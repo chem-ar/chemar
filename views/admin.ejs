@@ -1,0 +1,90 @@
+<!-- Include the header and navbar partials -->
+<%- include('partials/header') %>
+<%- include('partials/navbar')%>
+
+<script>
+//Function to load scenes on start
+function getScenes(){
+  //test scenes to be replaced with database format
+  let json = '{"list" : [' +
+    '{ "name": "Test Scene 1","description": "This is a test dummy scene for testing scene display feature"},' +
+    '{"name": "Test Scene 2","description": "This is a test dummy scene for testing scene display feature"} ]}';
+  let scenes = JSON.parse(json);
+
+  let display = document.getElementById("sceneDisplay");
+  for(let i = 0; i < Object.keys(scenes.list).length; i++){
+    //Get next scene
+    let name = scenes.list[i].name;
+    let description = scenes.list[i].description;
+
+    //Create new space for scene
+    let div = document.createElement("div");
+    div.className = "row text-center";
+
+    let idDisplay = document.createElement("p");
+    idDisplay.className = "border-top border-end btn-dark col-2 m-0";
+
+    let nameDisplay = document.createElement("p");
+    nameDisplay.className = "border-top border-end btn-dark col-3 m-0";
+
+    let descriptionDisplay = document.createElement("p");
+    descriptionDisplay.className = "border-top btn-dark col m-0";
+
+    //Add scene to display
+    idDisplay.innerText = i;
+    nameDisplay.innerText = name;
+    descriptionDisplay.innerText = description;
+
+    display.appendChild(div);
+    div.appendChild(idDisplay);
+    div.appendChild(nameDisplay);
+    div.appendChild(descriptionDisplay);
+  }
+}
+</script>
+
+<div class="container">
+  <div class="row content">
+      <div class="col-12 pt-4 text-start text-white bg-dark">
+          <h1 class="display-4 fw-bold">Scene Manager</h1>
+          <table id="sceneTable" class="table table-striped text-white" style="width:100%">
+              <thead>
+                  <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Description</th>
+                  </tr>
+              </thead>
+              <tbody>
+              </tbody>
+          </table>
+
+      </div>
+  </div>
+</div>
+
+<script>
+
+  $(document).ready(function () {
+      $('#sceneTable').DataTable({
+          scrollY: '500px',
+          scrollCollapse: true,
+          paging: true
+      });
+  });
+
+</script>
+
+<style>
+.table-striped>tbody>tr:nth-of-type(odd) {
+  background-color: #222;
+}
+.table-striped>tbody>tr:nth-of-type(odd)>td {
+  background-color: #222;
+  color: white ;
+}
+
+</style>
+
+
+<%- include('partials/footer') %>

@@ -1,8 +1,46 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+
+
+.container {
+  animation: fadeInAnimation ease 2s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
 }
 
-a {
-  color: #00B7FF;
+@keyframes fadeInAnimation {
+  0% {
+      opacity: 0;
+  }
+  100% {
+      opacity: 1;
+   }
 }
+
+.bg-darker{
+  background-color: #202020;
+}
+
+
+.table-striped>thead>tr>th {
+  background-color: white;
+  color: #202020 ;
+}
+
+.transparent-dark{
+  background-color: rgba(31, 35, 38, 0.7);
+}
+.blur-10{
+  backdrop-filter: blur(10px);
+}
+
+
+.table-striped>tbody>tr:nth-of-type(odd)>td {
+  background-color: #202020;
+  color: white ;
+}
+
+.table-striped>tbody>tr:nth-of-type(even)>td {
+  background-color: transparent;
+  color: white ;
+}
+
+

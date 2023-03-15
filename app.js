@@ -45,14 +45,15 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
-app.use("/molecule", moleculeRouter);
-app.use("/catalog", catalogRouter);
-app.use("/item", itemRouter);
-// app.use('/admin', adminRouter);
-app.use("/addMolecule", addMolecule);
-app.use("/viewer", viewerRouter);
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/molecule', moleculeRouter);
+app.use('/catalog', catalogRouter);
+app.use('/item', itemRouter);
+app.use('/admin', adminRouter);
+app.use('/addMolecule', addMolecule);
+app.use('/viewer', viewerRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
