@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="home.css" />
+    <title>Three JS Molecules</title>
+    <script src="js/molFileToJson.js"></script>
+    <script src="js/gsap.min.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./js/three.module.js",
+          "OrbitControls": "./js/OrbitControls.js"
+        }
+      }
+    </script>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas class="webgl"></canvas>
+    <section class="section">
+      <h1 class = "">CHEMAR</h1>
+    </section>
+    <section class="section">
+      <div>
+      <h2>Description</h2>
+      <div>
+      <P>This paragraph explains the software</P>
+      </div> 
+    </section>
+    <section class="section">
+      <h2>Changelog</h2>
+    </section>
+    <script type="module">
+      import { OrbitControls } from "./js/OrbitControls.js";
+      import * as THREE from "./js/three.module.js";
+      const objectsDistance = 4;
+      const canvas = document.querySelector("canvas.webgl");
+      const clock = new THREE.Clock();
+      let deltaTime = 0;
+      let totalTime = 0;
+      let centerOffset = -10;
+      let previousTime = 0;
+      const scene = new THREE.Scene();
+      // Base camera
+      const camera = new THREE.PerspectiveCamera(
+        35,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        100
+      );
+      camera.position.z = 5;
+      const renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        alpha: true,
+      });
+
+      document.body.appendChild(renderer.domElement);
+      renderer.setClearAlpha(0);
+      renderer.setSize(window.innerWidth,window.innerHeight);
+      const geometry = new THREE.SphereGeometry(0.1, 32, 32);
+      const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+      const sphereRadiusRatio = 0.75;
+      const cameraGroup = new THREE.Group();
+      scene.add(cameraGroup);
+
+      let autoRotateX = {
+        switch: false,
+      };
+      let autoRotateY = {
+        switch: false,
+      };
+      let autoRotateZ = {
+        switch: false,
+      };
+
+      const moleculeGeometries = {
+        C: new THREE.SphereGeometry(0.8 * sphereRadiusRatio, 32, 32),
+        H: new THREE.SphereGeometry(0.3 * sphereRadiusRatio, 32, 32),
+        O: new THREE.SphereGeometry(0.5 * sphereRadiusRatio, 32, 32),
+        N: new THREE.SphereGeometry(0.6 * sphereRadiusRatio, 32, 32),
+        S: new THREE.SphereGeometry(0.8 * sphereRadiusRatio, 32, 32),
+        P: new THREE.SphereGeometry(0.9 * sphereRadiusRatio, 32, 32),
+        F: new THREE.SphereGeometry(0.4 * sphereRadiusRatio, 32, 32),
+        Cl: new THREE.SphereGeometry(0.5 * sphereRadiusRatio, 32, 32),
+        Br: new THREE.SphereGeometry(0.6 * sphereRadiusRatio, 32, 32),
+        I: new THREE.SphereGeometry(0.7 *sphereRadiusRatio, 32, 32),
+      };
+      const moleculeMaterials = {
+        C: new THREE.MeshPhongMaterial({
+          color: 0x333333,
+  
+
+        }),
+        H: new THREE.MeshPhongMaterial({
+          color: 0xffffff,
+
+        }),
+        O: new THREE.MeshPhongMaterial({
+          color: 0xff0000,
+
+
+        }),
+        N: new THREE.MeshPhongMaterial({
+          color: 0x0000ff,
+
+
+        }),
+        S: new THREE.MeshPhongMaterial({
+          color: 0xffff00,
+
+        }),
+        P: new THREE.MeshPhongMaterial({
+          color: 0xff00ff,
+
+
+        }),
+        F: new THREE.MeshPhongMaterial({
+          color: 0x00ff00,
+
+
+        }),
+        Cl: new THREE.MeshPhongMaterial({
+          color: 0x00ff00,
+
+
+        }),
+        Br: new THREE.MeshPhongMaterial({
+          color: 0x00ff00,
+
+
+        }),
+        I: new THREE.MeshPhongMaterial({
+          color: 0x00ff00,
+
+
+        }),
+      };
+      const cylinderMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+      });
+
+      let moleculeGroup = new THREE.Group();
+
+      function drawMolecule(molFile) {
+        while (moleculeGroup.children.length > 0) {
+          moleculeGroup.remove(moleculeGroup.children[0]);
+        }
+        const molObject = molFileToJSON(molFile);
+
+        let firstPoint = new THREE.Vector3(
+          molObject.atoms[0].position.x,
+          molObject.atoms[0].position.y,
+          molObject.atoms[0].position.z
+        );
+
+        let limits = {
+          x: {
+            min: firstPoint.x,
+            max: firstPoint.x,
+          },
+          y: {
+            min: firstPoint.y,
+            max: firstPoint.y,
+          },
+          z: {
+            min: firstPoint.z,
+            max: firstPoint.z,
+          },
+        };
+
+        for (let item of molObject.atoms) {
+          let point = new THREE.Vector3(
+            item.position.x,
+            item.position.y,
+            item.position.z
+          );
+          if (Number(point.x) < Number(limits.x.min)) {
+            limits.x.min = point.x;
+          }
+          if (Number(point.x) > Number(limits.x.max)) {
+            limits.x.max = point.x;
+          }
+          if (Number(point.y) < Number(limits.y.min)) {
+            limits.y.min = point.y;
+          }
+          if (Number(point.y) > Number(limits.y.max)) {
+            limits.y.max = point.y;
+          }
+          if (Number(point.z) < Number(limits.z.min)) {
+            limits.z.min = point.z;
+          }
+          if (Number(point.z) > Number(limits.z.max)) {
+            limits.z.max = point.z;
+          }
+        }
+
+        let moleculeCenter = new THREE.Vector3(
+          (Number(limits.x.min) + Number(limits.x.max)) / 2,
+          (Number(limits.y.min) + Number(limits.y.max)) / 2,
+          (Number(limits.z.min) + Number(limits.z.max)) / 2
+        );
+
+        for (let item of molObject.atoms) {
+          const sphere = new THREE.Mesh(
+            moleculeGeometries[item.type],
+            moleculeMaterials[item.type]
+          );
+          sphere.position.x = item.position.x - moleculeCenter.x;
+          sphere.position.y = item.position.y - moleculeCenter.y;
+          sphere.position.z = item.position.z - moleculeCenter.z;
+          moleculeGroup.add(sphere);
+        }
+        for (let bond of molObject.bonds) {
+          let index1 = Number(bond[0]) - 1;
+          let index2 = Number(bond[1]) - 1;
+
+          let atom1 = molObject.atoms[index1];
+          let atom2 = molObject.atoms[index2];
+
+          let point1 = new THREE.Vector3(
+            atom1.position.x - moleculeCenter.x,
+            atom1.position.y - moleculeCenter.y,
+            atom1.position.z - moleculeCenter.z
+          );
+          let point2 = new THREE.Vector3(
+            atom2.position.x - moleculeCenter.x,
+            atom2.position.y - moleculeCenter.y,
+            atom2.position.z - moleculeCenter.z
+          );
+
+          let distance = point1.distanceTo(point2);
+
+          let cylinderRadius = bond[2] == 1 ? 0.05 : 0.15;
+
+          const cylinderGeometry = new THREE.CylinderGeometry(
+            cylinderRadius,
+            cylinderRadius,
+            distance,
+            8
+          );
+          cylinderGeometry.translate(0, distance / 2, 0);
+          cylinderGeometry.rotateX(Math.PI / 2);
+
+          const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+          cylinder.position.x = atom1.position.x - moleculeCenter.x;
+          cylinder.position.y = atom1.position.y - moleculeCenter.y;
+          cylinder.position.z = atom1.position.z - moleculeCenter.z;
+          cylinder.lookAt(point2);
+
+          moleculeGroup.add(cylinder);
+        }
+
+
+
+        scene.add(moleculeGroup);
+      }
+
+      export function getMolecule(CSID) {
+        fetch("molfiles/" + CSID + ".mol")
+          .then((response) => response.text())
+          .then((molFile) => {
+            drawMolecule(molFile);
+          });
+      }
+
+      function init(defaultCSID) {
+        getMolecule(defaultCSID);
+
+        const spotLight = new THREE.SpotLight(0xffffff);
+        spotLight.position.set(100, 1000, 100);
+        spotLight.castShadow = true;
+        spotLight.shadow.mapSize.width = 1024;
+        spotLight.shadow.mapSize.height = 1024;
+        spotLight.shadow.camera.near = 500;
+        spotLight.shadow.camera.far = 4000;
+        spotLight.shadow.camera.fov = 30;
+        scene.add(spotLight);
+
+        const light = new THREE.AmbientLight(0xffffff); // soft white light
+        scene.add(light);
+        moleculeGroup.position.x = -7;
+        moleculeGroup.position.z = -20;
+      }
+      function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+        deltaTime = clock.getDelta();
+      totalTime += deltaTime;
+
+        moleculeGroup.rotation.x -= 0.5 * deltaTime;
+      }
+     const sectionMeshes = [init(34668)];
+      /**
+       * Particles
+       */
+      // Geometry
+      const particlesCount = window.innerHeight*window.innerWidth/1000;
+      const positions = new Float32Array(particlesCount * 3);
+      for (let i = 0; i < particlesCount; i++) {
+        positions[i * 3 + 0] = (Math.random() - 0.5) * 10;
+        positions[i * 3 + 1] =
+          objectsDistance * 0.5 -
+          Math.random() * objectsDistance * sectionMeshes.length;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+      }
+      const particlesGeometry = new THREE.BufferGeometry();
+      particlesGeometry.setAttribute(
+        "position",
+        new THREE.BufferAttribute(positions, 3)
+      );
+      const particlesMaterial = new THREE.PointsMaterial({
+        color: "#ffeded",
+        sizeAttenuation: true,
+        size: 0.03,
+      });
+      const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+      scene.add(particles);
+      const sizes = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      };
+      window.addEventListener("resize", () => {
+        // Update sizes
+        sizes.width = window.innerWidth;
+        sizes.height = window.innerHeight;
+
+        // Update camera
+        camera.aspect = sizes.width / sizes.height;
+        camera.updateProjectionMatrix();
+
+        // Update renderer
+        renderer.setSize(sizes.width, sizes.height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      });
+
+      renderer.setAnimationLoop(function () {
+        renderer.render(scene, camera);
+      });
+
+      let scrollY = window.scrollY;
+      let currentSection = 0;
+      const cursor = {};
+      cursor.x = 0;
+      cursor.y = 0;
+      window.addEventListener("mousemove", (event) => {
+        cursor.x = event.clientX;
+        cursor.y = event.clientY;
+
+        console.log(cursor);
+      });
+      window.addEventListener("scroll", () => {
+        // ...
+        scrollY = window.scrollY;
+    const newSection = Math.round(scrollY / sizes.height);
+        for (const moleculeGroup of sectionMeshes) {
+          moleculeGroup.rotation.x += deltaTime * 0.1;
+          moleculeGroup.rotation.y += deltaTime * 0.12;
+        }
+        if (newSection != currentSection) {
+          // ...
+
+          gsap.to(sectionMeshes[currentSection].rotation, {
+            duration: 1.5,
+            ease: "power2.inOut",
+            x: "+=6",
+            y: "+=3",
+          });
+        }
+      });
+      const tick = () => {
+        // ...
+
+        // Animate camera
+        camera.position.y = (-scrollY / window.innerHeight) * objectsDistance;
+        const elapsedTime = clock.getElapsedTime();
+        const deltaTime = elapsedTime - previousTime;
+        previousTime = elapsedTime;
+        const parallaxX = cursor.x * 0.5;
+        const parallaxY = -cursor.y * 0.5;
+        cameraGroup.position.x +=
+          (parallaxX - cameraGroup.position.x) * 5 * deltaTime;
+        cameraGroup.position.y +=
+          (parallaxY - cameraGroup.position.y) * 5 * deltaTime;
+        // ...
+      };
+      animate();
+      tick();
+    </script>
+  </body>
+</html>

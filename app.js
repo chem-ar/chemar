@@ -49,7 +49,7 @@ app.use('/users', usersRouter);
 app.use('/molecule', moleculeRouter);
 app.use('/catalog', catalogRouter);
 app.use('/item', itemRouter);
-// app.use('/admin', adminRouter);
+app.use('/admin', adminRouter);
 app.use('/addMolecule', addMolecule);
 app.use('/viewer', viewerRouter);
 

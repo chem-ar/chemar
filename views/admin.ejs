@@ -1,0 +1,57 @@
+<!-- Include the header and navbar partials -->
+<%- include('partials/header') %>
+<%- include('partials/navbar')%>
+
+<div class="container">
+  <div class="row content">
+      <div class="col-12 pt-4 text-start text-white bg-dark">
+          <h1 class="display-4 fw-bold">Scene Manager</h1>
+          <table id="sceneTable" class="table table-striped text-white" style="width:100%">
+              <thead>
+                  <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Description</th>
+                  </tr>
+              </thead>
+              <tbody>
+                <% for(let i = 0; i <= numScenes.length; i++){;%>
+                  <% console.log(numScenes.length); %>
+                  <tr>
+                      <td><%=i%></td>
+                      <td id="name<%=i%>" class="text-white"><%=scenes[i].info.name; %></td>
+                      <td id="description<%=i%>" class="text-white"><%=scenes[i].info.description %></td>
+                  </tr>
+                <%}%>
+              </tbody>
+          </table>
+
+      </div>
+  </div>
+</div>
+
+<script>
+
+  $(document).ready(function () {
+      $('#sceneTable').DataTable({
+          scrollY: '500px',
+          scrollCollapse: true,
+          paging: true
+      });
+  });
+
+</script>
+
+<style>
+.table-striped>tbody>tr:nth-of-type(odd) {
+  background-color: #222;
+}
+.table-striped>tbody>tr:nth-of-type(odd)>td {
+  background-color: #222;
+  color: white ;
+}
+
+</style>
+
+
+<%- include('partials/footer') %>

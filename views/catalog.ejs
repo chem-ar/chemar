@@ -1,94 +1,59 @@
 <%- include('partials/header') %>
-    <%-include('partials/navbar')%>
+<%-include('partials/navbar')%>
 
-    <!--MAIN CONTENT-->
-        <div class="container-fluid text-center">
-            <div class="row content">
-
-                <!--EMPTY LEFT-SIDEBAR-->
-                <div class="col-sm-2">
-
-                </div>
-
-                <!--CENTER CONTENT-->
-                <div class="col-sm-8 text-start">
-                    <div>
-                        <h2 class="display-5 fw-bold fs-1">Catalog</h2>
-                    </div>
-                    <p></p>
-                    <table id="molTable" class="table table-striped" style="width:100%">
-                        <thead>
+<div class="container">
+    <div class="row content">
+        <div class="col-12 pt-4 text-start text-white bg-dark">
+            <h1 class="display-4 fw-bold">Catalog</h1>
+            <p class="fs-4">.mol files</p>
+            <p></p>
+            <table id="molTable" class="table table-striped text-white" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Name</th>
+                        <th>Formula</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% let listNumbers = list.map((item)=> {
+                            return item.replace(".mol", "")
+                        })
+                        listNumbers.sort(function(a, b) {
+                            return a - b;})
+                        %>
+                        <% for (let item of listNumbers){%>
                             <tr>
-                                <th>CSID</th>
-                                <th>Name</th>
-                                <th>Formula</th>
+                                <td><%= String(item).padStart(3, '0' ) %></td>
+                                <td>
+                                    <a class="text-white" id="Name<%=item %>" href="/item/<%=item%>">Name</a>
+                                </td>
+                                <td id="Formula<%=item %>" class="text-white">Formula</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th>CSID</th>
-                                <th>Name</th>
-                                <th>Formula</th>
-                            </tr>
-                            <% let listNumbers=list.map((item)=> {
-                                return item.replace(".mol", "")
-                                })
-                                listNumbers.sort(
-                                function(a, b) {
-                                return a - b;
-                                }
-                                )
-                                %>
-                                <% for (let item of listNumbers){%>
-                                    <tr>
-                                        <td><a class="btn btn-light" href="/item/<%=item%>">
-                                                <%= String(item).padStart(3, '0' ) %>
-                                            </a></td>
-                                        <td><a class="text-white" id="Name<%=item %>" href="/item/<%=item%>">Name</a>
-                                        </td>
-                                        <td id="Formula<%=item %>" class="text-white">Formula</td>
-                                    </tr>
-                                    <%}%>
-                        </tbody>
-                    </table>
-                </div>
+                        <%}%>
+                </tbody>
+            </table>
+            <p class="fs-4">.gltf files</p>
 
-                <!--EMPTY RIGHT-SIDEBAR-->
-                <div class="col-sm-2">
-
-                </div>
-            </div>
         </div>
+    </div>
+</div>
 
-        <script>
-            fetch('/catalog/catalog.json')
-                .then((response) => response.json())
-                .then((data) => {
-                    for (let item of Object.keys(data)) {
-                        document.getElementById("Name" + item).innerHTML = data[item].name;
-                        document.getElementById("Formula" + item).innerHTML = data[item].formula;
-                    }
-                }
-                );
+<script>
 
-            $(document).ready(function () {
-                $('#molTable').DataTable({
-                    scrollY: '500px',
-                    scrollCollapse: true,
-                    paging: true
-                });
-            });
+    $(document).ready(function () {
+        $('#molTable').DataTable({
+            scrollY: '500px',
+            scrollCollapse: true,
+            paging: true
+        });
+    });
 
-            $(document).ready(function () {
-                $('#molTable2').DataTable({
-                    searching: false,
-                    scrollY: '545px',
-                    scrollCollapse: true,
-                    info: false,
-                    paging: true
-                });
-            });
-        </script>
+</script>
+
+<style>
+
+</style>
 
 
-        <%- include('partials/footer') %>
+<%- include('partials/footer') %>
