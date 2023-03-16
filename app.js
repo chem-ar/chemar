@@ -9,15 +9,23 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
-var moleculeRouter = require("./routes/molecule");
-var catalogRouter = require("./routes/catalog");
-var itemRouter = require("./routes/item");
-var viewerRouter = require("./routes/viewer");
-var adminRouter = require("./routes/admin");
-var addMolecule = require("./routes/addMolecule");
-var homeRouter = require("./routes/home");
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
+var moleculeRouter = require('./routes/molecule');
+var catalogRouter = require('./routes/catalog');
+var itemRouter = require('./routes/item');
+var viewerRouter = require('./routes/viewer');
+var adminRouter = require('./routes/admin');
+var addMolecule = require('./routes/addMolecule');
+var addScene = require('./routes/addScene');
+
+
 
 var app = express();
 
@@ -51,8 +59,9 @@ app.use('/molecule', moleculeRouter);
 app.use('/catalog', catalogRouter);
 app.use('/item', itemRouter);
 app.use('/admin', adminRouter);
-app.use('/addMolecule', addMolecule);
 app.use('/viewer', viewerRouter);
+app.use('/addMolecule', addMolecule);
+app.use('/addScene', addScene);
 
 
 // catch 404 and forward to error handler
