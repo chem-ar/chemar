@@ -1,78 +1,26 @@
 <%- include('partials/header') %>
 <%-include('partials/navbar')%>
-
 <div class="container">
-    <div class="row">
-        <!-- Heading Text -->
+    <div class="row content">
         <div class="col-12 pt-4 text-start text-white bg-dark">
-            <h1 class="display-4 fw-bold">Add a Molecule</h1>
-        </div>
-        <!-- Form Contents -->
-        <div class = "col-6">
-            <form class="row g-3 text-white">
-
-                <div class="col-12">
-                    <h4 class="mb-1">Molecule name:</h4>
-                    <input class="form-control" type="text" id="moleculeName" name="name" required>
-                </div>
-
-                <div class="col-12">
-                    <h4 class="mb-1">Formula:</h4>
-                    <input class="form-control" type="text" id="formula" name="formula" required>
-                </div>
-                
-                <div class="col-12">
-                    <h4 class="mb-1">File:</h4>
-                    <input class="form-control" type="file" id="fileName" name="fileName" required>
-                </div>
-
-                <div class="col-12">
-                  <button type="submit" class="btn btn-primary mb-3">Submit</button>
-                </div>
-            </form>    
-        </div>
-
-        <!-- MolFile Contents -->
-        <div class = "col-6 bg-light">
-            <pre>
-.mol File contents here
-            </pre>
-        </div>
-    </div>
-</div>
-
-
-<div class="pb-5 mb-4 bg-light rounded-3 bg-dark text-white text-center">
-    <div class=" pt-5">
-        <h1 class="display-5 fw-bold">Add new molecule</h1>
-    </div>
+            <h1 class="display-4 fw-bold">Add New Molecule</h1>
     
-            <div class="form-signin w-75 m-auto">
-                <form class="row" action="/addMolecule" method="POST" id="addMolForm" style="background-color: red;">
-                    <div class="col-12 col-sm-5 col-md-5" style="background-color:aqua">
-                        <div class="form-floating">
-                            <h4 class="m-4">Molecule name:</h4>
-                            <input class="form-control" type="text" id="moleculeName" name="name" required>
-                        </div>
-                        <div class="form-floating mb-4">
-                            <h4 class="m-4">Formula:</h4>
-                            <input class="form-control" type="text" id="formula" name="formula" required>
-                        </div>
-                        <div class="form-floating">
-                            <h4 class="m-4">File:</h4>
-                            <input class="form-control" type="file" id="fileName" name="fileName" onchange="onReceiptsSelected()" required>
-                        </div>
-                        <br>
-                        <button class="w-50 btn btn-lg btn-primary  mb-4">Submit</button>
-                        <br>
-                    </div>
-                    <div class="col-12 col-sm-7 col-md-7">
-                        <div class="form-floating">
-                            <textarea class="" name="preview" id="preview" cols="80" rows="20"></textarea>
-                        </div>
-                    </div>
-                </form>
-            </div>
+    <form class="d-flex justify-content-center flex-wrap" action="/addMolecule" method="POST" id="addMolForm">
+        <div class="row d-flex flex-wrap">
+          <div class="col-12 col-sm-6 d-flex  flex-wrap">
+                <h4>Molecule name:</h4>
+                <input type="text" class="form-control" id="moleculeName" name="name" placeholder="Molecule name"  required>
+                <h4>Formula:</h4>
+                <input type="text" class="form-control" id="formula" name="formula" placeholder="Formula" required>
+                <h4>File:</h4>
+                <input type="file" class="form-control" id="fileName" name="fileName" placeholder="File name" onchange="onReceiptsSelected()" required>
+                <button class="form-control my-4 w-50">Submit</button>
+          </div>
+          <div class="col-12 col-sm-6 d-flex align-content-stretch flex-wrap">
+                <textarea class="form-control" name="preview" id="preview"></textarea>
+          </div>
+        </div>
+    </form>        
 
     <script>
         // Preview the .mol file content when selected
