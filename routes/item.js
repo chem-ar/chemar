@@ -16,7 +16,7 @@ router.get('/:id', function(req , res){
   if(molfiles.includes(req.params.id + '.mol')){
     
     //If the file exists, read the file and store the contents in a variable called molfile
-    let molfile = fs.readFileSync('./public/molfiles/'+req.params.id+'.mol', 'utf8');
+    let molfile = fs.readFileSync('./public/catalog.json');
     
     let moleculeName = 'No name in catalog';
     let moleculeFormula = 'No formula in catalog';
@@ -28,7 +28,7 @@ router.get('/:id', function(req , res){
     }
     
     //Render the item page with the id as the item argument and the molfile as the molfile argument
-    res.render('item', {
+    res.render('mol', {
       title: 'Molecule Viewer: '+ req.params.id, 
       item: req.params.id, 
       molfile: molfile,

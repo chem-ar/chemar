@@ -1,38 +1,82 @@
 <%- include('partials/header') %>
 <%-include('partials/navbar')%>
 
+<!--MAIN CONTENT-->
 <div class="container">
     <div class="row content">
         <div class="col-12 pt-4 text-start text-white bg-dark">
             <h1 class="display-4 fw-bold">Catalog</h1>
             <p class="fs-4">.mol files</p>
             <p></p>
-            <table id="molTable" class="table table-striped text-white" style="width:100%">
+            <table id="molTable" class="table table-striped text-white" style="">
                 <thead>
                     <tr>
                         <th>File</th>
                         <th>Name</th>
                         <th>Formula</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% let listNumbers = list.map((item)=> {
+                    <%  let listNumbers = list.map((item)=> {
                             return item.replace(".mol", "")
                         })
                         listNumbers.sort(function(a, b) {
                             return a - b;})
                         %>
-                        <% for (let item of listNumbers){%>
+                        <% for (let item of listNumbers){
+                            if(mol[item] != undefined){
+                                let name = mol[item].name;
+                                let formula = mol[item].formula;
+                            } else {
+                                name = "not found in Catalog";
+                                formula = "not found in Catalog";
+                            }
+                            %>
                             <tr>
                                 <td><%= String(item).padStart(3, '0' ) %></td>
                                 <td>
-                                    <a class="text-white" id="Name<%=item %>" href="/item/<%=item%>">Name</a>
+                                    <a class="text-white" id="<%= "name" + item %></a>" href="/item/<%=item%>"><%=name%></a>
                                 </td>
-                                <td id="Formula<%=item %>" class="text-white">Formula</td>
+                                <td id="<%= "formula" + item %></td>" class="text-white"><%=formula%></td>
+                                <td class="d-flex justify-content-end">
+                                    <button id="<%= "previewBtn" + item %>" type="button" class="preview btn btn-light mx-1" data-bs-toggle="modal" data-bs-target="#canvasModal">
+                                    Preview
+                                    </button>
+                                    <button type="button" class="btn btn-info mx-1" data-bs-toggle="modal" data-bs-target="">
+                                    Edit
+                                    </button>
+                                    <button type="button" class="btn btn-light mx-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+                                            <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+                                          </svg> Share
+                                    </button>
+                                    <button type="button" class="btn btn-danger mx-1" data-bs-toggle="modal" data-bs-target="">
+                                        Delete
+                                    </button>
+
+                                   
+                                </td>
                             </tr>
                         <%}%>
                 </tbody>
             </table>
+            <!-- Modal -->
+            <div class="modal fade" id="canvasModal" tabindex="-1" aria-labelledby="canvasModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content bg-dark">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-white" id="canvasModalLabel">Name</h5>
+                            <h6 class="modal-title text-white" id="canvasModalLabel">Formula</h6><br>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    <div class="modal-body">
+                        <div class="moleculeViewer" style = "height: 50vh">
+                            <iframe id="iframePreview" class = "rounded" src = "" width = "100%" height="100%" frameborder="0"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <p class="fs-4">.gltf files</p>
 
         </div>
@@ -40,6 +84,8 @@
 </div>
 
 <script>
+    var iframePreview = document.getElementById("iframePreview")
+    console.log(iframePreview);
 
     $(document).ready(function () {
         $('#molTable').DataTable({
@@ -49,11 +95,40 @@
         });
     });
 
+    var preview = document.getElementsByClassName("preview");
+
+    Array.from(preview).forEach(function(element) {
+        element.addEventListener("click", function(){
+            let itemNumber = element.id.replace("previewBtn", "")
+            iframePreview.src = "https://localhost:4000/viewer/" + itemNumber;
+        })
+    });
+
 </script>
 
 <style>
 
 </style>
+
+// <script>
+//     fetch('file://./public/catalog/catalog.json')
+//       .then((response) => response.json())
+//       .then((data) => {
+//         for(let item of Object.keys(data)){
+//             if(list.includes(item)){
+
+//             }
+//             console.log(item);
+//             document.getElementById("name" + item).innerHTML = data[item].name;
+//             document.getElementById("formula" + item).innerHTML = data[item].formula;
+
+//             const preview = document.getElementById("iframePreview");
+//             preview.setAttribute("src", "https://localhost:4000/viewer/"+item);
+//             console.log(item);
+//         }
+//       }
+// );
+// </script>
 
 
 <%- include('partials/footer') %>
