@@ -1,0 +1,37 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar')%>
+
+<div class="container">
+    <div class="row content">
+        <div class="col-12 pt-4 text-start text-white bg-dark">
+            <h1 class="display-4 fw-bold">Add New Scene</h1>
+            <form class="d-flex justify-content-center flex-wrap" action="/addScene" method="POST" id="addSceneForm">
+                <div class="row d-flex flex-wrap">
+                    <div class="col-12 col-sm-6 d-flex flex-wrap">
+                        <h4 class = "mt-2">Scene name:</h4>
+                        <input type="text" class="form-control mb-2" id="sceneName" name="name" placeholder="Scene Name">
+                        <h4 class = "mt-2">File:</h4>
+                        <input type="file" class="form-control mb-2" id="fileName" name="fileName" placeholder="File name" onchange="onReceiptsSelected()">
+                        <button class="form-control my-4 w-50">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Preview the .mol file content when selected
+function onReceiptsSelected() {
+    const files = fileName.files;
+    if (files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            document.getElementById("preview").value += e.target.result;
+            //console.log(e.target.result);
+        };
+        reader.readAsText(files[0]);
+    }
+}
+</script>
+<%- include('partials/footer') %>
