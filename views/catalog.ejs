@@ -99,7 +99,7 @@ var iframePreview = document.getElementById("iframePreview")
     Array.from(preview).forEach(function(element) {
         element.addEventListener("click", function(){
             let itemNumber = element.id.replace("previewBtn", "")
-            iframePreview.src = "https://localhost:4000/viewer/" + itemNumber;
+            iframePreview.src = "/moleculeViewer/" + itemNumber;
         })
     });
 

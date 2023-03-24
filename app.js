@@ -20,7 +20,7 @@ var usersRouter = require('./routes/users');
 var moleculeRouter = require('./routes/molecule');
 var catalogRouter = require('./routes/catalog');
 var itemRouter = require('./routes/item');
-var viewerRouter = require('./routes/viewer');
+var moleculeViewerRouter = require('./routes/moleculeViewer');
 var scenesRouter = require('./routes/scenes');
 var addMolecule = require('./routes/addMolecule');
 var addScene = require('./routes/addScene');
@@ -59,7 +59,7 @@ app.use('/molecule', moleculeRouter);
 app.use('/catalog', catalogRouter);
 app.use('/item', itemRouter);
 app.use('/scenes', scenesRouter);
-app.use('/viewer', viewerRouter);
+app.use('/moleculeviewer', moleculeViewerRouter);
 app.use('/addMolecule', addMolecule);
 app.use('/addScene', addScene);
 
