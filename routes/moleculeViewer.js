@@ -28,7 +28,6 @@ router.get('/:id', function(req , res){
     res.render('moleculeViewer', {
       title: 'Molecule Viewer', 
       item: req.params.id
-
     });
 
   }
