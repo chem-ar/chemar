@@ -1,6 +1,12 @@
 <!-- Include the header and navbar partials -->
 <%- include('partials/header') %>
-<%- include('partials/navbar')%>
+<% if (isAdmin) { %>
+  <%- include('partials/navbarAdmin') %>
+<% } %>
+<% if (!isAdmin) { %>
+  <%- include('partials/navbar') %>
+<% } %>
+ 
 
 <div class="container">
   <div class="row bg-light rounded-3 bg-dark text-white">
