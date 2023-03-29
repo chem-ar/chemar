@@ -12,6 +12,7 @@ router.get('/', function(req, res, next) {
 router.post('/', (req, res) => {
   // Assign values from form to variables
   var sceneName = req.body.name;
+  var sceneDescription = req.body.description;
   var fileName = req.body.fileName;
   var sceneFileContent = req.body.preview;
   const csid = fileName.substring(0, fileName.indexOf("."));
@@ -32,10 +33,14 @@ router.post('/', (req, res) => {
 
       // Read json file and add info to it
       var rawdata = fs.readFileSync('./public/scenes/scenes.json');
-      var  parsedData = JSON.parse(rawdata);
+      var parsedData = JSON.parse(rawdata);
 
       parsedData[csid] = {
-          name: sceneName,
+          "info": {
+            name: sceneName,
+            description: sceneDescription
+          }
+          
       };
 
       var newScene = JSON.stringify(parsedData);

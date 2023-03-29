@@ -4,24 +4,23 @@
       Add new scene
     </a>
 </p>
-<div class="container">
-    <div class="row content">
-        <div class="col-12 pt-4 text-start text-white bg-dark">
-            <h1 class="display-4 fw-bold">Add New Scene</h1>
-            <form class="d-flex justify-content-center flex-wrap" action="/addScene" method="POST" id="addSceneForm" enctype="multipart/form-data">
-                <div class="row d-flex flex-wrap">
-                    <div class="col-12 col-sm-6 d-flex flex-wrap">
-                        <h4 class = "mt-2">Scene name:</h4>
-                        <input type="text" class="form-control mb-2" id="sceneName" name="name" placeholder="Scene Name">
-                        <h4 class = "mt-2">File:</h4>
-                        <input type="file" class="form-control mb-2" id="fileName" name="fileName" placeholder="File name" onchange="onReceiptsSelected()">
-                        <button class="form-control my-4 w-50">Submit</button>
-                    </div>
-                    <div class="col-12 col-sm-6 d-flex align-content-stretch flex-wrap">
-                        <textarea class="form-control" name="preview" id="preview" style="display: none"></textarea>
-                  </div>
+<div class="collapse" id="collapseExample">
+    <div class="card card-body bg-dark">
+        <form class=" justify-content-center flex-wrap" action="/addScene" method="POST" id="addSceneForm">
+            <div class="row d-flex flex-wrap">
+                <div class="col-12 col-sm-6 d-flex  flex-wrap">
+                    <h4>Scene name:</h4>
+                    <input type="text" class="form-control" id="sceneName" name="name" placeholder="Scene name"  required>
+                    <h4>Description:</h4>
+                    <input type="text" class="form-control" id="sceneDescription" name="description" placeholder="Description"  required>
+                    <h4>File:</h4>
+                    <input type="file" class="form-control" id="fileName" name="fileName" placeholder="File name" onchange="onReceiptsSelected()" required>
+                    <button class="form-control my-4 w-50">Submit</button>
                 </div>
-            </form>
-        </div>
+                <div class="col-12 col-sm-6 d-flex align-content-stretch flex-wrap">
+                    <textarea class="form-control" name="preview" id="preview" style="display: none"></textarea>
+                </div>
+            </div>
+        </form>   
     </div>
-</div>
+</div> 
