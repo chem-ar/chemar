@@ -16,7 +16,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var usersRouter = require('./routes/session');
 var moleculeRouter = require('./routes/molecule');
 var catalogRouter = require('./routes/catalog');
 var itemRouter = require('./routes/item');
@@ -24,6 +24,8 @@ var viewerRouter = require('./routes/viewer');
 var scenesRouter = require('./routes/scenes');
 var addMolecule = require('./routes/addMolecule');
 var addScene = require('./routes/addScene');
+var loginRouter = require('./routes/login');
+var sessionRouter = require('./routes/session')
 
 
 
@@ -49,7 +51,7 @@ app.set("view engine", "ejs");
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser("iauuhdfsoivfdsoviufh"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 
@@ -62,6 +64,8 @@ app.use('/scenes', scenesRouter);
 app.use('/viewer', viewerRouter);
 app.use('/addMolecule', addMolecule);
 app.use('/addScene', addScene);
+app.use('/login', loginRouter);
+app.use('/session', sessionRouter);
 
 
 // catch 404 and forward to error handler
