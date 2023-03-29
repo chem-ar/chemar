@@ -48,7 +48,7 @@
                                         </svg> Preview
                                     </button>
 
-                                    <button type="button" class="btn btn-light mx-1" data-bs-toggle="modal" data-bs-target="#shareModal">
+                                    <button id="<%= "shareBtn" + item %>" type="button" class="share btn btn-light mx-1" data-bs-toggle="modal" data-bs-target="#shareModal">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
                                             <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
                                           </svg> Share
@@ -109,9 +109,9 @@
             </div>
         <div class="modal-body">
             <div class="">
-                <div id="qrcode"></div>
+                <div id="qrcode" align="center"></div>
                 <script type="text/javascript">
-                new QRCode(document.getElementById("qrcode"), "http://jindo.dev.naver.com/collie");
+                var qrcode = new QRCode(document.getElementById("qrcode"), "http://jindo.dev.naver.com/collie");
                 </script>
             </div>
         </div>
@@ -123,7 +123,6 @@
 <script>
 
 var iframePreview = document.getElementById("iframePreview")
-    console.log(iframePreview);
 
     $(document).ready(function () {
         $('#molTable').DataTable({
@@ -138,7 +137,16 @@ var iframePreview = document.getElementById("iframePreview")
     Array.from(preview).forEach(function(element) {
         element.addEventListener("click", function(){
             let itemNumber = element.id.replace("previewBtn", "")
-            iframePreview.src = "https://localhost:4000/viewer/" + itemNumber;
+            iframePreview.src = "/viewer/" + itemNumber;
+        })
+    });
+
+    var share = document.getElementsByClassName("share");
+
+    Array.from(share).forEach(function(element) {
+        element.addEventListener("click", function(){
+            let itemNumber = element.id.replace("shareBtn", "")
+            qrcode.makeCode("https://localhost:4000/viewer/" + itemNumber); 
         })
     });
 
