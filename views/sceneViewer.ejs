@@ -59,9 +59,9 @@
     </div>
 
     <script type= "module">
-        import { OrbitControls } from './js/OrbitControls.js';
-        import { VRMLLoader } from './js/VRMLLoader.js';
-        import * as THREE from './js/three.module.js';
+        import { OrbitControls } from '/js/OrbitControls.js';
+        import { VRMLLoader } from '/js/VRMLLoader.js';
+        import * as THREE from '/js/three.module.js';
 
         const threeBackground = document.getElementById('three-background');
         const threeArea = document.getElementById('three-area');
@@ -95,7 +95,7 @@
             scene.add( ambientLight );
 
 
-            loader.load( 'scenefiles/PeriodicTable.wrl', function ( object ) {
+            loader.load( '../scenefiles/PeriodicTable.wrl', function ( object ) {
                 scene.add( object );
             } );
 
