@@ -1,9 +1,11 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET users listing. */
+//Create cookie here then redirect
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+  const oneDay = 86400000
+  res.cookie('name', 'admin', {maxAge: oneDay});
+  res.redirect("/");
 });
 
 module.exports = router;
