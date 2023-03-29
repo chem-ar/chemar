@@ -4,10 +4,9 @@ var fs = require('fs');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  let numScenes = fs.readdirSync("./public/scenes/");
-  let scenes = JSON.parse(fs.readFileSync("./public/scenes/scenes.json", "utf8"));
+  let scenes = fs.readdirSync('./public/scenefiles/')
   
-  res.render('scenes', {title: 'Scene Manager', scenes: scenes, numScenes : numScenes});
+  res.render('scenes', {title: 'Scene Manager', list: scenes, isAdmin: true});
 });
 
 module.exports = router;

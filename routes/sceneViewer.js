@@ -20,7 +20,7 @@ router.get('/:id', function(req , res){
   else{
     res.render('sceneViewer', {
       title: 'Scene Viewer', 
-      item: 2519
+      item: undefined
     });  
   }
 
