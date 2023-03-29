@@ -6,6 +6,10 @@
   <div class="row content">
       <div class="col-12 pt-4 text-start text-white bg-dark">
           <h1 class="display-4 fw-bold">Scene Manager</h1>
+
+          <!-- Add Molecule collapsable section -->
+          <%-include('partials/addScenes')%>
+
           <table id="sceneTable" class="table table-striped text-white" style="width:100%">
               <thead>
                   <tr>
@@ -30,6 +34,19 @@
 </div>
 
 <script>
+
+  // Preview the scene file content when selected
+  function onReceiptsSelected() {
+            const files = fileName.files;
+            if (files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById("preview").value += e.target.result;
+                    //console.log(e.target.result);
+                };
+                reader.readAsText(files[0]);
+            }
+        }
 
   $(document).ready(function () {
       $('#sceneTable').DataTable({
