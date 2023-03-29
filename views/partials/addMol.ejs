@@ -1,0 +1,26 @@
+<!-- Add Molecule-->
+<p>
+    <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+      Add new molecule
+    </a>
+</p>
+<div class="collapse" id="collapseExample">
+    <div class="card card-body bg-dark">
+        <form class=" justify-content-center flex-wrap" action="/addMolecule" method="POST" id="addMolForm">
+            <div class="row d-flex flex-wrap">
+                <div class="col-12 col-sm-6 d-flex  flex-wrap">
+                    <h4>Molecule name:</h4>
+                    <input type="text" class="form-control" id="moleculeName" name="name" placeholder="Molecule name"  required>
+                    <h4>Formula:</h4>
+                    <input type="text" class="form-control" id="formula" name="formula" placeholder="Formula" required>
+                    <h4>File:</h4>
+                    <input type="file" class="form-control" id="fileName" name="fileName" placeholder="File name" onchange="onReceiptsSelected()" required>
+                    <button class="form-control my-4 w-50">Submit</button>
+                </div>
+                <div class="col-12 col-sm-6 d-flex align-content-stretch flex-wrap">
+                    <textarea class="form-control" name="preview" id="preview" style="display: none"></textarea>
+                </div>
+            </div>
+        </form>   
+    </div>
+</div> 
