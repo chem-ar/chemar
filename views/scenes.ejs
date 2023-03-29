@@ -113,27 +113,26 @@
 
 <script>
 
-var iframePreview = document.getElementById("iframePreview")
-    console.log(iframePreview);
+  // Preview the scene file content when selected
+  function onReceiptsSelected() {
+            const files = fileName.files;
+            if (files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById("preview").value += e.target.result;
+                    //console.log(e.target.result);
+                };
+                reader.readAsText(files[0]);
+            }
+        }
 
-    $(document).ready(function () {
-        $('#molTable').DataTable({
-            scrollY: false,
-            scrollX:        true,
-
-            scrollCollapse: true,
-            paging: true
-        });
-    });
-
-    var preview = document.getElementsByClassName("preview");
-
-    Array.from(preview).forEach(function(element) {
-        element.addEventListener("click", function(){
-            let itemNumber = element.id.replace("previewBtn", "")
-            iframePreview.src = "/moleculeViewer/" + itemNumber;
-        })
-    });
+  $(document).ready(function () {
+      $('#sceneTable').DataTable({
+          scrollY: '500px',
+          scrollCollapse: true,
+          paging: true
+      });
+  });
 
 </script>
 

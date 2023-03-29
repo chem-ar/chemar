@@ -22,6 +22,7 @@ router.post('/', (req, res) => {
     var molName = req.body.name;
     var molFormula = req.body.formula;
     var fileName = req.body.fileName;
+    console.log(fileName);
     var molFileContent = req.body.preview;
     const csid = fileName.substring(0, fileName.indexOf("."));
 
