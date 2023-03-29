@@ -25,7 +25,8 @@ var scenesRouter = require('./routes/scenes');
 var addMolecule = require('./routes/addMolecule');
 var addScene = require('./routes/addScene');
 var loginRouter = require('./routes/login');
-var sessionRouter = require('./routes/session')
+var sessionRouter = require('./routes/session');
+var logoutRouter = require('./routes/logout');
 
 
 
@@ -66,6 +67,7 @@ app.use('/addMolecule', addMolecule);
 app.use('/addScene', addScene);
 app.use('/login', loginRouter);
 app.use('/session', sessionRouter);
+app.use('/logout', logoutRouter);
 
 
 // catch 404 and forward to error handler
