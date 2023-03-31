@@ -40,21 +40,12 @@
                                             </svg> Preview
                                         </button>
 
-                                <td class="d-flex justify-content-end">
-                                    <button id="<%= "previewBtn" + item %>" type="button" class="preview btn btn-light mx-1" data-bs-toggle="modal" data-bs-target="#canvasModal">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
-                                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
-                                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
-                                        </svg> Preview
-                                    </button>
-
-                                    <button id="<%= "shareBtn" + item %>" type="button" class="share btn btn-light mx-1" data-bs-toggle="modal" data-bs-target="#shareModal">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
-                                            <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
-                                          </svg> Share
-                                    </button>
-
-                                     <!--ADMIN CHECK-->
+                                        <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#shareModal">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+                                                <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+                                            </svg> Share
+                                        </button>
+                                    <!--ADMIN CHECK-->
                                     <% if (isAdmin){%>
                                         <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
@@ -111,9 +102,9 @@
             </div>
         <div class="modal-body">
             <div class="">
-                <div id="qrcode" align="center"></div>
+                <div id="qrcode"></div>
                 <script type="text/javascript">
-                var qrcode = new QRCode(document.getElementById("qrcode"), "http://jindo.dev.naver.com/collie");
+                new QRCode(document.getElementById("qrcode"), "http://jindo.dev.naver.com/collie");
                 </script>
             </div>
         </div>
@@ -126,18 +117,19 @@
 
     // Preview the .mol file content when selected
     function onReceiptsSelected() {
-            const files = fileName.files;
-            if (files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById("preview").value += e.target.result;
-                    //console.log(e.target.result);
-                };
-                reader.readAsText(files[0]);
-            }
+        const files = fileName.files;
+        if (files.length > 0) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+            document.getElementById("preview").value += e.target.result;
+                //console.log(e.target.result);
+            };
+            reader.readAsText(files[0]);
         }
+    }
 
 var iframePreview = document.getElementById("iframePreview")
+    console.log(iframePreview);
 
     $(document).ready(function () {
         $('#molTable').DataTable({
@@ -154,16 +146,7 @@ var iframePreview = document.getElementById("iframePreview")
     Array.from(preview).forEach(function(element) {
         element.addEventListener("click", function(){
             let itemNumber = element.id.replace("previewBtn", "")
-            iframePreview.src = "/viewer/" + itemNumber;
-        })
-    });
-
-    var share = document.getElementsByClassName("share");
-
-    Array.from(share).forEach(function(element) {
-        element.addEventListener("click", function(){
-            let itemNumber = element.id.replace("shareBtn", "")
-            qrcode.makeCode("https://localhost:4000/viewer/" + itemNumber); 
+            iframePreview.src = "/moleculeViewer/" + itemNumber;
         })
     });
 

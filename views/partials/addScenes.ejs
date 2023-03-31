@@ -1,0 +1,50 @@
+<!-- Add Scene -->
+<div class="row content">
+    <div class="col-12 text-start text-white bg-dark">
+        <button class="btn btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample"
+            aria-expanded="false" aria-controls="collapseExample">
+            Add New Scene
+        </button>
+        <div class="collapse" id="collapseExample">
+            <div class="col-12 text-start text-white bg-dark">
+                <form class="" action="/addScene" method="POST" id="addSceneForm">
+                    <div class="row ">
+                        <div class="col-12 col-sm-9 col-md-6">
+                            <h4 class="mb-1 mt-2">Scene Name:</h4>
+                            <input type="text" class="form-control" id="sceneName" name="name"
+                                placeholder="Scene Name" required>
+                            <h4 class="mb-1 mt-2">Description:</h4>
+                            <input type="text" class="form-control" id="description" name="description" placeholder="Description"
+                                required>
+                            <h4 class="mb-1 mt-2">File:</h4>
+                            <input type="file" class="form-control" id="fileName" name="fileName"
+                                placeholder="File name" onchange="onReceiptsSelected()" required>
+                            <button class="btn btn-success form-control my-2">Submit</button>
+                        </div>
+                        <div class="col-12 col-sm-3">
+                            <textarea class="form-control d-none" name="preview" id="preview"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+    <script>
+        // Preview the .mol file content when selected
+        function onReceiptsSelected() {
+            const files = fileName.files;
+            if (files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById("preview").value += e.target.result;
+                    //console.log(e.target.result);
+                };
+                reader.readAsText(files[0]);
+            }
+        }
+    </script>
