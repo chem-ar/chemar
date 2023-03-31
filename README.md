@@ -369,7 +369,7 @@ For instance, in the viewer.js file:
 ```js
 /* GET the viewer page. */
 //This route used to render a page called "viewer".
-//URL: https://localhost:4000/viewer
+//URL: https://localhost:4000/moleculeviewer
 //This route takes in an id as a parameter and checks if there is a file with the same id as the parameter in the molfiles directory.
 router.get('/', function(req, res, next) {
   //Render the viewer page with the id 2519 as an argument with the title "Molecule Viewer" and item 2519 (CID for Caffeine)

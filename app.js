@@ -21,15 +21,14 @@ var usersRouter = require('./routes/session');
 var moleculeRouter = require('./routes/molecule');
 var catalogRouter = require('./routes/catalog');
 var itemRouter = require('./routes/item');
-var viewerRouter = require('./routes/viewer');
 var scenesRouter = require('./routes/scenes');
+var moleculeViewer = require('./routes/moleculeViewer');
+var sceneViewer = require('./routes/sceneViewer');
 var addMolecule = require('./routes/addMolecule');
 var addScene = require('./routes/addScene');
 var loginRouter = require('./routes/login');
 var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
-
-
 
 var app = express();
 
@@ -59,11 +58,13 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/molecule', moleculeRouter);
+app.use('/molecules', moleculeRouter);
 app.use('/catalog', catalogRouter);
 app.use('/item', itemRouter);
 app.use('/scenes', scenesRouter);
-app.use('/viewer', viewerRouter);
+app.use('/moleculeviewer', moleculeViewer);
+app.use('/sceneviewer', sceneViewer);
+
 app.use('/addMolecule', addMolecule);
 app.use('/addScene', addScene);
 app.use('/login', loginRouter);
