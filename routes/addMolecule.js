@@ -20,8 +20,11 @@ router.post('/test', (req, res) => {
 router.post('/', (req, res) => {
     // Assign values from form to variables
     var molName = req.body.name;
+    console.log(molName);
     var molFormula = req.body.formula;
+    console.log(molFormula);
     var molDescription = req.body.description;
+    console.log(molDescription);
     var fileName = req.body.fileName;
     var molFileContent = req.body.preview;
     //const csid = fileName.substring(0, fileName.indexOf("."));
