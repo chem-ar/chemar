@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link
       rel="stylesheet"
       href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css"
@@ -69,14 +71,14 @@
 
   <body class="bg-dark">
     <canvas class="webgl"></canvas>
-    <section class="section" style="font-size: 3.2vw">
+    <section class="section" >
       <div class="py-5" style="margin-left: 40%">
-        <h1 class="display-5 fw-bold" style="text-align: center">
+        <h1 class="display-5 fw-bold" style="font-size: 3.2vw; text-align: center">
           Chemistry + Augmented Reality
         </h1>
         <p
           class="col-md-8 fs-4"
-          style="margin-right: auto; margin-left: auto; text-align: center"
+          style="font-size:3.0vw; margin-right: auto; margin-left: auto; text-align: center"
         >
           View molecular diagrams in augmented reality using only a web browser
         </p>
@@ -420,8 +422,15 @@
 
         const light = new THREE.AmbientLight(0xffffff); // soft white light
         scene.add(light);
-        moleculeGroup.position.x = -7;
-        moleculeGroup.position.z = -20;
+        if (/Android|iPhone/i.test(navigator.userAgent)){
+          moleculeGroup.position.z = -60
+          moleculeGroup.position.x = -7
+        }
+        else{
+          moleculeGroup.position.x = -7;
+          moleculeGroup.position.z = -20;
+        }
+
       }
       function animate() {
         requestAnimationFrame(animate);
