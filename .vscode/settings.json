@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/8a924a50-b381-4b90-a92c-024c2e380f86/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/chemar-test",
+    "appService.deploySubpath": "."
+}
