@@ -115,6 +115,19 @@
 
 <script>
 
+    // Preview the .mol file content when selected
+    function onReceiptsSelected() {
+        const files = fileName.files;
+        if (files.length > 0) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+            document.getElementById("preview").value += e.target.result;
+                //console.log(e.target.result);
+            };
+            reader.readAsText(files[0]);
+        }
+    }
+
 var iframePreview = document.getElementById("iframePreview")
     console.log(iframePreview);
 
