@@ -21,10 +21,10 @@ router.post('/', (req, res) => {
     // Assign values from form to variables
     var molName = req.body.name;
     var molFormula = req.body.formula;
+    var molDescription = req.body.description;
     var fileName = req.body.fileName;
-    console.log(fileName);
     var molFileContent = req.body.preview;
-    const csid = fileName.substring(0, fileName.indexOf("."));
+    //const csid = fileName.substring(0, fileName.indexOf("."));
 
     var molfiles = fs.readdirSync('./public/molfiles/');
     var fileIsPresent = molfiles.includes(fileName);
@@ -41,20 +41,21 @@ router.post('/', (req, res) => {
         });
 
         // Read json file and add info to it
-        var rawdata = fs.readFileSync('./public/catalog/catalog.json');
-        var  parsedData = JSON.parse(rawdata);
+        var rawdata = fs.readFileSync('./public/catalog/molfileCatalog.json');
+        var parsedData = JSON.parse(rawdata);
 
-        parsedData[csid] = {
+        parsedData[fileName] = {
             name: molName,
-            formula: molFormula
+            formula: molFormula,
+            description: molDescription
         };
 
         var newMol = JSON.stringify(parsedData);
-        fs.writeFileSync('./public/catalog/catalog.json', newMol);
+        fs.writeFileSync('./public/catalog/molfileCatalog.json', newMol);
     }    
 
     // Return to catalog page
-    res.redirect('/catalog');
+    res.redirect('/molecules');
 });
 
 module.exports = router;
