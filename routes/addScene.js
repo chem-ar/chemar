@@ -15,7 +15,7 @@ router.post('/', (req, res) => {
   var sceneDescription = req.body.description;
   var fileName = req.body.fileName;
   var sceneFileContent = req.body.preview;
-  const csid = fileName.substring(0, fileName.indexOf("."));
+  //const csid = fileName.substring(0, fileName.indexOf("."));
 
   var scenefiles = fs.readdirSync('./public/scenefiles/');
   var fileIsPresent = scenefiles.includes(fileName);
@@ -32,19 +32,16 @@ router.post('/', (req, res) => {
       });
 
       // Read json file and add info to it
-      var rawdata = fs.readFileSync('./public/scenes/scenes.json');
+      var rawdata = fs.readFileSync('./public/catalog/sceneCatalog.json');
       var parsedData = JSON.parse(rawdata);
 
-      parsedData[csid] = {
-          "info": {
+      parsedData[fileName] = {
             name: sceneName,
-            description: sceneDescription
-          }
-          
+            description: sceneDescription          
       };
 
       var newScene = JSON.stringify(parsedData);
-      fs.writeFileSync('./public/scenes/scenes.json', newScene);
+      fs.writeFileSync('./public/catalog/sceneCatalog.json', newScene);
   }    
 
   // Return to scene page
