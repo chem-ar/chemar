@@ -18,7 +18,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/session');
-var moleculeRouter = require('./routes/molecule');
+var moleculeRouter = require('./routes/molecules');
 var catalogRouter = require('./routes/catalog');
 var itemRouter = require('./routes/item');
 var scenesRouter = require('./routes/scenes');
