@@ -8,6 +8,7 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+var bodyParser = require('body-parser');
 
 var createError = require('http-errors');
 var express = require('express');
@@ -68,6 +69,8 @@ app.use('/addScene', addScene);
 app.use('/login', loginRouter);
 app.use('/session', sessionRouter);
 app.use('/logout', logoutRouter);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 
 // catch 404 and forward to error handler
