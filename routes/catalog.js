@@ -7,7 +7,11 @@ router.get('/', function(req, res, next) {
     const molfiles = './public/molfiles/';
     let molecule = JSON.parse(fs.readFileSync("./public/catalog/catalog.json"));
     let name,formula = "not found in catalog";
-    res.render('catalog', { title: 'Catalog', list: fs.readdirSync(molfiles), mol: molecule,name: name, formula: formula, isAdmin: true});
+    
+    //Admin check
+    let isAdmin = (req.signedCookies.admin == 'true');
+
+    res.render('catalog', { title: 'Catalog', list: fs.readdirSync(molfiles), mol: molecule,name: name, formula: formula, isAdmin: isAdmin});
 });
 
 module.exports = router;
