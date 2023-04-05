@@ -9,7 +9,6 @@ router.get('/', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
   let adminPass = JSON.parse(fs.readFileSync("./admin.json")).admin.password;
-  console.log(req.body);
   if(adminPass == req.body.password){
     const oneDay = 86400000
     res.cookie('admin', true, {maxAge: oneDay, signed: true});
