@@ -1,5 +1,11 @@
 <%- include('partials/header') %>
-<%- include('partials/navbar')%>
+<!--ADMIN NAVBAR CHECK-->
+<% if (isAdmin){%>
+    <%- include('partials/navbarAdmin') %>
+<%}%>
+<% if (!isAdmin){%>
+    <%- include('partials/navbar') %>
+<%}%>
 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 
 <div class="container mb-4">
