@@ -79,13 +79,25 @@
     <script type= "module">
         import { OrbitControls } from '/js/OrbitControls.js';
         import { VRMLLoader } from '/js/VRMLLoader.js';
+        import { GLTFLoader } from '/js/GLTFLoader.js';
+
         import * as THREE from '/js/three.module.js';
         import { ARButton } from '/js/ARButton.js';
 
+        let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
+        let requestedFileExt = requestedFile.substring(requestedFile.lastIndexOf('.') + 1);
+
+        let loader;
+        if(requestedFileExt == "wrl"){
+            loader = new VRMLLoader();
+        }else if(requestedFileExt == "gltf"){
+            loader = new GLTFLoader();
+        }
 
         const threeArea = document.getElementById('three-area');
 
         let scene, camera, renderer, controls, clock;
+        let mixer;
 
         let axesHelper;
         let spotLightTop, spotLightBottom, ambientLight;
@@ -93,8 +105,8 @@
         clock = new THREE.Clock();
         let deltaTime = 0;
         let totalTime = 0;
+        let actions = [];
 
-        const loader = new VRMLLoader();
 
         function init(){
 
@@ -121,8 +133,21 @@
             scene.add( ambientLight );
 
 
-            loader.load( '../scenefiles/PeriodicTable.wrl', function ( object ) {
-                scene.add( object );
+            loader.load( '../scenefiles/' + requestedFile, function ( object ) {
+                if(requestedFileExt == "wrl"){
+                    scene.add( object );
+                }
+                else if(requestedFileExt == "gltf"){
+                    console.log(object);
+                    mixer = new THREE.AnimationMixer( object.scene );
+                    for(let animation of object.animations){
+                        actions.push(mixer.clipAction(animation));
+                        var action = mixer.clipAction( animation);
+                        action.play();
+
+                    }
+                    scene.add( object.scene );
+                }
             } );
 
 
@@ -133,15 +158,17 @@
             controls.dampingFactor = 10;
             controls.minDistance = 35;
 
-            camera.position.x = 200;
-            camera.position.y = -100;
-            camera.position.z = 200;
+            camera.position.x = 0;
+            camera.position.y = 0;
+            camera.position.z = 100;
 
         }
-
         
+
         function animate() {
             requestAnimationFrame( animate );
+            var delta = clock.getDelta();
+            if ( mixer ) mixer.update( delta );
 
             renderer.render( scene, camera );
             controls.update();
