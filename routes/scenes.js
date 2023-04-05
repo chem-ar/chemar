@@ -4,7 +4,7 @@ var fs = require('fs');
 
 //Get scenes page
 router.get('/', function(req, res, next) {
-  let list = fs.readdirSync("./public/scenes/");
+  let list = fs.readdirSync("./public/scenefiles/");
 
   //Admin check
   let isAdmin = (req.signedCookies.admin == 'true');
