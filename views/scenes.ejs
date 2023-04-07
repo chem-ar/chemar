@@ -8,6 +8,7 @@
 <%}%>
 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 
+
 <div class="container mb-4">
     <div class="row content">
         <div class="col-12 pt-4 text-start text-white bg-dark">
@@ -19,7 +20,7 @@
             <%}%>
 
             <p></p>
-            <table id="molTable" class="table table-striped text-white" style="width:100%">
+            <table id="sceneTable" class="table table-striped text-white" style="width:100%">
                 <thead>
                     <tr>
                         <th>File</th>
@@ -134,7 +135,6 @@
 
   $(document).ready(function () {
       $('#sceneTable').DataTable({
-          scrollY: '500px',
           scrollCollapse: true,
           paging: true
       });
