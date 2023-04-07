@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link
       rel="stylesheet"
       href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css"
@@ -31,60 +33,31 @@
         }
       }
     </script>
-    <style>
-      body {
-        margin: 0;
-      }
-      .footerbuttons {
-        z-index: 1100 !important;
-        position: relative;
-      }
-      .navbar {
-        z-index: 1100 !important;
-        position: sticky;
-        top: 0;
-      }
-      .section {
-        z-index: 1000 !important;
-      }
-      .dataTables_filter input {
-        color: white;
-        background-color: white;
-      }
-      .dataTables_length select {
-        color: white;
-      }
-      table,
-      thead,
-      tbody {
-        color: white;
-      }
-      .instructions {
-        color: white;
-        background-color: transparent;
-      }
-    </style>
+
+
   </head>
   <%- include('partials/navbar')%>
 
   <body class="bg-dark">
     <canvas class="webgl"></canvas>
-    <section class="section" style="font-size: 3.2vw">
+    <section class="section" >
       <div class="py-5" style="margin-left: 40%">
-        <h1 class="display-5 fw-bold" style="text-align: center">
+        <h1 class="display-5 fw-bold" style="font-size: 3.2vw; text-align: center">
           Chemistry + Augmented Reality
         </h1>
+        <div style = "margin-left: 10%; margin-right: 10%;">
         <p
-          class="col-md-8 fs-4"
-          style="margin-right: auto; margin-left: auto; text-align: center"
+          class="col-md-8"
+          style="font-size: 1.6vw; margin-right: auto; margin-left: auto; text-align: center"
         >
           View molecular diagrams in augmented reality using only a web browser
         </p>
+</div>
         <div
-          class="col-md-4 mb-5"
-          style="margin-right: auto; margin-left: auto"
+          class="col-md-4 mb-5 text-center"
+          style="margin-right: auto; margin-left: auto;"
         >
-          <a href="/catalog" class="btn btn-outline-light btn-lg" type="button">
+          <a href="/catalog" class="btn btn-outline-light btn-lg" style= "font-size: 1.6vw; " type="button">
             Browse All Molecules
           </a>
           <br />
@@ -420,8 +393,15 @@
 
         const light = new THREE.AmbientLight(0xffffff); // soft white light
         scene.add(light);
-        moleculeGroup.position.x = -7;
-        moleculeGroup.position.z = -20;
+        if (/Android|iPhone/i.test(navigator.userAgent)){
+          moleculeGroup.position.z = -70
+          moleculeGroup.position.x = -6
+        }
+        else{
+          moleculeGroup.position.x = -7;
+          moleculeGroup.position.z = -20;
+        }
+
       }
       function animate() {
         requestAnimationFrame(animate);
@@ -430,33 +410,35 @@
         totalTime += deltaTime;
 
         moleculeGroup.rotation.x -= 0.25 * deltaTime;
+        moleculeGroup.rotation.y -= 0.25 * deltaTime;
+        moleculeGroup.rotation.z -= 0.25 * deltaTime;
       }
       const sectionMeshes = [init(34668)];
-      /**
-       * Particles
-       */
-      // Geometry
-      const particlesCount = (window.innerHeight * window.innerWidth) / 2000;
-      const positions = new Float32Array(particlesCount * 3);
-      for (let i = 0; i < particlesCount; i++) {
-        positions[i * 3 + 0] = (Math.random() - 0.5) * 10;
-        positions[i * 3 + 1] =
-          objectsDistance * 0.5 -
-          Math.random() * objectsDistance * sectionMeshes.length;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
-      }
-      const particlesGeometry = new THREE.BufferGeometry();
-      particlesGeometry.setAttribute(
-        "position",
-        new THREE.BufferAttribute(positions, 3)
-      );
-      const particlesMaterial = new THREE.PointsMaterial({
-        color: "#ffeded",
-        sizeAttenuation: true,
-        size: 0.03,
-      });
-      const particles = new THREE.Points(particlesGeometry, particlesMaterial);
-      scene.add(particles);
+      // /**
+      //  * Particles
+      //  */
+      // // Geometry
+      // const particlesCount = (window.innerHeight * window.innerWidth) / 2000;
+      // const positions = new Float32Array(particlesCount * 3);
+      // for (let i = 0; i < particlesCount; i++) {
+      //   positions[i * 3 + 0] = (Math.random() - 0.5) * 10;
+      //   positions[i * 3 + 1] =
+      //     objectsDistance * 0.5 -
+      //     Math.random() * objectsDistance * sectionMeshes.length;
+      //   positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+      // }
+      // const particlesGeometry = new THREE.BufferGeometry();
+      // particlesGeometry.setAttribute(
+      //   "position",
+      //   new THREE.BufferAttribute(positions, 3)
+      // );
+      // const particlesMaterial = new THREE.PointsMaterial({
+      //   color: "#ffeded",
+      //   sizeAttenuation: true,
+      //   size: 0.03,
+      // });
+      // const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+      // scene.add(particles);
 
       const sizes = {
         width: window.innerWidth,
