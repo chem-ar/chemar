@@ -208,11 +208,47 @@
         </div>
     </div>
 
+
+
     <script type= "module">
+        console.log(navigator)
+        if(/iPhone|iPad/.test(navigator.userAgent)){
+            const webxrViewerScheme = "ios-webxr-viewer://"
+            const xrViewerApp = "https://apps.apple.com/ca/app/webxr-viewer/id1295998056";
+            const webViewerUrl = "ios-webxr-viewer://load?url=" + window.location.href;
+            const isAppInstalled = window.navigator.registerProtocolHandler(webxrViewerScheme, window.location.href, "webxr")  
+            if (isAppInstalled == false){
+                const modal = document.createElement("div");
+                modal.innerHTML = `
+                    <div>
+                    <h2>Download WebXR Viewer to Use This IOS</h2>
+                    <p>Would you like to download our app from the App Store?</p>
+                    <button id="downloadButton">Download</button>
+                    <button id="cancelButton">Cancel</button>
+                    </div>
+                    `;
+                modal.id = "appDownloadModal";
+                modal.style.display = "block";
+                modal.style.position = "fixed";
+                modal.style.top = 0;
+                modal.style.left =  0;
+                modal.style.width = "100%";
+                modal.style.height = "100%";
+                modal.style.backgroundColor = "black";
+                modal.style.zIndex = "9999";
+                document.appendChild(modal);
+                    const downloadButton = document.createElement("button");
+                    const cancelButton = document.createElement("button");
+                    downloadButton.addEventListener("click", () => {
+                window.location.href = xrViewerApp;
+                    });
+                    cancelButton.addEventListener("click", () => {
+                        modal.style.display = "none";});
+            }
+        }
+       
         import {OrbitControls} from '/js/OrbitControls.js';
         import { ARButton } from '/js/ARButton.js';
-
-
         import * as THREE from '/js/three.module.js';
         
         const clock = new THREE.Clock();
