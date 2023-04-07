@@ -656,7 +656,7 @@
 
                     viewButton.addEventListener("click", function(event) {
                         event.preventDefault();
-                        const itemURL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${item.CID}/SDF`;
+                        const itemURL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${item.CID}/SDF?record_type=3d`;
                         getMoleculeURL(itemURL);
                     });
 
