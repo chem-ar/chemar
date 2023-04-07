@@ -12,4 +12,35 @@ router.get('/', function(req, res, next) {
     res.render('lessons', { title: 'Catalog', list: fs.readdirSync(lessons), isAdmin: isAdmin});
 });
 
+// Post to name that already exists, update file.
+// If post to name that doesn't exist, make new file.
+
+// This endpoint is where you can update lessons.
+// Example put '/lessons/add/exampleLesson'
+router.put('/add/:lesson', (req, res) => {
+
+    // Grab info from the request.
+    const lessonName = req.params.lesson;
+    const lessonPath = `./public/lessons/${lessonName}.json`;
+
+    // Check if lesson doesn't exist.
+    if (!fs.existsSync(lessonPath)) {
+
+        // Basic template for lesson file if file doesn't exist.
+        const lessonTemplate = { name: lessonName };
+
+        // Write the file with template.
+        fs.writeFile(lessonPath, JSON.stringify(lessonTemplate), (err) => {
+            
+            if (err) {
+                // Send err in response if it fails.
+                res.status(500).send(err);
+            } else {
+                res.send("Lesson added successfully.");
+            }
+        });
+
+    }
+});
+
 module.exports = router;
