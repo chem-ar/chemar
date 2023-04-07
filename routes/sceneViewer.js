@@ -18,10 +18,7 @@ router.get('/:id', function(req , res){
   }
   
   else{
-    res.render('sceneViewer', {
-      title: 'Scene Viewer', 
-      item: undefined
-    });  
+    res.render('error', { title: 'MoleculAR - Error', message: 'Scene not found', error: {status: 404, stack: 'Scene not found'}});
   }
 
 });
