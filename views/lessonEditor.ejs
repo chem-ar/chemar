@@ -55,6 +55,38 @@
         .blur-10{
             backdrop-filter: blur(10px);
         }
+
+        @media (min-width: 576px) { 
+            .offcanvas{
+                width:100% !important;
+            }  
+         }
+
+        @media (min-width: 768px) { 
+            .offcanvas{
+                width:50% !important;
+            }  
+         }
+
+        @media (min-width: 992px) { 
+            .offcanvas{
+                width:50% !important;
+            }
+         }
+
+        @media (min-width: 1200px) { 
+            .offcanvas{
+                width:40% !important;
+            }
+         }
+
+        @media (min-width: 1400px) { 
+            .offcanvas{
+                width:30% !important;
+            }
+         }
+
+
     </style> 
 </head>
 <body>
@@ -103,7 +135,7 @@
                                 <div class="col-12 mt-2">
                                   <div class="collapse multi-collapse" id="fileMenu">
                                     <div class="mb-3">
-                                        <input class="form-control form-control-lg" type="file" id="fileInput" accept=".png">
+                                        <input class="form-control" type="file" id="fileInput" accept=".png">
                                       </div>
                                   </div>
                                 </div>
@@ -111,31 +143,43 @@
                             <hr>
                             <div class = "row">
                                 <h4>Tracking Marker Position</h4>
-                                <p>(offset from the bottom left of page)</p>
                                 <div class = "col-12">
-                                    <div class = "row">
-                                        <div class = "col-4">
-                                            <label for="marker-x" class="form-label">Offset X</label>
-                                            <input type="number" class="form-control" id="markerXSlider" min="0" max="11.0" step=".01" value="0" oninput="markerXInput.value = markerXSlider.value">
-                                        </div>
-                                    </div>
-
-                                    <div class = "row">
+                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#trackerMenu" role="button" aria-expanded="false" aria-controls="trackerMenu">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
+                                            <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
+                                        </svg>
+                                          Edit
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mt-2">
+                                    <div class="collapse multi-collapse" id="trackerMenu">
                                         <div class = "col-12">
-                                            <input type="range" class="form-range" id="markerXInput" min="0" max="11.0"  step=".01" value="0" oninput="markerXSlider.value = markerXInput.value" >
-                                        </div>
-                                    </div>
+                                            <div class = "row">
+                                                <div class = "col-2">
+                                                    <label for="marker-x" class="form-label">Offset X</label>
+                                                </div>
+                                                <div class = "col-7">
+                                                    <input type="range" class="form-range" id="markerXInput" min="0" max="11.0"  step=".01" value="0" oninput="markerXSlider.value = markerXInput.value" >
+                                                </div>
+                                                <div class = "col-3">
+                                                    <input type="number" class="form-control" id="markerXSlider" min="0" max="11.0" step=".01" value="0" oninput="markerXInput.value = markerXSlider.value">
+                                                </div>
+                                            </div>
 
-                                    <div class = "row">
-                                        <div class = "col-4">
-                                            <label for="marker-y" class="form-label">Offset Y</label>
-                                            <input type="number" class="form-control"  id="markerYSlider"  min="0" max="8.5" step=".01" value="0" oninput="markerYInput.value = markerYSlider.value" >
-                                        </div>
-                                    </div>
+                                            <div class = "row mt-2">
+                                                <div class = "col-2">
+                                                    <label for="marker-y" class="form-label">Offset Y</label>
+                                                </div>
+                                                <div class = "col-7">
+                                                    <input type="range" class="form-range" id="markerYInput"  min="0" max="8.5" step=".01" value="0" oninput="markerYSlider.value = markerYInput.value" >
 
-                                    <div class = "row">
-                                        <div class = "col-12">
-                                            <input type="range" class="form-range" id="markerYInput"  min="0" max="8.5" step=".01" value="0" oninput="markerYSlider.value = markerYInput.value" >
+                                                </div>
+                                                <div class = "col-3">
+                                                    <input type="number" class="form-control"  id="markerYSlider"  min="0" max="8.5" step=".01" value="0" oninput="markerYInput.value = markerYSlider.value" >
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -143,15 +187,35 @@
                             <hr>
                             <div class = "row">
                                 <h4>Add Molecule</h4>
-                                <div class = "col-12">
-                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-fill" viewBox="0 0 16 16">
-                                            <path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3z"/>
+
+                                <div class = "col-12 mt-2">
+                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#searchMenu" role="button" aria-expanded="false" aria-controls="searchMenu">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                                           </svg>
-                                        Load from Pubchem
-                                    </button>
+                                        Search PubChem
+                                    </button>   
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-12 mt-2">
+                                  <div class="collapse multi-collapse" id="searchMenu">
+                                    <div class="input-group flex-nowrap">
+
+                                        <input type="text" id = "search-field" class="form-control" placeholder="Molecule Name or Formula" aria-label="Username" aria-describedby="addon-wrapping">
+                                        <button class="btn btn-info" type="button" id="search-button">Search</button>
+                                    </div>
+                                    <div class = "row">
+                                        <div class = "col-12">
+                                            <div id = "search-results">
+                                            </div>
+                                        </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+                            <hr>
+
                         </div>
                     </div>
                 </div>
@@ -161,6 +225,95 @@
 
     <script type= "module">
 
+        let offcanvas = document.getElementById('mainMenu')
+        offcanvas.classList.add('show')
+
+        const searchField = document.getElementById('search-field');
+        const searchButton = document.getElementById('search-button');
+        const searchResults = document.getElementById('search-results');
+
+        searchField.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                searchButton.click();
+                }
+            });
+
+        searchButton.addEventListener("click", function(event) {
+            event.preventDefault();
+            searchPUBCHEM(searchField.value);
+        });
+
+        function searchPUBCHEM(name){
+            const URL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${name}/property/IUPACName,MolecularFormula,Title/JSON?name_type=word&MaxRecords=10`;
+
+            if(name){
+                fetch(URL)
+                .then(response => response.json())
+                .then(data => displaySearchResults(data, null))
+                .catch(error => console.log(error))
+            }
+        }
+
+        function displaySearchResults(data, error){
+            console.log(data);
+            if(data.hasOwnProperty('Fault')){
+                searchResults.innerHTML = `<p class="text-danger p-2">No results found</p>`;
+            }
+            else{
+                searchResults.innerHTML = '';
+
+                const searchResultTable = document.createElement('table');
+                searchResultTable.classList = 'table text-white mb-0';
+                searchResults.appendChild(searchResultTable);
+
+                const tableHead = document.createElement('thead');
+                searchResultTable.appendChild(tableHead);
+                const tableHeadRow = document.createElement('tr');
+                tableHead.appendChild(tableHeadRow);
+                const tableHeadCell1 = document.createElement('th');
+                const tableHeadCell2 = document.createElement('th');
+                tableHeadCell1.innerHTML = "Formula<br>IUPAC Name<br>Title";
+                tableHeadCell2.innerHTML = "";
+
+                tableHeadRow.appendChild(tableHeadCell1);
+                tableHeadRow.appendChild(tableHeadCell2);
+
+
+                const tableBody = document.createElement('tbody');
+                searchResultTable.appendChild(tableBody);
+
+                for(let i = 0; i < 10; i++){
+                    let item = data.PropertyTable.Properties[i];
+                    const row = tableBody.insertRow();
+                    const cell1 = row.insertCell(0);
+                    const cell2 = row.insertCell(1);
+
+
+                    cell1.classList.add('text-break');
+                    cell1.innerHTML = item.MolecularFormula + "<br>" + item.IUPACName + "<br><b>" + item.Title+ "</b>";
+                    let viewButton = document.createElement('button');
+                    viewButton.classList = 'btn btn-outline-light';
+                    viewButton.innerHTML = 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"     class="bi bi-eye-fill" viewBox="0 0 16 16">
+                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                    </svg> View`;
+
+                    viewButton.addEventListener("click", function(event) {
+                        event.preventDefault();
+                        const itemURL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${item.CID}/SDF?record_type=3d`;
+                        // getMoleculeURL(itemURL);
+                    });
+
+                    cell2.appendChild(viewButton);
+                    cell2.classList.add('align-middle');
+                }
+            }
+        }
+
+
+
         import { OrbitControls } from '/js/OrbitControls.js';
         import { VRMLLoader } from '/js/VRMLLoader.js';
         import { GLTFLoader } from '/js/GLTFLoader.js';
@@ -168,12 +321,8 @@
         import * as THREE from '/js/three.module.js';
         import { ARButton } from '/js/ARButton.js';
 
-        
-        console.log(THREE.ImageUtils)
-        
+                
         const loader = new THREE.TextureLoader();
-
-
         // let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
         // let requestedFileExt = requestedFile.substring(requestedFile.lastIndexOf('.') + 1);
 
@@ -280,7 +429,7 @@
 
         });
 
-        document.getElementById('markerXSlider').addEventListener('input', function(e){
+        document.getElementById('markerYSlider').addEventListener('input', function(e){
             markerLocationHelper.position.y = e.target.value*10;
             markerPlane.position.y = e.target.value*10;
 
@@ -312,7 +461,7 @@
                     };
 
                     var xhr = new XMLHttpRequest();
-                    xhr.open('POST', '/upload/images', true);
+                    xhr.open('POST', 'scene/upload/images', true);
                     xhr.setRequestHeader('Content-Type', 'application/json');
                     xhr.onload = function() {
                         if (xhr.status === 200) {
@@ -321,7 +470,7 @@
                         alert('Error: ' + xhr.status);
                         }
                     };
-                    xhr.send(JSON.stringify(data));
+                    xhr.send(data);
                 }
             });
         
