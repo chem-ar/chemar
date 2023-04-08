@@ -29,6 +29,14 @@
             background-color : #202020;
             margin: 0; 
         }
+
+        td{
+            border-top-width: 1px !important;
+            border-bottom-width: 0px !important;
+
+        }
+
+
         #three-area{
             height: 100vh;
             width: 100%;
@@ -45,7 +53,9 @@
         }
         #body-container{
             position: relative;
+            overflow: hidden;
         }
+        
         .bg-black{
             background-color: #1f2326 !important;
         }
@@ -55,6 +65,14 @@
         .blur-10{
             backdrop-filter: blur(10px);
         }
+
+
+
+        @media (max-width: 576px) { 
+            .offcanvas{
+                width:100% !important;
+            }  
+         }
 
         @media (min-width: 576px) { 
             .offcanvas{
@@ -76,16 +94,15 @@
 
         @media (min-width: 1200px) { 
             .offcanvas{
-                width:40% !important;
+                width:45% !important;
             }
          }
 
         @media (min-width: 1400px) { 
             .offcanvas{
-                width:30% !important;
+                width:35% !important;
             }
          }
-
 
     </style> 
 </head>
@@ -142,7 +159,7 @@
                             </div>
                             <hr>
                             <div class = "row">
-                                <h4>Tracking Marker Position</h4>
+                                <h4>Tracking Marker</h4>
                                 <div class = "col-12">
                                     <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#trackerMenu" role="button" aria-expanded="false" aria-controls="trackerMenu">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
@@ -215,9 +232,31 @@
                                 </div>
                             </div>
                             <hr>
+                            <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                Launch Test modal
+                            </button>
 
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Preview Molecule</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    hello
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-light">Save changes</button>
                 </div>
             </div>
         </div>
@@ -245,23 +284,29 @@
         });
 
         function searchPUBCHEM(name){
-            const URL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${name}/property/IUPACName,MolecularFormula,Title/JSON?name_type=word&MaxRecords=10`;
 
-            if(name){
-                fetch(URL)
-                .then(response => response.json())
-                .then(data => displaySearchResults(data, null))
-                .catch(error => console.log(error))
+            if(name === ""){
+                searchResults.innerHTML = `<div class="text-warning pt-2 px-2">Please enter a search term</div>`;
+            }
+            else{
+                const URL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${name}/property/IUPACName,MolecularFormula,Title/JSON?name_type=word&MaxRecords=10`;
+                 searchResults.innerHTML = `<div class="text-info pt-2 px-2">Searching</div>`;
+                 if(name){
+                    fetch(URL)
+                    .then(response => response.json())
+                    .then(data => displaySearchResults(data, null))
+                    .catch(error => console.log(error))
+                }
             }
         }
 
         function displaySearchResults(data, error){
             console.log(data);
             if(data.hasOwnProperty('Fault')){
-                searchResults.innerHTML = `<p class="text-danger p-2">No results found</p>`;
+                searchResults.innerHTML = `<div class="text-danger pt-2 px-2">No results found</div>`;
             }
             else{
-                searchResults.innerHTML = '';
+                searchResults.innerHTML = ``;
 
                 const searchResultTable = document.createElement('table');
                 searchResultTable.classList = 'table text-white mb-0';
@@ -273,7 +318,7 @@
                 tableHead.appendChild(tableHeadRow);
                 const tableHeadCell1 = document.createElement('th');
                 const tableHeadCell2 = document.createElement('th');
-                tableHeadCell1.innerHTML = "Formula<br>IUPAC Name<br>Title";
+                tableHeadCell1.innerHTML = "<div class='text-info'>Formula<br>IUPAC Name<br>Title</div>";
                 tableHeadCell2.innerHTML = "";
 
                 tableHeadRow.appendChild(tableHeadCell1);
@@ -282,6 +327,8 @@
 
                 const tableBody = document.createElement('tbody');
                 searchResultTable.appendChild(tableBody);
+
+                console.log(data.PropertyTable.Properties.length)
 
                 for(let i = 0; i < 10; i++){
                     let item = data.PropertyTable.Properties[i];
@@ -298,7 +345,7 @@
                     `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"     class="bi bi-eye-fill" viewBox="0 0 16 16">
                         <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
                         <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-                    </svg> View`;
+                    </svg> Preview`;
 
                     viewButton.addEventListener("click", function(event) {
                         event.preventDefault();
@@ -357,6 +404,9 @@
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 4000 );
 
+            // camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, .0001, 1000 );
+            scene.add( camera );
+
             renderer = new THREE.WebGLRenderer({ alpha: true });
             renderer.setClearColor( 0x000000, 0 );
             renderer.setSize( window.innerWidth, window.innerHeight );
@@ -380,6 +430,7 @@
             paperMaterial = new THREE.MeshLambertMaterial({
                 map: loader.load('/test_lesson.png')
             });
+            paperMaterial.side = THREE.DoubleSide;
 
             let paperDimensions = new THREE.Vector2( 85, 110 );
             paperGeometry = new THREE.PlaneGeometry( paperDimensions.y, paperDimensions.x );
