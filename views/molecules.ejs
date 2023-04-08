@@ -8,19 +8,18 @@
 <%}%>
 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 
-
 <div class="container mb-4">
     <div class="row content">
         <div class="col-12 pt-4 text-start text-white bg-dark">
-            <h1 class="display-4 fw-bold">Scene Catalog</h1>
+            <h1 class="display-4 fw-bold">Molecule Catalog</h1>
 
             <!--ADMIN CHECK-->
             <% if (isAdmin){%>
-                <%- include('partials/addScenes') %>
+                <%- include('partials/addMolecule') %>
             <%}%>
 
             <p></p>
-            <table id="sceneTable" class="table table-striped text-white" style="width:100%">
+            <table id="molTable" class="table table-striped text-white" style="width:100%">
                 <thead>
                     <tr>
                         <th>File</th>
@@ -40,7 +39,7 @@
                             <tr>
                                 <td><%= String(item).padStart(3, '0' ) %></td>
                                 <td>
-                                    <a class="text-white" id="Name<%=item %>" href="/sceneviewer/<%=item%>">Name</a>
+                                    <a class="text-white" id="Name<%=item %>" href="/moleculeViewer/<%=item%>">Name</a>
                                 </td>
                                 <td id="Formula<%=item %>" class="text-white">Formula</td>
                                 <td class>
@@ -52,7 +51,7 @@
                                             </svg> Preview
                                         </button>
 
-                                        <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#shareModal">
+                                        <button id="<%= "shareBtn" + item %>" type="button" class="share btn btn-light" data-bs-toggle="modal" data-bs-target="#shareModal">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
                                                 <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
                                             </svg> Share
@@ -87,11 +86,13 @@
     <div class="modal-dialog">
         <div class="modal-content bg-dark">
             <div class="modal-header">
+                <h5 class="modal-title text-white" id="canvasModalLabel">Name</h5>
+                <h6 class="modal-title text-white" id="canvasModalLabel">Formula</h6><br>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
         <div class="modal-body">
             <div class="moleculeViewer" style = "height: 50vh">
-                <!-- <iframe id="iframePreview" class = "rounded" src = "" width = "100%" height="100%" frameborder="0"></iframe> -->
+                <iframe id="iframePreview" class = "rounded" src = "" width = "100%" height="100%" frameborder="0"></iframe>
             </div>
         </div>
     </div>
@@ -103,13 +104,13 @@
     <div class="modal-dialog">
         <div class="modal-content bg-dark">
             <div class="modal-header">
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+               
             </div>
         <div class="modal-body">
             <div class="">
-                <div id="qrcode"></div>
+                <div id="qrcode" class="bg-white py-4" align="center"></div>
                 <script type="text/javascript">
-                new QRCode(document.getElementById("qrcode"), "http://jindo.dev.naver.com/collie");
+                var qrcode = new QRCode(document.getElementById("qrcode"), "http://jindo.dev.naver.com/collie");
                 </script>
             </div>
         </div>
@@ -120,25 +121,49 @@
 
 <script>
 
-    // Preview the scene file content when selected
+    // Preview the .mol file content when selected
     function onReceiptsSelected() {
         const files = fileName.files;
         if (files.length > 0) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                document.getElementById("preview").value += e.target.result;
+            document.getElementById("preview").value += e.target.result;
                 //console.log(e.target.result);
             };
             reader.readAsText(files[0]);
         }
     }
 
-  $(document).ready(function () {
-      $('#sceneTable').DataTable({
-          scrollCollapse: true,
-          paging: true
-      });
-  });
+var iframePreview = document.getElementById("iframePreview")
+    console.log(iframePreview);
+
+    $(document).ready(function () {
+        $('#molTable').DataTable({
+            scrollY: false,
+            scrollX:        true,
+
+            scrollCollapse: true,
+            paging: true
+        });
+    });
+
+    var preview = document.getElementsByClassName("preview");
+
+    Array.from(preview).forEach(function(element) {
+        element.addEventListener("click", function(){
+            let itemNumber = element.id.replace("previewBtn", "")
+            iframePreview.src = "/moleculeViewer/" + itemNumber;
+        })
+    });
+
+    var share = document.getElementsByClassName("share");
+
+    Array.from(share).forEach(function(element) {
+        element.addEventListener("click", function(){
+            let itemNumber = element.id.replace("shareBtn", "");
+            qrcode.makeCode(window.location.href + "/viewer/" + itemNumber); 
+        })
+    });
 
 </script>
 
