@@ -300,7 +300,6 @@
                 reader.addEventListener(
                     "load",
                     () => {
-                    // convert image file to base64 string
                         console.log(reader.result);
                     },
                     false
@@ -308,27 +307,20 @@
 
                 if (file) {
                     reader.readAsDataURL(file);
-
-
-                    let image = new THREE.TextureLoader().load(file);
-                    image.src = URL.createObjectURL( file );
-
-                    image.onload = function()  {
-                        loadedTexture.needsUpdate = true;
-                    };
-
-                    let loadedMaterial = new THREE.MeshLambertMaterial({
-                        map: image
-                    });
-
-                    loadedMaterial.needsUpdate = true;
-
                     
-                    paperPlane.material  = loadedMaterial;
-                    paperPlane.material.needsUpdate = true;
-
-                    // paperMaterial.map = THREE.ImageUtils.getDataURL( file );
-
+                    var data = {name: 'test', file: reader.result
+                        };
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/upload/images/', true);
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.onload = function() {
+                        if (xhr.status === 200) {
+                        alert('Image Uploaded:' + xhr.responseText);
+                        } else {
+                        alert('Error: ' + xhr.status);
+                        }
+                    };
+                    xhr.send(JSON.stringify(data));
                 }
             });
         
