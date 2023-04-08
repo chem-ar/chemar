@@ -47,5 +47,37 @@ router.post('/upload/images', function(req , res){
   
 });
 
+router.post('/save', (req, res) => {
+    
+  // Grab info from the request.
+  const lessonName = req.query;
+  const lessonPath = `./public/lessons/${lessonName}.json`;
+  const contents = req.body.JSON;
+  var overwritten = false;
+
+  //Admin check
+  let isAdmin = (req.signedCookies.admin == 'true');
+
+  // Check if lesson doesn't exist.
+  if (!fs.existsSync(lessonPath)) {
+
+    // Write the file with template.
+    fs.writeFile(lessonPath, JSON.stringify(contents), (err) => {
+        res.status(500).send(err);
+    });
+
+    overwritten = true;
+
+  }
+
+  res.status(200).send({
+    status: "success",
+    overwritten: overwritten,
+    path: lessonPath
+  })
+
+})
+
+
 
 module.exports = router;
