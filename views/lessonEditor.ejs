@@ -205,7 +205,7 @@
                             <div class = "row">
                                 <h4>Add Molecule</h4>
 
-                                <div class = "col-12 mt-2">
+                                <div class = "col-12">
                                     <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#searchMenu" role="button" aria-expanded="false" aria-controls="searchMenu">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
@@ -232,8 +232,8 @@
                                 </div>
                             </div>
                             <hr>
-                            <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                Launch Test modal
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                Save Changes
                             </button>
 
                         </div>
@@ -247,16 +247,21 @@
         <div class="modal-dialog">
             <div class="modal-content bg-dark text-white">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Preview Molecule</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Save Changes?</h1>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    hello
+                    <p>
+                        Do you want to save your changes?
+                    </p>
+                    <p class = "text-warning">
+                        This will overwrite the current version of the file.
+                    </p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-light">Save changes</button>
+                    <button type="button" class="btn btn-warning">Save changes</button>
                 </div>
             </div>
         </div>
@@ -283,8 +288,28 @@
             searchPUBCHEM(searchField.value);
         });
 
-        function searchPUBCHEM(name){
+        function getMolecule(URL){
+            fetch(URL + "?record_type=3d")
+                .then(response => response.text())
+                .then(data => {
+                    if(data.includes("PUGREST.NotFound")){
+                        console.log("3D File Not Found");
+                        fetch(URL + "?record_type=2d")
+                            .then(response => response.text())
+                            .then(data => {
+                                if(data.includes("PUGREST.NotFound")){
+                                    console.log("2D File Not Found");
+                                }else{
+                                    console.log(data);
+                                }
+                            });
+                    }else{
+                        console.log(data);
+                    }
+                });
+            }
 
+        function searchPUBCHEM(name){
             if(name === ""){
                 searchResults.innerHTML = `<div class="text-warning pt-2 px-2">Please enter a search term</div>`;
             }
@@ -349,8 +374,8 @@
 
                     viewButton.addEventListener("click", function(event) {
                         event.preventDefault();
-                        const itemURL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${item.CID}/SDF?record_type=3d`;
-                        // getMoleculeURL(itemURL);
+                        const itemURL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${item.CID}/SDF`;
+                        getMolecule(itemURL);
                     });
 
                     cell2.appendChild(viewButton);
