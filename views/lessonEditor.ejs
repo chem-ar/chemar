@@ -168,6 +168,9 @@
         import * as THREE from '/js/three.module.js';
         import { ARButton } from '/js/ARButton.js';
 
+        
+        console.log(THREE.ImageUtils)
+        
         const loader = new THREE.TextureLoader();
 
 
@@ -224,27 +227,6 @@
             ambientLight = new THREE.AmbientLight( 0xffffff );
             scene.add( ambientLight );
 
-
-            // loader.load( '../scenefiles/' + requestedFile, function ( object ) {
-            //     if(requestedFileExt == "wrl"){
-            //         scene.add( object );
-            //     }
-            //     else if(requestedFileExt == "gltf"){
-            //         console.log(object);
-            //         mixer = new THREE.AnimationMixer( object.scene );
-            //         for(let animation of object.animations){
-            //             actions.push(mixer.clipAction(animation));
-            //             var action = mixer.clipAction( animation);
-            //             action.play();
-
-            //         }
-            //         scene.add( object.scene );
-            //     }
-            // } );
-            // instantiate a loader
-            // instantiate a loader
-
-
             // Load an image file into a custom material
             paperMaterial = new THREE.MeshLambertMaterial({
                 map: loader.load('/test_lesson.png')
@@ -264,6 +246,11 @@
             });
 
             let markerDimensions = new THREE.Vector2( 10, 10 );
+            markerGeometry = new THREE.PlaneGeometry( markerDimensions.x, markerDimensions.y );
+            markerPlane = new THREE.Mesh( markerGeometry, markerMaterial );
+            markerPlane.position.z = 0.1;
+            scene.add( markerPlane );
+
 
 
             markerLocationHelper = new THREE.AxesHelper( 10 );
@@ -284,72 +271,72 @@
 
         document.getElementById('markerXSlider').addEventListener('input', function(e){
             markerLocationHelper.position.x = e.target.value*10;
+            markerPlane.position.x = e.target.value*10;
         });
 
         document.getElementById('markerXInput').addEventListener('input', function(e){
             markerLocationHelper.position.x = e.target.value *10;
+            markerPlane.position.x = e.target.value*10;
 
         });
 
         document.getElementById('markerXSlider').addEventListener('input', function(e){
             markerLocationHelper.position.y = e.target.value*10;
+            markerPlane.position.y = e.target.value*10;
+
         });
 
         document.getElementById('markerYInput').addEventListener('input', function(e){
             markerLocationHelper.position.y = e.target.value*10;
+            markerPlane.position.y = e.target.value*10;
+
         });
 
-
-
-    // // Get a reference to the file input
-    //     const fileInput = document.querySelector('input');
-
-    //     // Listen for the change event so we can capture the file
-    //     fileInput.addEventListener('change', (e) => {
-    //         // Get a reference to the file
-    //         const file = e.target.files[0];
-
-    //         // Encode the file using the FileReader API
-    //         const reader = new FileReader();
-    //         reader.onloadend = () => {
-    //             // Use a regex to remove data url part
-    //             const base64String = reader.result
-    //                 .replace('data:', '')
-    //                 .replace(/^.+,/, '');
-
-    //             console.log(base64String);
-    //             // Logs wL2dvYWwgbW9yZ...
-    //         };
-    //         reader.readAsDataURL(file);
-    //     });
         
-        // const lessonFileInput = document.getElementById('fileInput');
-        // lessonFileInput.addEventListener('change', function(e) {
-        //     const file = lessonFileInput.files[0];
-        //     const reader = new FileReader();
-        //         reader.addEventListener(
-        //             "load",
-        //             () => {
-        //             // convert image file to base64 string
-        //                 console.log(reader.result);
-        //             },
-        //             false
-        //         );
+        const lessonFileInput = document.getElementById('fileInput');
+        lessonFileInput.addEventListener('change', function(e) {
+            const file = lessonFileInput.files[0];
+            const reader = new FileReader();
+                reader.addEventListener(
+                    "load",
+                    () => {
+                    // convert image file to base64 string
+                        console.log(reader.result);
+                    },
+                    false
+                );
 
-        //         if (file) {
-        //             reader.readAsDataURL(file);
-        //             paperMaterial =  new THREE.MeshLambertMaterial({
-        //                 map: loader.load('test.png')
-        //             });
-        //             paperPlane.material.needUpdate = true;
-        //         }
-        //     });
+                if (file) {
+                    reader.readAsDataURL(file);
+
+
+                    let image = new THREE.TextureLoader().load(file);
+                    image.src = URL.createObjectURL( file );
+
+                    image.onload = function()  {
+                        loadedTexture.needsUpdate = true;
+                    };
+
+                    let loadedMaterial = new THREE.MeshLambertMaterial({
+                        map: image
+                    });
+
+                    loadedMaterial.needsUpdate = true;
+
+                    
+                    paperPlane.material  = loadedMaterial;
+                    paperPlane.material.needsUpdate = true;
+
+                    // paperMaterial.map = THREE.ImageUtils.getDataURL( file );
+
+                }
+            });
         
-        // const loadMoleculeFile = {
-        //     loadFile : function() { 
-        //         document.getElementById('fileInput').click();
-        //     },
-        // };
+        const loadMoleculeFile = {
+            loadFile : function() { 
+                document.getElementById('fileInput').click();
+            },
+        };
 
         
 
