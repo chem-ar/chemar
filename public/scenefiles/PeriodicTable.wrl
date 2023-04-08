@@ -1,0 +1,1160 @@
+#VRML V2.0 utf8
+WorldInfo {
+title "test"
+info [ "By Avogadro" ]
+}
+NavigationInfo {
+type ["EXAMINE","ANY"]
+headlight TRUE
+visibilityLimit 0.0
+speed 1.0
+}
+DEF DefaultView Viewpoint {
+position 0 0 57.558
+description "Default view"
+fieldOfView 0.785398
+}
+Transform {
+	translation	0	0	0
+	children Shape {
+		geometry Sphere {
+			radius	5.5
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.75	0.75	0.75
+			}
+		}
+	}
+}
+Transform {
+	translation	850	0	0
+	children Shape {
+		geometry Sphere {
+			radius	7
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.85	1	1
+			}
+		}
+	}
+}
+Transform {
+	translation	0	-50	0
+	children Shape {
+		geometry Sphere {
+			radius	9.05
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.8	0.5	1
+			}
+		}
+	}
+}
+Transform {
+	translation	50	-50	0
+	children Shape {
+		geometry Sphere {
+			radius	7.65
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.76	1	0
+			}
+		}
+	}
+}
+Transform {
+	translation	600	-50	0
+	children Shape {
+		geometry Sphere {
+			radius	9.6
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	1	0.71	0.71
+			}
+		}
+	}
+}
+Transform {
+	translation	650	-50	0
+	children Shape {
+		geometry Sphere {
+			radius	8.5
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.4	0.4	0.4
+			}
+		}
+	}
+}
+Transform {
+	translation	700	-50	0
+	children Shape {
+		geometry Sphere {
+			radius	7.75
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.05	0.05	1
+			}
+		}
+	}
+}
+Transform {
+	translation	750	-50	0
+	children Shape {
+		geometry Sphere {
+			radius	7.6
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	1	0.05	0.05
+			}
+		}
+	}
+}
+Transform {
+	translation	800	-50	0
+	children Shape {
+		geometry Sphere {
+			radius	7.35
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.5	0.7	1
+			}
+		}
+	}
+}
+Transform {
+	translation	850	-50	0
+	children Shape {
+		geometry Sphere {
+			radius	7.7
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.7	0.89	0.96
+			}
+		}
+	}
+}
+Transform {
+	translation	0	-100	0
+	children Shape {
+		geometry Sphere {
+			radius	11.35
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.67	0.36	0.95
+			}
+		}
+	}
+}
+Transform {
+	translation	50	-100	0
+	children Shape {
+		geometry Sphere {
+			radius	8.65
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.54	1	0
+			}
+		}
+	}
+}
+Transform {
+	translation	600	-100	0
+	children Shape {
+		geometry Sphere {
+			radius	9.2
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.75	0.65	0.65
+			}
+		}
+	}
+}
+Transform {
+	translation	650	-100	0
+	children Shape {
+		geometry Sphere {
+			radius	10.5
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.5	0.6	0.6
+			}
+		}
+	}
+}
+Transform {
+	translation	700	-100	0
+	children Shape {
+		geometry Sphere {
+			radius	9
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	1	0.5	0
+			}
+		}
+	}
+}
+Transform {
+	translation	750	-100	0
+	children Shape {
+		geometry Sphere {
+			radius	9
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.7	0.7	0
+			}
+		}
+	}
+}
+Transform {
+	translation	800	-100	0
+	children Shape {
+		geometry Sphere {
+			radius	8.75
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.12	0.94	0.12
+			}
+		}
+	}
+}
+Transform {
+	translation	850	-100	0
+	children Shape {
+		geometry Sphere {
+			radius	9.4
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.5	0.82	0.89
+			}
+		}
+	}
+}
+Transform {
+	translation	0	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	13.75
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.56	0.25	0.83
+			}
+		}
+	}
+}
+Transform {
+	translation	50	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	11.55
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.24	1	0
+			}
+		}
+	}
+}
+Transform {
+	translation	100	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	11.5
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.9	0.9	0.9
+			}
+		}
+	}
+}
+Transform {
+	translation	150	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	10.75
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.75	0.76	0.78
+			}
+		}
+	}
+}
+Transform {
+	translation	200	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	10.25
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.65	0.65	0.67
+			}
+		}
+	}
+}
+Transform {
+	translation	250	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	10.25
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.54	0.6	0.78
+			}
+		}
+	}
+}
+Transform {
+	translation	300	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	10.25
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.61	0.48	0.78
+			}
+		}
+	}
+}
+Transform {
+	translation	350	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	10.25
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.88	0.4	0.2
+			}
+		}
+	}
+}
+Transform {
+	translation	400	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.94	0.56	0.63
+			}
+		}
+	}
+}
+Transform {
+	translation	450	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.31	0.82	0.31
+			}
+		}
+	}
+}
+Transform {
+	translation	500	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.78	0.5	0.2
+			}
+		}
+	}
+}
+Transform {
+	translation	550	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	10.5
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.49	0.5	0.69
+			}
+		}
+	}
+}
+Transform {
+	translation	600	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	9.35
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.76	0.56	0.56
+			}
+		}
+	}
+}
+Transform {
+	translation	650	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	10.55
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.4	0.56	0.56
+			}
+		}
+	}
+}
+Transform {
+	translation	700	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	9.25
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.74	0.5	0.89
+			}
+		}
+	}
+}
+Transform {
+	translation	750	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	9.5
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	1	0.63	0
+			}
+		}
+	}
+}
+Transform {
+	translation	800	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	9.15
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.65	0.16	0.16
+			}
+		}
+	}
+}
+Transform {
+	translation	850	-150	0
+	children Shape {
+		geometry Sphere {
+			radius	10.1
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.36	0.72	0.82
+			}
+		}
+	}
+}
+Transform {
+	translation	0	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	15.15
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.44	0.18	0.69
+			}
+		}
+	}
+}
+Transform {
+	translation	50	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	12.45
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0	1	0
+			}
+		}
+	}
+}
+Transform {
+	translation	100	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	12
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.58	1	1
+			}
+		}
+	}
+}
+Transform {
+	translation	150	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	11.5
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.58	0.88	0.88
+			}
+		}
+	}
+}
+Transform {
+	translation	200	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	10.75
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.45	0.76	0.79
+			}
+		}
+	}
+}
+Transform {
+	translation	250	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	10.5
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.33	0.71	0.71
+			}
+		}
+	}
+}
+Transform {
+	translation	300	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	10.25
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.23	0.62	0.62
+			}
+		}
+	}
+}
+Transform {
+	translation	350	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	10.25
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.14	0.56	0.56
+			}
+		}
+	}
+}
+Transform {
+	translation	400	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.04	0.49	0.55
+			}
+		}
+	}
+}
+Transform {
+	translation	450	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	10.25
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0	0.41	0.52
+			}
+		}
+	}
+}
+Transform {
+	translation	500	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	10.5
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.88	0.88	1
+			}
+		}
+	}
+}
+Transform {
+	translation	550	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	11
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	1	0.85	0.56
+			}
+		}
+	}
+}
+Transform {
+	translation	600	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	11
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.65	0.46	0.45
+			}
+		}
+	}
+}
+Transform {
+	translation	650	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	9.65
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.4	0.5	0.5
+			}
+		}
+	}
+}
+Transform {
+	translation	700	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	10.85
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.62	0.39	0.71
+			}
+		}
+	}
+}
+Transform {
+	translation	750	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	10.3
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.83	0.48	0
+			}
+		}
+	}
+}
+Transform {
+	translation	800	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	9.9
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.58	0	0.58
+			}
+		}
+	}
+}
+Transform {
+	translation	850	-200	0
+	children Shape {
+		geometry Sphere {
+			radius	10.8
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.26	0.62	0.69
+			}
+		}
+	}
+}
+Transform {
+	translation	0	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	17.15
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.34	0.09	0.56
+			}
+		}
+	}
+}
+Transform {
+	translation	50	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	13.4
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0	0.79	0
+			}
+		}
+	}
+}
+Transform {
+	translation	150	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	11.25
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.3	0.76	1
+			}
+		}
+	}
+}
+Transform {
+	translation	200	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	11
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.3	0.65	1
+			}
+		}
+	}
+}
+Transform {
+	translation	250	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	10.5
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.13	0.58	0.84
+			}
+		}
+	}
+}
+Transform {
+	translation	300	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	10.25
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.15	0.49	0.67
+			}
+		}
+	}
+}
+Transform {
+	translation	350	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.15	0.4	0.59
+			}
+		}
+	}
+}
+Transform {
+	translation	400	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.09	0.33	0.53
+			}
+		}
+	}
+}
+Transform {
+	translation	450	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	10.25
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.9	0.85	0.68
+			}
+		}
+	}
+}
+Transform {
+	translation	500	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	10.5
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.8	0.82	0.12
+			}
+		}
+	}
+}
+Transform {
+	translation	550	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	10.25
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.71	0.71	0.76
+			}
+		}
+	}
+}
+Transform {
+	translation	600	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	9.8
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.65	0.33	0.3
+			}
+		}
+	}
+}
+Transform {
+	translation	650	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	10.1
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.34	0.35	0.38
+			}
+		}
+	}
+}
+Transform {
+	translation	700	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	10.35
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.62	0.31	0.71
+			}
+		}
+	}
+}
+Transform {
+	translation	750	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	9.85
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.67	0.36	0
+			}
+		}
+	}
+}
+Transform {
+	translation	800	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	10.1
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.46	0.31	0.27
+			}
+		}
+	}
+}
+Transform {
+	translation	850	-250	0
+	children Shape {
+		geometry Sphere {
+			radius	11
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.26	0.51	0.59
+			}
+		}
+	}
+}
+Transform {
+	translation	0	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	17.4
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.26	0	0.4
+			}
+		}
+	}
+}
+Transform {
+	translation	50	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	14.15
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0	0.49	0
+			}
+		}
+	}
+}
+Transform {
+	translation	150	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.8	0	0.35
+			}
+		}
+	}
+}
+Transform {
+	translation	200	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.82	0	0.31
+			}
+		}
+	}
+}
+Transform {
+	translation	250	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.85	0	0.27
+			}
+		}
+	}
+}
+Transform {
+	translation	300	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.88	0	0.22
+			}
+		}
+	}
+}
+Transform {
+	translation	350	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.9	0	0.18
+			}
+		}
+	}
+}
+Transform {
+	translation	400	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.92	0	0.15
+			}
+		}
+	}
+}
+Transform {
+	translation	450	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.93	0	0.14
+			}
+		}
+	}
+}
+Transform {
+	translation	500	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.94	0	0.13
+			}
+		}
+	}
+}
+Transform {
+	translation	550	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.95	0	0.12
+			}
+		}
+	}
+}
+Transform {
+	translation	600	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	7.75
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.05	0.05	1
+			}
+		}
+	}
+}
+Transform {
+	translation	650	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.97	0	0.1
+			}
+		}
+	}
+}
+Transform {
+	translation	700	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.8	0	0.35
+			}
+		}
+	}
+}
+Transform {
+	translation	750	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.82	0	0.31
+			}
+		}
+	}
+}
+Transform {
+	translation	800	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.85	0	0.27
+			}
+		}
+	}
+}
+Transform {
+	translation	850	-300	0
+	children Shape {
+		geometry Sphere {
+			radius	10
+		}
+		appearance Appearance {
+			material Material {
+				diffuseColor	0.88	0	0.22
+			}
+		}
+	}
+}
