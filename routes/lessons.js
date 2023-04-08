@@ -43,4 +43,13 @@ router.put('/add/:lesson', (req, res) => {
     }
 });
 
+router.get('/list', function(req, res) {
+    const lessons = './public/lessons/';
+
+    //Admin check
+    let isAdmin = (req.signedCookies.admin == 'true');
+
+    res.status(200).send(fs.readdirSync(lessons));
+});
+
 module.exports = router;
