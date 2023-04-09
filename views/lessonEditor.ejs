@@ -261,7 +261,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-warning">Save changes</button>
+                    <button type="button" id="saveBtn" class="btn btn-warning">Save changes</button>
                 </div>
             </div>
         </div>
@@ -556,7 +556,30 @@
             },
         };
 
-        
+        // When the admin saves changes to the lesson editor.
+        document.getElementById("saveBtn").addEventListener('click', () => {
+            const x = 0;
+            const y = 0;
+            const lessonName = "lesson1";
+
+            const lesson = {
+                name: lessonName,
+                x: x,
+                y: y
+            }
+
+            fetch(`/save/${lessonName}`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': "application/json"
+                },
+                body: JSON.stringify(lesson)
+            })
+            .catch(err => {
+                console.error(err)
+            });
+
+        })
 
         function animate() {
             requestAnimationFrame( animate );
