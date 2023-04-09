@@ -25,7 +25,6 @@ router.get('/:id', function(req , res){
 });
 
 router.post('/upload/images', function(req , res){
-  console.log(req.body);
   let image = req.body["image-contents"].replace(/^data:image\/png;base64,/, "");
 
   console.log(req.body["image-name"]);
@@ -48,15 +47,43 @@ router.post('/upload/images', function(req , res){
   
 });
 
-router.get('/save/:lessonName', (req, res) => {
-    
-  console.log(req.params.lessonName);
+router.post('/save:lesson', (req, res) => {
+  
+  // Get the lesson name from the params.
+  const lessonName = req.params.lesson;
+  const lessonPath = `./public/lessons/${lessonName}.json`; // Save the file path.
+  var success = false;
 
-  res.status(200).send({
-    status: "success",
-    overwritten: overwritten,
-    path: lessonPath
-  })
+  // Check if lesson doesn't exist.
+  if (!fs.existsSync(lessonPath)) {
+
+    console.log("does not exist");
+
+    // // Basic template for lesson file if file doesn't exist.
+    // const lessonTemplate = { name: lessonName };
+
+    // Write the file with template.
+    fs.writeFile(lessonPath, JSON.stringify(req.body), (err) => {
+
+        if (err) {
+            success = false;
+            console.log(err);
+        } else {
+            success = true;
+        }
+
+    });
+
+  }
+
+  // res.status(200).send({
+  //   status: success,
+  //   overwritten: overwritten,
+  //   path: lessonPath,
+  //   body: req.body
+  // })
+
+  res.send("hit");
 
 });
 
