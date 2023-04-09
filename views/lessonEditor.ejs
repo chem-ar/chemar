@@ -294,15 +294,6 @@
                 .then(data => {
                     if(data.includes("PUGREST.NotFound")){
                         console.log("3D File Not Found");
-                        fetch(URL + "?record_type=2d")
-                            .then(response => response.text())
-                            .then(data => {
-                                if(data.includes("PUGREST.NotFound")){
-                                    console.log("2D File Not Found");
-                                }else{
-                                    console.log(data);
-                                }
-                            });
                     }else{
                         console.log(data);
                     }
@@ -314,7 +305,7 @@
                 searchResults.innerHTML = `<div class="text-warning pt-2 px-2">Please enter a search term</div>`;
             }
             else{
-                const URL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${name}/property/IUPACName,MolecularFormula,Title/JSON?name_type=word&MaxRecords=10`;
+                const URL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${name}/property/IUPACName,MolecularFormula,Title/JSON`;
                  searchResults.innerHTML = `<div class="text-info pt-2 px-2">Searching</div>`;
                  if(name){
                     fetch(URL)
