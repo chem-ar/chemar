@@ -31,9 +31,12 @@
         }
 
         td{
-            border-top-width: 1px !important;
+            border-top-width: 0px !important;
             border-bottom-width: 0px !important;
-
+        }
+        th{
+            border-top-width: 0px !important;
+            border-bottom-width: 0px !important;
         }
 
 
@@ -138,12 +141,37 @@
                         </div>
                         <div class="offcanvas-body">
                             <div class = "row">
+                                <h4>Lesson</h4>
+                                <div class = "col-12">
+                                    <div class="input-group mb-2">
+                                        <select class="form-select" id="inputGroupSelect02">
+                                        <option selected>Choose...</option>
+                                        <option value="1">1 - Intro to Chemistry</option>
+                                        <option value="2">2 - Inorganic Chemistry</option>
+                                        <option value="3">3 - Organic Chemistry</option>
+                                        </select>
+                                        <button type="button" class="btn btn-outline-light">Load Lesson</button>
+                                    </div>  
+                                </div>
+                            </div>
+                            <div class = "row">
+                                <div class = "col-12">
+                                    <div class="d-grid gap-2">
+                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                            Save Changes
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class = "row">
                                 <h4>Lesson Sheet</h4>
                                 <div class = "col-12">
                                     <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#fileMenu" role="button" aria-expanded="false" aria-controls="fileMenu">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-fill" viewBox="0 0 16 16">
-                                            <path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3z"/>
-                                        </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-richtext" viewBox="0 0 16 16">
+                                            <path d="M7 4.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm-.861 1.542 1.33.886 1.854-1.855a.25.25 0 0 1 .289-.047l1.888.974V7.5a.5.5 0 0 1-.5.5H5a.5.5 0 0 1-.5-.5V7s1.54-1.274 1.639-1.208zM5 9a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+                                          </svg>
                                         Load .png File
                                     </button>
                                 </div>
@@ -162,10 +190,10 @@
                                 <h4>Tracking Marker</h4>
                                 <div class = "col-12">
                                     <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#trackerMenu" role="button" aria-expanded="false" aria-controls="trackerMenu">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
-                                            <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
-                                        </svg>
-                                          Edit
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-move" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708l2-2zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10zM.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708l-2-2zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8z"/>
+                                          </svg>
+                                          Move
                                     </button>
                                 </div>
                             </div>
@@ -204,7 +232,6 @@
                             <hr>
                             <div class = "row">
                                 <h4>Add Molecule</h4>
-
                                 <div class = "col-12">
                                     <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#searchMenu" role="button" aria-expanded="false" aria-controls="searchMenu">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -218,12 +245,11 @@
                                 <div class="col-12 mt-2">
                                   <div class="collapse multi-collapse" id="searchMenu">
                                     <div class="input-group flex-nowrap">
-
-                                        <input type="text" id = "search-field" class="form-control" placeholder="Molecule Name or Formula" aria-label="Username" aria-describedby="addon-wrapping">
+                                        <input type="text" id = "search-field" class="form-control" placeholder="Molecule Name" aria-label="Username" aria-describedby="addon-wrapping">
                                         <button class="btn btn-info" type="button" id="search-button">Search</button>
                                     </div>
                                     <div class = "row">
-                                        <div class = "col-12">
+                                        <div class = "col-12 mb-2">
                                             <div id = "search-results">
                                             </div>
                                         </div>
@@ -231,10 +257,27 @@
                                   </div>
                                 </div>
                             </div>
+                            <div class = "row">
+                                <div class = "col-12">
+                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#molFileMenu" role="button" aria-expanded="false" aria-controls="molFileMenu">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-fill" viewBox="0 0 16 16">
+                                            <path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3z"/>
+                                          </svg>
+                                        Load .mol File
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mt-2">
+                                  <div class="collapse multi-collapse" id="molFileMenu">
+                                    <div class="mb-3">
+                                        <input class="form-control" type="file" id="fileInput" accept=".mol">
+                                      </div>
+                                  </div>
+                                </div>
+                            </div>
                             <hr>
-                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                Save Changes
-                            </button>
+
 
                         </div>
                     </div>
@@ -266,6 +309,7 @@
             </div>
         </div>
     </div>
+    <script src="/js/molFileToJSON.js"></script>
 
     <script type= "module">
 
@@ -293,7 +337,15 @@
                 .then(response => response.text())
                 .then(data => {
                     if(data.includes("PUGREST.NotFound")){
-                        console.log("3D File Not Found");
+                        fetch(URL + "?record_type=2d")
+                            .then(response => response.text())
+                            .then(data => {
+                                if(data.includes("PUGREST.NotFound")){
+                                    console.log("2D File Not Found");
+                                }else{
+                                    console.log(data);
+                                }
+                            });
                     }else{
                         console.log(data);
                     }
@@ -306,7 +358,7 @@
             }
             else{
                 const URL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${name}/property/IUPACName,MolecularFormula,Title/JSON`;
-                 searchResults.innerHTML = `<div class="text-info pt-2 px-2">Searching</div>`;
+                 searchResults.innerHTML = `<div class="pt-2 px-2">Searching</div>`;
                  if(name){
                     fetch(URL)
                     .then(response => response.json())
@@ -344,9 +396,7 @@
                 const tableBody = document.createElement('tbody');
                 searchResultTable.appendChild(tableBody);
 
-                console.log(data.PropertyTable.Properties.length)
-
-                for(let i = 0; i < 10; i++){
+                for(let i = 0; i < data.PropertyTable.Properties.length; i++){
                     let item = data.PropertyTable.Properties[i];
                     const row = tableBody.insertRow();
                     const cell1 = row.insertCell(0);
@@ -356,12 +406,12 @@
                     cell1.classList.add('text-break');
                     cell1.innerHTML = item.MolecularFormula + "<br>" + item.IUPACName + "<br><b>" + item.Title+ "</b>";
                     let viewButton = document.createElement('button');
-                    viewButton.classList = 'btn btn-outline-light';
+                    viewButton.classList = 'btn btn-outline-light btn-block';
                     viewButton.innerHTML = 
                     `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"     class="bi bi-eye-fill" viewBox="0 0 16 16">
                         <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
                         <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-                    </svg> Preview`;
+                    </svg> <br>Add to Lesson`;
 
                     viewButton.addEventListener("click", function(event) {
                         event.preventDefault();
@@ -370,7 +420,7 @@
                     });
 
                     cell2.appendChild(viewButton);
-                    cell2.classList.add('align-middle');
+                    cell2.classList = 'w-25';
                 }
             }
         }
