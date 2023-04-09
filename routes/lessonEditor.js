@@ -3,7 +3,9 @@ var router = express.Router();
 var fs = require('fs'); 
 
 router.get('/', function(req, res, next) {
-  res.render('lessonEditor', { title: 'Scene Viewer'});
+  const lessons = './public/lessons/'
+
+  res.render('lessonEditor', { title: 'Scene Viewer', lessonList: fs.readdirSync(lessons) });
 });
 
 
@@ -18,7 +20,7 @@ router.get('/:id', function(req , res){
   }
   
   else{
-    res.render('error', { title: 'MoleculAR - Error', message: 'Lesson not found', error: {status: 404, stack: 'Scene not found'}});
+    res.render('error', { title: 'MoleculAR - Error', message: 'Lesson not found', error: {status: 404, stack: 'Lesson not found'}});
   }
 });
 
@@ -43,32 +45,12 @@ router.post('/upload/images', function(req , res){
       "file-src": newImage.replace('./public', '')
     }
   );
-
   
 });
 
-router.post('/save', (req, res) => {
+router.get('/save/:lessonName', (req, res) => {
     
-  // Grab info from the request.
-  const lessonName = req.query;
-  const lessonPath = `./public/lessons/${lessonName}.json`;
-  const contents = req.body.JSON;
-  var overwritten = false;
-
-  //Admin check
-  let isAdmin = (req.signedCookies.admin == 'true');
-
-  // Check if lesson doesn't exist.
-  if (!fs.existsSync(lessonPath)) {
-
-    // Write the file with template.
-    fs.writeFile(lessonPath, JSON.stringify(contents), (err) => {
-        res.status(500).send(err);
-    });
-
-    overwritten = true;
-
-  }
+  console.log(req.params.lessonName);
 
   res.status(200).send({
     status: "success",
@@ -76,8 +58,6 @@ router.post('/save', (req, res) => {
     path: lessonPath
   })
 
-})
-
-
+});
 
 module.exports = router;
