@@ -150,14 +150,14 @@
                                             <option value="<%= lesson %>"><%= lesson %></option>
                                         <% }); %>
                                         </select>
-                                        <button type="button" class="btn btn-outline-light">Load Lesson</button>
+                                        <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loadModal">Load Lesson</button>
                                     </div>  
                                 </div>
                             </div>
                             <div class = "row">
                                 <div class = "col-12">
                                     <div class="d-grid gap-2">
-                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#saveModal">
                                             Save Changes
                                         </button>
                                     </div>
@@ -286,11 +286,11 @@
         </div>
     </div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="saveModal" tabindex="-1" aria-labelledby="saveModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content bg-dark text-white">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Save Changes?</h1>
+                    <h1 class="modal-title fs-5" id="saveModalLabel">Save Changes?</h1>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
@@ -305,6 +305,29 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" id="saveBtn" class="btn btn-warning">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="loadModal" tabindex="-1" aria-labelledby="loadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="loadModalLabel">Save before loading?</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Do you want to save your changes before opening another lesson?
+                    </p>
+                    <p class = "text-warning">
+                        This will overwrite the current version of the file.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Do not save changes</button>
+                    <button type="button" id="saveBtn" class="btn btn-warning">Save changes and switch</button>
                 </div>
             </div>
         </div>
