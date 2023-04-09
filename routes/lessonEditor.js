@@ -47,7 +47,7 @@ router.post('/upload/images', function(req , res){
   
 });
 
-router.post('/save:lesson', (req, res) => {
+router.post('/save/:lesson', (req, res) => {
   
   // Get the lesson name from the params.
   const lessonName = req.params.lesson;
@@ -58,9 +58,6 @@ router.post('/save:lesson', (req, res) => {
   if (!fs.existsSync(lessonPath)) {
 
     console.log("does not exist");
-
-    // // Basic template for lesson file if file doesn't exist.
-    // const lessonTemplate = { name: lessonName };
 
     // Write the file with template.
     fs.writeFile(lessonPath, JSON.stringify(req.body), (err) => {
@@ -76,14 +73,14 @@ router.post('/save:lesson', (req, res) => {
 
   }
 
-  // res.status(200).send({
-  //   status: success,
-  //   overwritten: overwritten,
-  //   path: lessonPath,
-  //   body: req.body
-  // })
+  console.log("hit");
 
-  res.send("hit");
+  res.status(200).send({
+    status: success,
+    overwritten: overwritten,
+    path: lessonPath,
+    body: req.body
+  })
 
 });
 
