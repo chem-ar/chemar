@@ -146,9 +146,9 @@
                                     <div class="input-group mb-2">
                                         <select class="form-select" id="inputGroupSelect02">
                                         <option selected>Choose...</option>
-                                        <option value="1">1 - Intro to Chemistry</option>
-                                        <option value="2">2 - Inorganic Chemistry</option>
-                                        <option value="3">3 - Organic Chemistry</option>
+                                        <% lessonList.forEach((lesson) => { %>
+                                            <option value="<%= lesson %>"><%= lesson %></option>
+                                        <% }); %>
                                         </select>
                                         <button type="button" class="btn btn-outline-light">Load Lesson</button>
                                     </div>  
