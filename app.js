@@ -34,6 +34,7 @@ var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
 
 var app = express();
+app.use(express.json({ limit: '2MB' }));
 
 http.createServer(app).listen(8000);
 https
@@ -58,6 +59,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("iauuhdfsoivfdsoviufh"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
