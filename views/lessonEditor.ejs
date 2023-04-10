@@ -443,16 +443,16 @@
                         Do you want to save your changes?
                     </p>
                     <p class = "text-warning">
-                        This will overwrite the current version of the file.
+                        This will overwrite the current version of the file saved on the server.
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" id="saveBtn" class="btn btn-warning">Save changes</button>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="modal fade" id="loadModal" tabindex="-1" aria-labelledby="loadModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content bg-dark text-white">
@@ -466,11 +466,11 @@
                         Do you want to save your changes before opening another lesson?
                     </p>
                     <p class = "text-warning">
-                        This will overwrite the current version of the file.
+                        This will overwrite the current version of the file saved on the server.
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="loadNoSaveBtn" class="btn btn-secondary" data-bs-dismiss="modal">Do not save changes</button>
+                    <button type="button" id="loadNoSaveBtn" class="btn btn-danger" data-bs-dismiss="modal">Do not save changes</button>
                     <button type="button" id="loadSaveBtn" class="btn btn-warning">Save changes and switch</button>
                 </div>
             </div>
@@ -479,15 +479,8 @@
     <script src="/js/molFileToJSON.js"></script>
 
     <script type= "module">
+        let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
 
-
-
-        function updateMoleculeMenu() {
-            // Update the UI with the changing locations.
-
-
-            console.log("updateMoleculeMenu called");
-        }
 
         function getMolecule(URL, Title){
             fetch(URL + "?record_type=3d")
@@ -543,7 +536,7 @@
                 tableHead.appendChild(tableHeadRow);
                 const tableHeadCell1 = document.createElement('th');
                 const tableHeadCell2 = document.createElement('th');
-                tableHeadCell1.innerHTML = "<div class='text-info'>Formula<br>IUPAC Name<br>Title</div>";
+                tableHeadCell1.innerHTML = "";
                 tableHeadCell2.innerHTML = "";
 
                 tableHeadRow.appendChild(tableHeadCell1);
@@ -584,6 +577,149 @@
             }
         }
 
+        let moleculeList = document.getElementById('molecule-list');
+        function lessonMoleculeMenu() {
+            moleculeList.innerHTML = "";
+
+            for(let molecule of lessonMolecules){
+                console.log(molecule)
+                let moleculeItem = document.createElement('div');
+                moleculeItem.classList = 'list-group-item list-group-item-action mb-2';
+
+                let moleculeItemButton = document.createElement('button');
+                moleculeItemButton.classList = 'btn btn-outline-light btn-block';
+                moleculeItemButton.innerText = molecule.Title;
+                
+                let moleculeCollapse = document.createElement('div');
+                moleculeCollapse.classList = 'collapse';
+                moleculeCollapse.id = 'molecule' + molecule.molecule.uuid;
+                
+                let moleculeCollapseContent = document.createElement('div');
+                moleculeCollapseContent.classList = 'card card-body bg-dark border-light text-white  my-2';
+                moleculeCollapseContent.innerHTML = "<h5>Position</h5>";
+                moleculeCollapse.appendChild(moleculeCollapseContent);
+
+                let moleculePositionXRow = document.createElement('div');
+                moleculePositionXRow.classList = 'row';
+                moleculeCollapseContent.appendChild(moleculePositionXRow);
+
+                let moleculePositionXText = document.createElement('input');
+                moleculePositionXText.classList = 'form-control form-control-sm mb-2';
+                moleculePositionXText.type = 'number';
+                moleculePositionXText.value = molecule.molecule.position.x;
+                moleculePositionXText.addEventListener("input", function(event) {
+                    molecule.molecule.position.x = moleculePositionXText.value;
+                    moleculePositionXSlider.value = moleculePositionXText.value;
+                });
+                let moleculePositionXTextCol = document.createElement('div');
+                moleculePositionXTextCol.classList = 'col-3';
+                moleculePositionXTextCol.appendChild(moleculePositionXText);
+                moleculePositionXRow.appendChild(moleculePositionXTextCol);
+
+                let moleculePositionXSlider = document.createElement('input');
+                moleculePositionXSlider.classList = 'form-range mb-2';
+                moleculePositionXSlider.type = 'range';
+                moleculePositionXSlider.min = '0';
+                moleculePositionXSlider.max = '11';
+                moleculePositionXSlider.step = '0.01';
+                moleculePositionXSlider.value = molecule.molecule.position.x;
+                moleculePositionXSlider.addEventListener("input", function(event) {
+                    molecule.molecule.position.x = moleculePositionXSlider.value;
+                    moleculePositionXText.value = moleculePositionXSlider.value;
+                });
+                let moleculePositionXSliderCol = document.createElement('div');
+                moleculePositionXSliderCol.classList = 'col-9';
+                moleculePositionXSliderCol.appendChild(moleculePositionXSlider);
+                moleculePositionXRow.appendChild(moleculePositionXSliderCol);
+                
+                let moleculePositionYRow = document.createElement('div');
+                moleculePositionYRow.classList = 'row';
+                moleculeCollapseContent.appendChild(moleculePositionYRow);
+
+                let moleculePositionYText = document.createElement('input');
+                moleculePositionYText.classList = 'form-control form-control-sm mb-1';
+                moleculePositionYText.type = 'number';
+                moleculePositionYText.value = molecule.molecule.position.x;
+                moleculePositionYText.addEventListener("input", function(event) {
+                    molecule.molecule.position.y = moleculePositionYText.value;
+                    moleculePositionYSlider.value = moleculePositionYText.value;
+                });
+                let moleculePositionYTextCol = document.createElement('div');
+                moleculePositionYTextCol.classList = 'col-3';
+                moleculePositionYTextCol.appendChild(moleculePositionYText);
+                moleculePositionYRow.appendChild(moleculePositionYTextCol);
+
+                let moleculePositionYSlider = document.createElement('input');
+                moleculePositionYSlider.classList = 'form-range mb-2';
+                moleculePositionYSlider.type = 'range';
+                moleculePositionYSlider.min = '0';
+                moleculePositionYSlider.max = '11';
+                moleculePositionYSlider.step = '0.01';
+                moleculePositionYSlider.value = molecule.molecule.position.x;
+                moleculePositionYSlider.addEventListener("input", function(event) {
+                    molecule.molecule.position.y = moleculePositionYSlider.value;
+                    moleculePositionYText.value = moleculePositionYSlider.value;
+                });
+                let moleculePositionYSliderCol = document.createElement('div');
+                moleculePositionYSliderCol.classList = 'col-9';
+                moleculePositionYSliderCol.appendChild(moleculePositionYSlider);
+                moleculePositionYRow.appendChild(moleculePositionYSliderCol);
+
+                
+                let moleculePositionZRow = document.createElement('div');
+                moleculePositionZRow.classList = 'row';
+                moleculeCollapseContent.appendChild(moleculePositionZRow);
+
+                let moleculePositionZText = document.createElement('input');
+                moleculePositionZText.classList = 'form-control form-control-sm mb-2';
+                moleculePositionZText.type = 'number';
+                moleculePositionZText.value = molecule.molecule.position.x;
+                moleculePositionZText.addEventListener("input", function(event) {
+                    molecule.molecule.position.z = moleculePositionZText.value;
+                    moleculePositionZSlider.value = moleculePositionZText.value;
+                });
+                let moleculePositionZTextCol = document.createElement('div');
+                moleculePositionZTextCol.classList = 'col-3';
+                moleculePositionZTextCol.appendChild(moleculePositionZText);
+                moleculePositionZRow.appendChild(moleculePositionZTextCol);
+
+                let moleculePositionZSlider = document.createElement('input');
+                moleculePositionZSlider.classList = 'form-range mb-2';
+                moleculePositionZSlider.type = 'range';
+                moleculePositionZSlider.min = '0';
+                moleculePositionZSlider.max = '11';
+                moleculePositionZSlider.step = '0.01';
+                moleculePositionZSlider.value = molecule.molecule.position.x;
+                moleculePositionZSlider.addEventListener("input", function(event) {
+                    molecule.molecule.position.z = moleculePositionZSlider.value;
+                    moleculePositionZText.value = moleculePositionZSlider.value;
+                });
+                let moleculePositionZSliderCol = document.createElement('div');
+                moleculePositionZSliderCol.classList = 'col-9';
+                moleculePositionZSliderCol.appendChild(moleculePositionZSlider);
+                moleculePositionZRow.appendChild(moleculePositionZSliderCol);
+
+    
+
+                moleculeItemButton.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    let moleculeCollapse = document.getElementById('molecule' +  molecule.molecule.uuid);
+                    if(moleculeCollapse.classList.contains('show')){
+                        moleculeCollapse.classList.remove('show');
+                    }else{
+                        moleculeCollapse.classList.add('show');
+                    }
+                });
+
+                moleculeList.appendChild(moleculeItemButton);
+                moleculeList.appendChild(moleculeCollapse);
+                moleculeList.appendChild(moleculeItem);
+                console.log(molecule)
+            }
+            console.log("updateMoleculeMenu called");
+        }
+
+
         import { OrbitControls } from '/js/OrbitControls.js';
         import { VRMLLoader } from '/js/VRMLLoader.js';
         import { GLTFLoader } from '/js/GLTFLoader.js';
@@ -592,20 +728,11 @@
         import { ARButton } from '/js/ARButton.js';
 
         const loader = new THREE.TextureLoader();
-        // let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
         // let requestedFileExt = requestedFile.substring(requestedFile.lastIndexOf('.') + 1);
-
-        // let loader;
-        // if(requestedFileExt == "wrl"){
-        //     loader = new VRMLLoader();
-        // }else if(requestedFileExt == "gltf"){
-        //     loader = new GLTFLoader();
-        // }
 
         const threeArea = document.getElementById('three-area');
 
         let scene, camera, renderer, controls, clock;
-        let mixer;
 
         let axesHelper, markerLocationHelper;
         let spotLightTop, spotLightBottom, ambientLight;
@@ -739,8 +866,10 @@
 
             // moleculeGroup.position.z = centerOffset;
 
-            lessonMolecules.push(moleculeGroup)
+            lessonMolecules.push({Title: Title, molecule: moleculeGroup})
             scene.add( moleculeGroup );
+
+            lessonMoleculeMenu();
         }
 
 
@@ -777,7 +906,7 @@
             });
             paperMaterial.side = THREE.DoubleSide;
 
-            let paperDimensions = new THREE.Vector2( 85, 110 );
+            let paperDimensions = new THREE.Vector2( 8.5, 11 );
             paperGeometry = new THREE.PlaneGeometry( paperDimensions.y, paperDimensions.x );
             paperPlane = new THREE.Mesh( paperGeometry, paperMaterial );
             scene.add( paperPlane );
@@ -790,7 +919,7 @@
                 map: loader.load('/test_marker.png')
             });
 
-            let markerDimensions = new THREE.Vector2( 10, 10 );
+            let markerDimensions = new THREE.Vector2( 1, 1 );
             markerGeometry = new THREE.PlaneGeometry( markerDimensions.x, markerDimensions.y );
             markerPlane = new THREE.Mesh( markerGeometry, markerMaterial );
             markerPlane.position.z = 0.1;
@@ -807,11 +936,11 @@
 
             controls = new OrbitControls( camera, renderer.domElement );
             controls.dampingFactor = 10;
-            controls.minDistance = 35;
+            controls.minDistance = 1;
 
             camera.position.x = 0;
             camera.position.y = 0;
-            camera.position.z = 10;
+            camera.position.z = 2;
         }
 
         let offcanvas = document.getElementById('mainMenu')
@@ -856,74 +985,6 @@
 
         });
 
-        
-        const lessonFileInput = document.getElementById('lessonFileInput');
-        
-        lessonFileInput.addEventListener('change', function(e) {
-            const file = lessonFileInput.files[0];
-
-            const reader = new FileReader();
-            reader.addEventListener(
-                "load",
-                () => {
-                // convert image file to base64 string
-                console.log(reader.result);
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'lessonEditor/upload/images', true);
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        // paperMaterial.map = loader.load("public" + JSON.parse(xhr.response)["file-src"]);
-                        // console.log("public" + JSON.parse(xhr.response)["file-src"]);
-                        console.log(xhr.response);
-                        let response = JSON.parse(xhr.response);
-                        paperMaterial.map = loader.load(response["file-src"]);
-                        paperMaterial.needsUpdate = true
-
-                    } else {
-                    alert('Error: ' + xhr.status);
-                    }
-                };
-                xhr.send(JSON.stringify(
-                    {"image-name": file.name, "image-contents": reader.result}
-                ));
-                },
-                false
-            );
-
-            if (file) {
-                reader.readAsDataURL(file);
-            }
-
-            console.log(file);
-            // const reader = new FileReader();
-            // reader.addEventListener(
-            //     "load",
-            //     () => {
-            //         console.log(file);
-
-            //     },
-            //     false
-            // );
-
-            // // console.log(file);
-
-            // if (file) {
-                
-            //     reader.readAsDataURL(file);
-                
-
-                
-            // }
-        });
-
-        
-        const loadMoleculeFile = {
-            loadFile : function() { 
-                document.getElementById('fileInput').click();
-            },
-        };
-
         document.getElementById('loadSaveBtn').addEventListener('click', () => {
             console.log("Saved and loaded.");
         });
@@ -952,13 +1013,54 @@
             .catch(err => {
                 console.error(err)
             });
-
         })
+
+        
+        const lessonFileInput = document.getElementById('lessonFileInput');
+        
+        lessonFileInput.addEventListener('change', function(e) {
+            const file = lessonFileInput.files[0];
+
+            const reader = new FileReader();
+            reader.addEventListener("load", () => {
+                // convert image file to base64 string
+                console.log(reader.result);
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'lessonEditor/upload/images', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        let response = JSON.parse(xhr.response);
+                        paperMaterial.map = loader.load(response["file-src"]);
+                        paperMaterial.needsUpdate = true
+
+                    } else {
+                    alert('Error: ' + xhr.status);
+                    }
+                };
+                xhr.send(JSON.stringify(
+                    {"image-name": file.name, "image-contents": reader.result}
+                ));
+                },
+                false
+            );
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        });
+
+        
+        const loadMoleculeFile = {
+            loadFile : function() { 
+                document.getElementById('fileInput').click();
+            },
+        };
+
 
         function animate() {
             requestAnimationFrame( animate );
             var delta = clock.getDelta();
-            if ( mixer ) mixer.update( delta );
 
             renderer.render( scene, camera );
             controls.update();
@@ -970,7 +1072,6 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
-
 
         init();
         animate();
