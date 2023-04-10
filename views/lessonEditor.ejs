@@ -464,8 +464,8 @@
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Do not save changes</button>
-                    <button type="button" id="saveBtn" class="btn btn-warning">Save changes and switch</button>
+                    <button type="button" id="loadNoSaveBtn" class="btn btn-secondary" data-bs-dismiss="modal">Do not save changes</button>
+                    <button type="button" id="loadSaveBtn" class="btn btn-warning">Save changes and switch</button>
                 </div>
             </div>
         </div>
@@ -588,7 +588,7 @@
 
                     viewButton.addEventListener("click", function(event) {
                         event.preventDefault();
-                        updateMoleculeMenu();
+                        
                         const itemURL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${item.CID}/SDF`;
                         getMolecule(itemURL);
                     });
@@ -892,19 +892,25 @@
             },
         };
 
+        document.getElementById('loadSaveBtn').addEventListener('click', () => {
+            console.log("Saved and loaded.");
+        });
+
+        document.getElementById('loadNoSaveBtn').addEventListener('click', () => {
+            console.log("No save and loaded.");
+        });
+
         // When the admin saves changes to the lesson editor.
         document.getElementById("saveBtn").addEventListener('click', () => {
-            const x = 0;
-            const y = 0;
-            const lessonName = "lesson1";
+            console.log("Saved changes");
 
             const lesson = {
-                name: lessonName,
-                x: x,
-                y: y
+                name: "lesson1",
+                x: 2,
+                y: 4
             }
 
-            fetch(`/save/${lessonName}`, {
+            fetch(`/lessonEditor/save/${lesson.name}`, {
                 method: "POST",
                 headers: {
                     'Content-Type': "application/json"
