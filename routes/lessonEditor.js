@@ -24,7 +24,7 @@ router.get('/:id', function(req , res){
   }
 });
 
-router.post('/upload/images', function(req , res){
+router.post('/upload/images/', function(req , res){
   let image = req.body["image-contents"].replace(/^data:image\/png;base64,/, "");
 
   console.log(req.body["image-contents"]);
@@ -42,6 +42,8 @@ router.post('/upload/images', function(req , res){
       "file-src": newImage.replace('./public', '')
     }
   );
+
+  res.send("hello");
   
 });
 

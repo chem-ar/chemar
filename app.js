@@ -34,7 +34,7 @@ var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
 
 var app = express();
-app.use(express.json({ limit: '2MB' }));
+app.use(express.json({ limit: '4MB' }));
 
 http.createServer(app).listen(8000);
 https
