@@ -143,10 +143,9 @@
                             <div class = "row">
                                 <h4>Lesson</h4>
                                 <div class = "col-12">
-                                    <div id="lessonMenuList" class="input-group mb-2">
-                                        <select class="form-select" id="inputGroupSelect02">
-                                        <option selected>Choose...</option>
-                                            <option value="Less">lesson</option>
+                                    <div  class="input-group mb-2">
+                                        <select id="lessonMenuList" class="form-select" id="inputGroupSelect02">
+                                            <option selected>Choose...</option>
                                         </select>
                                         <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loadModal">Load Lesson</button>
                                     </div>  
@@ -281,145 +280,7 @@
                                     <div id = "molecule-list"></div>
                                 </div>
                             </div>
-                            <div class = "row">
-                                <h4>Test lessonMolecule[0] movement</h4>
-                                <div class = "col-12 mb-2">
-                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#positionMenu" role="button" aria-expanded="false" aria-controls="positionMenu">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-move" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708l2-2zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10zM.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708l-2-2zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8z"/>
-                                          </svg>
-                                          Position
-                                    </button>
-                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#rotateMenu" role="button" aria-expanded="false" aria-controls="rotateMenu">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-                                            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
-                                        </svg>
-                                        Rotate
-                                    </button>
-                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#scaleMenu" role="button" aria-expanded="false" aria-controls="scaleMenu">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-angle-expand" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707z"/>
-                                        </svg>
-                                        Scale
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 mt-2">
-                                    <div class="collapse multi-collapse" id="positionMenu">
-                                        <h4>Position</h4>
-                                        <div class = "col-12">
-                                            <div class = "row">
-                                                <div class = "col-2">
-                                                    <label for="marker-x" class="form-label">Pos X</label>
-                                                </div>
-                                                <div class = "col-7">
-                                                    <input type="range" class="form-range" id="markerXInput" min="0" max="11.0"  step=".01" value="0" oninput="markerXSlider.value = markerXInput.value" >
-                                                </div>
-                                                <div class = "col-3">
-                                                    <input type="number" class="form-control" id="markerXSlider" min="0" max="11.0" step=".01" value="0" oninput="markerXInput.value = markerXSlider.value">
-                                                </div>
-                                            </div>
 
-                                            <div class = "row mt-2">
-                                                <div class = "col-2">
-                                                    <label for="marker-y" class="form-label">Pos Y</label>
-                                                </div>
-                                                <div class = "col-7">
-                                                    <input type="range" class="form-range" id="markerYInput"  min="0" max="8.5" step=".01" value="0" oninput="markerYSlider.value = markerYInput.value" >
-
-                                                </div>
-                                                <div class = "col-3">
-                                                    <input type="number" class="form-control"  id="markerYSlider"  min="0" max="8.5" step=".01" value="0" oninput="markerYInput.value = markerYSlider.value" >
-                                                </div>
-                                            </div>
-
-                                            <div class = "row mt-2">
-                                                <div class = "col-2">
-                                                    <label for="marker-y" class="form-label">Pos Z</label>
-                                                </div>
-                                                <div class = "col-7">
-                                                    <input type="range" class="form-range" id="markerYInput"  min="0" max="8.5" step=".01" value="0" oninput="markerYSlider.value = markerYInput.value" >
-
-                                                </div>
-                                                <div class = "col-3">
-                                                    <input type="number" class="form-control"  id="markerYSlider"  min="0" max="8.5" step=".01" value="0" oninput="markerYInput.value = markerYSlider.value" >
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 mt-2">
-                                    <div class="collapse multi-collapse" id="rotateMenu">
-                                        <h4>Rotation</h4>
-                                        <div class = "col-12">
-                                            <div class = "row">
-                                                <div class = "col-2">
-                                                    <label for="marker-x" class="form-label">Rotate X</label>
-                                                </div>
-                                                <div class = "col-7">
-                                                    <input type="range" class="form-range" id="markerXInput" min="0" max="11.0"  step=".01" value="0" oninput="markerXSlider.value = markerXInput.value" >
-                                                </div>
-                                                <div class = "col-3">
-                                                    <input type="number" class="form-control" id="markerXSlider" min="0" max="11.0" step=".01" value="0" oninput="markerXInput.value = markerXSlider.value">
-                                                </div>
-                                            </div>
-
-                                            <div class = "row mt-2">
-                                                <div class = "col-2">
-                                                    <label for="marker-y" class="form-label">Rotate Y</label>
-                                                </div>
-                                                <div class = "col-7">
-                                                    <input type="range" class="form-range" id="markerYInput"  min="0" max="8.5" step=".01" value="0" oninput="markerYSlider.value = markerYInput.value" >
-
-                                                </div>
-                                                <div class = "col-3">
-                                                    <input type="number" class="form-control"  id="markerYSlider"  min="0" max="8.5" step=".01" value="0" oninput="markerYInput.value = markerYSlider.value" >
-                                                </div>
-                                            </div>
-                                            <div class = "row mt-2">
-                                                <div class = "col-2">
-                                                    <label for="marker-z" class="form-label">Rotate Z</label>
-                                                </div>
-                                                <div class = "col-7">
-                                                    <input type="range" class="form-range" id="markerZInput"  min="0" max="8.5" step=".01" value="0" oninput="markerZSlider.value = markerZInput.value" >
-
-                                                </div>
-                                                <div class = "col-3">
-                                                    <input type="number" class="form-control"  id="markerZSlider"  min="0" max="8.5" step=".01" value="0" oninput="markerZInput.value = markerZSlider.value" >
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 mt-2">
-                                    <div class="collapse multi-collapse" id="scaleMenu">
-                                        <h4>Scale</h4>
-                                        <div class = "col-12">
-                                            <div class = "row">
-                                                <div class = "col-9">
-                                                    <input type="range" class="form-range" id="markerScaleInput" min="0" max="11.0"  step=".01" value="0" oninput="markerScaleSlider.value = markerScaleInput.value" >
-                                                </div>
-                                                <div class = "col-3">
-                                                    <input type="number" class="form-control" id="markerScaleSlider" min="0" max="11.0" step=".01" value="0" oninput="markerScaleInput.value = markerScaleSlider.value">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 mt-2">
-                                    <div class="collapse multi-collapse" id="moveMoleculeMenu">
-                                        <div id="moveMoleculeRepeater"></div>
-                                    </div>
-                                </div>
-                            </div>
                             <hr>
                         </div>
                     </div>
@@ -479,7 +340,26 @@
     <script src="/js/molFileToJSON.js"></script>
 
     <script type= "module">
+
+        var lessonsListMenu = document.getElementById("lessonMenuList");
+        fetch('/lessons/list')
+            .then(response => response.json())
+            .then(data => {
+                const lessonsList = data;
+
+                lessonsList.map(lesson => {
+                    const newOption = document.createElement("option");
+                    newOption.value = lesson;
+                    newOption.text = lesson.replace('.json', '');
+                    lessonsListMenu.appendChild(newOption);
+                });
+            })
+            .catch(error => console.error(error));
+
+
         let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
+
+        console.log(requestedFile);
 
 
         function getMolecule(URL, Title){
@@ -858,7 +738,7 @@
                 let moleculeScaleText = document.createElement('input');
                 moleculeScaleText.classList = 'form-control form-control-sm mb-2';
                 moleculeScaleText.type = 'number';
-                moleculeScaleText.value = molecule.molecule.rotation.y;
+                moleculeScaleText.value = 1;
                 moleculeScaleText.addEventListener("input", function (event) {
                     molecule.molecule.scale.z = moleculeScaleText.value;
                     molecule.molecule.scale.x = moleculeScaleText.value;
@@ -877,7 +757,7 @@
                 moleculeScaleSlider.min = 0.01;
                 moleculeScaleSlider.max = 2;
                 moleculeScaleSlider.step = '0.01';
-                moleculeScaleSlider.value = molecule.molecule.rotation.y;
+                moleculeScaleSlider.value = 1;
                 moleculeScaleSlider.addEventListener("input", function (event) {
                     molecule.molecule.scale.z = moleculeScaleText.value;
                     molecule.molecule.scale.x = moleculeScaleText.value;
@@ -1176,24 +1056,40 @@
         });
 
         document.getElementById('loadSaveBtn').addEventListener('click', () => {
-            console.log("Saved and loaded.");
+            
+            var selectedLesson = "lesson1.json";
+            
+            fetch(`/lessons/${selectedLesson}`)
+                .then(response => response.json())
+                .then(data => {
+                    const loadedLesson = data;
+                    console.log(loadedLesson);
+                });
         });
 
         document.getElementById('loadNoSaveBtn').addEventListener('click', () => {
             console.log("No save and loaded.");
         });
 
-    
-
+        
+        let currentLesson;
         // When the admin saves changes to the lesson editor.
         document.getElementById("saveBtn").addEventListener('click', () => {
             console.log("Saved changes");
 
-            const lesson = {
-                name: "lesson1",
-                x: 2,
-                y: 4
+
+            currentLesson = {
+                "name" : "Test-Lesson",
+                "trackingMarker" : {
+                    "position" : {
+                        "x" : trackingMarker.position.x,
+                        "y" : trackingMarker.position.y,
+                        "z" : trackingMarker.position.z,
+                    },
+                },
             }
+
+            console.log(lesson);
 
             fetch(`/lessonEditor/save/${lesson.name}`, {
                 method: "POST",
