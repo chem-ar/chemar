@@ -9,7 +9,26 @@ router.get('/', function(req, res, next) {
     //Admin check
     let isAdmin = (req.signedCookies.admin == 'true');
 
-    res.render('molecules', { title: 'Catalog', list: fs.readdirSync(molfiles), isAdmin: isAdmin});
+
+    let listItems =  fs.readdirSync(molfiles);
+    let molfileJSON = fs.readFileSync('./public/catalog/molfileCatalog.json', 'utf8');
+    let molfileObject = JSON.parse(molfileJSON);
+    
+
+    let finalList = [];
+
+    for(let item of listItems){
+
+        molfileObject[item].file = item;
+        finalList.push(molfileObject[item])
+    }
+    console.log(finalList)
+
+    res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin});
 });
+
+router.post('/', function(req, res, next) {
+    
+})
 
 module.exports = router;
