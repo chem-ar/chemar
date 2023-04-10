@@ -480,24 +480,7 @@
 
     <script type= "module">
 
-        let offcanvas = document.getElementById('mainMenu')
-        offcanvas.classList.add('show')
 
-        const searchField = document.getElementById('search-field');
-        const searchButton = document.getElementById('search-button');
-        const searchResults = document.getElementById('search-results');
-
-        searchField.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                searchButton.click();
-                }
-            });
-
-        searchButton.addEventListener("click", function(event) {
-            event.preventDefault();
-            searchPUBCHEM(searchField.value);
-        });
 
         function updateMoleculeMenu() {
             // Update the UI with the changing locations.
@@ -506,7 +489,7 @@
             console.log("updateMoleculeMenu called");
         }
 
-        function getMolecule(URL){
+        function getMolecule(URL, Title){
             fetch(URL + "?record_type=3d")
                 .then(response => response.text())
                 .then(data => {
@@ -517,11 +500,11 @@
                                 if(data.includes("PUGREST.NotFound")){
                                     console.log("2D File Not Found");
                                 }else{
-                                    drawMolecule(data);
+                                    drawMolecule(data, Title);
                                 }
                             });
                     }else{
-                        drawMolecule(data);
+                        drawMolecule(data, Title);
                     }
                 });
             }
@@ -591,7 +574,8 @@
                         event.preventDefault();
                         
                         const itemURL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${item.CID}/SDF`;
-                        getMolecule(itemURL);
+                        console.log(item);
+                        getMolecule(itemURL, item.Title);
                     });
 
                     cell2.appendChild(viewButton);
@@ -662,9 +646,9 @@
             "I" : new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
         }
         
+        let lessonMolecules = [];
 
-        function drawMolecule(molFile){
-            console.log(molFile);
+        function drawMolecule(molFile, Title){
             let moleculeGroup = new THREE.Group();
             let molObject;
             molObject = molFileToJSON(molFile);
@@ -829,6 +813,25 @@
             camera.position.y = 0;
             camera.position.z = 10;
         }
+
+        let offcanvas = document.getElementById('mainMenu')
+        offcanvas.classList.add('show')
+
+        const searchField = document.getElementById('search-field');
+        const searchButton = document.getElementById('search-button');
+        const searchResults = document.getElementById('search-results');
+
+        searchField.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                searchButton.click();
+                }
+            });
+
+        searchButton.addEventListener("click", function(event) {
+            event.preventDefault();
+            searchPUBCHEM(searchField.value);
+        });
 
         document.getElementById('markerXSlider').addEventListener('input', function(e){
             markerLocationHelper.position.x = e.target.value*10;
