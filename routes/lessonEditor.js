@@ -47,39 +47,46 @@ router.post('/upload/images', function(req , res){
   
 });
 
+/*
+POST to <domain>/lessonEditor/save/<lessonName>
+Header: Content-Type = application/json
+Body example:
+{
+    "title": "Lesson 1",
+    "description": "Introduction to Chemistry",
+    "content": "This is the content of Lesson 2"
+}
+Response example:
+
+*/
 router.post('/save/:lesson', (req, res) => {
   
   // Get the lesson name from the params.
   const lessonName = req.params.lesson;
   const lessonPath = `./public/lessons/${lessonName}.json`; // Save the file path.
   var success = false;
+  var overwritten = false;
 
   // Check if lesson doesn't exist.
-  if (!fs.existsSync(lessonPath)) {
+  if (fs.existsSync(lessonPath))
+    overwritten = true;
 
-    console.log("does not exist");
+  // Write the file with template.
+  fs.writeFile(lessonPath, JSON.stringify(req.body), (err) => {
 
-    // Write the file with template.
-    fs.writeFile(lessonPath, JSON.stringify(req.body), (err) => {
+    if (err) {
+        success = false;
+        console.log(err);
+    }
 
-        if (err) {
-            success = false;
-            console.log(err);
-        } else {
-            success = true;
-        }
+  });
 
-    });
-
-  }
-
-  console.log("hit");
+  success = true;
 
   res.status(200).send({
-    status: success,
+    successful: success,
     overwritten: overwritten,
-    path: lessonPath,
-    body: req.body
+    path: lessonPath
   })
 
 });

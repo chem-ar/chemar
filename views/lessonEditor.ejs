@@ -277,8 +277,146 @@
                                 </div>
                             </div>
                             <hr>
+                            <div class = "row">
+                                <h4>Test lessonMolecule[0] movement</h4>
+                                <div class = "col-12 mb-2">
+                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#positionMenu" role="button" aria-expanded="false" aria-controls="positionMenu">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-move" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708l2-2zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10zM.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708l-2-2zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8z"/>
+                                          </svg>
+                                          Position
+                                    </button>
+                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#rotateMenu" role="button" aria-expanded="false" aria-controls="rotateMenu">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                                            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                                        </svg>
+                                        Rotate
+                                    </button>
+                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#scaleMenu" role="button" aria-expanded="false" aria-controls="scaleMenu">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-angle-expand" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707z"/>
+                                        </svg>
+                                        Scale
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mt-2">
+                                    <div class="collapse multi-collapse" id="positionMenu">
+                                        <h4>Position</h4>
+                                        <div class = "col-12">
+                                            <div class = "row">
+                                                <div class = "col-2">
+                                                    <label for="marker-x" class="form-label">Pos X</label>
+                                                </div>
+                                                <div class = "col-7">
+                                                    <input type="range" class="form-range" id="markerXInput" min="0" max="11.0"  step=".01" value="0" oninput="markerXSlider.value = markerXInput.value" >
+                                                </div>
+                                                <div class = "col-3">
+                                                    <input type="number" class="form-control" id="markerXSlider" min="0" max="11.0" step=".01" value="0" oninput="markerXInput.value = markerXSlider.value">
+                                                </div>
+                                            </div>
 
+                                            <div class = "row mt-2">
+                                                <div class = "col-2">
+                                                    <label for="marker-y" class="form-label">Pos Y</label>
+                                                </div>
+                                                <div class = "col-7">
+                                                    <input type="range" class="form-range" id="markerYInput"  min="0" max="8.5" step=".01" value="0" oninput="markerYSlider.value = markerYInput.value" >
 
+                                                </div>
+                                                <div class = "col-3">
+                                                    <input type="number" class="form-control"  id="markerYSlider"  min="0" max="8.5" step=".01" value="0" oninput="markerYInput.value = markerYSlider.value" >
+                                                </div>
+                                            </div>
+
+                                            <div class = "row mt-2">
+                                                <div class = "col-2">
+                                                    <label for="marker-y" class="form-label">Pos Z</label>
+                                                </div>
+                                                <div class = "col-7">
+                                                    <input type="range" class="form-range" id="markerYInput"  min="0" max="8.5" step=".01" value="0" oninput="markerYSlider.value = markerYInput.value" >
+
+                                                </div>
+                                                <div class = "col-3">
+                                                    <input type="number" class="form-control"  id="markerYSlider"  min="0" max="8.5" step=".01" value="0" oninput="markerYInput.value = markerYSlider.value" >
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mt-2">
+                                    <div class="collapse multi-collapse" id="rotateMenu">
+                                        <h4>Rotation</h4>
+                                        <div class = "col-12">
+                                            <div class = "row">
+                                                <div class = "col-2">
+                                                    <label for="marker-x" class="form-label">Rotate X</label>
+                                                </div>
+                                                <div class = "col-7">
+                                                    <input type="range" class="form-range" id="markerXInput" min="0" max="11.0"  step=".01" value="0" oninput="markerXSlider.value = markerXInput.value" >
+                                                </div>
+                                                <div class = "col-3">
+                                                    <input type="number" class="form-control" id="markerXSlider" min="0" max="11.0" step=".01" value="0" oninput="markerXInput.value = markerXSlider.value">
+                                                </div>
+                                            </div>
+
+                                            <div class = "row mt-2">
+                                                <div class = "col-2">
+                                                    <label for="marker-y" class="form-label">Rotate Y</label>
+                                                </div>
+                                                <div class = "col-7">
+                                                    <input type="range" class="form-range" id="markerYInput"  min="0" max="8.5" step=".01" value="0" oninput="markerYSlider.value = markerYInput.value" >
+
+                                                </div>
+                                                <div class = "col-3">
+                                                    <input type="number" class="form-control"  id="markerYSlider"  min="0" max="8.5" step=".01" value="0" oninput="markerYInput.value = markerYSlider.value" >
+                                                </div>
+                                            </div>
+                                            <div class = "row mt-2">
+                                                <div class = "col-2">
+                                                    <label for="marker-z" class="form-label">Rotate Z</label>
+                                                </div>
+                                                <div class = "col-7">
+                                                    <input type="range" class="form-range" id="markerZInput"  min="0" max="8.5" step=".01" value="0" oninput="markerZSlider.value = markerZInput.value" >
+
+                                                </div>
+                                                <div class = "col-3">
+                                                    <input type="number" class="form-control"  id="markerZSlider"  min="0" max="8.5" step=".01" value="0" oninput="markerZInput.value = markerZSlider.value" >
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mt-2">
+                                    <div class="collapse multi-collapse" id="scaleMenu">
+                                        <h4>Scale</h4>
+                                        <div class = "col-12">
+                                            <div class = "row">
+                                                <div class = "col-9">
+                                                    <input type="range" class="form-range" id="markerScaleInput" min="0" max="11.0"  step=".01" value="0" oninput="markerScaleSlider.value = markerScaleInput.value" >
+                                                </div>
+                                                <div class = "col-3">
+                                                    <input type="number" class="form-control" id="markerScaleSlider" min="0" max="11.0" step=".01" value="0" oninput="markerScaleInput.value = markerScaleSlider.value">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mt-2">
+                                    <div class="collapse multi-collapse" id="moveMoleculeMenu">
+                                        <div id="moveMoleculeRepeater"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
                         </div>
                     </div>
                 </div>
@@ -355,6 +493,18 @@
             searchPUBCHEM(searchField.value);
         });
 
+        function updateMoleculeMenu() {
+            // Update the UI with the changing locations.
+
+            var names = [];
+
+            lessonMolecules.forEach(element => {
+                
+            });
+
+            console.log("updateMoleculeMenu called");
+        }
+
         function getMolecule(URL){
             fetch(URL + "?record_type=3d")
                 .then(response => response.text())
@@ -366,11 +516,11 @@
                                 if(data.includes("PUGREST.NotFound")){
                                     console.log("2D File Not Found");
                                 }else{
-                                    console.log(data);
+                                    drawMolecule(data);
                                 }
                             });
                     }else{
-                        console.log(data);
+                        drawMolecule(data);
                     }
                 });
             }
@@ -384,9 +534,9 @@
                  searchResults.innerHTML = `<div class="pt-2 px-2">Searching</div>`;
                  if(name){
                     fetch(URL)
-                    .then(response => response.json())
-                    .then(data => displaySearchResults(data, null))
-                    .catch(error => console.log(error))
+                        .then(response => response.json())
+                        .then(data => displaySearchResults(data, null))
+                        .catch(error => console.log(error))
                 }
             }
         }
@@ -438,6 +588,7 @@
 
                     viewButton.addEventListener("click", function(event) {
                         event.preventDefault();
+                        updateMoleculeMenu();
                         const itemURL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${item.CID}/SDF`;
                         getMolecule(itemURL);
                     });
@@ -448,8 +599,6 @@
             }
         }
 
-
-
         import { OrbitControls } from '/js/OrbitControls.js';
         import { VRMLLoader } from '/js/VRMLLoader.js';
         import { GLTFLoader } from '/js/GLTFLoader.js';
@@ -457,7 +606,6 @@
         import * as THREE from '/js/three.module.js';
         import { ARButton } from '/js/ARButton.js';
 
-                
         const loader = new THREE.TextureLoader();
         // let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
         // let requestedFileExt = requestedFile.substring(requestedFile.lastIndexOf('.') + 1);
@@ -486,6 +634,130 @@
 
         let markerGeometry, markerMaterial, markerPlane;
         let markerPosition = new THREE.Vector3(0,0,0);
+
+
+        const moleculeGeometries = {
+            "C" : new THREE.SphereGeometry( .8, 32, 32 ),
+            "H" : new THREE.SphereGeometry( .3, 32, 32 ),
+            "O" : new THREE.SphereGeometry( .5, 32, 32 ),
+            "N" : new THREE.SphereGeometry( .6, 32, 32 ),
+            "S" : new THREE.SphereGeometry( .8, 32, 32 ),
+            "P" : new THREE.SphereGeometry( .9, 32, 32 ),
+            "F" : new THREE.SphereGeometry( .4, 32, 32 ),
+            "Cl": new THREE.SphereGeometry( .5, 32, 32 ),
+            "Br": new THREE.SphereGeometry( .6, 32, 32 ),
+            "I" : new THREE.SphereGeometry( .7, 32, 32 ),
+        }
+        const moleculeMaterials = {
+            "C" : new THREE.MeshPhongMaterial( { color: 0x333333, opacity: 0.9, transparent: true} ),
+            "H" : new THREE.MeshPhongMaterial( { color: 0xffffff, opacity: 0.9, transparent: true} ),
+            "O" : new THREE.MeshPhongMaterial( { color: 0xff0000, opacity: 0.9, transparent: true} ),
+            "N" : new THREE.MeshPhongMaterial( { color: 0x0000ff, opacity: 0.9, transparent: true} ),
+            "S" : new THREE.MeshPhongMaterial( { color: 0xffff00, opacity: 0.9, transparent: true} ),
+            "P" : new THREE.MeshPhongMaterial( { color: 0xff00ff, opacity: 0.9, transparent: true} ),
+            "F" : new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
+            "Cl": new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
+            "Br": new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
+            "I" : new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
+        }
+        
+        let lessonMolecules = []
+
+        function drawMolecule(molFile){
+            console.log(molFile);
+            let moleculeGroup = new THREE.Group();
+            let molObject;
+            molObject = molFileToJSON(molFile);
+
+            let firstPoint = new THREE.Vector3(
+                molObject.atoms[0].position.x, 
+                molObject.atoms[0].position.y, 
+                molObject.atoms[0].position.z);
+
+            let limits = {
+                x: {
+                    min: firstPoint.x,
+                    max: firstPoint.x
+                },
+                y: {
+                    min: firstPoint.y,
+                    max: firstPoint.y
+                },
+                z: {
+                    min: firstPoint.z,
+                    max: firstPoint.z
+                }
+            }
+
+            for(let item of molObject.atoms){
+                let point = new THREE.Vector3(item.position.x, item.position.y, item.position.z);
+                if(Number(point.x) < Number(limits.x.min)){
+                    limits.x.min = point.x;
+                }
+                if(Number(point.x) > Number(limits.x.max)){
+                    limits.x.max = point.x;
+                }
+                if(Number(point.y) < Number(limits.y.min)){
+                    limits.y.min = point.y;
+                }
+                if(Number(point.y) > Number(limits.y.max)){
+                    limits.y.max = point.y;
+                }
+                if(Number(point.z) < Number(limits.z.min)){
+                    limits.z.min = point.z;
+                }
+                if(Number(point.z) > Number(limits.z.max))  {
+                    limits.z.max = point.z;
+                }
+            }
+
+            let moleculeCenter = new THREE.Vector3(
+                (Number((limits.x.min)) + Number(limits.x.max))/2,
+                (Number((limits.y.min)) + Number(limits.y.max))/2,
+                (Number((limits.z.min)) + Number(limits.z.max))/2);
+                        
+            for(let item of molObject.atoms){
+                const sphere = new THREE.Mesh( moleculeGeometries[item.type], moleculeMaterials[item.type] );
+                sphere.position.x = item.position.x - moleculeCenter.x;
+                sphere.position.y = item.position.y - moleculeCenter.y;
+                sphere.position.z = item.position.z - moleculeCenter.z;
+                moleculeGroup.add( sphere );
+            }
+
+            // for(let bond of molObject.bonds){
+
+            //     let index1 = Number(bond[0])-1;
+            //     let index2 = Number(bond[1])-1;
+
+            //     let atom1 = molObject.atoms[index1];
+            //     let atom2 = molObject.atoms[index2];
+
+            //     let point1 = new THREE.Vector3( atom1.position.x - moleculeCenter.x, atom1.position.y- moleculeCenter.y, atom1.position.z - moleculeCenter.z );
+            //     let point2 = new THREE.Vector3( atom2.position.x - moleculeCenter.x, atom2.position.y- moleculeCenter.y, atom2.position.z - moleculeCenter.z );
+                
+            //     let distance = point1.distanceTo(point2);
+
+            //     let cylinderRadius = bond[2] == 1 ? .05 : .15;
+
+            //     const cylinderGeometry = new THREE.CylinderGeometry( cylinderRadius, cylinderRadius, distance, 8 );
+            //     cylinderGeometry.translate(0, distance / 2, 0);
+            //     cylinderGeometry.rotateX(Math.PI / 2);
+
+            //     const cylinder = new THREE.Mesh( cylinderGeometry, cylinderMaterial );
+            //     cylinder.position.x = atom1.position.x - moleculeCenter.x;
+            //     cylinder.position.y = atom1.position.y - moleculeCenter.y;
+            //     cylinder.position.z = atom1.position.z - moleculeCenter.z;
+            //     cylinder.lookAt(point2);
+
+            //     moleculeGroup.add( cylinder );
+
+            //     }
+
+            // moleculeGroup.position.z = centerOffset;
+
+            lessonMolecules.push(moleculeGroup)
+            scene.add( moleculeGroup );
+        }
 
 
         function init(){
