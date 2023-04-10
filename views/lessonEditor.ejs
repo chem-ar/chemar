@@ -154,7 +154,7 @@
                             <div class = "row">
                                 <div class = "col-12">
                                     <div class="d-grid gap-2">
-                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#saveModal">
+                                        <button id="first-save-button" type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#saveModal">
                                             Save Changes
                                         </button>
                                     </div>
@@ -337,10 +337,10 @@
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>
+                    <p id ="save-text">
                         Do you want to save your changes?
                     </p>
-                    <p class = "text-warning">
+                    <p class = "text-warning" id="save-warning">
                         This will overwrite the current version of the file saved on the server.
                     </p>
                 </div>
@@ -1119,6 +1119,11 @@
         document.getElementById("saveBtn").addEventListener('click', () => {
             console.log("Saved changes");
 
+            document.getElementById("save-text").className = "text-success";
+            document.getElementById("save-text").innerText = "Saved succesfully.";
+            document.getElementById("save-warning").className = "d-none";
+
+
             lesson = {
                 "name" : "hello",
                 "trackingMarker" : {
@@ -1149,6 +1154,13 @@
             .catch(err => {
                 console.error(err)
             });
+        })
+
+        document.getElementById("first-save-button").addEventListener('click', () => {
+           
+            document.getElementById("save-text").className = "text-white";
+            document.getElementById("save-text").innerText = "Do you want to save your changes?"; 
+            document.getElementById("save-warning").className = "d-inline text-warning";
         })
 
         function updateLessonsList() {
