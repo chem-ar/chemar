@@ -240,10 +240,10 @@
                                                     <label for="marker-x" class="form-label">Offset X</label>
                                                 </div>
                                                 <div class = "col-7">
-                                                    <input type="range" class="form-range" id="markerXInput" min="0" max="11.0"  step=".01" value="0" oninput="markerXSlider.value = markerXInput.value" >
+                                                    <input type="range" class="form-range" id="markerXInput" min="0" max="1.1"  step=".01" value="0" oninput="markerXSlider.value = markerXInput.value" >
                                                 </div>
                                                 <div class = "col-3">
-                                                    <input type="number" class="form-control" id="markerXSlider" min="0" max="11.0" step=".01" value="0" oninput="markerXInput.value = markerXSlider.value">
+                                                    <input type="number" class="form-control" id="markerXSlider" min="0" max="1.1" step=".01" value="0" oninput="markerXInput.value = markerXSlider.value">
                                                 </div>
                                             </div>
 
@@ -252,11 +252,11 @@
                                                     <label for="marker-y" class="form-label">Offset Y</label>
                                                 </div>
                                                 <div class = "col-7">
-                                                    <input type="range" class="form-range" id="markerYInput"  min="0" max="8.5" step=".01" value="0" oninput="markerYSlider.value = markerYInput.value" >
+                                                    <input type="range" class="form-range" id="markerYInput"  min="0" max="1.1" step=".01" value="0" oninput="markerYSlider.value = markerYInput.value" >
 
                                                 </div>
                                                 <div class = "col-3">
-                                                    <input type="number" class="form-control"  id="markerYSlider"  min="0" max="8.5" step=".01" value="0" oninput="markerYInput.value = markerYSlider.value" >
+                                                    <input type="number" class="form-control"  id="markerYSlider"  min="0" max="1.1" step=".01" value="0" oninput="markerYInput.value = markerYSlider.value" >
                                                 </div>
                                             </div>
                                         </div>
@@ -1128,10 +1128,8 @@
                         "z" : markerPlane.position.z,
                     },
                 },
-                "Molecules" : {
-
-                },
-            }
+                "molecules" : lessonMolecules
+                }
 
             lessonMolecules.forEach(mol => {
                 lesson["Molecules"][mol.Title] = mol.molecule;
