@@ -130,7 +130,7 @@
             </div>
             <div class="modal-body">
                 <div class="col-12 text-start text-white bg-dark">
-                    <form class="" action="/addMolecule" method="POST" id="addMolForm">
+                    <form class="" action="/" method="POST" id="editMolForm">
                         <div class="row ">
                             <div class="col-12 col-sm-12 col-md-12">
                                 <h4 class="mb-1 mt-2">Molecule Name:</h4>
@@ -139,8 +139,6 @@
                                 <input type="text" class="form-control" id="formulaEdit" name="formula" placeholder="Formula" required>
                                 <h4 class="mb-1 mt-2">Description:</h4>
                                 <input type="text" class="form-control" id="moleculeDescriptionEdit" name="description" placeholder="Description" required>
-                                <h4 class="mb-1 mt-2">File:</h4>
-                                <input type="file" class="form-control" id="fileName" name="fileName" placeholder="File name" onchange="onReceiptsSelected()" required>
                                 <button class="btn btn-success form-control my-2">Submit</button>
                             </div>
                             <div class="col-12 col-sm-3">
