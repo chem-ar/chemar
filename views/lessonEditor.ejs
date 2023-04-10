@@ -806,9 +806,7 @@
                 moleculeRotationYSliderCol.appendChild(moleculeRotationYSlider);
                 moleculeRotationYRow.appendChild(moleculeRotationYSliderCol);
 
-
                 //Rotation Z
-
                 let moleculeRotationZRow = document.createElement('div');
                 moleculeRotationZRow.classList = 'row';
                 moleculeCollapseContent.appendChild(moleculeRotationZRow);
@@ -817,7 +815,6 @@
                 moleculeRotationZLabel.classList = 'col-1';
                 moleculeRotationZLabel.innerText = "Z";
                 moleculeRotationZRow.appendChild(moleculeRotationZLabel);
-
 
                 let moleculeRotationZText = document.createElement('input');
                 moleculeRotationZText.classList = 'form-control form-control-sm mb-2';
@@ -847,6 +844,51 @@
                 moleculeRotationZSliderCol.classList = 'col-8';
                 moleculeRotationZSliderCol.appendChild(moleculeRotationZSlider);
                 moleculeRotationZRow.appendChild(moleculeRotationZSliderCol);
+
+                //Scale
+                let moleculeScaleRow = document.createElement('div');
+                moleculeScaleRow.classList = 'row';
+                moleculeCollapseContent.appendChild(moleculeScaleRow);
+               
+                moleculeScaleRow.innerHTML = "<h5>Scale</h5>";
+               moleculeCollapseContent.appendChild(moleculeScaleRow);
+
+
+
+                let moleculeScaleText = document.createElement('input');
+                moleculeScaleText.classList = 'form-control form-control-sm mb-2';
+                moleculeScaleText.type = 'number';
+                moleculeScaleText.value = molecule.molecule.rotation.y;
+                moleculeScaleText.addEventListener("input", function (event) {
+                    molecule.molecule.scale.z = moleculeScaleText.value;
+                    molecule.molecule.scale.x = moleculeScaleText.value;
+                    molecule.molecule.scale.y = moleculeScaleText.value;
+
+                    moleculeScaleSlider.value = moleculeScaleText.value;
+                });
+                let moleculeScaleTextCol = document.createElement('div');
+                moleculeScaleTextCol.classList = 'col-3';
+                moleculeScaleTextCol.appendChild(moleculeScaleText);
+                moleculeScaleRow.appendChild(moleculeScaleTextCol);
+
+                let moleculeScaleSlider = document.createElement('input');
+                moleculeScaleSlider.classList = 'form-range mb-2';
+                moleculeScaleSlider.type = 'range';
+                moleculeScaleSlider.min = 0.01;
+                moleculeScaleSlider.max = 2;
+                moleculeScaleSlider.step = '0.01';
+                moleculeScaleSlider.value = molecule.molecule.rotation.y;
+                moleculeScaleSlider.addEventListener("input", function (event) {
+                    molecule.molecule.scale.z = moleculeScaleText.value;
+                    molecule.molecule.scale.x = moleculeScaleText.value;
+                    molecule.molecule.scale.y = moleculeScaleText.value;
+
+                    moleculeScaleText.value = moleculeScaleSlider.value;
+                });
+                let moleculeScaleSliderCol = document.createElement('div');
+                moleculeScaleSliderCol.classList = 'col-9';
+                moleculeScaleSliderCol.appendChild(moleculeScaleSlider);
+                moleculeScaleRow.appendChild(moleculeScaleSliderCol);
 
 
 
