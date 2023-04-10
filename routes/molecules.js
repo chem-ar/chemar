@@ -27,9 +27,21 @@ router.get('/', function(req, res, next) {
     res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin});
 });
 
-router.post('/', function(req, res) {
-    var molName = req.body.name;
-    console.log(molName);
+// Edit molecule
+router.put('/', function(req, res) {
+    
+})
+
+// Delete molecule
+router.post('/delete', function(req, res) {
+    const path = './file.txt'
+
+    try {
+        fs.unlinkSync(path)
+    //file removed
+    } catch(err) {
+        console.error(err)
+    }
 })
 
 module.exports = router;

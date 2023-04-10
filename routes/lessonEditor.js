@@ -5,8 +5,10 @@ var fs = require('fs');
 router.get('/', function(req, res, next) {
   const lessons = './public/lessons/'
 
-  res.render('lessonEditor', { title: 'Scene Viewer', lessonList: fs.readdirSync(lessons) });
+  res.render('lessonEditor', { title: 'Scene Viewer'});
 });
+
+//lessonList: fs.readdirSync(lessons) 
 
 
 router.get('/:id', function(req , res){

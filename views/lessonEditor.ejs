@@ -162,8 +162,43 @@
                             </div>
                             <hr>
                             <div class = "row">
-                                <h4>Lesson Sheet</h4>
-                                <div class = "col-12">
+                                <div class="col-4">
+                                    <h4>Lesson Name</h4>
+                                </div>
+                                <div class = "col-3 offset-5">
+                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#editNameMenu" role="button" aria-expanded="false" aria-controls="editNameMenu">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-move" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708l2-2zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10zM.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708l-2-2zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8z"/>
+                                          </svg>
+                                          Edit
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mt-2">
+                                    <div class="collapse multi-collapse" id="editNameMenu">
+                                        <div class = "col-12">
+                                            <div class = "row">
+                                                <div class = "col-1">
+                                                    <label for="marker-x" class="form-label mb-1 mt-2">Name:</label>
+                                                </div>
+                                                <div class = "col-8">
+                                                    <input type="text" class="form-control" oninput="" >
+                                                </div>
+                                                <div class = "col-3">
+                                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#fileMenu" role="button" aria-expanded="false" aria-controls="fileMenu">Submit</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class = "row">
+                                <div class = "col-4 ">
+                                    <h4>Lesson Sheet</h4>
+                                </div>
+                                <div class = "col-4 offset-4">
                                     <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#fileMenu" role="button" aria-expanded="false" aria-controls="fileMenu">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-richtext" viewBox="0 0 16 16">
                                             <path d="M7 4.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm-.861 1.542 1.33.886 1.854-1.855a.25.25 0 0 1 .289-.047l1.888.974V7.5a.5.5 0 0 1-.5.5H5a.5.5 0 0 1-.5-.5V7s1.54-1.274 1.639-1.208zM5 9a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
@@ -184,8 +219,10 @@
                             </div>
                             <hr>
                             <div class = "row">
-                                <h4>Tracking Marker</h4>
-                                <div class = "col-12">
+                                <div class="col-4">
+                                    <h4>Tracking Marker</h4>
+                                </div>
+                                <div class = "col-3 offset-5">
                                     <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#trackerMenu" role="button" aria-expanded="false" aria-controls="trackerMenu">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-move" viewBox="0 0 16 16">
                                             <path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708l2-2zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10zM.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708l-2-2zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8z"/>
@@ -228,17 +265,28 @@
                             </div>
                             <hr>
                             <div class = "row">
-                                <h4>Add Molecule</h4>
-                                <div class = "col-12">
+                                <div class="col-4">
+                                    <h4>Add Molecule</h4>
+                                </div>
+                                <div class = "col-4">
                                     <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#searchMenu" role="button" aria-expanded="false" aria-controls="searchMenu">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                                           </svg>
                                         Search PubChem
-                                    </button>   
+                                    </button>
                                 </div>
+                                <div class = "col-4">
+                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#molFileMenu" role="button" aria-expanded="false" aria-controls="molFileMenu">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-fill" viewBox="0 0 16 16">
+                                            <path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3z"/>
+                                            </svg>
+                                        Load .mol File
+                                    </button>
+                                </div> 
                             </div>
-                            <div class="row">
+                            <div class="row
+                            ">
                                 <div class="col-12 mt-2">
                                   <div class="collapse multi-collapse" id="searchMenu">
                                     <div class="input-group flex-nowrap">
@@ -254,16 +302,7 @@
                                   </div>
                                 </div>
                             </div>
-                            <div class = "row">
-                                <div class = "col-12">
-                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#molFileMenu" role="button" aria-expanded="false" aria-controls="molFileMenu">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-fill" viewBox="0 0 16 16">
-                                            <path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3z"/>
-                                          </svg>
-                                        Load .mol File
-                                    </button>
-                                </div>
-                            </div>
+                        
                             <div class="row">
                                 <div class="col-12 mt-2">
                                   <div class="collapse multi-collapse" id="molFileMenu">
@@ -1055,14 +1094,17 @@
 
         });
 
+        var loadedLesson = {};
+
         document.getElementById('loadSaveBtn').addEventListener('click', () => {
             
-            var selectedLesson = "lesson1.json";
+            var selectedLesson = document.getElementById("lessonMenuList").value;
+            console.log(selectedLesson);
             
             fetch(`/lessons/${selectedLesson}`)
                 .then(response => response.json())
                 .then(data => {
-                    const loadedLesson = data;
+                    loadedLesson = JSON.stringify(data);
                     console.log(loadedLesson);
                 });
         });
@@ -1072,22 +1114,28 @@
         });
 
         
-        let currentLesson;
+        let lesson;
         // When the admin saves changes to the lesson editor.
         document.getElementById("saveBtn").addEventListener('click', () => {
             console.log("Saved changes");
 
-
-            currentLesson = {
-                "name" : "Test-Lesson",
+            lesson = {
+                "name" : "hello",
                 "trackingMarker" : {
                     "position" : {
-                        "x" : trackingMarker.position.x,
-                        "y" : trackingMarker.position.y,
-                        "z" : trackingMarker.position.z,
+                        "x" : markerPlane.position.x,
+                        "y" : markerPlane.position.y,
+                        "z" : markerPlane.position.z,
                     },
                 },
+                "Molecules" : {
+
+                },
             }
+
+            lessonMolecules.forEach(mol => {
+                lesson["Molecules"][mol.Title] = mol.molecule;
+            })
 
             console.log(lesson);
 
