@@ -17,7 +17,7 @@ router.get('/', function(req, res, next) {
 
 // This endpoint is where you can update lessons.
 // Example put '/lessons/add/exampleLesson'
-router.put('/add/:lesson', (req, res) => {
+router.put('/addLesson', (req, res) => {
 
     // Grab info from the request.
     const lessonName = req.params.lesson;

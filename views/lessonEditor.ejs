@@ -143,12 +143,10 @@
                             <div class = "row">
                                 <h4>Lesson</h4>
                                 <div class = "col-12">
-                                    <div class="input-group mb-2">
+                                    <div id="lessonMenuList" class="input-group mb-2">
                                         <select class="form-select" id="inputGroupSelect02">
                                         <option selected>Choose...</option>
-                                        <% lessonList.forEach((lesson) => { %>
-                                            <option value="<%= lesson %>"><%= lesson %></option>
-                                        <% }); %>
+                                            <option value="Less">lesson</option>
                                         </select>
                                         <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loadModal">Load Lesson</button>
                                     </div>  
@@ -599,9 +597,14 @@
                 moleculeCollapseContent.innerHTML = "<h5>Position</h5>";
                 moleculeCollapse.appendChild(moleculeCollapseContent);
 
+                let moleculePositionRow = document.createElement('div');
+               
+                moleculePositionRow.innerHTML = "<h5>Position</h5>";
+                moleculeCollapseContent.appendChild(moleculePositionRow);
+                
                 let moleculePositionXRow = document.createElement('div');
                 moleculePositionXRow.classList = 'row';
-                moleculeCollapseContent.appendChild(moleculePositionXRow);
+                moleculePositionRow.appendChild(moleculePositionXRow);
 
                 let moleculePositionXText = document.createElement('input');
                 moleculePositionXText.classList = 'form-control form-control-sm mb-2';
@@ -699,7 +702,113 @@
                 moleculePositionZSliderCol.appendChild(moleculePositionZSlider);
                 moleculePositionZRow.appendChild(moleculePositionZSliderCol);
 
-    
+                //ROTATION X
+                let moleculerotationXRow = document.createElement('div');
+                moleculerotationXRow.classList = 'row';
+                moleculeCollapseContent.appendChild(moleculerotationXRow);
+
+                let moleculerotationXText = document.createElement('input');
+                moleculerotationXText.classList = 'form-control form-control-sm mb-2';
+                moleculerotationXText.type = 'number';
+                moleculerotationXText.value = molecule.molecule.rotation.y;
+                moleculerotationXText.addEventListener("input", function (event) {
+                    molecule.molecule.rotation.x = moleculerotationXText.value;
+                    moleculerotationXSlider.value = moleculerotationXText.value;
+                });
+                let moleculerotationXTextCol = document.createElement('div');
+                moleculerotationXTextCol.classList = 'col-3';
+                moleculerotationXTextCol.appendChild(moleculerotationXText);
+                moleculerotationXRow.appendChild(moleculerotationXTextCol);
+
+                let moleculerotationXSlider = document.createElement('input');
+                moleculerotationXSlider.classList = 'form-range mb-2';
+                moleculerotationXSlider.type = 'range';
+                moleculerotationXSlider.min = -Math.PI;
+                moleculerotationXSlider.max = Math.PI;
+                moleculerotationXSlider.step = '0.01';
+                moleculerotationXSlider.value = molecule.molecule.rotation.y;
+                moleculerotationXSlider.addEventListener("input", function (event) {
+                    molecule.molecule.rotation.x = moleculerotationXSlider.value;
+                    moleculerotationXText.value = moleculerotationXSlider.value;
+                });
+                let moleculerotationXSliderCol = document.createElement('div');
+                moleculerotationXSliderCol.classList = 'col-9';
+                moleculerotationXSliderCol.appendChild(moleculerotationXSlider);
+                moleculerotationXRow.appendChild(moleculerotationXSliderCol);
+ 
+                //Rotation Y
+                let moleculerotationYRow = document.createElement('div');
+                moleculerotationYRow.classList = 'row';
+                moleculeCollapseContent.appendChild(moleculerotationYRow);
+
+                let moleculerotationYText = document.createElement('input');
+                moleculerotationYText.classList = 'form-control form-control-sm mb-2';
+                moleculerotationYText.type = 'number';
+                moleculerotationYText.value = molecule.molecule.rotation.y;
+                moleculerotationYText.addEventListener("input", function (event) {
+                    molecule.molecule.rotation.y = moleculerotationYText.value;
+                    moleculerotationYSlider.value = moleculerotationYText.value;
+                });
+                let moleculerotationYTextCol = document.createElement('div');
+                moleculerotationYTextCol.classList = 'col-3';
+                moleculerotationYTextCol.appendChild(moleculerotationYText);
+                moleculerotationYRow.appendChild(moleculerotationYTextCol);
+
+                let moleculerotationYSlider = document.createElement('input');
+                moleculerotationYSlider.classList = 'form-range mb-2';
+                moleculerotationYSlider.type = 'range';
+                moleculerotationYSlider.min = -Math.PI;
+                moleculerotationYSlider.max = Math.PI;
+                moleculerotationYSlider.step = '0.01';
+                moleculerotationYSlider.value = molecule.molecule.rotation.y;
+                moleculerotationYSlider.addEventListener("input", function (event) {
+                    molecule.molecule.rotation.y = moleculerotationYSlider.value;
+                    moleculerotationYText.value = moleculerotationYSlider.value;
+                });
+                let moleculerotationYSliderCol = document.createElement('div');
+                moleculerotationYSliderCol.classList = 'col-9';
+                moleculerotationYSliderCol.appendChild(moleculerotationYSlider);
+                moleculerotationYRow.appendChild(moleculerotationYSliderCol);
+
+
+                //Rotation Z
+
+                let moleculerotationZRow = document.createElement('div');
+                moleculerotationZRow.classList = 'row';
+                moleculeCollapseContent.appendChild(moleculerotationZRow);
+
+                let moleculerotationZText = document.createElement('input');
+                moleculerotationZText.classList = 'form-control form-control-sm mb-2';
+                moleculerotationZText.type = 'number';
+                moleculerotationZText.value = molecule.molecule.rotation.y;
+                moleculerotationZText.addEventListener("input", function (event) {
+                    molecule.molecule.rotation.z = moleculerotationZText.value;
+                    moleculerotationZSlider.value = moleculerotationZText.value;
+                });
+                let moleculerotationZTextCol = document.createElement('div');
+                moleculerotationZTextCol.classList = 'col-3';
+                moleculerotationZTextCol.appendChild(moleculerotationZText);
+                moleculerotationZRow.appendChild(moleculerotationZTextCol);
+
+                let moleculerotationZSlider = document.createElement('input');
+                moleculerotationZSlider.classList = 'form-range mb-2';
+                moleculerotationZSlider.type = 'range';
+                moleculerotationZSlider.min = -Math.PI;
+                moleculerotationZSlider.max = Math.PI;
+                moleculerotationZSlider.step = '0.01';
+                moleculerotationZSlider.value = molecule.molecule.rotation.y;
+                moleculerotationZSlider.addEventListener("input", function (event) {
+                    molecule.molecule.rotation.z = moleculerotationZSlider.value;
+                    moleculerotationZText.value = moleculerotationZSlider.value;
+                });
+                let moleculerotationZSliderCol = document.createElement('div');
+                moleculerotationZSliderCol.classList = 'col-9';
+                moleculerotationZSliderCol.appendChild(moleculerotationZSlider);
+                moleculerotationZRow.appendChild(moleculerotationZSliderCol);
+
+
+
+
 
                 moleculeItemButton.addEventListener("click", function(event) {
                     event.preventDefault();
@@ -993,6 +1102,8 @@
             console.log("No save and loaded.");
         });
 
+    
+
         // When the admin saves changes to the lesson editor.
         document.getElementById("saveBtn").addEventListener('click', () => {
             console.log("Saved changes");
@@ -1015,7 +1126,17 @@
             });
         })
 
-        
+        function updateLessonsList() {
+            fetch('https://localhost:4000/lessons/list')
+                .then(response => response.text())
+                .then(data => {
+                    console.log(data); // log the data to the console
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+  });
+        }
+
         const lessonFileInput = document.getElementById('lessonFileInput');
         
         lessonFileInput.addEventListener('change', function(e) {
@@ -1073,6 +1194,8 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
+
+        //updateLessonsList();
         init();
         animate();
     </script>
