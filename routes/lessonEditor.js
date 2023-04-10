@@ -27,9 +27,9 @@ router.get('/:id', function(req , res){
 router.post('/upload/images', function(req , res){
   let image = req.body["image-contents"].replace(/^data:image\/png;base64,/, "");
 
-  console.log(req.body["image-name"]);
+  console.log(req.body["image-contents"]);
 
-  const newImage = './public/lessons/images/' + req.body["image-name"];
+  const newImage = './public/images/' + req.body["image-name"];
 
   fs.writeFile(newImage, image, 'base64', function(err) {
     console.log(err);

@@ -79,7 +79,7 @@
 
         @media (min-width: 576px) { 
             .offcanvas{
-                width:100% !important;
+                width:55% !important;
             }  
          }
 
@@ -277,6 +277,12 @@
                                 </div>
                             </div>
                             <hr>
+                            <div class = "row">
+                                <h4>Current Molecules</h4>
+                                <div class = "col-12">
+                                    <div id = "molecule-list"></div>
+                                </div>
+                            </div>
                             <div class = "row">
                                 <h4>Test lessonMolecule[0] movement</h4>
                                 <div class = "col-12 mb-2">
@@ -496,11 +502,6 @@
         function updateMoleculeMenu() {
             // Update the UI with the changing locations.
 
-            var names = [];
-
-            lessonMolecules.forEach(element => {
-                
-            });
 
             console.log("updateMoleculeMenu called");
         }
@@ -661,7 +662,6 @@
             "I" : new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
         }
         
-        let lessonMolecules = []
 
         function drawMolecule(molFile){
             console.log(molFile);
@@ -789,7 +789,7 @@
 
             // Load an image file into a custom material
             paperMaterial = new THREE.MeshLambertMaterial({
-                map: loader.load('/lessons/images/test_lesson.png')
+                map: loader.load('/images/lesson1.png')
             });
             paperMaterial.side = THREE.DoubleSide;
 
@@ -858,11 +858,12 @@
         lessonFileInput.addEventListener('change', function(e) {
             const file = lessonFileInput.files[0];
             const reader = new FileReader();
-            var contents = "";
             reader.addEventListener(
                 "load",
                 () => {
-                    contents = reader.result;
+                    xhr.send(JSON.stringify(
+                        {"image-name": file.name, "image-contents": reader.result}
+                    ));
                 },
                 false
             );
@@ -879,14 +880,16 @@
                     if (xhr.status === 200) {
                         // paperMaterial.map = loader.load("public" + JSON.parse(xhr.response)["file-src"]);
                         // console.log("public" + JSON.parse(xhr.response)["file-src"]);
-                        console.log(JSON.parse(xhr.response['file-src']))
+                        console.log(xhr.response);
+                        let response = JSON.parse(xhr.response);
+                        paperMaterial.map = loader.load(response["file-src"]);
+                        paperMaterial.needsUpdate = true
+
                     } else {
                     alert('Error: ' + xhr.status);
                     }
                 };
-                xhr.send(JSON.stringify({
-                    "image-name": file.name, "image-contents": contents}));
-
+                
             }
             });
         
