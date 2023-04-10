@@ -27,8 +27,9 @@ router.get('/', function(req, res, next) {
     res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin});
 });
 
-router.post('/', function(req, res, next) {
-    
+router.post('/', function(req, res) {
+    var molName = req.body.name;
+    console.log(molName);
 })
 
 module.exports = router;
