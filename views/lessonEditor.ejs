@@ -180,7 +180,7 @@
                                 <div class="col-12 mt-2">
                                   <div class="collapse multi-collapse" id="fileMenu">
                                     <div class="mb-3">
-                                        <input class="form-control" type="file" id="fileInput" accept=".png">
+                                        <input class="form-control" type="file" id="lessonFileInput" accept=".png">
                                       </div>
                                   </div>
                                 </div>
@@ -854,25 +854,17 @@
         });
 
         
-        const lessonFileInput = document.getElementById('fileInput');
+        const lessonFileInput = document.getElementById('lessonFileInput');
+        
         lessonFileInput.addEventListener('change', function(e) {
             const file = lessonFileInput.files[0];
+
             const reader = new FileReader();
             reader.addEventListener(
                 "load",
                 () => {
-                    xhr.send(JSON.stringify(
-                        {"image-name": file.name, "image-contents": reader.result}
-                    ));
-                },
-                false
-            );
-
-            // console.log(file);
-
-            if (file) {
-                reader.readAsDataURL(file);
-                
+                // convert image file to base64 string
+                console.log(reader.result);
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST', 'lessonEditor/upload/images', true);
                 xhr.setRequestHeader('Content-Type', 'application/json');
@@ -889,9 +881,39 @@
                     alert('Error: ' + xhr.status);
                     }
                 };
-                
+                xhr.send(JSON.stringify(
+                    {"image-name": file.name, "image-contents": reader.result}
+                ));
+                },
+                false
+            );
+
+            if (file) {
+                reader.readAsDataURL(file);
             }
-            });
+
+            console.log(file);
+            // const reader = new FileReader();
+            // reader.addEventListener(
+            //     "load",
+            //     () => {
+            //         console.log(file);
+
+            //     },
+            //     false
+            // );
+
+            // // console.log(file);
+
+            // if (file) {
+                
+            //     reader.readAsDataURL(file);
+                
+
+                
+            // }
+        });
+
         
         const loadMoleculeFile = {
             loadFile : function() { 
