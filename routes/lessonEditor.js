@@ -29,13 +29,11 @@ router.post('/upload/images', function(req , res){
 
   console.log(req.body["image-name"]);
 
-  const newImage = './public/images/' + req.body["image-name"];
+  const newImage = './public/lessons/images/' + req.body["image-name"];
 
   fs.writeFile(newImage, image, 'base64', function(err) {
     console.log(err);
   });
-
-  // res.status(200).send("File uploaded successfully.");
   
   res.status(200).json(
     {
@@ -57,7 +55,11 @@ Body example:
     "content": "This is the content of Lesson 2"
 }
 Response example:
-
+{
+    "successful": true,
+    "overwritten": true,
+    "path": "./public/lessons/lesson10.json"
+}
 */
 router.post('/save/:lesson', (req, res) => {
   

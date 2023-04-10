@@ -789,7 +789,7 @@
 
             // Load an image file into a custom material
             paperMaterial = new THREE.MeshLambertMaterial({
-                map: loader.load('/test_lesson.png')
+                map: loader.load('/lessons/images/test_lesson.png')
             });
             paperMaterial.side = THREE.DoubleSide;
 
@@ -858,32 +858,36 @@
         lessonFileInput.addEventListener('change', function(e) {
             const file = lessonFileInput.files[0];
             const reader = new FileReader();
-                reader.addEventListener(
-                    "load",
-                    () => {
-                        console.log(reader.result);
-                    },
-                    false
-                );
+            var contents = "";
+            reader.addEventListener(
+                "load",
+                () => {
+                    contents = reader.result;
+                },
+                false
+            );
 
-                if (file) {
-                    reader.readAsDataURL(file);
-                    
-                    var data = {name: 'test', file: reader.result
-                    };
+            // console.log(file);
 
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('POST', 'scene/upload/images', true);
-                    xhr.setRequestHeader('Content-Type', 'application/json');
-                    xhr.onload = function() {
-                        if (xhr.status === 200) {
-                        alert('Image Uploaded:' + xhr.responseText);
-                        } else {
-                        alert('Error: ' + xhr.status);
-                        }
-                    };
-                    xhr.send(data);
-                }
+            if (file) {
+                reader.readAsDataURL(file);
+                
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'lessonEditor/upload/images', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        // paperMaterial.map = loader.load("public" + JSON.parse(xhr.response)["file-src"]);
+                        // console.log("public" + JSON.parse(xhr.response)["file-src"]);
+                        console.log(JSON.parse(xhr.response['file-src']))
+                    } else {
+                    alert('Error: ' + xhr.status);
+                    }
+                };
+                xhr.send(JSON.stringify({
+                    "image-name": file.name, "image-contents": contents}));
+
+            }
             });
         
         const loadMoleculeFile = {
