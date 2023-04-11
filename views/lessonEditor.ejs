@@ -212,10 +212,10 @@
                                                     <label for="marker-x" class="form-label">Offset X</label>
                                                 </div>
                                                 <div class = "col-7">
-                                                    <input type="range" class="form-range" id="markerXInput" min="0" max="1.1"  step=".01" value="0" oninput="markerXSlider.value = markerXInput.value" >
+                                                    <input type="range" class="form-range" id="markerXInput" min="0" max="11"  step=".01" value="0" oninput="markerXSlider.value = markerXInput.value" >
                                                 </div>
                                                 <div class = "col-3">
-                                                    <input type="number" class="form-control" id="markerXSlider" min="0" max="1.1" step=".01" value="0" oninput="markerXInput.value = markerXSlider.value">
+                                                    <input type="number" class="form-control" id="markerXSlider" min="0" max="11" step=".01" value="0" oninput="markerXInput.value = markerXSlider.value">
                                                 </div>
                                             </div>
 
@@ -224,11 +224,11 @@
                                                     <label for="marker-y" class="form-label">Offset Y</label>
                                                 </div>
                                                 <div class = "col-7">
-                                                    <input type="range" class="form-range" id="markerYInput"  min="0" max="1.1" step=".01" value="0" oninput="markerYSlider.value = markerYInput.value" >
+                                                    <input type="range" class="form-range" id="markerYInput"  min="0" max="11" step=".01" value="0" oninput="markerYSlider.value = markerYInput.value" >
 
                                                 </div>
                                                 <div class = "col-3">
-                                                    <input type="number" class="form-control"  id="markerYSlider"  min="0" max="1.1" step=".01" value="0" oninput="markerYInput.value = markerYSlider.value" >
+                                                    <input type="number" class="form-control"  id="markerYSlider"  min="0" max="11" step=".01" value="0" oninput="markerYInput.value = markerYSlider.value" >
                                                 </div>
                                             </div>
                                         </div>
@@ -1287,25 +1287,25 @@
         });
 
         document.getElementById('markerXSlider').addEventListener('input', function(e){
-            markerLocationHelper.position.x = e.target.value*10;
-            markerPlane.position.x = e.target.value*10;
+            markerLocationHelper.position.x = e.target.value;
+            markerPlane.position.x = e.target.value;
         });
 
         document.getElementById('markerXInput').addEventListener('input', function(e){
-            markerLocationHelper.position.x = e.target.value *10;
-            markerPlane.position.x = e.target.value*10;
+            markerLocationHelper.position.x = e.target.value;
+            markerPlane.position.x = e.target.value;
 
         });
 
         document.getElementById('markerYSlider').addEventListener('input', function(e){
-            markerLocationHelper.position.y = e.target.value*10;
-            markerPlane.position.y = e.target.value*10;
+            markerLocationHelper.position.y = e.target.value;
+            markerPlane.position.y = e.target.value;
 
         });
 
         document.getElementById('markerYInput').addEventListener('input', function(e){
-            markerLocationHelper.position.y = e.target.value*10;
-            markerPlane.position.y = e.target.value*10;
+            markerLocationHelper.position.y = e.target.value;
+            markerPlane.position.y = e.target.value;
 
         });
 
