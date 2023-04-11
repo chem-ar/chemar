@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title></title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.3/css/dataTables.bootstrap5.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+    <link rel='stylesheet' href='/styles/style.css' />
+    <script src='/js/three.js'></script>
+
+    <!-- include jsartookit -->
+    <script src="/jsartoolkit5/artoolkit.min.js"></script>
+    <script src="/jsartoolkit5/artoolkit.api.js"></script>
+    <!-- include threex.artoolkit -->
+    <script src="/threex/threex-artoolkitsource.js"></script>
+    <script src="/threex/threex-artoolkitcontext.js"></script>
+    <script src="/threex/threex-arbasecontrols.js"></script>
+    <script src="/threex/threex-armarkercontrols.js"></script>
+
+    <!-- include datgui debugging purposes -->
+
+    <!-- include Mol file to CJSON conversion extras -->
+    <script src="/cjson/converter.js"></script>
+
+    <style>
+      #gui_container{
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1000 !important;
+      }
+      #text{
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1000 !important;
+        color: white;
+        font-family: "Lucida Grande", sans-serif;
+        padding: 1em;
+        background-color: #000;
+      }
+
+      #gui{
+        transform:translate(0, -20px);
+      }
+    </style>
+  </head>
+
+<html>
+  <body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
+  <div id="gui_container"></div>
+  <div id="text">
+    <a href = "/lessons/" style = "text-decoration: none">
+      ◄ <span style = "text-decoration: underline"> Back to Lessons</span> 
+    </a>
+    <br>
+  </div>
+  <!-- 
+    Example created by Lee Stemkoski: https://github.com/stemkoski
+    Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/
+  -->
+  <script>
+
+  let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1) + '.json';
+  
+  let moleculeData;
+
+
+  fetch('/lessons' + '/' + requestedFile)
+    .then(response => response.json())
+    .then(data => {
+      moleculeData = data;
+      initialize();
+      animate();
+    }
+  );
+  
+  var scene, camera, renderer, clock, deltaTime, totalTime;
+  
+  var arToolkitSource, arToolkitContext;
+  
+  var markerRoot1, markerRoot2;
+  const moleculeGeometries = {
+    "C" : new THREE.SphereGeometry( .67, 32, 32 ),
+    "H" : new THREE.SphereGeometry( .53, 32, 32 ),
+    "O" : new THREE.SphereGeometry( .48, 32, 32 ),
+    "N" : new THREE.SphereGeometry( .56, 32, 32 ),
+    "S" : new THREE.SphereGeometry( .88, 32, 32 ),
+    "P" : new THREE.SphereGeometry( .98, 32, 32 ),
+    "F" : new THREE.SphereGeometry( .42, 32, 32 ),
+    "Cl": new THREE.SphereGeometry( .79, 32, 32 ),
+    "Br": new THREE.SphereGeometry( .94, 32, 32 ),
+    "I" : new THREE.SphereGeometry( 1.15, 32, 32 ),
+    "Be": new THREE.SphereGeometry( 1.12, 32, 32 ),
+    "B" : new THREE.SphereGeometry( .87, 32, 32 ),
+    "Ne" : new THREE.SphereGeometry(.38,32,32),
+    "Na" : new THREE.SphereGeometry( 1.9,32,32),
+    "Mg" : new THREE.SphereGeometry(1.45,32,32),
+    "Al" : new THREE.SphereGeometry(1.18,32,32),
+    "Si" : new THREE.SphereGeometry(1.11,32,32),
+    "Ar" : new THREE.SphereGeometry(.71,32,32),
+    "K" : new THREE.SphereGeometry(2.43,32,32),
+    "Ca" : new THREE.SphereGeometry(1.94,32,32),
+    "Sc" : new THREE.SphereGeometry(1.84,32,32),
+    "Ti" : new THREE.SphereGeometry(1.76,32,32),
+    "V" : new THREE.SphereGeometry(1.71,32,32),
+    "Cr" : new THREE.SphereGeometry(1.66,32,32),
+    "Mn" : new THREE.SphereGeometry(1.61,32,32),
+    "Fe" : new THREE.SphereGeometry(1.56,32,32),
+    "Co" : new THREE.SphereGeometry(1.52,32,32),
+    "Ni" : new THREE.SphereGeometry(1.49,32,32),
+    "Cu" : new THREE.SphereGeometry(1.45,32,32),
+    "Zn" : new THREE.SphereGeometry(1.42,32,32),
+    "Ga" : new THREE.SphereGeometry(1.36,32,32),
+    "Ge" : new THREE.SphereGeometry(1.25,32,32),
+    "As" : new THREE.SphereGeometry(1.14,32,32),
+    "Se" : new THREE.SphereGeometry(1.03,32,32),
+    "Kr" : new THREE.SphereGeometry(0.88,32,32),
+    "Rb" : new THREE.SphereGeometry(2.65,32,32),
+    "Sr" : new THREE.SphereGeometry(2.19,32,32),
+    "Y" : new THREE.SphereGeometry(2.12,32,32),
+    "Zr" : new THREE.SphereGeometry(2.06,32,32),
+    "Nb" : new THREE.SphereGeometry(1.98,32,32),
+    "Mo" : new THREE.SphereGeometry(1.9,32,32),
+    "Tc" : new THREE.SphereGeometry(1.83,32,32),
+    "Ru" : new THREE.SphereGeometry(1.78,32,32),
+    "Rh" : new THREE.SphereGeometry(1.73,32,32),
+    "Pd" : new THREE.SphereGeometry(1.69,32,32),
+    "Ag" : new THREE.SphereGeometry(1.65,32,32),
+    "Cd" : new THREE.SphereGeometry(1.61,32,32),
+    "In" : new THREE.SphereGeometry(1.56,32,32),
+    "Sn" : new THREE.SphereGeometry(1.45,32,32),
+    "Sb" : new THREE.SphereGeometry(1.33,32,32),
+    "Te" : new THREE.SphereGeometry(1.23,32,32),
+    "Xe" : new THREE.SphereGeometry(1.08,32,32),
+    "Cs" : new THREE.SphereGeometry(2.98,32,32),
+    "Ba" : new THREE.SphereGeometry(2.53,32,32),
+    "La" : new THREE.SphereGeometry(2.46,32,32),
+    "Ce" : new THREE.SphereGeometry(2.35,32,32),
+    "Pr" : new THREE.SphereGeometry(2.44,32,32),
+    "Nd" : new THREE.SphereGeometry(2.4,32,32),
+    "Pm" : new THREE.SphereGeometry(2.38,32,32),
+    "Sm" : new THREE.SphereGeometry(2.29,32,32),
+    "Eu" : new THREE.SphereGeometry(2.33,32,32),
+    "Gd" : new THREE.SphereGeometry(2.37,32,32),
+    "Tb" : new THREE.SphereGeometry(2.21,32,32),
+    "Cr" : new THREE.SphereGeometry(1.73,32,32),
+    "Cs" : new THREE.SphereGeometry(2.98,32,32),
+    "Cu" : new THREE.SphereGeometry(1.45,32,32),
+    "Eu" : new THREE.SphereGeometry(2.33,32,32),
+    "Ga" : new THREE.SphereGeometry(1.36,32,32),
+    "Hf" : new THREE.SphereGeometry(2.08,32,32),
+    "In" : new THREE.SphereGeometry(1.56,32,32),
+    "Ir" : new THREE.SphereGeometry(1.86,32,32),
+    "Kr" : new THREE.SphereGeometry(0.88,32,32),
+    "La" : new THREE.SphereGeometry(2.46,32,32),
+    "Li" : new THREE.SphereGeometry(1.52,32,32),
+    "Lu" : new THREE.SphereGeometry(2.1,32,32),
+    "Mg" : new THREE.SphereGeometry(1.45,32,32),
+    "Mn" : new THREE.SphereGeometry(1.61,32,32),
+    "Mo" : new THREE.SphereGeometry(1.9,32,32),
+    "Na" : new THREE.SphereGeometry(1.9,32,32),
+    "Nb" : new THREE.SphereGeometry(1.98,32,32),
+    "Ne" : new THREE.SphereGeometry(0.38,32,32),
+    "Ni" : new THREE.SphereGeometry(1.49,32,32),
+    "Os" : new THREE.SphereGeometry(1.85,32,32),
+    "P"  : new THREE.SphereGeometry(0.98,32,32),
+    "Pa" : new THREE.SphereGeometry(2.0,32,32),
+    "Pb" : new THREE.SphereGeometry(1.8,32,32),
+    "Pd" : new THREE.SphereGeometry(1.69,32,32),
+    "Pm" : new THREE.SphereGeometry(2.38,32,32),
+    "Po" : new THREE.SphereGeometry(1.4,32,32),
+    "Pr" : new THREE.SphereGeometry(2.44,32,32),
+    "Pt" : new THREE.SphereGeometry(1.75,32,32),
+    "Ra" : new THREE.SphereGeometry(2.31,32,32),
+    "Rb" : new THREE.SphereGeometry(2.65,32,32),
+    "Re" : new THREE.SphereGeometry(1.88,32,32),
+    "Rh" : new THREE.SphereGeometry(1.73,32,32),
+    "Rn" : new THREE.SphereGeometry(1.5,32,32),
+    "Ru" : new THREE.SphereGeometry(1.78,32,32),
+    "Sb" : new THREE.SphereGeometry(1.33,32,32),
+    "Sc" : new THREE.SphereGeometry(1.84,32,32),
+    "Se" : new THREE.SphereGeometry(1.03,32,32),
+    "Si" : new THREE.SphereGeometry(1.11,32,32),
+    "Sm" : new THREE.SphereGeometry(2.29,32,32),
+    "Sn" : new THREE.SphereGeometry(1.45,32,32),
+    "Sr" : new THREE.SphereGeometry(2.19,32,32),
+    "Ta" : new THREE.SphereGeometry(2.0, 32,32)
+}
+const moleculeMaterials = {
+    "C" : new THREE.MeshPhongMaterial( { color: 0x333333, opacity: 0.9, transparent: true} ),
+    "H" : new THREE.MeshPhongMaterial( { color: 0xffffff, opacity: 0.9, transparent: true} ),
+    "O" : new THREE.MeshPhongMaterial( { color: 0xff0000, opacity: 0.9, transparent: true} ),
+    "N" : new THREE.MeshPhongMaterial( { color: 0x0000ff, opacity: 0.9, transparent: true} ),
+    "S" : new THREE.MeshPhongMaterial( { color: 0xffff00, opacity: 0.9, transparent: true} ),
+    "P" : new THREE.MeshPhongMaterial( { color: 0xff00ff, opacity: 0.9, transparent: true} ),
+    "F" : new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
+    "Cl": new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
+    "Br": new THREE.MeshPhongMaterial( { color: 0x964b00, opacity: 0.9, transparent: true} ),
+    "I" : new THREE.MeshPhongMaterial( { color: 0x8b008b, opacity: 0.9, transparent: true} ),
+    "Be": new THREE.MeshPhongMaterial( { color: 0xc2c2c2, opacity: 0.9, transparent: true} ),
+    "B" : new THREE.MeshPhongMaterial( { color: 0xffa500, opacity: 0.9, transparent: true} ),
+    "Ne" : new THREE.MeshPhongMaterial( { color: 0xb3e6ff, opacity: 0.9, transparent: true} ),
+    "Na" : new THREE.MeshPhongMaterial( { color: 0x0000ff, opacity: 0.9, transparent: true} ),
+    "Mg" : new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
+    "Al" : new THREE.MeshPhongMaterial( { color: 0xc2c2c2, opacity: 0.9, transparent: true} ),
+    "Si" : new THREE.MeshPhongMaterial( { color: 0xd9d9d9, opacity: 0.9, transparent: true} ),
+    "Ar" : new THREE.MeshPhongMaterial( { color: 0xb3e6ff, opacity: 0.9, transparent: true} ),
+    "K" : new THREE.MeshPhongMaterial( { color: 0x8f40a6, opacity: 0.9, transparent: true} ),
+    "Ca" : new THREE.MeshPhongMaterial( { color: 0x808080, opacity: 0.9, transparent: true} ),
+    "Sc" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Ti" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "V" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Cr" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Mn" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Fe" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Co" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Ni" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Cu" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Zn" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Ga" : new THREE.MeshPhongMaterial( { color: 0xc2c2c2, opacity: 0.9, transparent: true} ),
+    "Ge" : new THREE.MeshPhongMaterial( { color: 0xd9d9d9, opacity: 0.9, transparent: true} ),
+    "As" : new THREE.MeshPhongMaterial( { color: 0xffa500, opacity: 0.9, transparent: true} ),
+    "Se" : new THREE.MeshPhongMaterial( { color: 0xffff00, opacity: 0.9, transparent: true} ),
+    "Kr" : new THREE.MeshPhongMaterial( { color: 0xb3e6ff, opacity: 0.9, transparent: true} ),
+    "Rb" : new THREE.MeshPhongMaterial( { color: 0x8f40a6, opacity: 0.9, transparent: true} ),
+    "Sr" : new THREE.MeshPhongMaterial( { color: 0x808080, opacity: 0.9, transparent: true} ),
+    "Y" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Zr" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Nb" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Mo" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Tc" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Ru" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Rh" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Pd" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+    "Li": new THREE.MeshPhongMaterial( { color: 0xff6666, opacity: 0.9, transparent: true} ),
+    "Be": new THREE.MeshPhongMaterial( { color: 0xccff99, opacity: 0.9, transparent: true} ),
+    "F": new THREE.MeshPhongMaterial( { color: 0x66ff66, opacity: 0.9, transparent: true} ),
+    "Na": new THREE.MeshPhongMaterial( { color: 0x3366ff, opacity: 0.9, transparent: true} ),
+    "Mg": new THREE.MeshPhongMaterial( { color: 0x33cc33, opacity: 0.9, transparent: true} ),
+    "Al": new THREE.MeshPhongMaterial( { color: 0xcccccc, opacity: 0.9, transparent: true} ),
+    "Si": new THREE.MeshPhongMaterial( { color: 0x999999, opacity: 0.9, transparent: true} ),
+    "Cl": new THREE.MeshPhongMaterial( { color: 0x00ff66, opacity: 0.9, transparent: true} ),
+    "K": new THREE.MeshPhongMaterial( { color: 0xff3399, opacity: 0.9, transparent: true} ),
+    "Ca": new THREE.MeshPhongMaterial( { color: 0x66ffff, opacity: 0.9, transparent: true} ),
+    "Ti": new THREE.MeshPhongMaterial( { color: 0xff99ff, opacity: 0.9, transparent: true} ),
+    "Fe": new THREE.MeshPhongMaterial( { color: 0xff9933, opacity: 0.9, transparent: true} ),
+    "Cu": new THREE.MeshPhongMaterial( { color: 0x996633, opacity: 0.9, transparent: true} ),
+    "Zn": new THREE.MeshPhongMaterial( { color: 0x9999cc, opacity: 0.9, transparent: true} ),
+    "Ag": new THREE.MeshPhongMaterial( { color: 0xcccccc, opacity: 0.9, transparent: true} ),
+    "Au": new THREE.MeshPhongMaterial( { color: 0xffcc00, opacity: 0.9, transparent: true} )
+  }
+  scene = new THREE.Scene();
+
+  var mesh1;
+  
+  
+  function drawMolecule(molObject, Title, drawPosition, drawRotation, drawScale, offset){
+    // console.log(molObject);
+    // console.log(drawPosition);
+    // console.log(drawRotation);
+    // console.log(drawScale);
+    console.log(offset);
+
+
+
+    let moleculeGroup = new THREE.Group();
+
+    if(drawPosition === undefined){
+        drawPosition = new THREE.Vector3(0,0,0);
+    }
+    
+    if(drawRotation === undefined){
+        drawRotation = {
+            _x: 0,
+            _y: 0,
+            _z: 0}
+    }
+
+    if(drawScale === undefined){
+        drawScale = {
+            x: 1,
+            y: 1,
+            z: 1}
+    }
+
+    let firstPoint = new THREE.Vector3(
+        molObject.x, 
+        molObject.y, 
+        molObject.z);
+
+    let limits = {
+        x: {
+            min: firstPoint.x,
+            max: firstPoint.x
+        },
+        y: {
+            min: firstPoint.y,
+            max: firstPoint.y
+        },
+        z: {
+            min: firstPoint.z,
+            max: firstPoint.z
+        }
+    }
+
+    for(let item of molObject.atoms){
+        let point = new THREE.Vector3(item.position.x, item.position.y, item.position.z);
+        if(Number(point.x) < Number(limits.x.min)){
+            limits.x.min = point.x;
+        }
+        if(Number(point.x) > Number(limits.x.max)){
+            limits.x.max = point.x;
+        }
+        if(Number(point.y) < Number(limits.y.min)){
+            limits.y.min = point.y;
+        }
+        if(Number(point.y) > Number(limits.y.max)){
+            limits.y.max = point.y;
+        }
+        if(Number(point.z) < Number(limits.z.min)){
+            limits.z.min = point.z;
+        }
+        if(Number(point.z) > Number(limits.z.max))  {
+            limits.z.max = point.z;
+        }
+    }
+
+    let moleculeCenter = new THREE.Vector3(
+        (Number((limits.x.min)) + Number(limits.x.max))/2,
+        (Number((limits.y.min)) + Number(limits.y.max))/2,
+        (Number((limits.z.min)) + Number(limits.z.max))/2);
+                
+    for(let item of molObject.atoms){
+        const sphere = new THREE.Mesh( moleculeGeometries[item.type], moleculeMaterials[item.type] );
+        sphere.position.x = item.position.x - moleculeCenter.x;
+        sphere.position.y = item.position.y - moleculeCenter.y;
+        sphere.position.z = item.position.z - moleculeCenter.z;
+        moleculeGroup.add( sphere );
+    }
+
+            // for(let bond of molObject.bonds){
+
+            //     let index1 = Number(bond[0])-1;
+            //     let index2 = Number(bond[1])-1;
+
+            //     let atom1 = molObject.atoms[index1];
+            //     let atom2 = molObject.atoms[index2];
+
+            //     let point1 = new THREE.Vector3( atom1.position.x - moleculeCenter.x, atom1.position.y- moleculeCenter.y, atom1.position.z - moleculeCenter.z );
+            //     let point2 = new THREE.Vector3( atom2.position.x - moleculeCenter.x, atom2.position.y- moleculeCenter.y, atom2.position.z - moleculeCenter.z );
+                
+            //     let distance = point1.distanceTo(point2);
+
+            //     let cylinderRadius = bond[2] == 1 ? .05 : .15;
+
+            //     const cylinderGeometry = new THREE.CylinderGeometry( cylinderRadius, cylinderRadius, distance, 8 );
+            //     cylinderGeometry.translate(0, distance / 2, 0);
+            //     cylinderGeometry.rotateX(Math.PI / 2);
+
+            //     const cylinder = new THREE.Mesh( cylinderGeometry, cylinderMaterial );
+            //     cylinder.position.x = atom1.position.x - moleculeCenter.x;
+            //     cylinder.position.y = atom1.position.y - moleculeCenter.y;
+            //     cylinder.position.z = atom1.position.z - moleculeCenter.z;
+            //     cylinder.lookAt(point2);
+
+            //     moleculeGroup.add( cylinder );
+
+            //     }
+
+            // moleculeGroup.position.z = centerOffset;
+
+            //Sets the position
+            moleculeGroup.position.x = drawPosition.x;
+            moleculeGroup.position.y = drawPosition.z;
+            moleculeGroup.position.z = drawPosition.y;
+
+            moleculeGroup.position.x -= offset.x;
+            moleculeGroup.position.y -= offset.y;
+            moleculeGroup.position.z -= offset.z;
+
+            //Sets the rotation
+            // moleculeGroup.rotation.x = drawRotation._x;
+            // moleculeGroup.rotation.y = drawRotation._y;
+            // moleculeGroup.rotation.z = drawRotation._z;
+            
+            //Sets the scale
+            moleculeGroup.scale.x = drawScale.x;
+            moleculeGroup.scale.y = drawScale.y;
+            moleculeGroup.scale.z = drawScale.z;
+
+            return moleculeGroup;
+
+        }
+
+  function initialize()
+  {
+    
+    let ambientLight = new THREE.AmbientLight( 0xffffff, 1 );
+    scene.add( ambientLight );
+    
+    let spotLight = new THREE.SpotLight( 0xffffff );
+    spotLight.position.set( 100, 1000, 100 );
+
+    spotLight.castShadow = true;
+
+    spotLight.shadow.mapSize.width = 1024;
+    spotLight.shadow.mapSize.height = 1024;
+
+    spotLight.shadow.camera.near = 500;
+    spotLight.shadow.camera.far = 4000;
+    spotLight.shadow.camera.fov = 30;
+
+    scene.add( spotLight );
+    
+          
+    camera = new THREE.Camera();
+    scene.add(camera);
+  
+    renderer = new THREE.WebGLRenderer({
+      antialias : true,
+      alpha: true
+    });
+    renderer.setClearColor(new THREE.Color('lightgrey'), 0)
+    renderer.setSize( 640, 480 );
+    renderer.domElement.style.position = 'absolute'
+    renderer.domElement.style.top = '0px'
+    renderer.domElement.style.left = '0px'
+    document.body.appendChild( renderer.domElement );
+  
+    clock = new THREE.Clock();
+    deltaTime = 0;
+    totalTime = 0;
+    
+    ////////////////////////////////////////////////////////////
+    // setup arToolkitSource
+    ////////////////////////////////////////////////////////////
+  
+    arToolkitSource = new THREEx.ArToolkitSource({
+      sourceType : 'webcam',
+    });
+  
+    function onResize()
+    {
+      arToolkitSource.onResize()	
+      arToolkitSource.copySizeTo(renderer.domElement)	
+      if ( arToolkitContext.arController !== null )
+      {
+        arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)	
+      }	
+    }
+  
+    arToolkitSource.init(function onReady(){
+      onResize()
+    });
+    
+    // handle resize event
+    window.addEventListener('resize', function(){
+      onResize()
+    });
+    
+    ////////////////////////////////////////////////////////////
+    // setup arToolkitContext
+    ////////////////////////////////////////////////////////////	
+  
+    // create atToolkitContext
+    arToolkitContext = new THREEx.ArToolkitContext({
+      cameraParametersUrl: '/data/camera_para.dat',
+      detectionMode: 'mono'
+    });
+    
+    // copy projection matrix to camera when initialization complete
+    arToolkitContext.init( function onCompleted(){
+      camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
+    });
+  
+    ////////////////////////////////////////////////////////////
+    // setup markerRoots
+    ////////////////////////////////////////////////////////////
+  
+    // build markerControls
+    markerRoot1 = new THREE.Group();
+    scene.add(markerRoot1);
+    let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
+      type: 'pattern', patternUrl: "/data/kanji.patt",
+    })
+
+    // let geometry1	= new THREE.CubeGeometry(1,1,1);
+    // let material1	= new THREE.MeshNormalMaterial({
+    //   transparent: true,
+    //   opacity: 0.5,
+    //   side: THREE.DoubleSide
+    // }); 
+    
+    // mesh1 = new THREE.Mesh( geometry1, material1 );
+    // mesh1.position.y = 0.5;
+
+    console.log(moleculeData.trackingMarker);
+
+    for(let item of moleculeData.molecules){
+
+      let molecule = drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale, moleculeData.trackingMarker.position);
+      // console.log(molecule);
+
+      markerRoot1.add( molecule ); 
+
+    }
+
+
+
+
+    markerRoot1.add( mesh1 ); 
+  
+  }
+  
+  
+  function update()
+  {
+    // update artoolkit on every frame
+    if ( arToolkitSource.ready !== false )
+      arToolkitContext.update( arToolkitSource.domElement );
+  }
+  
+  
+  function render()
+  {
+    renderer.render( scene, camera );
+  }
+  
+  
+  function animate()
+  {
+    requestAnimationFrame(animate);
+    deltaTime = clock.getDelta();
+    totalTime += deltaTime;
+
+    update();
+    render();
+  }
+  
+  </script>
+  </body>
+</html>

@@ -1,0 +1,259 @@
+<%- include('partials/header') %>
+<!--ADMIN NAVBAR CHECK-->
+<% if (isAdmin){%>
+    <%- include('partials/navbarAdmin') %>
+<%}%>
+<% if (!isAdmin){%>
+    <%- include('partials/navbar') %>
+<%}%>
+<script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+
+<div class="container mb-4">
+    <div class="row content">
+        <div class="col-12 pt-4 text-start text-white bg-dark">
+            <h1 class="display-4 fw-bold">Molecule Catalog</h1>
+
+            <!--ADMIN CHECK-->
+            <% if (isAdmin){%>
+                <%- include('partials/addMolecule') %>
+            <%}%>
+            
+            <p></p>
+            <table id="molTable" class="table table-striped text-white" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Name</th>
+                        <th>Formula</th>
+                        <th>Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <% let listNumbers = list.map((item)=> {
+                            item.file = item.file.replace(".mol", "")
+                            return item;
+                        })
+                        listNumbers.sort(function(a, b) {
+                            return a - b;})
+                        %>
+                        <% for (let item of listNumbers){%>
+                            <tr>
+                                <td><%= String(item.file).padStart(3, '0' ) %></td>
+                                <td>
+                                    <a class="text-white" id="Name<%=item.file %>" href="/moleculeViewer/<%=item.file%>"><%=item.name%></a>
+                                </td>
+                                <td id="Formula<%=item.file %>" class="text-white"><%=item.formula%></td>
+                                <td class>
+                                    <div class = "d-grid gap-2">
+                                        <button id="<%= "previewBtn" + item.file %>" type="button" class="preview btn btn-light" data-bs-toggle="modal" data-bs-target="#canvasModal">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                                                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                                            </svg> Preview
+                                        </button>
+
+                                        <button id="<%= "shareBtn" + item.file %>" type="button" class="share btn btn-light" data-bs-toggle="modal" data-bs-target="#shareModal">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+                                                <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+                                            </svg> Share
+                                        </button>
+                                    <!--ADMIN CHECK-->
+                                    <% if (isAdmin){%>
+                                        <button type="button" id="edit<%=item.file %>" onclick="" class="btn btn-outline-warning editMoleculeBtn" data-bs-toggle="modal" data-bs-target="#editModal">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                            </svg> Edit
+                                        </button>
+    
+                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                            </svg> Delete
+                                        </button>
+                                    <%}%>
+                                    </div>
+                                </td>
+                            </tr>
+                        <%}%>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="canvasModal" tabindex="-1" aria-labelledby="canvasModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+        <div class="modal-body">
+            <div class="moleculeViewer" style = "height: 50vh">
+                <iframe id="iframePreview" class = "rounded" src = "" width = "100%" height="100%" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="canvasModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+               
+            </div>
+        <div class="modal-body">
+            <div class="">
+                <div id="qrcode" class="bg-white py-4" align="center"></div>
+                <script type="text/javascript">
+                var qrcode = new QRCode(document.getElementById("qrcode"), "http://jindo.dev.naver.com/collie");
+                </script>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+  
+<!-- Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="canvasModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title text-white" id="canvasModalLabel">Name</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="col-12 text-start text-white bg-dark">
+                    <form class="" action="/" method="PUT" id="editMolForm">
+                        <div class="row ">
+                            <div class="col-12 col-sm-12 col-md-12">
+                                <h4 class="mb-1 mt-2">Molecule Name:</h4>
+                                <input type="text" class="form-control" id="moleculeNameEdit" name="name" placeholder="Molecule Name" required>
+                                <h4 class="mb-1 mt-2">Formula:</h4>
+                                <input type="text" class="form-control" id="formulaEdit" name="formula" placeholder="Formula" required>
+                                <h4 class="mb-1 mt-2">Description:</h4>
+                                <input type="text" class="form-control" id="moleculeDescriptionEdit" name="description" placeholder="Description" required>
+                                <button id="editSubmitBtn" class="btn btn-success form-control my-2">Submit</button>
+                            </div>
+                            <div class="col-12 col-sm-3">
+                                <textarea class="form-control d-none" name="preview" id="preview"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let dataTable;
+
+
+    fetch("/catalog/molfileCatalog.json")
+        .then((response) => response.json())
+        .then((data) => {
+            dataTable = data;
+            // Iterates through the json file
+            for (let item in data) {
+                var id = item.replace(".mol", "");
+                // Check if the molecule ID exists before trying to update the name and formula
+                if (document.getElementById("Name"+id) != null) {
+                    var molName = document.getElementById("Name"+id);
+                    var molFormula = document.getElementById("Formula"+id); 
+                    molName.innerHTML = data[item].name;
+                    molFormula.innerHTML = data[item].formula;
+                }
+            }
+        });
+
+    // Adding edit button functionality.
+    var editBtnArray = document.getElementsByClassName("editMoleculeBtn");
+
+    var moleculeNameEditInput = document.getElementById("moleculeNameEdit");
+    var formulaEditInput = document.getElementById("formulaEdit");
+    var moleculeDescriptionEditInput = document.getElementById("moleculeDescriptionEdit");
+    // Get array of all the HTML edit buttons.
+    Array.from(editBtnArray).forEach(btn => {
+        console.log(btn.id);
+        var id = btn.id.replace("edit", "") + ".mol";
+
+        // On click, we want to do this:
+        btn.addEventListener('click', () => {
+
+            let currentMolecule = dataTable[id];
+
+            moleculeNameEditInput.value = currentMolecule.name;
+            formulaEditInput.value = currentMolecule.formula;
+            moleculeDescriptionEditInput.value = currentMolecule.description;
+
+            var submitButton = document.getElementById("editSubmitBtn");
+            submitButton.addEventListener('click', () => {
+                
+            });
+
+            selectActiveMolecule();
+
+        });
+    })
+
+    function selectActiveMolecule() {
+
+    };
+
+    // Preview the .mol file content when selected
+    function onReceiptsSelected() {
+        const files = fileName.files;
+        if (files.length > 0) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+            document.getElementById("preview").value += e.target.result;
+                //console.log(e.target.result);
+            };
+            reader.readAsText(files[0]);
+        }
+    }
+
+var iframePreview = document.getElementById("iframePreview")
+    console.log(iframePreview);
+
+    $(document).ready(function () {
+        $('#molTable').DataTable({
+            scrollY: false,
+            scrollX:        true,
+
+            scrollCollapse: true,
+            paging: true
+        });
+    });
+
+    var preview = document.getElementsByClassName("preview");
+
+    Array.from(preview).forEach(function(element) {
+        element.addEventListener("click", function(){
+            let itemNumber = element.id.replace("previewBtn", "")
+            iframePreview.src = "/moleculeViewer/" + itemNumber;
+        })
+    });
+
+    var share = document.getElementsByClassName("share");
+
+    Array.from(share).forEach(function(element) {
+        element.addEventListener("click", function(){
+            let itemNumber = element.id.replace("shareBtn", "");
+            qrcode.makeCode(window.location.href + "/viewer/" + itemNumber); 
+        })
+    });
+
+</script>
+
+<style>
+
+</style>
+
+
+<%- include('partials/footer') %>

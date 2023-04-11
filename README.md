@@ -361,9 +361,91 @@ module.exports = router;
 
 To break this down, we first require `express` and `express.Router()`. Since I am creating the catalog page based on a the contents of a file folder, I also require the `fs` module. The `fs` module allows for operations such as reading and writing files, and creating directories. The `fs` module is part of the Node.js standard library, so it does not need to be installed.
 
-I call the `fs.readdirSync` function, which reads the contents of a directory. The `fs.readdirSync` function takes a single parameter, which is the path to the directory. In this case, the path is `./public/molfiles/`. The `./` at the start of the path tells the function to look in the current directory. The `public` directory is the directory that contains the `molfiles` directory. The `molfiles` directory contains the files that will be displayed on the catalog page. The `fs.readdirSync` function returns an array of the names of the files in the directory. This array is passed to the `catalog.ejs` file as the `list` parameter.
+I call the `fs.readdirSync` function, which reads the contents of a directory. The `fs.readdirSync` function takes a single parameter, which is the path to the directory. In this case, the path is `./public/molfiles/`. The `./` at the start of the path tells the function to look in the current directory. The `public` directory is the directory that contains the `molfiles` directory. The `molfiles` directory contains the files that will be displayed on the catalog page. The `fs.readdirSync` function returns an array of the names of the files in the directory.
 
-The contents of the `molfiles` directory are displayed on the catalog page. The `molfiles` directory contains a number of `.mol` files. These files are retrieved from the Royal Society of Chemistry's chemspider.com website.
+The contents of the `molfiles` directory are displayed on the catalog page. The `molfiles` directory contains a number of `.mol` files.
+
+For instance, in the viewer.js file:
+```js
+/* GET the viewer page. */
+//This route used to render a page called "viewer".
+//URL: https://localhost:4000/moleculeviewer
+//This route takes in an id as a parameter and checks if there is a file with the same id as the parameter in the molfiles directory.
+router.get('/', function(req, res, next) {
+  //Render the viewer page with the id 2519 as an argument with the title "Molecule Viewer" and item 2519 (CID for Caffeine)
+  res.render('viewer', { title: 'Molecule Viewer', item: 2519 });
+});
+
+/* GET the viewer page. */
+//This route takes in an id as a parameter 
+router.get('/:id', function(req , res){
+  //Read the molfiles directory and store the names of the files in an array
+  var molfiles = fs.readdirSync('./public/molfiles/')
+
+  //Check if the array includes a file with the same name as the id parameter
+  //req.params.id is the id parameter '/:id'
+  if(molfiles.includes(req.params.id + '.mol')){
+    //If the file exists, read the file and store the contents in a variable called molfile
+    molfile = fs.readFileSync('./public/molfiles/'+req.params.id+'.mol', 'utf8');
+    //Render the viewer page with the id as the item argument  
+    res.render('viewer', {
+      title: 'Molecule Viewer', 
+      item: req.params.id
+    });
+  }
+  //If the file does not exist, render the viewer page with the id 2519 as a fallback
+  else{
+    res.render('viewer', {
+      title: 'Molecule Viewer', 
+      item: 2519
+    });
+  }
+});
+
+```
+
+You could also pass the contents of the file through the `res.render` function, as shown in the `item.js` file:
+
+```js
+router.get('/:id', function(req , res){
+  
+  //Read the molfiles directory and store the names of the files in an array
+  let molfiles = fs.readdirSync('./public/molfiles/')
+  
+  //Read the contents of the catalogData.json file and store the contents in a variable called data
+  let catalogData = JSON.parse(fs.readFileSync('./public/catalog/catalog.json', "utf8"));
+  
+  //Check if the array includes a file with the same name as the id parameter
+  if(molfiles.includes(req.params.id + '.mol')){
+    
+    //If the file exists, read the file and store the contents in a variable called molfile
+    let molfile = fs.readFileSync('./public/molfiles/'+req.params.id+'.mol', 'utf8');
+    
+    let moleculeName = 'No name in catalog';
+    let moleculeFormula = 'No formula in catalog';
+    //Check if the catalogData object has a property with the same name as the id parameter (needs to correspond to file name)
+    if(catalogData[req.params.id]){
+      //If the property does exist, set the name and formula properties to 'No name in catalog' and 'No formula in catalog'
+      moleculeName = catalogData[req.params.id].name;
+      moleculeFormula = catalogData[req.params.id].formula;
+    }
+    
+    //Render the item page with the id as the item argument and the molfile as the molfile argument
+    res.render('item', {
+      title: 'Molecule Viewer: '+ req.params.id, 
+      item: req.params.id, 
+      molfile: molfile,
+      name: moleculeName,
+      formula: moleculeFormula,
+    });
+  }
+  
+  //If the file does not exist, render the error page:
+  else{
+    res.render('error', {title: 'Error', message: 'Molecule not found', error: {status: 404}});
+  }
+});
+```
 
 ### Adding an admin route to the application:
 
@@ -398,7 +480,7 @@ router.get('/', function(req, res, next) {
 module.exports = router;
 ```
 
-Then, in the "views" directory, we need to create a new file called `admin.ejs` and add this content to it:
+Then, in the "views" directory, we need to create a new file called `admin.ejs` and some content to it:
 ```html
 <!DOCTYPE html>
 <html>
@@ -462,7 +544,7 @@ The contents of the public folder for a project with Threex and AR.js might look
 
 The `catalog` directory includes a .JSON file which has information about the particulars of the molecules. The `cjson` folder includes a script called `converter.js` which converts molfiles to JSON objects. We then have a folder called `data` which included some sample patterns and molecules. The `datgui` folder includes a script called `dat.gui.js` which is used to create a GUI for the application. The `img` folder includes some images which are used in the application. The `js` folder includes the main script for the application. The `jsartoolkit5` folder includes the AR.js library. The `molfiles` folder includes some sample molecules as .mol files . The `threex` folder includes scripts which handle DOM events.
 
-You can see that how these files are accessed in the `molecule.ejs` file:
+You can see that how these files are accessed in the by the HTML rendered from the `molecule.ejs` file:
 
 ```html
 <link rel='stylesheet' href='/styles/style.css' />
@@ -1418,11 +1500,14 @@ markerRoot1.add( mesh1 );
 ```
 Thus, we can modify this code to add our own 3D objects to the scene, and attach them to the marker. Using the molecule viewer as a basis, we can add a molecule to the scene, and attach it to the marker. We can then use the camera of the device to view the molecule in AR, with the marker as a reference point.
 
-# Deployment
 
+
+# Deployment
 ## Local Deployments
 ### CORS and HTTPS:
-The AR.js library requires that the application is served over HTTPs. This is because the AR.js library uses the WebRTC API, which requires special permissions to be granted by the user. This is why we need to use HTTPS. If you want to develop locally, you can ignore the warnings about the SSL certificate being invalid. If you want to secure the application locally, you need to generate some SSL certificate credentials. For instruction on how to do this (particularly, generating `cert.pem`, `csr.pem` and `key.pem` files), and how to use them with NodeJS, take a look at this article: https://adamtheautomator.com/https-nodejs/
+The AR.js library requires that the application is served over HTTPs. This is because the AR.js library uses the WebRTC API, which requires special permissions to be granted by the user. This is why we need to use HTTPS. If you want to develop locally, you can ignore the warnings about the SSL certificate being invalid.
+ 
+If you want to secure the application locally, you will need to generate some unique SSL certificate credentials. For instruction on how to do this (particularly, generating `cert.pem`, `csr.pem` and `key.pem` files), and how to use them with NodeJS, [take a look at this article](https://adamtheautomator.com/https-nodejs/)
 
 When deploying to a cloud service like Azure Websites, HTTPS is enabled by default, which means that you don't need to worry about this.
 

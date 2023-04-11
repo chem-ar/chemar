@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="home.css" />
+    <title>Three JS Molecules</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="js/molFileToJson.js"></script>
+    <script src="js/gsap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./js/three.module.js",
+          "OrbitControls": "./js/OrbitControls.js"
+        }
+      }
+    </script>
+    <style>
+      body {
+        margin: 0;
+      }
+      .footerbuttons{
+        z-index: 1100 !important;
+        position: relative;
+      }
+      .navbar{
+        z-index: 1100 !important;
+        position:  sticky;
+        top: 0;
+      }
+      .section{
+        z-index: 1000 !important;
+      }
+      .dataTables_filter input {
+        color: white;
+        background-color: white;
+    }
+    .dataTables_length select {
+      color: white;
+    }
+    table,thead,tbody{
+      color: white;
+    }
+    .instructions{
+      color: white;
+      background-color: transparent;
+    }
+
+    </style>
+  </head>
+
+  <!--Navbar--> 
+  <nav class="navbar navbar-expand-sm navbar-dark bg-dark navbar" aria-label="Third navbar example">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">ChemAR</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample03"
+        aria-controls="navbarsExample03" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExample03">
+        <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="home.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="catalogue.html">Catalogue</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link">About</a>
+          </li>
+        </ul>
+
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white"
+          class="bi bi-box-arrow-in-right me-2" viewBox="0 0 16 16">
+          <path fill-rule="evenodd"
+            d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z">
+          </path>
+          <path fill-rule="evenodd"
+            d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z">
+          </path>
+        </svg>
+        <button type="button" class="btn btn-outline-light me-2">Login</button>
+      </div>
+    </div>
+  </nav>
+  <body>
+
+    
+
+
+    <canvas class="webgl"></canvas>
+    <section class="section">
+        <div class=" py-5" style = "margin-left: 40%;">
+          <h1 class="display-5 fw-bold" style = "text-align: center;">Chemistry + Augmented Reality</h1>
+          <p class="col-md-8 fs-4" style = "margin-right: auto; margin-left: auto; text-align: center;">View molecular diagrams in augmented reality using only a web browser</p>
+          <div class ="col-md-4 mb-5" style = "margin-right: auto; margin-left: auto;">
+          <a href="/catalog" class="btn btn-outline-light btn-lg" type="button">
+            Browse All Molecules
+          </a>
+          <br>
+          </div> 
+        </div>
+
+    </section>
+
+    
+    <section class= "section">
+      <div style = "margin-left: 40%;"></div>
+          <div class = "card instructions" style = "margin-left: auto; margin-right: auto; width: auto; border-color: transparent; text-align: center;">
+            <div class = "card-header">Instructions</div>
+            <div class="accordion instructions" id="instructions">
+              <div class="accordion-item instructions">
+                <h2 class="accordion-header instructions" id="stepOne">
+                  <button class="accordion-button instructions" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    Step 1
+                  </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show instructions" style= "" aria-labelledby="stepOne" data-bs-parent="#instructions">
+                  <div class="accordion-body instructions">
+                    <strong>This is the first item's accordion body.</strong> 
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item instructions">
+                <h2 class="accordion-header" id="stepTwo">
+                  <button class="accordion-button collapsed instructions" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    Step 2
+                  </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="stepTwo" data-bs-parent="#instructions">
+                  <div class="accordion-body">
+                    <strong>This is the second item's accordion body.</strong> 
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item instructions">
+                <h2 class="accordion-header instructions" id="headingThree">
+                  <button class="accordion-button collapsed instructions" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    Step 3
+                  </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse instructions" aria-labelledby="headingThree" data-bs-parent="#instructions">
+                  <div class="accordion-body">
+                    <strong>This is the third item's accordion body.</strong> 
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+    </section>
+  
+    
+    <section class="section">
+      <h2>Changelog</h2>
+    </section>
+    
+    <script type="module">
+      import { OrbitControls } from "./js/OrbitControls.js";
+      import * as THREE from "./js/three.module.js";
+      const objectsDistance = 4;
+      const canvas = document.querySelector("canvas.webgl");
+      
+      const clock = new THREE.Clock();
+      let deltaTime = 0;
+      let totalTime = 0;
+      let centerOffset = -10;
+      let previousTime = 0;
+      
+      const scene = new THREE.Scene();
+      // Base camera
+     
+      const camera = new THREE.PerspectiveCamera(
+        35,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        100
+      );
+      camera.position.z = 5;
+      
+      const renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        alpha: true,
+      });
+      document.body.appendChild(renderer.domElement);
+      renderer.setClearAlpha(0);
+      renderer.setSize(window.innerWidth,window.innerHeight);
+      
+      const geometry = new THREE.SphereGeometry(0.1, 32, 32);
+      const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+      const sphereRadiusRatio = 0.75;
+      const cameraGroup = new THREE.Group();
+      scene.add(cameraGroup);
+
+      let autoRotateX = {
+        switch: false,
+      };
+      let autoRotateY = {
+        switch: false,
+      };
+      let autoRotateZ = {
+        switch: false,
+      };
+
+      const moleculeGeometries = {
+        C: new THREE.SphereGeometry(0.8 * sphereRadiusRatio, 32, 32),
+        H: new THREE.SphereGeometry(0.3 * sphereRadiusRatio, 32, 32),
+        O: new THREE.SphereGeometry(0.5 * sphereRadiusRatio, 32, 32),
+        N: new THREE.SphereGeometry(0.6 * sphereRadiusRatio, 32, 32),
+        S: new THREE.SphereGeometry(0.8 * sphereRadiusRatio, 32, 32),
+        P: new THREE.SphereGeometry(0.9 * sphereRadiusRatio, 32, 32),
+        F: new THREE.SphereGeometry(0.4 * sphereRadiusRatio, 32, 32),
+        Cl: new THREE.SphereGeometry(0.5 * sphereRadiusRatio, 32, 32),
+        Br: new THREE.SphereGeometry(0.6 * sphereRadiusRatio, 32, 32),
+        I: new THREE.SphereGeometry(0.7 *sphereRadiusRatio, 32, 32),
+      };
+      const moleculeMaterials = {
+        C: new THREE.MeshPhongMaterial({
+          color: 0x333333,
+  
+
+        }),
+        H: new THREE.MeshPhongMaterial({
+          color: 0xffffff,
+
+        }),
+        O: new THREE.MeshPhongMaterial({
+          color: 0xff0000,
+
+
+        }),
+        N: new THREE.MeshPhongMaterial({
+          color: 0x0000ff,
+
+
+        }),
+        S: new THREE.MeshPhongMaterial({
+          color: 0xffff00,
+
+        }),
+        P: new THREE.MeshPhongMaterial({
+          color: 0xff00ff,
+
+
+        }),
+        F: new THREE.MeshPhongMaterial({
+          color: 0x00ff00,
+
+
+        }),
+        Cl: new THREE.MeshPhongMaterial({
+          color: 0x00ff00,
+
+
+        }),
+        Br: new THREE.MeshPhongMaterial({
+          color: 0x00ff00,
+
+
+        }),
+        I: new THREE.MeshPhongMaterial({
+          color: 0x00ff00,
+
+
+        }),
+      };
+      const cylinderMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+      });
+
+      let moleculeGroup = new THREE.Group();
+
+      function drawMolecule(molFile) {
+        while (moleculeGroup.children.length > 0) {
+          moleculeGroup.remove(moleculeGroup.children[0]);
+        }
+        const molObject = molFileToJSON(molFile);
+
+        let firstPoint = new THREE.Vector3(
+          molObject.atoms[0].position.x,
+          molObject.atoms[0].position.y,
+          molObject.atoms[0].position.z
+        );
+
+        let limits = {
+          x: {
+            min: firstPoint.x,
+            max: firstPoint.x,
+          },
+          y: {
+            min: firstPoint.y,
+            max: firstPoint.y,
+          },
+          z: {
+            min: firstPoint.z,
+            max: firstPoint.z,
+          },
+        };
+
+        for (let item of molObject.atoms) {
+          let point = new THREE.Vector3(
+            item.position.x,
+            item.position.y,
+            item.position.z
+          );
+          if (Number(point.x) < Number(limits.x.min)) {
+            limits.x.min = point.x;
+          }
+          if (Number(point.x) > Number(limits.x.max)) {
+            limits.x.max = point.x;
+          }
+          if (Number(point.y) < Number(limits.y.min)) {
+            limits.y.min = point.y;
+          }
+          if (Number(point.y) > Number(limits.y.max)) {
+            limits.y.max = point.y;
+          }
+          if (Number(point.z) < Number(limits.z.min)) {
+            limits.z.min = point.z;
+          }
+          if (Number(point.z) > Number(limits.z.max)) {
+            limits.z.max = point.z;
+          }
+        }
+
+        let moleculeCenter = new THREE.Vector3(
+          (Number(limits.x.min) + Number(limits.x.max)) / 2,
+          (Number(limits.y.min) + Number(limits.y.max)) / 2,
+          (Number(limits.z.min) + Number(limits.z.max)) / 2
+        );
+
+        for (let item of molObject.atoms) {
+          const sphere = new THREE.Mesh(
+            moleculeGeometries[item.type],
+            moleculeMaterials[item.type]
+          );
+          sphere.position.x = item.position.x - moleculeCenter.x;
+          sphere.position.y = item.position.y - moleculeCenter.y;
+          sphere.position.z = item.position.z - moleculeCenter.z;
+          moleculeGroup.add(sphere);
+        }
+        for (let bond of molObject.bonds) {
+          let index1 = Number(bond[0]) - 1;
+          let index2 = Number(bond[1]) - 1;
+
+          let atom1 = molObject.atoms[index1];
+          let atom2 = molObject.atoms[index2];
+
+          let point1 = new THREE.Vector3(
+            atom1.position.x - moleculeCenter.x,
+            atom1.position.y - moleculeCenter.y,
+            atom1.position.z - moleculeCenter.z
+          );
+          let point2 = new THREE.Vector3(
+            atom2.position.x - moleculeCenter.x,
+            atom2.position.y - moleculeCenter.y,
+            atom2.position.z - moleculeCenter.z
+          );
+
+          let distance = point1.distanceTo(point2);
+
+          let cylinderRadius = bond[2] == 1 ? 0.05 : 0.15;
+
+          const cylinderGeometry = new THREE.CylinderGeometry(
+            cylinderRadius,
+            cylinderRadius,
+            distance,
+            8
+          );
+          cylinderGeometry.translate(0, distance / 2, 0);
+          cylinderGeometry.rotateX(Math.PI / 2);
+
+          const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+          cylinder.position.x = atom1.position.x - moleculeCenter.x;
+          cylinder.position.y = atom1.position.y - moleculeCenter.y;
+          cylinder.position.z = atom1.position.z - moleculeCenter.z;
+          cylinder.lookAt(point2);
+
+          moleculeGroup.add(cylinder);
+        }
+
+
+
+        scene.add(moleculeGroup);
+      }
+
+      export function getMolecule(CSID) {
+        fetch("molfiles/" + CSID + ".mol")
+          .then((response) => response.text())
+          .then((molFile) => {
+            drawMolecule(molFile);
+          });
+      }
+
+      function init(defaultCSID) {
+        getMolecule(defaultCSID);
+
+        const spotLight = new THREE.SpotLight(0xffffff);
+        spotLight.position.set(100, 1000, 100);
+        spotLight.castShadow = true;
+        spotLight.shadow.mapSize.width = 1024;
+        spotLight.shadow.mapSize.height = 1024;
+        spotLight.shadow.camera.near = 500;
+        spotLight.shadow.camera.far = 4000;
+        spotLight.shadow.camera.fov = 30;
+        scene.add(spotLight);
+
+        const light = new THREE.AmbientLight(0xffffff); // soft white light
+        scene.add(light);
+        moleculeGroup.position.x = -7;
+        moleculeGroup.position.z = -20;
+      }
+      function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+        deltaTime = clock.getDelta();
+      totalTime += deltaTime;
+
+        moleculeGroup.rotation.x -= 0.25 * deltaTime;
+      }
+     const sectionMeshes = [init(34668)];
+      /**
+       * Particles
+       */
+      // Geometry
+      const particlesCount = window.innerHeight*window.innerWidth/2000;
+      const positions = new Float32Array(particlesCount * 3);
+      for (let i = 0; i < particlesCount; i++) {
+        positions[i * 3 + 0] = (Math.random() - 0.5) * 10;
+        positions[i * 3 + 1] =
+          objectsDistance * 0.5 -
+          Math.random() * objectsDistance * sectionMeshes.length;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+      }
+      const particlesGeometry = new THREE.BufferGeometry();
+      particlesGeometry.setAttribute(
+        "position",
+        new THREE.BufferAttribute(positions, 3)
+      );
+      const particlesMaterial = new THREE.PointsMaterial({
+        color: "#ffeded",
+        sizeAttenuation: true,
+        size: 0.03,
+      });
+      const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+      scene.add(particles);
+      
+      const sizes = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      };
+      window.addEventListener("resize", () => {
+        // Update sizes
+        sizes.width = window.innerWidth;
+        sizes.height = window.innerHeight;
+
+        // Update camera
+        camera.aspect = sizes.width / sizes.height;
+        camera.updateProjectionMatrix();
+
+        // Update renderer
+        renderer.setSize(sizes.width, sizes.height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      });
+
+      renderer.setAnimationLoop(function () {
+        renderer.render(scene, camera);
+      });
+
+      let scrollY = window.scrollY;
+      let currentSection = 0;
+      const cursor = {};
+      cursor.x = 0;
+      cursor.y = 0;
+      window.addEventListener("mousemove", (event) => {
+        cursor.x = event.clientX;
+        cursor.y = event.clientY;
+
+        console.log(cursor);
+      });
+      
+      window.addEventListener("scroll", () => {
+        // ...
+        scrollY = window.scrollY;
+        const newSection = Math.round(scrollY / sizes.height);
+        for (const moleculeGroup of sectionMeshes) {
+          moleculeGroup.rotation.x += deltaTime * 0.1;
+          moleculeGroup.rotation.y += deltaTime * 0.12;
+        }
+        if (newSection != currentSection) {
+          // ...
+
+          gsap.to(sectionMeshes[currentSection].rotation, {
+            duration: 1.5,
+            ease: "power2.inOut",
+            x: "+=6",
+            y: "+=3",
+          });
+        }
+      });
+      const tick = () => {
+        // ...
+
+        // Animate camera
+        camera.position.y = (-scrollY / window.innerHeight) * objectsDistance;
+        const elapsedTime = clock.getElapsedTime();
+        const deltaTime = elapsedTime - previousTime;
+        previousTime = elapsedTime;
+        const parallaxX = cursor.x * 0.5;
+        const parallaxY = -cursor.y * 0.5;
+        cameraGroup.position.x +=
+          (parallaxX - cameraGroup.position.x) * 5 * deltaTime;
+        cameraGroup.position.y +=
+          (parallaxY - cameraGroup.position.y) * 5 * deltaTime;
+        // ...
+      };
+      animate();
+      tick();
+    </script>
+    
+  <!--FOOTER SECTION-->
+<div class="container footerbuttons">
+  <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+      <div class="col-md-4 d-flex align-items-center">
+          <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
+              <svg class="bi" width="30" height="24">
+                  <use xlink:href="#bootstrap"></use>
+              </svg>
+          </a>
+          <span class="mb-3 mb-md-0 text-muted">© 2023 ChemAR</span>
+      </div>
+
+       <!-- Facebook -->
+       <a style="color: white;" href="#!" role="button"><i class="fab fa-facebook-f fa-lg"></i></a>
+
+       <!-- Twitter -->
+       <a style="color: #55acee;" href="#!" role="button"><i class="fab fa-twitter fa-lg"></i></a>
+
+       <!-- Google -->
+       <a style="color: #dd4b39;" href="#!" role="button"><i class="fab fa-google fa-lg"></i></a>
+
+       <!-- Instagram -->
+       <a style="color: #ac2bac;" href="#!" role="button"><i class="fab fa-instagram fa-lg"></i></a>
+
+      <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">  
+          <li class="ms-3">
+              <a class="text-muted" href="#">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-twitter" viewBox="0 0 16 16">
+                      <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
+                    </svg>
+              </a>
+          </li>
+          <li class="ms-3">
+              <a class="text-muted" href="#">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-instagram" viewBox="0 0 16 16">
+                      <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"/>
+                    </svg>
+              </a>
+          </li>
+          <li class="ms-3">
+              <a class="text-muted" href="#">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-facebook" viewBox="0 0 16 16">
+                      <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/>
+                    </svg>
+              </a>
+          </li>
+      </ul>
+  </footer>
+</div>
+<script src="../datatable.js"></script>
+</script>
+</body>
+</html>
