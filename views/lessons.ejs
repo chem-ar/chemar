@@ -206,7 +206,7 @@ var iframePreview = document.getElementById("iframePreview")
     Array.from(share).forEach(function(element) {
         element.addEventListener("click", function(){
             let itemNumber = element.id.replace("shareBtn", "")
-            qrcode.makeCode(window.location.href + "lessonViewer/" + itemNumber); 
+            qrcode.makeCode(window.location.href + "/lessonViewer/" + itemNumber); 
         })
     });
 

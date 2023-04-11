@@ -20,7 +20,7 @@
       crossorigin="anonymous"
     ></script>
     <link rel="stylesheet" href="home.css" />
-    <title>Three JS Molecules</title>
+    <title>ChemAR Home</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script src="js/molFileToJson.js"></script>
     <script src="js/gsap.min.js"></script>
@@ -36,7 +36,12 @@
 
 
   </head>
-  <%- include('partials/navbar')%>
+  <% if (isAdmin){%>
+    <%- include('partials/navbarAdmin') %>
+<%}%>
+<% if (!isAdmin){%>
+    <%- include('partials/navbar') %>
+<%}%>
 
   <body class="bg-dark">
     <canvas class="webgl"></canvas>
@@ -57,7 +62,7 @@
           class="col-md-4 mb-5 text-center"
           style="margin-right: auto; margin-left: auto;"
         >
-          <a href="/catalog" class="btn btn-outline-light btn-lg" style= "font-size: 1.6vw; " type="button">
+          <a href="/molecules" class="btn btn-outline-light btn-lg" style= "font-size: 1.6vw; " type="button">
             Browse All Molecules
           </a>
           <br />
