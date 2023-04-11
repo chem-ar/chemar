@@ -67,7 +67,6 @@
   fetch('/lessons' + '/' + requestedFile)
     .then(response => response.json())
     .then(data => {
-      console.log(data);
       moleculeData = data;
       initialize();
       animate();
@@ -255,85 +254,86 @@ const moleculeMaterials = {
   
   
   function drawMolecule(molObject, Title, drawPosition, drawRotation, drawScale){
-    // console.log(drawPosition);
-    // console.log(drawRotation);
-    // console.log(drawScale);
+    console.log(molObject);
+    console.log(drawPosition);
+    console.log(drawRotation);
+    console.log(drawScale);
 
 
-    // let moleculeGroup = new THREE.Group();
+    let moleculeGroup = new THREE.Group();
 
-    // if(drawPosition === undefined){
-    //     drawPosition = new THREE.Vector3(0,0,0);
-    // }
+    if(drawPosition === undefined){
+        drawPosition = new THREE.Vector3(0,0,0);
+    }
     
-    // if(drawRotation === undefined){
-    //     drawRotation = {
-    //         x: 0,
-    //         y: 0,
-    //         z: 0}
-    // }
+    if(drawRotation === undefined){
+        drawRotation = {
+            _x: 0,
+            _y: 0,
+            _z: 0}
+    }
 
-    // if(drawScale === undefined){
-    //     drawScale = {
-    //         x: 0,
-    //         y: 0,
-    //         z: 0}
-    // }
+    if(drawScale === undefined){
+        drawScale = {
+            x: 1,
+            y: 1,
+            z: 1}
+    }
 
-    // let firstPoint = new THREE.Vector3(
-    //     molObject.x, 
-    //     molObject.y, 
-    //     molObject.z);
+    let firstPoint = new THREE.Vector3(
+        molObject.x, 
+        molObject.y, 
+        molObject.z);
 
-    // let limits = {
-    //     x: {
-    //         min: firstPoint.x,
-    //         max: firstPoint.x
-    //     },
-    //     y: {
-    //         min: firstPoint.y,
-    //         max: firstPoint.y
-    //     },
-    //     z: {
-    //         min: firstPoint.z,
-    //         max: firstPoint.z
-    //     }
-    // }
+    let limits = {
+        x: {
+            min: firstPoint.x,
+            max: firstPoint.x
+        },
+        y: {
+            min: firstPoint.y,
+            max: firstPoint.y
+        },
+        z: {
+            min: firstPoint.z,
+            max: firstPoint.z
+        }
+    }
 
-    // for(let item of molObject.atoms){
-    //     let point = new THREE.Vector3(item.position.x, item.position.y, item.position.z);
-    //     if(Number(point.x) < Number(limits.x.min)){
-    //         limits.x.min = point.x;
-    //     }
-    //     if(Number(point.x) > Number(limits.x.max)){
-    //         limits.x.max = point.x;
-    //     }
-    //     if(Number(point.y) < Number(limits.y.min)){
-    //         limits.y.min = point.y;
-    //     }
-    //     if(Number(point.y) > Number(limits.y.max)){
-    //         limits.y.max = point.y;
-    //     }
-    //     if(Number(point.z) < Number(limits.z.min)){
-    //         limits.z.min = point.z;
-    //     }
-    //     if(Number(point.z) > Number(limits.z.max))  {
-    //         limits.z.max = point.z;
-    //     }
-    // }
+    for(let item of molObject.atoms){
+        let point = new THREE.Vector3(item.position.x, item.position.y, item.position.z);
+        if(Number(point.x) < Number(limits.x.min)){
+            limits.x.min = point.x;
+        }
+        if(Number(point.x) > Number(limits.x.max)){
+            limits.x.max = point.x;
+        }
+        if(Number(point.y) < Number(limits.y.min)){
+            limits.y.min = point.y;
+        }
+        if(Number(point.y) > Number(limits.y.max)){
+            limits.y.max = point.y;
+        }
+        if(Number(point.z) < Number(limits.z.min)){
+            limits.z.min = point.z;
+        }
+        if(Number(point.z) > Number(limits.z.max))  {
+            limits.z.max = point.z;
+        }
+    }
 
-    // let moleculeCenter = new THREE.Vector3(
-    //     (Number((limits.x.min)) + Number(limits.x.max))/2,
-    //     (Number((limits.y.min)) + Number(limits.y.max))/2,
-    //     (Number((limits.z.min)) + Number(limits.z.max))/2);
+    let moleculeCenter = new THREE.Vector3(
+        (Number((limits.x.min)) + Number(limits.x.max))/2,
+        (Number((limits.y.min)) + Number(limits.y.max))/2,
+        (Number((limits.z.min)) + Number(limits.z.max))/2);
                 
-    // for(let item of molObject.atoms){
-    //     const sphere = new THREE.Mesh( moleculeGeometries[item.type], moleculeMaterials[item.type] );
-    //     sphere.position.x = item.position.x - moleculeCenter.x;
-    //     sphere.position.y = item.position.y - moleculeCenter.y;
-    //     sphere.position.z = item.position.z - moleculeCenter.z;
-    //     moleculeGroup.add( sphere );
-    // }
+    for(let item of molObject.atoms){
+        const sphere = new THREE.Mesh( moleculeGeometries[item.type], moleculeMaterials[item.type] );
+        sphere.position.x = item.position.x - moleculeCenter.x;
+        sphere.position.y = item.position.y - moleculeCenter.y;
+        sphere.position.z = item.position.z - moleculeCenter.z;
+        moleculeGroup.add( sphere );
+    }
 
             // for(let bond of molObject.bonds){
 
@@ -365,6 +365,23 @@ const moleculeMaterials = {
             //     }
 
             // moleculeGroup.position.z = centerOffset;
+
+            //Sets the position
+            moleculeGroup.position.x = drawPosition.x;
+            moleculeGroup.position.y = drawPosition.y;
+            moleculeGroup.position.z = drawPosition.z;
+
+            //Sets the rotation
+            moleculeGroup.rotation.x = drawRotation._x;
+            moleculeGroup.rotation.y = drawRotation._y;
+            moleculeGroup.rotation.z = drawRotation._z;
+            
+            //Sets the scale
+            moleculeGroup.scale.x = drawScale.x;
+            moleculeGroup.scale.y = drawScale.y;
+            moleculeGroup.scale.z = drawScale.z;
+
+            return moleculeGroup;
 
         }
 
@@ -470,10 +487,18 @@ const moleculeMaterials = {
     mesh1 = new THREE.Mesh( geometry1, material1 );
     mesh1.position.y = 0.5;
 
+    console.log(moleculeData);
+
     for(let item of moleculeData.molecules){
       console.log(item);
+
+      let molecule = drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale, moleculeData);
+      console.log(molecule);
+
+      markerRoot1.add( molecule ); 
+
     }
-    
+
 
 
 
