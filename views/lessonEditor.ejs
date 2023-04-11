@@ -136,7 +136,7 @@
                         </button>
     
                         <h3 class="offcanvas-title fw-bold" id="offcanvasScrollingLabel">
-                            MoleculAR
+                            ChemAR
                         </h3>
                         </div>
                         <div class="offcanvas-body">
@@ -154,52 +154,20 @@
                             <div class = "row">
                                 <div class = "col-12">
                                     <div class="d-grid gap-2">
-                                        <button id="first-save-button" type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#saveModal">
+                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#saveModal">
                                             Save Changes
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                            <hr>
-                            <div class = "row">
-                                <div class="col-4">
-                                    <h4>Lesson Name</h4>
-                                </div>
-                                <div class = "col-3 offset-5">
-                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#editNameMenu" role="button" aria-expanded="false" aria-controls="editNameMenu">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-move" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708l2-2zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10zM.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708l-2-2zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8z"/>
-                                          </svg>
-                                          Edit
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 mt-2">
-                                    <div class="collapse multi-collapse" id="editNameMenu">
-                                        <div class = "col-12">
-                                            <div class = "row">
-                                                <div class = "col-1">
-                                                    <label for="marker-x" class="form-label mb-1 mt-2">Name:</label>
-                                                </div>
-                                                <div class = "col-8">
-                                                    <input type="text" class="form-control" oninput="" >
-                                                </div>
-                                                <div class = "col-3">
-                                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#fileMenu" role="button" aria-expanded="false" aria-controls="fileMenu">Submit</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                           
                             <hr>
                             <div class = "row">
                                 <div class = "col-4 ">
                                     <h4>Lesson Sheet</h4>
                                 </div>
                                 <div class = "col-4 offset-4">
-                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#fileMenu" role="button" aria-expanded="false" aria-controls="fileMenu">
+                                    <button type="button" class="btn btn-outline-light float-end" data-bs-toggle="collapse" href="#fileMenu" role="button" aria-expanded="false" aria-controls="fileMenu">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-richtext" viewBox="0 0 16 16">
                                             <path d="M7 4.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm-.861 1.542 1.33.886 1.854-1.855a.25.25 0 0 1 .289-.047l1.888.974V7.5a.5.5 0 0 1-.5.5H5a.5.5 0 0 1-.5-.5V7s1.54-1.274 1.639-1.208zM5 9a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
                                             <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
@@ -219,11 +187,11 @@
                             </div>
                             <hr>
                             <div class = "row">
-                                <div class="col-4">
+                                <div class="col-7">
                                     <h4>Tracking Marker</h4>
                                 </div>
-                                <div class = "col-3 offset-5">
-                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#trackerMenu" role="button" aria-expanded="false" aria-controls="trackerMenu">
+                                <div class = "col-5">
+                                    <button type="button" class="btn btn-outline-light float-end" data-bs-toggle="collapse" href="#trackerMenu" role="button" aria-expanded="false" aria-controls="trackerMenu">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-move" viewBox="0 0 16 16">
                                             <path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708l2-2zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10zM.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708l-2-2zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8z"/>
                                           </svg>
@@ -268,25 +236,17 @@
                                 <div class="col-4">
                                     <h4>Add Molecule</h4>
                                 </div>
-                                <div class = "col-4">
-                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#searchMenu" role="button" aria-expanded="false" aria-controls="searchMenu">
+                                <div class = "col-8">
+                                    <button type="button" class="btn btn-outline-light float-end" data-bs-toggle="collapse" href="#searchMenu" role="button" aria-expanded="false" aria-controls="searchMenu">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                                           </svg>
                                         Search PubChem
                                     </button>
                                 </div>
-                                <div class = "col-4">
-                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#molFileMenu" role="button" aria-expanded="false" aria-controls="molFileMenu">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-fill" viewBox="0 0 16 16">
-                                            <path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3z"/>
-                                            </svg>
-                                        Load .mol File
-                                    </button>
-                                </div> 
+
                             </div>
-                            <div class="row
-                            ">
+                            <div class="row">
                                 <div class="col-12 mt-2">
                                   <div class="collapse multi-collapse" id="searchMenu">
                                     <div class="input-group flex-nowrap">
@@ -302,16 +262,7 @@
                                   </div>
                                 </div>
                             </div>
-                        
-                            <div class="row">
-                                <div class="col-12 mt-2">
-                                  <div class="collapse multi-collapse" id="molFileMenu">
-                                    <div class="mb-3">
-                                        <input class="form-control" type="file" id="fileInput" accept=".mol">
-                                      </div>
-                                  </div>
-                                </div>
-                            </div>
+                    
                             <hr>
                             <div class = "row">
                                 <h4>Current Molecules</h4>
@@ -337,15 +288,23 @@
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p id ="save-text">
+                    <p>
                         Do you want to save your changes?
                     </p>
-                    <p class = "text-warning" id="save-warning">
+                    <p class = "text-warning">
                         This will overwrite the current version of the file saved on the server.
                     </p>
+                    <div class="col-4">
+                        <h4>Lesson Name</h4>
+                    </div>
+                    <div class = "col-8">
+                                <div>
+                                        <input type="text" class="form-control" id="newNameInput" oninput="" >
+                                </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="saveBtn" class="btn btn-warning">Save changes</button>
+                    <button type="button" id="saveBtn" form = "newNameInput" class = "btn btn-warning">Save changes</button>
                 </div>
             </div>
         </div>
@@ -380,6 +339,27 @@
 
     <script type= "module">
 
+        let lesson;
+
+        let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
+        console.log(requestedFile);
+
+        fetch('/lessons' + '/' + requestedFile)
+            .then(response => response.json())
+            .then(data => {
+                lesson = data;
+                console.log(lesson);
+            })
+            .catch(error => console.error(error));
+
+
+        function validateName(){
+            const input = document.getElementById("newNameInput").value;
+            if (input == "") {
+                return false;
+            }
+            return true;
+        }
         var lessonsListMenu = document.getElementById("lessonMenuList");
         fetch('/lessons/list')
             .then(response => response.json())
@@ -394,12 +374,6 @@
                 });
             })
             .catch(error => console.error(error));
-
-
-        let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
-
-        console.log(requestedFile);
-
 
         function getMolecule(URL, Title){
             fetch(URL + "?record_type=3d")
@@ -1106,6 +1080,7 @@
                 .then(data => {
                     loadedLesson = JSON.stringify(data);
                     console.log(loadedLesson);
+                    window.location.href = "/" + loadedLesson.name +".json";
                 });
         });
 
@@ -1113,19 +1088,25 @@
             console.log("No save and loaded.");
         });
 
-        
-        let lesson;
+        let lessonNameInput = document.getElementById('newNameInput');
+
         // When the admin saves changes to the lesson editor.
         document.getElementById("saveBtn").addEventListener('click', () => {
+            
+            if(!validateName()){
+                alert("Please enter a name");
+            }else{
             console.log("Saved changes");
+            var lessonName = lessonNameInput.value;
 
-            document.getElementById("save-text").className = "text-success";
-            document.getElementById("save-text").innerText = "Saved succesfully.";
-            document.getElementById("save-warning").className = "d-none";
-
+            // Check if name changed.
+            var newLessonName = document.getElementById("newNameInput").value;
+            console.log(newLessonName);
+            // if (newLessonName != (lesson[name] + ""))
+            //     lesson[name] = newLessonName;
 
             lesson = {
-                "name" : "hello",
+                "name" : lessonName,
                 "trackingMarker" : {
                     "position" : {
                         "x" : markerPlane.position.x,
@@ -1134,11 +1115,11 @@
                     },
                 },
                 "molecules" : lessonMolecules
-                }
+            }
 
-            lessonMolecules.forEach(mol => {
-                lesson["Molecules"][mol.Title] = mol.molecule;
-            })
+            // lessonMolecules.forEach(mol => {
+            //     lesson["molecules"][mol.Title] = mol.molecule;
+            // })
 
             console.log(lesson);
 
@@ -1152,13 +1133,8 @@
             .catch(err => {
                 console.error(err)
             });
-        })
 
-        document.getElementById("first-save-button").addEventListener('click', () => {
-           
-            document.getElementById("save-text").className = "text-white";
-            document.getElementById("save-text").innerText = "Do you want to save your changes?"; 
-            document.getElementById("save-warning").className = "d-inline text-warning";
+        }
         })
 
         function updateLessonsList() {

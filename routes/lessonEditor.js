@@ -22,7 +22,7 @@ router.get('/:id', function(req , res){
   }
   
   else{
-    res.render('error', { title: 'MoleculAR - Error', message: 'Lesson not found', error: {status: 404, stack: 'Lesson not found'}});
+    res.render('error', { title: 'ChemAR - Error', message: 'Lesson not found', error: {status: 404, stack: 'Lesson not found'}});
   }
 });
 
