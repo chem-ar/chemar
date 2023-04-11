@@ -1,8 +1,39 @@
-<header class="pb-3 mb-4 border-bottom ">
-    <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
-      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="32" color = "white" class="me-2" viewBox="0 0 118 94" role="img">
-        <svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="HubIcon" fill="currentcolor"><path d="M8.4 18.2c.38.5.6 1.12.6 1.8 0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3c.44 0 .85.09 1.23.26l1.41-1.77c-.92-1.03-1.29-2.39-1.09-3.69l-2.03-.68c-.54.83-1.46 1.38-2.52 1.38-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3c0 .07 0 .14-.01.21l2.03.68c.64-1.21 1.82-2.09 3.22-2.32V5.91C9.96 5.57 9 4.4 9 3c0-1.66 1.34-3 3-3s3 1.34 3 3c0 1.4-.96 2.57-2.25 2.91v2.16c1.4.23 2.58 1.11 3.22 2.32L18 9.71V9.5c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3c-1.06 0-1.98-.55-2.52-1.37l-2.03.68c.2 1.29-.16 2.65-1.09 3.69l1.41 1.77c.38-.18.79-.27 1.23-.27 1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3c0-.68.22-1.3.6-1.8l-1.41-1.77c-1.35.75-3.01.76-4.37 0L8.4 18.2z"></path></svg>
-      </svg>
-      <span class="fs-4 text-white">ChemAR</span>
-    </a>
-  </header>
+<nav class="navbar navbar-expand-sm navbar-dark bg-darker sticky-top" aria-label="Third navbar example">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">ChemAR</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample03"
+      aria-controls="navbarsExample03" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExample03">
+      <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/molecules">Molecules</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/scenes">Scenes</a>
+        </li>
+        <li class="-items">
+          <a class="nav-link" href="/lessons">Lessons</a>
+        <li class="nav-item">
+          <a class="nav-link" href="/">About</a>
+        </li>
+      </ul>
+
+      <a type="button" class="btn btn-outline-light me-2" href="/login">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+          class="bi bi-box-arrow-in-right me-2" viewBox="0 0 16 16">
+          <path fill-rule="evenodd"
+            d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z">
+          </path>
+          <path fill-rule="evenodd"
+            d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z">
+          </path>
+        </svg>
+        Login
+      </a>
+
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Molecule Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.3/css/dataTables.bootstrap5.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+    <script src = "https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
+    <script src = "https://cdn.datatables.net/1.13.3/js/dataTables.bootstrap5.min.js"></script>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "/js/three.module.js",
+                "OrbitControls": "/js/OrbitControls.js"
+            }
+        }
+    </script>
+    <script type="text/javascript" src="/js/datgui/dat.gui.min.js"></script>
+    <script src="/js/molFileToJSON.js"></script>
+
+    <style>
+        body { 
+            background-color : #202020;
+            margin: 0; 
+        }
+        #three-area{
+            height: 100vh;
+            width: 100%;
+        }
+        #gui-area{
+            position: absolute;
+            top: 0;
+            left: 0;
+            max-width: 500px;
+            z-index: 1000 !important;
+        }
+        .gui-width{
+            max-width: 500px;
+        }
+        #body-container{
+            position: relative;
+        }
+        .bg-black{
+            background-color: #1f2326 !important;
+        }
+        .transparent-blur{
+            background-color: rgba(31, 35, 38, 0.7);
+        }
+        .blur-10{
+            backdrop-filter: blur(10px);
+        }
+    </style> 
+</head>
+<body>
+    <div id = "body-container">
+        <div id ="three-area"></div>
+        <div id="gui-area">
+            <div class="gui-width">
+                <div class = "container">
+                    <div class = "row mt-3">
+                        <div class = "col">
+                            <button type="button" id = "main-menu-button" class="btn btn-outline-light" data-bs-toggle="offcanvas" data-bs-target="#mainMenu" aria-controls="mainMenu">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-menu-app-fill" viewBox="0 0 16 16">
+                                    <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h2A1.5 1.5 0 0 1 5 1.5v2A1.5 1.5 0 0 1 3.5 5h-2A1.5 1.5 0 0 1 0 3.5v-2zM0 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8zm1 3v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2H1zm14-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2h14zM2 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z"/>
+                                </svg>
+                                Menu
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="offcanvas offcanvas-start text-white transparent-blur blur-10" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="mainMenu" aria-labelledby="mainMenu">
+                        <div class="offcanvas-header bg-black border-bottom">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="offcanvas" aria-label="Close">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-menu-app" viewBox="0 0 16 16">
+                                <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h2A1.5 1.5 0 0 1 5 1.5v2A1.5 1.5 0 0 1 3.5 5h-2A1.5 1.5 0 0 1 0 3.5v-2zM1.5 1a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5h-2zM0 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8zm1 3v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2H1zm14-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2h14zM2 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z"/>
+                            </svg>
+                            Menu
+                        </button>
+    
+                        <h3 class="offcanvas-title fw-bold" id="offcanvasScrollingLabel">
+                            MoleculAR
+                        </h3>
+                        </div>
+                        <div class="offcanvas-body">
+                            <div class = "row">
+                                <h4>Molecule</h4>
+                                <div class = "col-12">
+                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#fileMenu" role="button" aria-expanded="false" aria-controls="fileMenu">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-fill" viewBox="0 0 16 16">
+                                            <path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3z"/>
+                                          </svg>
+                                        Load .mol File
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mt-2">
+                                  <div class="collapse multi-collapse" id="fileMenu">
+                                    <div class="mb-3">
+                                        <input class="form-control form-control-lg" type="file" id="fileInput" accept=".mol">
+                                      </div>
+                                  </div>
+                                </div>
+                            </div>
+        
+        
+                            <div class = "row">
+                                <div class = "col-12 mt-2">
+                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#searchMenu" role="button" aria-expanded="false" aria-controls="searchMenu">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                          </svg>
+                                        Search PubChem
+                                    </button>   
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mt-2">
+                                  <div class="collapse multi-collapse" id="searchMenu">
+                                    <div class="input-group flex-nowrap">
+                                        <span class="input-group-text" id="addon-wrapping">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+                                            </svg>
+                                        </span>
+                                        <input type="text" id = "search-field" class="form-control form-control-lg" placeholder="Molecule Name" aria-label="Username" aria-describedby="addon-wrapping">
+                                        <button class="btn btn-light" type="button" id="search-button">Search</button>
+                                    </div>
+                                    <div class = "row">
+                                        <div class = "col-12">
+                                            <div id = "search-results">
+                                            </div>
+                                        </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class = "row">
+                                <h4>Appearance</h4>
+                                <div class = "col-12">
+                                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                        <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+                                        <label class="btn btn-outline-light" for="btnradio1">Stick</label>
+                                      
+                                        <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+                                        <label class="btn btn-outline-light" for="btnradio2">Ball and Stick</label>
+                                      
+                                        <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
+                                        <label class="btn btn-outline-light" for="btnradio3">Space Filling</label>
+                                      </div>
+                                </div>
+                                <div class = "col-12 mt-3">
+                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#appearanceMenu" role="button" aria-expanded="false" aria-controls="appearanceMenu">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-brush" viewBox="0 0 16 16">
+                                            <path d="M15.825.12a.5.5 0 0 1 .132.584c-1.53 3.43-4.743 8.17-7.095 10.64a6.067 6.067 0 0 1-2.373 1.534c-.018.227-.06.538-.16.868-.201.659-.667 1.479-1.708 1.74a8.118 8.118 0 0 1-3.078.132 3.659 3.659 0 0 1-.562-.135 1.382 1.382 0 0 1-.466-.247.714.714 0 0 1-.204-.288.622.622 0 0 1 .004-.443c.095-.245.316-.38.461-.452.394-.197.625-.453.867-.826.095-.144.184-.297.287-.472l.117-.198c.151-.255.326-.54.546-.848.528-.739 1.201-.925 1.746-.896.126.007.243.025.348.048.062-.172.142-.38.238-.608.261-.619.658-1.419 1.187-2.069 2.176-2.67 6.18-6.206 9.117-8.104a.5.5 0 0 1 .596.04zM4.705 11.912a1.23 1.23 0 0 0-.419-.1c-.246-.013-.573.05-.879.479-.197.275-.355.532-.5.777l-.105.177c-.106.181-.213.362-.32.528a3.39 3.39 0 0 1-.76.861c.69.112 1.736.111 2.657-.12.559-.139.843-.569.993-1.06a3.122 3.122 0 0 0 .126-.75l-.793-.792zm1.44.026c.12-.04.277-.1.458-.183a5.068 5.068 0 0 0 1.535-1.1c1.9-1.996 4.412-5.57 6.052-8.631-2.59 1.927-5.566 4.66-7.302 6.792-.442.543-.795 1.243-1.042 1.826-.121.288-.214.54-.275.72v.001l.575.575zm-4.973 3.04.007-.005a.031.031 0 0 1-.007.004zm3.582-3.043.002.001h-.002z"/>
+                                        </svg>
+                                        Edit
+                                    </button>   
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mt-2">
+                                  <div class="collapse multi-collapse" id="appearanceMenu">
+                                        <input type="button" class="btn-check btn-block" name="btnradio" id="atomAppearanceButton" autocomplete="off" data-bs-toggle="collapse" href="#atomAppearanceMenu" role="button" aria-expanded="false" aria-controls="atomAppearanceMenu">
+                                        <label class="btn btn-outline-light" for="atomAppearanceButton">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrows-angle-expand" viewBox="0 0 24 24">
+                                                <path d="M16 7c0 2.21-1.79 4-4 4S8 9.21 8 7s1.79-4 4-4 4 1.79 4 4zm-9 6c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm10 0c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z"></path>
+                                            </svg>
+                                            Atoms
+                                        </label>
+                                    
+                                        <input type="button" class="btn-check btn-block" name="btnradio" id="bondAppearanceButton" autocomplete="off" data-bs-toggle="collapse"  href="#bondsAppearanceMenu" role="button" aria-expanded="false" aria-controls="bondsAppearanceMenu">
+                                        <label class="btn btn-outline-light" for="bondAppearanceButton">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrows-angle-expand" viewBox="0 0 24 24">
+                                            <path d="M8.4 18.2c.38.5.6 1.12.6 1.8 0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3c.44 0 .85.09 1.23.26l1.41-1.77c-.92-1.03-1.29-2.39-1.09-3.69l-2.03-.68c-.54.83-1.46 1.38-2.52 1.38-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3c0 .07 0 .14-.01.21l2.03.68c.64-1.21 1.82-2.09 3.22-2.32V5.91C9.96 5.57 9 4.4 9 3c0-1.66 1.34-3 3-3s3 1.34 3 3c0 1.4-.96 2.57-2.25 2.91v2.16c1.4.23 2.58 1.11 3.22 2.32L18 9.71V9.5c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3c-1.06 0-1.98-.55-2.52-1.37l-2.03.68c.2 1.29-.16 2.65-1.09 3.69l1.41 1.77c.38-.18.79-.27 1.23-.27 1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3c0-.68.22-1.3.6-1.8l-1.41-1.77c-1.35.75-3.01.76-4.37 0L8.4 18.2z"></path>
+                                            </svg>
+                                            Bonds
+                                        </label>
+                                        <div class="row">
+                                            <div class="col-12 mt-2">
+                                              <div class="collapse multi-collapse" id="atomAppearanceMenu">
+                                                <div id = "atomMaterialEditor"></div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 mt-2">
+                                              <div class="collapse multi-collapse" id="bondsAppearanceMenu">
+                                                Bonds
+                                                <div id = "bondMaterialEditor"></div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script type= "module">
+        console.log(navigator)
+        if(/iPhone|iPad/.test(navigator.userAgent)){
+            const webxrViewerScheme = "ios-webxr-viewer://"
+            const xrViewerApp = "https://apps.apple.com/ca/app/webxr-viewer/id1295998056";
+            const webViewerUrl = "ios-webxr-viewer://load?url=" + window.location.href;
+            const isAppInstalled = window.navigator.registerProtocolHandler(webxrViewerScheme, window.location.href, "webxr")  
+            if (isAppInstalled == false){
+                const modal = document.createElement("div");
+                modal.innerHTML = `
+                    <div>
+                    <h2>Download WebXR Viewer to Use This IOS</h2>
+                    <p>Would you like to download our app from the App Store?</p>
+                    <button id="downloadButton">Download</button>
+                    <button id="cancelButton">Cancel</button>
+                    </div>
+                    `;
+                modal.id = "appDownloadModal";
+                modal.style.display = "block";
+                modal.style.position = "fixed";
+                modal.style.top = 0;
+                modal.style.left =  0;
+                modal.style.width = "100%";
+                modal.style.height = "100%";
+                modal.style.backgroundColor = "black";
+                modal.style.zIndex = "9999";
+                document.appendChild(modal);
+                    const downloadButton = document.createElement("button");
+                    const cancelButton = document.createElement("button");
+                    downloadButton.addEventListener("click", () => {
+                window.location.href = xrViewerApp;
+                    });
+                    cancelButton.addEventListener("click", () => {
+                        modal.style.display = "none";});
+            }
+        }
+       
+        import {OrbitControls} from '/js/OrbitControls.js';
+        import { ARButton } from '/js/ARButton.js';
+        import * as THREE from '/js/three.module.js';
+        
+        const clock = new THREE.Clock();
+        let deltaTime = 0;
+        let totalTime = 0;
+        let centerOffset = -10;
+
+        const threeArea = document.getElementById('three-area');
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setClearColor( 0x000000, 0 );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        threeArea.appendChild( renderer.domElement );
+
+        const activateAR = document.body.appendChild( ARButton.createButton( renderer ) );
+        renderer.xr.enabled = true;
+        renderer.setAnimationLoop( function () {
+            renderer.render( scene, camera );
+        } );
+
+
+        const controls = new OrbitControls( camera, renderer.domElement );
+        controls.target.set( 0, 0, centerOffset );
+
+        
+        let autoRotateX = {
+            switch: false
+        }
+        let autoRotateY = {
+            switch: false
+        }
+        let autoRotateZ = {
+            switch: false
+        }
+
+        const moleculeGeometries = {
+            "C" : new THREE.SphereGeometry( .8, 32, 32 ),
+            "H" : new THREE.SphereGeometry( .3, 32, 32 ),
+            "O" : new THREE.SphereGeometry( .5, 32, 32 ),
+            "N" : new THREE.SphereGeometry( .6, 32, 32 ),
+            "S" : new THREE.SphereGeometry( .8, 32, 32 ),
+            "P" : new THREE.SphereGeometry( .9, 32, 32 ),
+            "F" : new THREE.SphereGeometry( .4, 32, 32 ),
+            "Cl": new THREE.SphereGeometry( .5, 32, 32 ),
+            "Br": new THREE.SphereGeometry( .6, 32, 32 ),
+            "I" : new THREE.SphereGeometry( .7, 32, 32 ),
+        }
+        const moleculeMaterials = {
+            "C" : new THREE.MeshPhongMaterial( { color: 0x333333, opacity: 0.9, transparent: true} ),
+            "H" : new THREE.MeshPhongMaterial( { color: 0xffffff, opacity: 0.9, transparent: true} ),
+            "O" : new THREE.MeshPhongMaterial( { color: 0xff0000, opacity: 0.9, transparent: true} ),
+            "N" : new THREE.MeshPhongMaterial( { color: 0x0000ff, opacity: 0.9, transparent: true} ),
+            "S" : new THREE.MeshPhongMaterial( { color: 0xffff00, opacity: 0.9, transparent: true} ),
+            "P" : new THREE.MeshPhongMaterial( { color: 0xff00ff, opacity: 0.9, transparent: true} ),
+            "F" : new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
+            "Cl": new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
+            "Br": new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
+            "I" : new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
+        }
+        const cylinderMaterial = new THREE.MeshBasicMaterial( {color: 0xffffff} );
+
+        const atomMaterialEditor = document.getElementById('atomMaterialEditor');
+
+
+        let moleculeGroup = new THREE.Group();
+        let molObject;
+        function drawMolecule(molFile){
+            while(moleculeGroup.children.length > 0){ 
+                moleculeGroup.remove(moleculeGroup.children[0]); 
+            }
+            molObject = molFileToJSON(molFile);
+
+            atomMaterialEditor.innerHTML = '';
+            const uniqueElements = [...new Set(molObject.atoms.map(item => item.type))];
+            for(let item of uniqueElements){
+                let materialEditor = document.createElement('div');
+                atomMaterialEditor.appendChild(materialEditor);
+                
+                let materialRow = document.createElement('div');
+                materialRow.classList.add('row');
+                materialEditor.appendChild(materialRow);
+                
+                let materialCol = document.createElement('div');
+                materialCol.classList.add('col-12');
+                materialRow.appendChild(materialCol);
+                
+                let materialCard = document.createElement('div');
+                materialCard.classList.add('card', 'bg-dark', 'text-white', 'border', 'border-white', 'mb-2');
+                materialCol.appendChild(materialCard);
+                
+                let materialCardBody = document.createElement('div');
+                materialCardBody.classList.add('card-body', 'p-1');
+                materialCard.appendChild(materialCardBody);
+                
+                let materialCardBodyRow = document.createElement('div');
+                materialCardBodyRow.classList.add('row', 'g-0');
+                materialCard.appendChild(materialCardBodyRow);
+
+                let materialCardTitleCol = document.createElement('div');
+                materialCardTitleCol.classList.add('col-1');
+                materialCardBodyRow.appendChild(materialCardTitleCol);
+                
+                let materialCardTitle = document.createElement('h5');
+                materialCardTitle.classList.add('card-title', 'p-2', 'm-0');
+                materialCardTitle.innerHTML = item;
+                materialCardTitleCol.appendChild(materialCardTitle);
+                
+                let materialCardScaleCol = document.createElement('div');
+                materialCardScaleCol.classList.add('col-9', 'p-2');
+                materialCardBodyRow.appendChild(materialCardScaleCol);
+
+                let materialCardScale = document.createElement('input');
+                materialCardScale.classList.add('form-range');
+                materialCardScale.type = 'range';
+                materialCardScale.min = 0.1;
+                materialCardScale.max = 2;
+                materialCardScale.step = 0.1;
+                materialCardScale.value = 1;
+                materialCardScaleCol.appendChild(materialCardScale);
+
+                let materialCardColorCol = document.createElement('div');
+                materialCardColorCol.classList.add('col-2', 'p-2');
+                materialCardBodyRow.appendChild(materialCardColorCol);
+
+                let materialCardColor = document.createElement('input');
+                materialCardColor.classList.add('form-control', 'form-control-sm');
+                materialCardColor.type = 'color';
+                materialCardColorCol.appendChild(materialCardColor);
+
+
+            }
+
+            let firstPoint = new THREE.Vector3(
+                molObject.atoms[0].position.x, 
+                molObject.atoms[0].position.y, 
+                molObject.atoms[0].position.z);
+
+            let limits = {
+                x: {
+                    min: firstPoint.x,
+                    max: firstPoint.x
+                },
+                y: {
+                    min: firstPoint.y,
+                    max: firstPoint.y
+                },
+                z: {
+                    min: firstPoint.z,
+                    max: firstPoint.z
+                }
+            }
+
+            for(let item of molObject.atoms){
+                let point = new THREE.Vector3(item.position.x, item.position.y, item.position.z);
+                if(Number(point.x) < Number(limits.x.min)){
+                    limits.x.min = point.x;
+                }
+                if(Number(point.x) > Number(limits.x.max)){
+                    limits.x.max = point.x;
+                }
+                if(Number(point.y) < Number(limits.y.min)){
+                    limits.y.min = point.y;
+                }
+                if(Number(point.y) > Number(limits.y.max)){
+                    limits.y.max = point.y;
+                }
+                if(Number(point.z) < Number(limits.z.min)){
+                    limits.z.min = point.z;
+                }
+                if(Number(point.z) > Number(limits.z.max))  {
+                    limits.z.max = point.z;
+                }
+            }
+
+            let moleculeCenter = new THREE.Vector3(
+                (Number((limits.x.min)) + Number(limits.x.max))/2,
+                (Number((limits.y.min)) + Number(limits.y.max))/2,
+                (Number((limits.z.min)) + Number(limits.z.max))/2);
+                        
+            for(let item of molObject.atoms){
+                const sphere = new THREE.Mesh( moleculeGeometries[item.type], moleculeMaterials[item.type] );
+                sphere.position.x = item.position.x - moleculeCenter.x;
+                sphere.position.y = item.position.y - moleculeCenter.y;
+                sphere.position.z = item.position.z - moleculeCenter.z;
+                moleculeGroup.add( sphere );
+            }
+
+            for(let bond of molObject.bonds){
+
+                let index1 = Number(bond[0])-1;
+                let index2 = Number(bond[1])-1;
+
+                let atom1 = molObject.atoms[index1];
+                let atom2 = molObject.atoms[index2];
+
+                let point1 = new THREE.Vector3( atom1.position.x - moleculeCenter.x, atom1.position.y- moleculeCenter.y, atom1.position.z - moleculeCenter.z );
+                let point2 = new THREE.Vector3( atom2.position.x - moleculeCenter.x, atom2.position.y- moleculeCenter.y, atom2.position.z - moleculeCenter.z );
+                
+                let distance = point1.distanceTo(point2);
+
+                let cylinderRadius = bond[2] == 1 ? .05 : .15;
+
+                const cylinderGeometry = new THREE.CylinderGeometry( cylinderRadius, cylinderRadius, distance, 8 );
+                cylinderGeometry.translate(0, distance / 2, 0);
+                cylinderGeometry.rotateX(Math.PI / 2);
+
+                const cylinder = new THREE.Mesh( cylinderGeometry, cylinderMaterial );
+                cylinder.position.x = atom1.position.x - moleculeCenter.x;
+                cylinder.position.y = atom1.position.y - moleculeCenter.y;
+                cylinder.position.z = atom1.position.z - moleculeCenter.z;
+                cylinder.lookAt(point2);
+
+                moleculeGroup.add( cylinder );
+
+                }
+
+            moleculeGroup.position.z = centerOffset;
+
+            scene.add( moleculeGroup );
+        }
+
+        export function getMolecule(CSID){
+            fetch('/molfiles/' + CSID + '.mol')
+                .then(response => response.text())
+                .then(molFile => {
+                    drawMolecule(molFile);
+                });
+            }
+
+
+        const moleculeFileInput = document.getElementById('fileInput');
+        moleculeFileInput.addEventListener('change', function(e) {
+            const file = moleculeFileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = reader.result;
+                drawMolecule(text);
+            };
+            reader.readAsText(file);
+        });
+
+        const loadMoleculeFile = {
+            loadFile : function() { 
+                document.getElementById('fileInput').click();
+            },
+        };
+
+        const showExampleMolecules = {
+            showCaffeine : function() { 
+                getMolecule(2424);
+            },
+            showEthanol : function() { 
+                getMolecule(682);
+            },
+            showCatnip : function() { 
+                getMolecule(141747);
+            },
+            showThebacon : function() { 
+                getMolecule(9683173);
+            }
+        };
+
+        function init(defaultCSID){
+
+            getMolecule(defaultCSID);
+
+            const spotLight = new THREE.SpotLight( 0xffffff );
+            spotLight.position.set( 100, 1000, 100 );
+            spotLight.castShadow = true;
+            spotLight.shadow.mapSize.width = 1024;
+            spotLight.shadow.mapSize.height = 1024;
+            spotLight.shadow.camera.near = 500;
+            spotLight.shadow.camera.far = 4000;
+            spotLight.shadow.camera.fov = 30;
+            scene.add( spotLight );
+
+            const light = new THREE.AmbientLight( 0xffffff ); // soft white light
+            scene.add( light );
+
+            camera.position.x = 5;
+            camera.position.y = 5;
+            camera.position.z = centerOffset - 5;
+
+            // const axesHelper = new THREE.AxesHelper( 5 );
+            // scene.add( axesHelper );
+        }
+        
+        function animate() {
+            requestAnimationFrame( animate );
+            renderer.render( scene, camera );
+            
+            deltaTime = clock.getDelta();
+            totalTime += deltaTime;
+
+            if(autoRotateX.switch){
+                moleculeGroup.rotation.x-=.5*deltaTime;
+            }
+            if(autoRotateY.switch){
+                moleculeGroup.rotation.y-=.5*deltaTime;
+            }
+            if(autoRotateZ.switch){
+                moleculeGroup.rotation.z-=.5*deltaTime;
+            }
+
+            controls.update();
+        }
+        
+        init(<%=item%>);
+
+        animate();
+
+        window.addEventListener('resize', onResize, false);
+
+        function onResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        const searchField = document.getElementById('search-field');
+        const searchButton = document.getElementById('search-button');
+
+        searchField.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                searchButton.click();
+                }
+            });
+
+        searchButton.addEventListener("click", function(event) {
+            event.preventDefault();
+            searchPUBCHEM(searchField.value);
+        });
+
+        function searchPUBCHEM(name){
+            const URL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${name}/property/IUPACName,MolecularFormula/JSON?name_type=word&MaxRecords=10`;
+
+            console.log(URL);
+
+            if(name){
+                fetch(URL)
+                .then(response => response.json())
+                .then(data => displaySearchResults(data, null))
+                .catch(error => displaySearchResults(null, error))
+            }
+        }
+
+        const searchResults = document.getElementById('search-results');
+        function getMoleculeURL(URL){
+            fetch(URL)
+                .then(response => response.text())
+                .then(molFile => {
+                    console.log(molFile);
+                    drawMolecule(molFile);
+                });
+            }
+            
+        function displaySearchResults(data, error){
+            console.log(data);
+            if(data.hasOwnProperty('Fault')){
+                searchResults.innerHTML = `<p class="text-danger p-2">No results found</p>`;
+            }
+            else{
+                searchResults.innerHTML = '';
+
+                const searchResultTable = document.createElement('table');
+                searchResultTable.classList = 'table text-white mb-0';
+                searchResults.appendChild(searchResultTable);
+
+                const tableHead = document.createElement('thead');
+                searchResultTable.appendChild(tableHead);
+                const tableHeadRow = document.createElement('tr');
+                tableHead.appendChild(tableHeadRow);
+                const tableHeadCell1 = document.createElement('th');
+                const tableHeadCell2 = document.createElement('th');
+                tableHeadCell1.innerHTML = "Formula <br> IUPAC Name";
+                tableHeadCell2.innerHTML = "";
+
+                tableHeadRow.appendChild(tableHeadCell1);
+                tableHeadRow.appendChild(tableHeadCell2);
+
+
+                const tableBody = document.createElement('tbody');
+                searchResultTable.appendChild(tableBody);
+
+                for(let i = 0; i < 10; i++){
+                    let item = data.PropertyTable.Properties[i];
+                    const row = tableBody.insertRow();
+                    const cell1 = row.insertCell(0);
+                    const cell2 = row.insertCell(1);
+
+
+                    cell1.classList.add('text-break');
+                    cell1.innerHTML = item.MolecularFormula + "<br>" + item.IUPACName;
+                    let viewButton = document.createElement('button');
+                    viewButton.classList = 'btn btn-outline-light';
+                    viewButton.innerHTML = 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"     class="bi bi-eye-fill" viewBox="0 0 16 16">
+                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                    </svg> View`;
+
+                    viewButton.addEventListener("click", function(event) {
+                        event.preventDefault();
+                        const itemURL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${item.CID}/SDF?record_type=3d`;
+                        getMoleculeURL(itemURL);
+                    });
+
+                    cell2.appendChild(viewButton);
+                    cell2.classList.add('align-middle');
+                }
+            }
+        }
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+</body>
+</html>

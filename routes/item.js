@@ -4,33 +4,25 @@ var fs = require('fs');
 
 
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.redirect('/catalog');
-});
-
 router.get('/:id', function(req , res){
+  
+  //Read the molfiles directory and store the names of the files in an array
   var molfiles = fs.readdirSync('./public/molfiles/')
-  let data = JSON.parse(fs.readFileSync('./public/catalog/catalog.json', "utf8"));
-
-  for(let i = 0; i < molfiles.length; i++){
-    molfiles[i] = molfiles[i].replace('.mol', '');
-  }
-  if(molfiles.includes(req.params.id)){
-    if(!data[req.params.id].hasOwnProperty('name')){
-      data[req.params.id].name = 'No name in catalog';
-      data[req.params.id].formula = 'No formula in catalog';
-    }
-    var molfile = fs.readFileSync('./public/molfiles/'+req.params.id+'.mol', 'utf8');
+  
+  
+  //Check if the array includes a file with the same name as the id parameter
+  if(molfiles.includes(req.params.id + '.mol')){
+    
+    //Render the item page with the id as the item argument and the molfile as the molfile argument
     res.render('item', {
       title: 'Molecule Viewer: '+ req.params.id, 
-      item: req.params.id, 
-      molfile: molfile,
-      name: data[req.params.id].name,
-      formula: data[req.params.id].formula,
+      item: req.params.id
     });
-  }else{
-    res.render('error', {title: 'Error', message: 'Molecule not found', error: {status: 404, stack: ''}});
+  }
+  
+  //If the file does not exist, render the error page:
+  else{
+    res.render('error', {title: 'Error', message: 'Molecule not found', error: {status: 404}});
   }
 });
 

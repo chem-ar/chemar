@@ -1,0 +1,56 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+.webgl {
+  background-image: linear-gradient(black, grey);
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+.section {
+  display: flex;
+  align-items: center;
+  height: 100vh;
+  position: relative;
+  font-family: "Cabin", sans-serif;
+  color: #ffeded;
+  padding-left: 10%;
+  padding-right: 10%;
+  z-index: 1000 !important;
+}
+
+section:nth-child(odd) {
+  justify-content: flex-end;
+}
+html {
+  background: #1e1a20;
+}
+body {
+  margin: 0;
+}
+.footerbuttons {
+  z-index: 1100 !important;
+  position: relative;
+}
+.navbar {
+  z-index: 1100 !important;
+  position: sticky;
+  top: 0;
+}
+.dataTables_filter input {
+  color: white;
+  background-color: white;
+}
+.dataTables_length select {
+  color: white;
+}
+table,
+thead,
+tbody {
+  color: white;
+}
+.instructions {
+  color: white;
+  background-color: transparent;
+}
