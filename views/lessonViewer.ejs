@@ -253,11 +253,13 @@ const moleculeMaterials = {
   var mesh1;
   
   
-  function drawMolecule(molObject, Title, drawPosition, drawRotation, drawScale){
-    console.log(molObject);
-    console.log(drawPosition);
-    console.log(drawRotation);
-    console.log(drawScale);
+  function drawMolecule(molObject, Title, drawPosition, drawRotation, drawScale, offset){
+    // console.log(molObject);
+    // console.log(drawPosition);
+    // console.log(drawRotation);
+    // console.log(drawScale);
+    console.log(offset);
+
 
 
     let moleculeGroup = new THREE.Group();
@@ -371,6 +373,10 @@ const moleculeMaterials = {
             moleculeGroup.position.y = drawPosition.y;
             moleculeGroup.position.z = drawPosition.z;
 
+            moleculeGroup.position.x -= offset.x;
+            moleculeGroup.position.y -= offset.y;
+            moleculeGroup.position.z -= offset.z;
+
             //Sets the rotation
             moleculeGroup.rotation.x = drawRotation._x;
             moleculeGroup.rotation.y = drawRotation._y;
@@ -477,23 +483,22 @@ const moleculeMaterials = {
       type: 'pattern', patternUrl: "/data/kanji.patt",
     })
 
-    let geometry1	= new THREE.CubeGeometry(1,1,1);
-    let material1	= new THREE.MeshNormalMaterial({
-      transparent: true,
-      opacity: 0.5,
-      side: THREE.DoubleSide
-    }); 
+    // let geometry1	= new THREE.CubeGeometry(1,1,1);
+    // let material1	= new THREE.MeshNormalMaterial({
+    //   transparent: true,
+    //   opacity: 0.5,
+    //   side: THREE.DoubleSide
+    // }); 
     
-    mesh1 = new THREE.Mesh( geometry1, material1 );
-    mesh1.position.y = 0.5;
+    // mesh1 = new THREE.Mesh( geometry1, material1 );
+    // mesh1.position.y = 0.5;
 
-    console.log(moleculeData);
+    console.log(moleculeData.trackingMarker);
 
     for(let item of moleculeData.molecules){
-      console.log(item);
 
-      let molecule = drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale, moleculeData);
-      console.log(molecule);
+      let molecule = drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale, moleculeData.trackingMarker.position);
+      // console.log(molecule);
 
       markerRoot1.add( molecule ); 
 
