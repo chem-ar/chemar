@@ -3,14 +3,14 @@ var router = express.Router();
 var fs = require('fs'); 
 
 router.get('/', function(req, res, next) {
-  res.render('lessonViewer', { title: 'Scene Viewer'});
+  res.redirect('/lessons');
 });
 
 
 router.get('/:id', function(req , res){
-  var lessonfiles = fs.readdirSync('./public/lessons/')
+  var lessonFiles = fs.readdirSync(`./public/lessons/`);
 
-  if(lessonfiles.includes(req.params.id)){
+  if(lessonFiles.includes(req.params.id + ".json")){
     res.render('lessonViewer', {
       title: 'Scene Viewer', 
       item: req.params.id
@@ -18,7 +18,7 @@ router.get('/:id', function(req , res){
   }
   
   else{
-    res.render('error', { title: 'MoleculAR - Error', message: 'Scene not found', error: {status: 404, stack: 'Scene not found'}});
+    res.render('error', { title: 'ChemAR - Error', message: 'Scene not found', error: {status: 404, stack: 'Scene not found'}});
   }
 
 });

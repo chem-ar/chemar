@@ -141,7 +141,11 @@
                         </div>
                         <div class="offcanvas-body">
                             <div class = "row">
-                                <h4>Lesson</h4>
+                                <h4 id="currentLesson">Lesson</h4>
+                                <p id = "fileName"></p>
+                                <p id = "lessonName"></p>
+                                <p id = "lessonDescription"></p>
+
                                 <div class = "col-12">
                                     <div  class="input-group mb-2">
                                         <select id="lessonMenuList" class="form-select" id="inputGroupSelect02">
@@ -339,6 +343,10 @@
 
     <script type= "module">
 
+        var fileName = document.getElementById("fileName");
+        var lessonName = document.getElementById("lessonName");
+        var lessonDescription = document.getElementById("lessonDescription");
+
         let lesson;
 
         let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
@@ -349,6 +357,21 @@
             .then(data => {
                 lesson = data;
                 console.log(lesson);
+                // <h4 id="currentLesson">Lesson</h4>
+                // <p id = "fileName           "></p>
+                // <p id = "lessonName        "></p>
+                // <p id = "lessonDescription"></p
+
+                fileName.innerHTML = "File name: " + requestedFile;
+                lessonName.innerHTML = "Lesson name: " + lesson.name;
+                lessonDescription.innerHTML = "Lesson desc: " + lesson.desc;
+
+                // Draw each molecule in three when lessonEditor is loaded.
+                for(let item of lesson.molecules) {
+                    console.log(item);
+                    drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale);
+                }
+
             })
             .catch(error => console.error(error));
 
@@ -386,11 +409,11 @@
                                 if(data.includes("PUGREST.NotFound")){
                                     console.log("2D File Not Found");
                                 }else{
-                                    drawMolecule(data, Title);
+                                    drawMoleculeFromMolFile(data, Title);
                                 }
                             });
                     }else{
-                        drawMolecule(data, Title);
+                        drawMoleculeFromMolFile(data, Title);
                     }
                 });
             }
@@ -512,10 +535,14 @@
                 moleculePositionXText.classList = 'form-control form-control-sm mb-2';
                 moleculePositionXText.type = 'number';
                 moleculePositionXText.value = molecule.molecule.position.x;
+                
+                // molecule pos x
                 moleculePositionXText.addEventListener("input", function(event) {
                     molecule.molecule.position.x = moleculePositionXText.value;
                     moleculePositionXSlider.value = moleculePositionXText.value;
+
                 });
+
                 let moleculePositionXTextCol = document.createElement('div');
                 moleculePositionXTextCol.classList = 'col-3';
                 moleculePositionXTextCol.appendChild(moleculePositionXText);
@@ -528,10 +555,14 @@
                 moleculePositionXSlider.max = '11';
                 moleculePositionXSlider.step = '0.01';
                 moleculePositionXSlider.value = molecule.molecule.position.x;
+
                 moleculePositionXSlider.addEventListener("input", function(event) {
                     molecule.molecule.position.x = moleculePositionXSlider.value;
                     moleculePositionXText.value = moleculePositionXSlider.value;
+            
+
                 });
+
                 let moleculePositionXSliderCol = document.createElement('div');
                 moleculePositionXSliderCol.classList = 'col-8';
                 moleculePositionXSliderCol.appendChild(moleculePositionXSlider);
@@ -550,10 +581,13 @@
                 moleculePositionYText.classList = 'form-control form-control-sm mb-2';
                 moleculePositionYText.type = 'number';
                 moleculePositionYText.value = molecule.molecule.position.x;
+
+                // molecule pos y
                 moleculePositionYText.addEventListener("input", function(event) {
                     molecule.molecule.position.y = moleculePositionYText.value;
                     moleculePositionYSlider.value = moleculePositionYText.value;
                 });
+
                 let moleculePositionYTextCol = document.createElement('div');
                 moleculePositionYTextCol.classList = 'col-3';
                 moleculePositionYTextCol.appendChild(moleculePositionYText);
@@ -566,16 +600,17 @@
                 moleculePositionYSlider.max = '11';
                 moleculePositionYSlider.step = '0.01';
                 moleculePositionYSlider.value = molecule.molecule.position.x;
+
                 moleculePositionYSlider.addEventListener("input", function(event) {
                     molecule.molecule.position.y = moleculePositionYSlider.value;
                     moleculePositionYText.value = moleculePositionYSlider.value;
                 });
+
                 let moleculePositionYSliderCol = document.createElement('div');
                 moleculePositionYSliderCol.classList = 'col-8';
                 moleculePositionYSliderCol.appendChild(moleculePositionYSlider);
                 moleculePositionYRow.appendChild(moleculePositionYSliderCol);
 
-                
                 let moleculePositionZRow = document.createElement('div');
                 moleculePositionZRow.classList = 'row';
                 moleculeCollapseContent.appendChild(moleculePositionZRow);
@@ -589,10 +624,14 @@
                 moleculePositionZText.classList = 'form-control form-control-sm mb-2';
                 moleculePositionZText.type = 'number';
                 moleculePositionZText.value = molecule.molecule.position.x;
+                
+                // molecule pos z
                 moleculePositionZText.addEventListener("input", function(event) {
                     molecule.molecule.position.z = moleculePositionZText.value;
+                    // Add to the array.
                     moleculePositionZSlider.value = moleculePositionZText.value;
                 });
+
                 let moleculePositionZTextCol = document.createElement('div');
                 moleculePositionZTextCol.classList = 'col-3';
                 moleculePositionZTextCol.appendChild(moleculePositionZText);
@@ -605,10 +644,14 @@
                 moleculePositionZSlider.max = '11';
                 moleculePositionZSlider.step = '0.01';
                 moleculePositionZSlider.value = molecule.molecule.position.x;
+                
+                
+                // molecule Z event listener
                 moleculePositionZSlider.addEventListener("input", function(event) {
                     molecule.molecule.position.z = moleculePositionZSlider.value;
                     moleculePositionZText.value = moleculePositionZSlider.value;
                 });
+                
                 let moleculePositionZSliderCol = document.createElement('div');
                 moleculePositionZSliderCol.classList = 'col-8';
                 moleculePositionZSliderCol.appendChild(moleculePositionZSlider);
@@ -635,10 +678,12 @@
                 moleculeRotationXText.classList = 'form-control form-control-sm mb-2';
                 moleculeRotationXText.type = 'number';
                 moleculeRotationXText.value = molecule.molecule.rotation.y;
+                
                 moleculeRotationXText.addEventListener("input", function (event) {
                     molecule.molecule.rotation.x = moleculeRotationXText.value;
                     moleculeRotationXSlider.value = moleculeRotationXText.value;
                 });
+                
                 let moleculeRotationXTextCol = document.createElement('div');
                 moleculeRotationXTextCol.classList = 'col-3';
                 moleculeRotationXTextCol.appendChild(moleculeRotationXText);
@@ -651,10 +696,12 @@
                 moleculeRotationXSlider.max = Math.PI;
                 moleculeRotationXSlider.step = '0.01';
                 moleculeRotationXSlider.value = molecule.molecule.rotation.y;
+                
                 moleculeRotationXSlider.addEventListener("input", function (event) {
                     molecule.molecule.rotation.x = moleculeRotationXSlider.value;
                     moleculeRotationXText.value = moleculeRotationXSlider.value;
                 });
+                
                 let moleculeRotationXSliderCol = document.createElement('div');
                 moleculeRotationXSliderCol.classList = 'col-8';
                 moleculeRotationXSliderCol.appendChild(moleculeRotationXSlider);
@@ -674,10 +721,12 @@
                 moleculeRotationYText.classList = 'form-control form-control-sm mb-2';
                 moleculeRotationYText.type = 'number';
                 moleculeRotationYText.value = molecule.molecule.rotation.y;
+               
                 moleculeRotationYText.addEventListener("input", function (event) {
                     molecule.molecule.rotation.y = moleculeRotationYText.value;
                     moleculeRotationYSlider.value = moleculeRotationYText.value;
                 });
+                
                 let moleculeRotationYTextCol = document.createElement('div');
                 moleculeRotationYTextCol.classList = 'col-3';
                 moleculeRotationYTextCol.appendChild(moleculeRotationYText);
@@ -690,10 +739,12 @@
                 moleculeRotationYSlider.max = Math.PI;
                 moleculeRotationYSlider.step = '0.01';
                 moleculeRotationYSlider.value = molecule.molecule.rotation.y;
+                
                 moleculeRotationYSlider.addEventListener("input", function (event) {
                     molecule.molecule.rotation.y = moleculeRotationYSlider.value;
                     moleculeRotationYText.value = moleculeRotationYSlider.value;
                 });
+
                 let moleculeRotationYSliderCol = document.createElement('div');
                 moleculeRotationYSliderCol.classList = 'col-8';
                 moleculeRotationYSliderCol.appendChild(moleculeRotationYSlider);
@@ -713,10 +764,12 @@
                 moleculeRotationZText.classList = 'form-control form-control-sm mb-2';
                 moleculeRotationZText.type = 'number';
                 moleculeRotationZText.value = molecule.molecule.rotation.y;
+               
                 moleculeRotationZText.addEventListener("input", function (event) {
                     molecule.molecule.rotation.z = moleculeRotationZText.value;
                     moleculeRotationZSlider.value = moleculeRotationZText.value;
                 });
+
                 let moleculeRotationZTextCol = document.createElement('div');
                 moleculeRotationZTextCol.classList = 'col-3';
                 moleculeRotationZTextCol.appendChild(moleculeRotationZText);
@@ -729,10 +782,12 @@
                 moleculeRotationZSlider.max = Math.PI;
                 moleculeRotationZSlider.step = '0.01';
                 moleculeRotationZSlider.value = molecule.molecule.rotation.y;
+                
                 moleculeRotationZSlider.addEventListener("input", function (event) {
                     molecule.molecule.rotation.z = moleculeRotationZSlider.value;
                     moleculeRotationZText.value = moleculeRotationZSlider.value;
                 });
+
                 let moleculeRotationZSliderCol = document.createElement('div');
                 moleculeRotationZSliderCol.classList = 'col-8';
                 moleculeRotationZSliderCol.appendChild(moleculeRotationZSlider);
@@ -744,21 +799,20 @@
                 moleculeCollapseContent.appendChild(moleculeScaleRow);
                
                 moleculeScaleRow.innerHTML = "<h5>Scale</h5>";
-               moleculeCollapseContent.appendChild(moleculeScaleRow);
-
-
+                moleculeCollapseContent.appendChild(moleculeScaleRow);
 
                 let moleculeScaleText = document.createElement('input');
                 moleculeScaleText.classList = 'form-control form-control-sm mb-2';
                 moleculeScaleText.type = 'number';
                 moleculeScaleText.value = 1;
+                
                 moleculeScaleText.addEventListener("input", function (event) {
                     molecule.molecule.scale.z = moleculeScaleText.value;
                     molecule.molecule.scale.x = moleculeScaleText.value;
                     molecule.molecule.scale.y = moleculeScaleText.value;
-
                     moleculeScaleSlider.value = moleculeScaleText.value;
                 });
+
                 let moleculeScaleTextCol = document.createElement('div');
                 moleculeScaleTextCol.classList = 'col-3';
                 moleculeScaleTextCol.appendChild(moleculeScaleText);
@@ -771,6 +825,7 @@
                 moleculeScaleSlider.max = 2;
                 moleculeScaleSlider.step = '0.01';
                 moleculeScaleSlider.value = 1;
+
                 moleculeScaleSlider.addEventListener("input", function (event) {
                     molecule.molecule.scale.z = moleculeScaleText.value;
                     molecule.molecule.scale.x = moleculeScaleText.value;
@@ -778,13 +833,11 @@
 
                     moleculeScaleText.value = moleculeScaleSlider.value;
                 });
+
                 let moleculeScaleSliderCol = document.createElement('div');
                 moleculeScaleSliderCol.classList = 'col-9';
                 moleculeScaleSliderCol.appendChild(moleculeScaleSlider);
                 moleculeScaleRow.appendChild(moleculeScaleSliderCol);
-
-
-
 
 
                 moleculeItemButton.addEventListener("click", function(event) {
@@ -835,16 +888,111 @@
 
 
         const moleculeGeometries = {
-            "C" : new THREE.SphereGeometry( .8, 32, 32 ),
-            "H" : new THREE.SphereGeometry( .3, 32, 32 ),
-            "O" : new THREE.SphereGeometry( .5, 32, 32 ),
-            "N" : new THREE.SphereGeometry( .6, 32, 32 ),
-            "S" : new THREE.SphereGeometry( .8, 32, 32 ),
-            "P" : new THREE.SphereGeometry( .9, 32, 32 ),
-            "F" : new THREE.SphereGeometry( .4, 32, 32 ),
-            "Cl": new THREE.SphereGeometry( .5, 32, 32 ),
-            "Br": new THREE.SphereGeometry( .6, 32, 32 ),
-            "I" : new THREE.SphereGeometry( .7, 32, 32 ),
+            "C" : new THREE.SphereGeometry( .67, 32, 32 ),
+            "H" : new THREE.SphereGeometry( .53, 32, 32 ),
+            "O" : new THREE.SphereGeometry( .48, 32, 32 ),
+            "N" : new THREE.SphereGeometry( .56, 32, 32 ),
+            "S" : new THREE.SphereGeometry( .88, 32, 32 ),
+            "P" : new THREE.SphereGeometry( .98, 32, 32 ),
+            "F" : new THREE.SphereGeometry( .42, 32, 32 ),
+            "Cl": new THREE.SphereGeometry( .79, 32, 32 ),
+            "Br": new THREE.SphereGeometry( .94, 32, 32 ),
+            "I" : new THREE.SphereGeometry( 1.15, 32, 32 ),
+            "Be": new THREE.SphereGeometry( 1.12, 32, 32 ),
+            "B" : new THREE.SphereGeometry( .87, 32, 32 ),
+            "Ne" : new THREE.SphereGeometry(.38,32,32),
+            "Na" : new THREE.SphereGeometry( 1.9,32,32),
+            "Mg" : new THREE.SphereGeometry(1.45,32,32),
+            "Al" : new THREE.SphereGeometry(1.18,32,32),
+            "Si" : new THREE.SphereGeometry(1.11,32,32),
+            "Ar" : new THREE.SphereGeometry(.71,32,32),
+            "K" : new THREE.SphereGeometry(2.43,32,32),
+            "Ca" : new THREE.SphereGeometry(1.94,32,32),
+            "Sc" : new THREE.SphereGeometry(1.84,32,32),
+            "Ti" : new THREE.SphereGeometry(1.76,32,32),
+            "V" : new THREE.SphereGeometry(1.71,32,32),
+            "Cr" : new THREE.SphereGeometry(1.66,32,32),
+            "Mn" : new THREE.SphereGeometry(1.61,32,32),
+            "Fe" : new THREE.SphereGeometry(1.56,32,32),
+            "Co" : new THREE.SphereGeometry(1.52,32,32),
+            "Ni" : new THREE.SphereGeometry(1.49,32,32),
+            "Cu" : new THREE.SphereGeometry(1.45,32,32),
+            "Zn" : new THREE.SphereGeometry(1.42,32,32),
+            "Ga" : new THREE.SphereGeometry(1.36,32,32),
+            "Ge" : new THREE.SphereGeometry(1.25,32,32),
+            "As" : new THREE.SphereGeometry(1.14,32,32),
+            "Se" : new THREE.SphereGeometry(1.03,32,32),
+            "Kr" : new THREE.SphereGeometry(0.88,32,32),
+            "Rb" : new THREE.SphereGeometry(2.65,32,32),
+            "Sr" : new THREE.SphereGeometry(2.19,32,32),
+            "Y" : new THREE.SphereGeometry(2.12,32,32),
+            "Zr" : new THREE.SphereGeometry(2.06,32,32),
+            "Nb" : new THREE.SphereGeometry(1.98,32,32),
+            "Mo" : new THREE.SphereGeometry(1.9,32,32),
+            "Tc" : new THREE.SphereGeometry(1.83,32,32),
+            "Ru" : new THREE.SphereGeometry(1.78,32,32),
+            "Rh" : new THREE.SphereGeometry(1.73,32,32),
+            "Pd" : new THREE.SphereGeometry(1.69,32,32),
+            "Ag" : new THREE.SphereGeometry(1.65,32,32),
+            "Cd" : new THREE.SphereGeometry(1.61,32,32),
+            "In" : new THREE.SphereGeometry(1.56,32,32),
+            "Sn" : new THREE.SphereGeometry(1.45,32,32),
+            "Sb" : new THREE.SphereGeometry(1.33,32,32),
+            "Te" : new THREE.SphereGeometry(1.23,32,32),
+            "Xe" : new THREE.SphereGeometry(1.08,32,32),
+            "Cs" : new THREE.SphereGeometry(2.98,32,32),
+            "Ba" : new THREE.SphereGeometry(2.53,32,32),
+            "La" : new THREE.SphereGeometry(2.46,32,32),
+            "Ce" : new THREE.SphereGeometry(2.35,32,32),
+            "Pr" : new THREE.SphereGeometry(2.44,32,32),
+            "Nd" : new THREE.SphereGeometry(2.4,32,32),
+            "Pm" : new THREE.SphereGeometry(2.38,32,32),
+            "Sm" : new THREE.SphereGeometry(2.29,32,32),
+            "Eu" : new THREE.SphereGeometry(2.33,32,32),
+            "Gd" : new THREE.SphereGeometry(2.37,32,32),
+            "Tb" : new THREE.SphereGeometry(2.21,32,32),
+            "Cr" : new THREE.SphereGeometry(1.73,32,32),
+            "Cs" : new THREE.SphereGeometry(2.98,32,32),
+            "Cu" : new THREE.SphereGeometry(1.45,32,32),
+            "Eu" : new THREE.SphereGeometry(2.33,32,32),
+            "Ga" : new THREE.SphereGeometry(1.36,32,32),
+            "Hf" : new THREE.SphereGeometry(2.08,32,32),
+            "In" : new THREE.SphereGeometry(1.56,32,32),
+            "Ir" : new THREE.SphereGeometry(1.86,32,32),
+            "Kr" : new THREE.SphereGeometry(0.88,32,32),
+            "La" : new THREE.SphereGeometry(2.46,32,32),
+            "Li" : new THREE.SphereGeometry(1.52,32,32),
+            "Lu" : new THREE.SphereGeometry(2.1,32,32),
+            "Mg" : new THREE.SphereGeometry(1.45,32,32),
+            "Mn" : new THREE.SphereGeometry(1.61,32,32),
+            "Mo" : new THREE.SphereGeometry(1.9,32,32),
+            "Na" : new THREE.SphereGeometry(1.9,32,32),
+            "Nb" : new THREE.SphereGeometry(1.98,32,32),
+            "Ne" : new THREE.SphereGeometry(0.38,32,32),
+            "Ni" : new THREE.SphereGeometry(1.49,32,32),
+            "Os" : new THREE.SphereGeometry(1.85,32,32),
+            "P"  : new THREE.SphereGeometry(0.98,32,32),
+            "Pa" : new THREE.SphereGeometry(2.0,32,32),
+            "Pb" : new THREE.SphereGeometry(1.8,32,32),
+            "Pd" : new THREE.SphereGeometry(1.69,32,32),
+            "Pm" : new THREE.SphereGeometry(2.38,32,32),
+            "Po" : new THREE.SphereGeometry(1.4,32,32),
+            "Pr" : new THREE.SphereGeometry(2.44,32,32),
+            "Pt" : new THREE.SphereGeometry(1.75,32,32),
+            "Ra" : new THREE.SphereGeometry(2.31,32,32),
+            "Rb" : new THREE.SphereGeometry(2.65,32,32),
+            "Re" : new THREE.SphereGeometry(1.88,32,32),
+            "Rh" : new THREE.SphereGeometry(1.73,32,32),
+            "Rn" : new THREE.SphereGeometry(1.5,32,32),
+            "Ru" : new THREE.SphereGeometry(1.78,32,32),
+            "Sb" : new THREE.SphereGeometry(1.33,32,32),
+            "Sc" : new THREE.SphereGeometry(1.84,32,32),
+            "Se" : new THREE.SphereGeometry(1.03,32,32),
+            "Si" : new THREE.SphereGeometry(1.11,32,32),
+            "Sm" : new THREE.SphereGeometry(2.29,32,32),
+            "Sn" : new THREE.SphereGeometry(1.45,32,32),
+            "Sr" : new THREE.SphereGeometry(2.19,32,32),
+            "Ta" : new THREE.SphereGeometry(2.0, 32,32)
         }
         const moleculeMaterials = {
             "C" : new THREE.MeshPhongMaterial( { color: 0x333333, opacity: 0.9, transparent: true} ),
@@ -855,21 +1003,96 @@
             "P" : new THREE.MeshPhongMaterial( { color: 0xff00ff, opacity: 0.9, transparent: true} ),
             "F" : new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
             "Cl": new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
-            "Br": new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
-            "I" : new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
+            "Br": new THREE.MeshPhongMaterial( { color: 0x964b00, opacity: 0.9, transparent: true} ),
+            "I" : new THREE.MeshPhongMaterial( { color: 0x8b008b, opacity: 0.9, transparent: true} ),
+            "Be": new THREE.MeshPhongMaterial( { color: 0xc2c2c2, opacity: 0.9, transparent: true} ),
+            "B" : new THREE.MeshPhongMaterial( { color: 0xffa500, opacity: 0.9, transparent: true} ),
+            "Ne" : new THREE.MeshPhongMaterial( { color: 0xb3e6ff, opacity: 0.9, transparent: true} ),
+            "Na" : new THREE.MeshPhongMaterial( { color: 0x0000ff, opacity: 0.9, transparent: true} ),
+            "Mg" : new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
+            "Al" : new THREE.MeshPhongMaterial( { color: 0xc2c2c2, opacity: 0.9, transparent: true} ),
+            "Si" : new THREE.MeshPhongMaterial( { color: 0xd9d9d9, opacity: 0.9, transparent: true} ),
+            "Ar" : new THREE.MeshPhongMaterial( { color: 0xb3e6ff, opacity: 0.9, transparent: true} ),
+            "K" : new THREE.MeshPhongMaterial( { color: 0x8f40a6, opacity: 0.9, transparent: true} ),
+            "Ca" : new THREE.MeshPhongMaterial( { color: 0x808080, opacity: 0.9, transparent: true} ),
+            "Sc" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Ti" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "V" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Cr" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Mn" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Fe" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Co" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Ni" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Cu" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Zn" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Ga" : new THREE.MeshPhongMaterial( { color: 0xc2c2c2, opacity: 0.9, transparent: true} ),
+            "Ge" : new THREE.MeshPhongMaterial( { color: 0xd9d9d9, opacity: 0.9, transparent: true} ),
+            "As" : new THREE.MeshPhongMaterial( { color: 0xffa500, opacity: 0.9, transparent: true} ),
+            "Se" : new THREE.MeshPhongMaterial( { color: 0xffff00, opacity: 0.9, transparent: true} ),
+            "Kr" : new THREE.MeshPhongMaterial( { color: 0xb3e6ff, opacity: 0.9, transparent: true} ),
+            "Rb" : new THREE.MeshPhongMaterial( { color: 0x8f40a6, opacity: 0.9, transparent: true} ),
+            "Sr" : new THREE.MeshPhongMaterial( { color: 0x808080, opacity: 0.9, transparent: true} ),
+            "Y" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Zr" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Nb" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Mo" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Tc" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Ru" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Rh" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Pd" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
+            "Li": new THREE.MeshPhongMaterial( { color: 0xff6666, opacity: 0.9, transparent: true} ),
+            "Be": new THREE.MeshPhongMaterial( { color: 0xccff99, opacity: 0.9, transparent: true} ),
+            "F": new THREE.MeshPhongMaterial( { color: 0x66ff66, opacity: 0.9, transparent: true} ),
+            "Na": new THREE.MeshPhongMaterial( { color: 0x3366ff, opacity: 0.9, transparent: true} ),
+            "Mg": new THREE.MeshPhongMaterial( { color: 0x33cc33, opacity: 0.9, transparent: true} ),
+            "Al": new THREE.MeshPhongMaterial( { color: 0xcccccc, opacity: 0.9, transparent: true} ),
+            "Si": new THREE.MeshPhongMaterial( { color: 0x999999, opacity: 0.9, transparent: true} ),
+            "Cl": new THREE.MeshPhongMaterial( { color: 0x00ff66, opacity: 0.9, transparent: true} ),
+            "K": new THREE.MeshPhongMaterial( { color: 0xff3399, opacity: 0.9, transparent: true} ),
+            "Ca": new THREE.MeshPhongMaterial( { color: 0x66ffff, opacity: 0.9, transparent: true} ),
+            "Ti": new THREE.MeshPhongMaterial( { color: 0xff99ff, opacity: 0.9, transparent: true} ),
+            "Fe": new THREE.MeshPhongMaterial( { color: 0xff9933, opacity: 0.9, transparent: true} ),
+            "Cu": new THREE.MeshPhongMaterial( { color: 0x996633, opacity: 0.9, transparent: true} ),
+            "Zn": new THREE.MeshPhongMaterial( { color: 0x9999cc, opacity: 0.9, transparent: true} ),
+            "Ag": new THREE.MeshPhongMaterial( { color: 0xcccccc, opacity: 0.9, transparent: true} ),
+            "Au": new THREE.MeshPhongMaterial( { color: 0xffcc00, opacity: 0.9, transparent: true} )
         }
         
         let lessonMolecules = [];
+        
+        function drawMoleculeFromMolFile(molFile, Title){
+            let molObject = molFileToJSON(molFile);
+            drawMolecule(molObject, Title);
+        }
 
-        function drawMolecule(molFile, Title){
+        function drawMolecule(molObject, Title, drawPosition, drawRotation, drawScale){
+            console.log(drawPosition);
+            console.log(drawRotation);
+
             let moleculeGroup = new THREE.Group();
-            let molObject;
-            molObject = molFileToJSON(molFile);
+
+            if(drawPosition === undefined){
+                drawPosition = new THREE.Vector3(0,0,0);
+            }
+            
+            if(drawRotation === undefined){
+                drawRotation = {
+                    _x: 0,
+                    _y: 0,
+                    _z: 0}
+            }
+
+            if(drawScale === undefined){
+                drawScale = {
+                    x: 1,
+                    y: 1,
+                    z: 1}
+            }
 
             let firstPoint = new THREE.Vector3(
-                molObject.atoms[0].position.x, 
-                molObject.atoms[0].position.y, 
-                molObject.atoms[0].position.z);
+                molObject.x, 
+                molObject.y, 
+                molObject.z);
 
             let limits = {
                 x: {
@@ -952,7 +1175,25 @@
 
             // moleculeGroup.position.z = centerOffset;
 
-            lessonMolecules.push({Title: Title, molecule: moleculeGroup})
+            moleculeGroup.position.x = drawPosition.x;
+            moleculeGroup.position.y = drawPosition.y;
+            moleculeGroup.position.z = drawPosition.z;
+
+            moleculeGroup.rotation.x = drawRotation._x;
+            moleculeGroup.rotation.y = drawRotation._y;
+            moleculeGroup.rotation.z = drawRotation._z;
+
+            
+            moleculeGroup.scale.x = drawScale.x;
+            moleculeGroup.scale.y = drawScale.y;
+            moleculeGroup.scale.z = drawScale.z;
+
+            console.log(moleculeGroup.rotation);
+            console.log(drawRotation);
+
+            
+
+            lessonMolecules.push({Title: Title, molecule: moleculeGroup, cjson: molObject, position: moleculeGroup.position, rotation: moleculeGroup.rotation, scale: moleculeGroup.scale})
             scene.add( moleculeGroup );
 
             lessonMoleculeMenu();
@@ -1080,7 +1321,7 @@
                 .then(data => {
                     loadedLesson = JSON.stringify(data);
                     console.log(loadedLesson);
-                    window.location.href = "/" + loadedLesson.name +".json";
+                    window.location.href = "/lessonEditor/" + selectedLesson;
                 });
         });
 
@@ -1104,6 +1345,20 @@
             console.log(newLessonName);
             // if (newLessonName != (lesson[name] + ""))
             //     lesson[name] = newLessonName;
+            let offsetArray = [];
+            for(let item of lessonMolecules){
+                offsetArray.push(item.molecule.position);
+            }
+
+            let rotationArray = [];
+            for(let item of lessonMolecules){
+                rotationArray.push(item.molecule.rotation);
+            }
+
+            let scaleArray = [];
+            for(let item of lessonMolecules){
+                scaleArray.push(item.molecule.scale);
+            }
 
             lesson = {
                 "name" : lessonName,
@@ -1113,8 +1368,18 @@
                         "y" : markerPlane.position.y,
                         "z" : markerPlane.position.z,
                     },
+                    "rotation" : {
+                        "x" : markerPlane.rotation.x,
+                        "y" : markerPlane.rotation.y,
+                        "z" : markerPlane.rotation.z,
+                    },
+                    "scale" : {
+                       "x" : markerPlane.scale.x,
+                       "y" : markerPlane.scale.y,
+                       "z" : markerPlane.scale.z, 
+                    }
                 },
-                "molecules" : lessonMolecules
+                "molecules" : lessonMolecules,
             }
 
             // lessonMolecules.forEach(mol => {
@@ -1145,7 +1410,7 @@
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
-  });
+            });
         }
 
         const lessonFileInput = document.getElementById('lessonFileInput');
