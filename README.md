@@ -78,6 +78,10 @@ git clone https://git.cs.dal.ca/belcher/chemar-winter-2023
 Install the dependencies:
 
 ```bash
+cd <project-root-directory>
+```
+
+```bash
 npm install
 ```
 
