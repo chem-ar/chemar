@@ -1,0 +1,8 @@
+deploy_azure:
+  stage: deploy
+  image: mcr.microsoft.com/azure-cli
+  only:
+    - main #Change to your branch for testing. Change back to main/develop before merging
+  script:
+    - az login --tenant TENANTID
+    - az webapp up --sku F1 --name <webapp-name>
