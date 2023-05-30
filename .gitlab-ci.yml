@@ -4,6 +4,4 @@ deploy_azure:
   only:
     - main #Change to your branch for testing. Change back to main/develop before merging
   script:
-    - az login --tenant cc4642ad-3f59-43e8-91db-052daa4306ec
     - az login --service-principal -u f52712e1-2310-486d-b932-0049e3238dd1 -p $PASSWORD --tenant cc4642ad-3f59-43e8-91db-052daa4306ec
-
