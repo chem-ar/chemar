@@ -1,0 +1,10 @@
+deploy-azure:
+  stage: deploy
+  image: mcr.microsoft.com/azure-cli
+  only:
+    - main
+  script:
+    - az login --username $USERID --password $USERPASSWORD
+    - az webapp up --name $APPNAME --plan $APPSERVICEPLAN --sku B2
+    - az webapp config set --resource-group $RESOURCEGROUP --name $APPNAME --linux-fx-version "NODE|16-lts"
+    - az webapp restart --name $APPNAME --resource-group $RESOURCEGROUP
