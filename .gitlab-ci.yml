@@ -1,29 +1,13 @@
-# ------------------------------
-# Stages will involve initial build, staging & testing area, followed by an azure deployment job.
-stages:
-  - build
-  - test
-  - deploy
-
-build:
-  stage: build
-  image: node:16
-  script:
-    # https://docs.npmjs.com/cli/v9/commands/npm-ci
-    - npm ci
-
-test:
-  stage: test
-  image: node:16
-  script:
-    - npm ci
-    - npm i
-
-deploy-azure:      # This job runs in the deploy stage.
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+deploy-azure:
+  stage: deploy
   image: mcr.microsoft.com/azure-cli
   only:
-    - develop #Change to your branch for testing. Change back to main/develop before merging
+    - develop
+  needs:
+    - job: build
+      artifacts: true
+    - job: test
+      artifacts: true
   script:
     - az login --username $USERID --password $USERPASSWORD
     - az webapp up --name $APPNAME --plan $APPSERVICEPLAN --sku B2
