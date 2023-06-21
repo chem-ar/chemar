@@ -3,11 +3,6 @@ deploy-azure:
   image: mcr.microsoft.com/azure-cli
   only:
     - develop
-  needs:
-    - job: build
-      artifacts: true
-    - job: test
-      artifacts: true
   script:
     - az login --username $USERID --password $USERPASSWORD
     - az webapp up --name $APPNAME --plan $APPSERVICEPLAN --sku B2
