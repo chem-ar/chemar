@@ -26,6 +26,6 @@ deploy-azure:      # This job runs in the deploy stage.
     - main #Change to your branch for testing. Change back to main/develop before merging
   script:
     - az login --username $PRODID --password $PRODPASSWORD
-    - az webapp update --name $PRODAPPNAME --plan $PRODAPPSERVICEPLAN --sku B2
+    - az webapp update --https-only true --name $PRODAPPNAME --resource-group $PRODRESOURCEGROUP
     - az webapp config set --resource-group $PRODRESOURCEGROUP --name $PRODAPPNAME --linux-fx-version "NODE|18-lts"
     - az webapp restart --name $PRODAPPNAME --resource-group $PRODRESOURCEGROUP
