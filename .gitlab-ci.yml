@@ -27,5 +27,4 @@ deploy-azure:      # This job runs in the deploy stage.
   script:
     - az login --username $PRODID --password $PRODPASSWORD
     - az webapp up --name $PRODAPPNAME --resource-group $PRODRESOURCEGROUP
-    - az webapp config set --resource-group $PRODRESOURCEGROUP --name $PRODAPPNAME --linux-fx-version "NODE|18-lts"
-    - az webapp restart --name $PRODAPPNAME --resource-group $PRODRESOURCEGROUP
+    - az webapp config set --resource-group $PRODRESOURCEGROUP --name $PRODAPPNAME --linux-fx-version "NODE|16-lts"
