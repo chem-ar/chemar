@@ -26,4 +26,4 @@ deploy-azure:      # This job runs in the deploy stage.
     - main #Change to your branch for testing. Change back to main/develop before merging
   script:
     - az login --username $PRODID --password $PRODPASSWORD
-    - az webapp up --name $PRODAPPNAME --resource-group $PRODRESOURCEGROUP --runtime "NODE|16-lts"
+    - az webapp up --name $PRODAPPNAME 
