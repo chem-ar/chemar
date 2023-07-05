@@ -27,3 +27,4 @@ deploy-azure:      # This job runs in the deploy stage.
   script:
     - az login -u $DEVID -p $DEVPASSWORD
     - az webapp up --name $TESTAPPNAME --resource-group $TESTRESOURCEGROUP --runtime "NODE|16-lts"
+    - export
