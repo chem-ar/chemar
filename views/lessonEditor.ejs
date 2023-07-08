@@ -1176,21 +1176,27 @@
 
             // moleculeGroup.position.z = centerOffset;
 
-            
+
             // Make the anchor position default back to the origin.
 
-        //     document.getElementById('markerYInput').addEventListener('input', function(e){
-        //         moleculeGroup.position.y =  drawPosition.y + e.target.value;
-        //         console.log(e.target.value)
-        //         console.log(drawPosition.y)
-        // });
+            document.getElementById('markerYInput').addEventListener('input', function(e){
+                moleculeGroup.position.y =  drawPosition.y + e.target.value;
+                console.log(e.target.value)
+                console.log(drawPosition.y)
+        });
 
-    
+            document.getElementById('markerXSlider').addEventListener('input', function(e){
+                moleculeGroup.position.x =  drawPosition.x + e.target.value;
 
+            });
 
-        //     document.getElementById('markerXInput').addEventListener('input', function(e){
-        //             moleculeGroup.position.x =  drawPosition.x + e.target.value;
-        //     });
+            document.getElementById('markerYSlider').addEventListener('input', function(e){
+                moleculeGroup.position.y =  drawPosition.y + e.target.value;
+            });
+
+            document.getElementById('markerXInput').addEventListener('input', function(e){
+                    moleculeGroup.position.x =  drawPosition.x + e.target.value;
+            });
 
             moleculeGroup.position.x = drawPosition.x;
             moleculeGroup.position.y = drawPosition.y;
