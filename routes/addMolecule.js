@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 const { parse } = require('path');
+const notifier = require('node-notifier'); // Node Notifiers: https://www.npmjs.com/package/node-notifier
 
 router.get('/', function(req, res, next) {
     res.render('addMolecule', {title: 'Add New Molecule'});
@@ -35,12 +36,27 @@ router.post('/', (req, res) => {
     // Check if the molecule already exists
     if (fileIsPresent) {
         console.log('This molecule already exists.');
-    }
+        notifier.notify({
+            title: 'Unsuccessful.',
+            message: 'Cannot save file This molecule already exists.',
+        });
+    } 
     else {
         // Create new mol file in ./public/molefiles/
         fs.writeFile('./public/molfiles/'+fileName, molFileContent, function (err) {
-            if (err) throw err;
+            if (err) {
+                console.log('Error saving file:', err);
+                notifier.notify({
+                    title: 'Unsuccessful',
+                    message: 'Cannot save file: ' + err,
+                });
+            } else {
                 console.log('New molecule created');
+                notifier.notify({
+                    title: 'Successful!',
+                    message: 'Successfully saved file!',
+                });
+            }
         });
 
         // Read json file and add info to it
@@ -55,7 +71,7 @@ router.post('/', (req, res) => {
 
         var newMol = JSON.stringify(parsedData);
         fs.writeFileSync('./public/catalog/molfileCatalog.json', newMol);
-    }    
+    }
 
     // Return to catalog page
     res.redirect('/molecules');
