@@ -37,7 +37,7 @@ router.post('/', (req, res) => {
     if (fileIsPresent) {
         console.log('This molecule already exists.');
         notifier.notify({
-            title: 'Unsuccessful.',
+            title: 'Save Unsuccessful.',
             message: 'Cannot save file This molecule already exists.',
         });
     } 
@@ -47,14 +47,14 @@ router.post('/', (req, res) => {
             if (err) {
                 console.log('Error saving file:', err);
                 notifier.notify({
-                    title: 'Unsuccessful',
-                    message: 'Cannot save file: ' + err,
+                    title: 'Save Unsuccessful',
+                    message: 'Cannot save the molecule: ' + err,
                 });
             } else {
                 console.log('New molecule created');
                 notifier.notify({
-                    title: 'Successful!',
-                    message: 'Successfully saved file!',
+                    title: 'Save Successful!',
+                    message: 'Successfully saved the molecule!',
                 });
             }
         });
