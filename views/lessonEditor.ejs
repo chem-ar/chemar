@@ -348,6 +348,7 @@
         var lessonDescription = document.getElementById("lessonDescription");
 
         let lesson;
+        let markerData;
 
         let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
         console.log(requestedFile);
@@ -365,6 +366,28 @@
                 fileName.innerHTML = "File name: " + requestedFile;
                 lessonName.innerHTML = "Lesson name: " + lesson.name;
                 lessonDescription.innerHTML = "Lesson desc: " + lesson.desc;
+                markerData = lesson.trackingMarker
+
+                markerLocationHelper.position.x = markerData.position.x;
+                markerPlane.position.x = markerData.position.x;
+
+                markerLocationHelper.position.y = markerData.position.y;
+                markerPlane.position.y = markerData.position.y;
+
+                const markerXSliderChange = document.getElementById('markerXSlider');
+                const markerXInputrChange = document.getElementById('markerXInput');
+                
+                markerXSliderChange.value = markerData.position.x;
+                markerXInputrChange.value = markerData.position.x;
+
+                const markerYSliderChange = document.getElementById('markerYSlider');
+                const markerYInputrChange = document.getElementById('markerYInput');
+                
+                markerYSliderChange.value = markerData.position.y;
+                markerYInputrChange.value = markerData.position.y;
+
+
+
 
                 // Draw each molecule in three when lessonEditor is loaded.
                 for(let item of lesson.molecules) {
