@@ -10,3 +10,5 @@ deploy-azure:      # This job runs in the deploy stage.
   script:
     - az login -u $DEVID -p $DEVPASSWORD
     - az webapp up --name $DEVAPPNAME --resource-group $DEVRESOURCEGROUP --runtime "NODE|16-lts"
+    - az webapp config set -n $DEVAPPNAME -g $DEVRESOURCEGROUP --node-version 16
+    - az webapp ssh --name $DEVAPPNAME -g $DEVRESOURCEGROUP --command "cd site/wwwroot && npm install"
