@@ -23,7 +23,9 @@ deploy-azure:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
   image: mcr.microsoft.com/azure-cli
   only:
-    - deployment #Change to your branch for testing. Change back to main/develop before merging
+    - develop #Change to your branch for testing. Change back to main/develop before merging
   script:
-    - az login --username $PRODID --password $PRODPASSWORD
-    - az webapp up --name "dalchemar"
+    - az login -u $DEVID -p $DEVPASSWORD
+    - az webapp up --name $DEVAPPNAME --resource-group $DEVRESOURCEGROUP --runtime "NODE|16-lts"
+    - az webapp config set -n $DEVAPPNAME -g $DEVRESOURCEGROUP --node-version 16
+    - az webapp ssh --name $DEVAPPNAME -g $DEVRESOURCEGROUP --command "cd site/wwwroot && npm install"
