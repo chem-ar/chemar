@@ -115,7 +115,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                                           </svg>
-                                        Search PubChem
+                                        Search ChemSpider
                                     </button>   
                                 </div>
                             </div>
@@ -211,7 +211,6 @@
 
 
     <script type= "module">
-        console.log(navigator)
         if(/iPhone|iPad/.test(navigator.userAgent)){
             const webxrViewerScheme = "ios-webxr-viewer://"
             const xrViewerApp = "https://apps.apple.com/ca/app/webxr-viewer/id1295998056";
@@ -583,35 +582,112 @@
 
         searchButton.addEventListener("click", function(event) {
             event.preventDefault();
-            searchPUBCHEM(searchField.value);
+            searchChemSpider(searchField.value);
         });
+        
+        const apikey = '70DYPVRnsRXA4S0tALUyyM2VoD5YZGat';
+        const headers = {
+            "Content-Type": "application/json",
+            "apikey": apikey
+        };
+        function searchChemSpider(compoundName){
+            var URL = `https://api.rsc.org/compounds/v1/filter/name`;
 
-        function searchPUBCHEM(name){
-            const URL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${name}/property/IUPACName,MolecularFormula/JSON?name_type=word&MaxRecords=10`;
+            const bodyContent = {
+                name: compoundName
+            };
 
-            console.log(URL);
+            const requestOptions = {
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify(bodyContent)
+            };
 
-            if(name){
-                fetch(URL)
+            fetch(URL, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                // get the results of the query-id
+                URL = `https://api.rsc.org/compounds/v1/filter/${data["queryId"]}/results`;
+                const requestOptions = {
+                    method: "GET",
+                    headers: headers,
+                };
+                // this grabs the results of the query-id which is the record-id
+                fetch(URL, requestOptions)
                 .then(response => response.json())
-                .then(data => displaySearchResults(data, null))
-                .catch(error => displaySearchResults(null, error))
-            }
+                .then(data => {
+                    // passes a list of record-ids
+                    displaySearchResults(data["results"], null);
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                // Handle any errors here
+            });
         }
 
         const searchResults = document.getElementById('search-results');
         function getMoleculeURL(URL){
-            fetch(URL)
-                .then(response => response.text())
-                .then(molFile => {
-                    console.log(molFile);
-                    drawMolecule(molFile);
+            const requestOptions = {
+                method: "GET",
+                headers: headers,
+            };
+            fetch(URL, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                drawMolecule(data["sdf"]);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                reject(error);
+            });
+        }
+        
+        function getRecordIdDetails(recordId) {
+            var URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=Formula`;
+            const headers = {
+                "Content-Type": "application/json",
+                "apikey": apikey
+            };
+            const requestOptions = {
+                method: "GET",
+                headers: headers,
+            };
+
+            return new Promise((resolve, reject) => {
+                fetch(URL, requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    var recordDetails = [];
+                    // make string look more formatted
+                    var newFormula = data["formula"].replaceAll("{", "").replaceAll("}", "").replaceAll("^", "").replaceAll("_", "");
+                    recordDetails.push(newFormula);
+
+                    URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=CommonName`;
+                    fetch(URL, requestOptions)
+                    .then(response => response.json())
+                    .then(data => {
+                        recordDetails.push(data["commonName"]);
+                        resolve(recordDetails);
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        reject(error);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    reject(error);
                 });
-            }
+            });
+        }
             
         function displaySearchResults(data, error){
-            console.log(data);
-            if(data.hasOwnProperty('Fault')){
+            // data contains list of record-id
+            if(data.length === 0){
                 searchResults.innerHTML = `<p class="text-danger p-2">No results found</p>`;
             }
             else{
@@ -627,7 +703,7 @@
                 tableHead.appendChild(tableHeadRow);
                 const tableHeadCell1 = document.createElement('th');
                 const tableHeadCell2 = document.createElement('th');
-                tableHeadCell1.innerHTML = "Formula <br> IUPAC Name";
+                tableHeadCell1.innerHTML = "Formula <br> Common Name";
                 tableHeadCell2.innerHTML = "";
 
                 tableHeadRow.appendChild(tableHeadCell1);
@@ -637,31 +713,36 @@
                 const tableBody = document.createElement('tbody');
                 searchResultTable.appendChild(tableBody);
 
-                for(let i = 0; i < 10; i++){
-                    let item = data.PropertyTable.Properties[i];
-                    const row = tableBody.insertRow();
-                    const cell1 = row.insertCell(0);
-                    const cell2 = row.insertCell(1);
+                for(let i = 0; i < data.length; i++){
+                    getRecordIdDetails(data[i])
+                        .then(listDetails => {
+                            const row = tableBody.insertRow();
+                            const cell1 = row.insertCell(0);
+                            const cell2 = row.insertCell(1);
 
 
-                    cell1.classList.add('text-break');
-                    cell1.innerHTML = item.MolecularFormula + "<br>" + item.IUPACName;
-                    let viewButton = document.createElement('button');
-                    viewButton.classList = 'btn btn-outline-light';
-                    viewButton.innerHTML = 
-                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"     class="bi bi-eye-fill" viewBox="0 0 16 16">
-                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
-                        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-                    </svg> View`;
+                            cell1.classList.add('text-break');
+                            cell1.innerHTML = listDetails[0] + "<br>" + listDetails[1];
+                            let viewButton = document.createElement('button');
+                            viewButton.classList = 'btn btn-outline-light';
+                            viewButton.innerHTML = 
+                            `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"     class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                            </svg> View`;
 
-                    viewButton.addEventListener("click", function(event) {
-                        event.preventDefault();
-                        const itemURL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${item.CID}/SDF?record_type=3d`;
-                        getMoleculeURL(itemURL);
-                    });
+                            viewButton.addEventListener("click", function(event) {
+                                event.preventDefault();
+                                const itemURL = `https://api.rsc.org/compounds/v1/records/${data[i]}/mol`;
+                                getMoleculeURL(itemURL);
+                            });
 
-                    cell2.appendChild(viewButton);
-                    cell2.classList.add('align-middle');
+                            cell2.appendChild(viewButton);
+                            cell2.classList.add('align-middle');
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                        });
                 }
             }
         }
