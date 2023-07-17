@@ -245,7 +245,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                                           </svg>
-                                        Search PubChem
+                                        Search ChemSpider
                                     </button>
                                 </div>
 
@@ -422,45 +422,114 @@
             .catch(error => console.error(error));
 
         function getMolecule(URL, Title){
-            fetch(URL + "?record_type=3d")
-                .then(response => response.text())
-                .then(data => {
-                    if(data.includes("PUGREST.NotFound")){
-                        fetch(URL + "?record_type=2d")
-                            .then(response => response.text())
-                            .then(data => {
-                                if(data.includes("PUGREST.NotFound")){
-                                    console.log("2D File Not Found");
-                                }else{
-                                    drawMoleculeFromMolFile(data, Title);
-                                }
-                            });
-                    }else{
-                        drawMoleculeFromMolFile(data, Title);
-                    }
-                });
-            }
-
-        function searchPUBCHEM(name){
-            if(name === ""){
+            const requestOptions = {
+                method: "GET",
+                headers: headers,
+            };
+            fetch(URL, requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                drawMoleculeFromMolFile(data["sdf"], Title);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                reject(error);
+            });
+        }
+        
+        const apikey = '70DYPVRnsRXA4S0tALUyyM2VoD5YZGat';
+        const headers = {
+            "Content-Type": "application/json",
+            "apikey": apikey
+        };
+        function searchChemSpider(compoundName){
+            if(compoundName === ""){
                 searchResults.innerHTML = `<div class="text-warning pt-2 px-2">Please enter a search term</div>`;
             }
             else{
-                const URL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${name}/property/IUPACName,MolecularFormula,Title/JSON`;
-                 searchResults.innerHTML = `<div class="pt-2 px-2">Searching</div>`;
-                 if(name){
-                    fetch(URL)
-                        .then(response => response.json())
-                        .then(data => displaySearchResults(data, null))
-                        .catch(error => console.log(error))
-                }
+                var URL = `https://api.rsc.org/compounds/v1/filter/name`;
+                searchResults.innerHTML = `<div class="pt-2 px-2">Searching</div>`;
+
+                const bodyContent = {
+                    name: compoundName
+                };
+
+                const requestOptions = {
+                    method: "POST",
+                    headers: headers,
+                    body: JSON.stringify(bodyContent)
+                };
+
+                fetch(URL, requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    // get the results of the query-id
+                    URL = `https://api.rsc.org/compounds/v1/filter/${data["queryId"]}/results`;
+                    const requestOptions = {
+                        method: "GET",
+                        headers: headers,
+                    };
+                    // this grabs the results of the query-id which is the record-id
+                    fetch(URL, requestOptions)
+                    .then(response => response.json())
+                    .then(data => {
+                        // passes a list of record-ids
+                        displaySearchResults(data["results"], null);
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    // Handle any errors here
+                });
             }
+        }
+        
+        function getRecordIdDetails(recordId) {
+            var URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=Formula`;
+            const headers = {
+                "Content-Type": "application/json",
+                "apikey": apikey
+            };
+            const requestOptions = {
+                method: "GET",
+                headers: headers,
+            };
+
+            return new Promise((resolve, reject) => {
+                fetch(URL, requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    var recordDetails = [];
+                    // make string look more formatted
+                    var newFormula = data["formula"].replaceAll("{", "").replaceAll("}", "").replaceAll("^", "").replaceAll("_", "");
+                    recordDetails.push(newFormula);
+
+                    URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=CommonName`;
+                    fetch(URL, requestOptions)
+                    .then(response => response.json())
+                    .then(data => {
+                        recordDetails.push(data["commonName"]);
+                        resolve(recordDetails);
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        reject(error);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    reject(error);
+                });
+            });
         }
 
         function displaySearchResults(data, error){
-            console.log(data);
-            if(data.hasOwnProperty('Fault')){
-                searchResults.innerHTML = `<div class="text-danger pt-2 px-2">No results found</div>`;
+            // data contains list of record-id
+            if(data.length === 0){
+                searchResults.innerHTML = `<p class="text-danger p-2">No results found</p>`;
             }
             else{
                 searchResults.innerHTML = ``;
@@ -485,33 +554,36 @@
                 const tableBody = document.createElement('tbody');
                 searchResultTable.appendChild(tableBody);
 
-                for(let i = 0; i < data.PropertyTable.Properties.length; i++){
-                    let item = data.PropertyTable.Properties[i];
-                    const row = tableBody.insertRow();
-                    const cell1 = row.insertCell(0);
-                    const cell2 = row.insertCell(1);
+                for(let i = 0; i < data.length; i++){
+                    getRecordIdDetails(data[i])
+                        .then(listDetails => {
+                            const row = tableBody.insertRow();
+                            const cell1 = row.insertCell(0);
+                            const cell2 = row.insertCell(1);
 
 
-                    cell1.classList.add('text-break');
-                    cell1.innerHTML = item.MolecularFormula + "<br>" + item.IUPACName + "<br><b>" + item.Title+ "</b>";
-                    let viewButton = document.createElement('button');
-                    viewButton.classList = 'btn btn-outline-light btn-block';
-                    viewButton.innerHTML = 
-                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"     class="bi bi-eye-fill" viewBox="0 0 16 16">
-                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
-                        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-                    </svg> <br>Add to Lesson`;
+                            cell1.classList.add('text-break');
+                            cell1.innerHTML = listDetails[0] + "<br>" + listDetails[1];
+                            let viewButton = document.createElement('button');
+                            viewButton.classList = 'btn btn-outline-light btn-block';
+                            viewButton.innerHTML = 
+                            `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"     class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                            </svg> <br>Add to Lesson`;
 
-                    viewButton.addEventListener("click", function(event) {
-                        event.preventDefault();
-                        
-                        const itemURL = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${item.CID}/SDF`;
-                        console.log(item);
-                        getMolecule(itemURL, item.Title);
-                    });
+                            viewButton.addEventListener("click", function(event) {
+                                event.preventDefault();
+                                const itemURL = `https://api.rsc.org/compounds/v1/records/${data[i]}/mol`;
+                                getMolecule(itemURL, listDetails[1]);
+                            });
 
-                    cell2.appendChild(viewButton);
-                    cell2.classList = 'w-25';
+                            cell2.appendChild(viewButton);
+                            cell2.classList = 'w-25';
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                        });
                 }
             }
         }
@@ -1328,7 +1400,7 @@
 
         searchButton.addEventListener("click", function(event) {
             event.preventDefault();
-            searchPUBCHEM(searchField.value);
+            searchChemSpider(searchField.value);
         });
 
         document.getElementById('markerXSlider').addEventListener('input', function(e){
