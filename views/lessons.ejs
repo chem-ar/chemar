@@ -79,6 +79,8 @@
     </div>
 </div>
 
+
+
 <!-- Modal -->
 <div class="modal fade" id="canvasModal" tabindex="-1" aria-labelledby="canvasModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -108,7 +110,22 @@
             <div class="">
                 <div id="qrcode" class="bg-white py-4" align="center"></div>
                 <script type="text/javascript">
-                var qrcode = new QRCode(document.getElementById("qrcode"), "http://jindo.dev.naver.com/collie");
+
+                    var share = document.getElementsByClassName("share");
+                    var qrcode = null;
+
+                    Array.from(share).forEach(function(element) {
+                        element.addEventListener("click", function(){
+                            itemNumber = element.id.replace("shareBtn", "");
+
+                            if (qrcode !== null) {
+                                qrcode.clear();
+                            }
+
+
+                            qrcode = new QRCode(document.getElementById("qrcode"), 'https://archemapp.azurewebsites.net/lessonViewer/' + itemNumber);
+                        })
+                    });
                 </script>
             </div>
         </div>
@@ -118,7 +135,6 @@
   
 
 <script>
-
     async function postNewLesson(lesson){
         const response = await fetch(`/lessonEditor/save/${lesson.name}`,
             {
