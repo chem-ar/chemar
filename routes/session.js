@@ -14,8 +14,5 @@ router.post('/', function(req, res, next) {
     res.cookie('admin', true, {maxAge: oneDay, signed: true});
     res.redirect("/");
   }
-  else{
-    res.redirect("back");
-  }
 });
 module.exports = router;
