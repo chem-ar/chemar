@@ -5,16 +5,12 @@ stages:
   - post-deploy
 deploy-azure:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  image: mcr.microsoft.com/azure-cli
+  image: mcr.microsoft.com/mcr.microsoft.com/azure-dev-cli-apps
   only:
     - feature/kudu_service_auth #Change to your branch for testing. Change back to main/develop before merging
   script:
     - az login -u $DEVID -p $DEVPASSWORD
     - az webapp up --name $DEVAPPNAME --resource-group $DEVRESOURCEGROUP --runtime "NODE|16-lts"
-auth-kudu:
-  stage: post-deploy
-  image: mcr.microsoft.com/powershell
-  script:
     - $webapp = Get-AzWebApp -Name "archemapp"
     - $username = $website.PUBLISHINGUSERNAME
     - $password = $website.$PUBLISHINGPASSWORD
