@@ -15,7 +15,7 @@ auth-kudu:
   stage: post-deploy
   image: mcr.microsoft.com/powershell
   script:
-    - $website = Get-AzureWebsite -Name "archemapp"
+    - $webapp = Get-AzWebApp -Name "archemapp"
     - $username = $website.PUBLISHINGUSERNAME
     - $password = $website.$PUBLISHINGPASSWORD
     - $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $username,$password)))
