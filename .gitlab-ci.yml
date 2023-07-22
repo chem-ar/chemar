@@ -2,12 +2,24 @@
 # Stages will involve initial build, staging & testing area, followed by an azure deployment job.
 stages:
   - deploy
+  - post-deploy
 deploy-azure:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
   image: mcr.microsoft.com/azure-cli
   only:
-    - develop #Change to your branch for testing. Change back to main/develop before merging
+    - feature/kudu_service_auth #Change to your branch for testing. Change back to main/develop before merging
   script:
     - az login -u $DEVID -p $DEVPASSWORD
     - az webapp up --name $DEVAPPNAME --resource-group $DEVRESOURCEGROUP --runtime "NODE|16-lts"
+auth-kudu:
+  stage: post-deploy
+  image: mcr.microsoft.com/powershell
+  script:
+    - $website = Get-AzureWebsite -Name "archemapp"
+    - $username = $website.PUBLISHINGUSERNAME
+    - $password = $website.$PUBLISHINGPASSWORD
+    - $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $username,$password)))
+    - $apiBaseUrl = "https://$($website.Name).scm.azurewebsites.net/api"
+    - $kuduVersion = Invoke-RestMethod -Uri "$apiBaseUrl/environment" -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -Method GET
+
 
