@@ -2,14 +2,19 @@
 # Stages will involve initial build, staging & testing area, followed by an azure deployment job.
 stages:
   - deploy
+  - post-deploy
 deploy-azure:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  image: mcr.microsoft.com/azure-powershell:latest
+  image: mcr.microsoft.com/azure-cli:latest
   only:
     - feature/kudu_service_auth #Change to your branch for testing. Change back to main/develop before merging
   script:
     - az login -u $DEVID -p $DEVPASSWORD
     - az webapp up --name $DEVAPPNAME --resource-group $DEVRESOURCEGROUP --runtime "NODE|16-lts"
+kudu-auth:
+  stage: post-deploy
+  image: mcr.microsoft.com/azure-powershell:latest
+  script:
     - $webapp = Get-AzWebApp -Name "archemapp"
     - $username = $website.PUBLISHINGUSERNAME
     - $password = $website.$PUBLISHINGPASSWORD
