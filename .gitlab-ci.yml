@@ -15,11 +15,4 @@ kudu-auth:
   stage: post-deploy
   image: mcr.microsoft.com/azure-powershell:latest
   script:
-    - $webapp = Get-AzWebApp -Name "archemapp"
-    - $username = $website.PUBLISHINGUSERNAME
-    - $password = $website.$PUBLISHINGPASSWORD
-    - $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $username,$password)))
-    - $apiBaseUrl = "https://$($website.Name).scm.azurewebsites.net/api"
-    - $kuduVersion = Invoke-RestMethod -Uri "$apiBaseUrl/environment" -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -Method GET
-
-
+    - Invoke-WebRequest -Uri 'https://archemapp.scm.azurewebsites.net/basicauth/DebugConsole' -Method POST -Headers @{'Authorization' = 'Basic JGFyY2hlbWFwcDoyYnQzdVR5MVJhd1c3ZkR5dFdpd2wwaXlqSEJoWGJETWtrYWl2bDdaZzV6c3NZUlp0eGpsdUZ0WWRqcWw=''Cookie' = 'ARRAffinity=cbe9e9718f0d822410f26ed3f330ac773a82055728017e0ba3ca3b7f294aae71; ARRAffinitySameSite=cbe9e9718f0d822410f26ed3f330ac773a82055728017e0ba3ca3b7f294aae71'}
