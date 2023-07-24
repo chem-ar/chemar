@@ -11,11 +11,8 @@ deploy-azure:      # This job runs in the deploy stage.
   script:
     - az login -u $DEVID -p $DEVPASSWORD
     - az webapp up --name $DEVAPPNAME --resource-group $DEVRESOURCEGROUP --runtime "NODE|16-lts"
-    - az rest --method POST --uri 'https://archemapp.scm.azurewebsites.net/basicauth/DebugConsole' --headers 'Authorization=Basic JGFyY2hlbWFwcDoyYnQzdVR5MVJhd1c3ZkR5dFdpd2wwaXlqSEJoWGJETWtrYWl2bDdaZzV6c3NZUlp0eGpsdUZ0WWRqcWw='
- 
-
-# kudu-auth:
-#   stage: post-deploy
-#   image: mcr.microsoft.com/azure-powershell:latest
-#   script:
-#     - Invoke-WebRequest -Uri 'https://archemapp.scm.azurewebsites.net/basicauth/DebugConsole' -Method POST -Headers @{'Authorization' = 'Basic JGFyY2hlbWFwcDoyYnQzdVR5MVJhd1c3ZkR5dFdpd2wwaXlqSEJoWGJETWtrYWl2bDdaZzV6c3NZUlp0eGpsdUZ0WWRqcWw=''Cookie' = 'ARRAffinity=cbe9e9718f0d822410f26ed3f330ac773a82055728017e0ba3ca3b7f294aae71; ARRAffinitySameSite=cbe9e9718f0d822410f26ed3f330ac773a82055728017e0ba3ca3b7f294aae71'}
+kudu-scm-build:
+  stage: post-deploy
+  image: mcr.microsoft.com/azure-cli:latest
+  script: |
+    az rest --method POST --uri "https://archemapp.scm.azurewebsites.net/api/command" --headers "Content-Type=application/json" "Authorization=Basic JGFyY2hlbWFwcDoyYnQzdVR5MVJhd1c3ZkR5dFdpd2wwaXlqSEJoWGJETWtrYWl2bDdaZzV6c3NZUlp0eGpsdUZ0WWRqcWw=" --body "{\"command\": \"npm config set prefix /home/site/wwwroot && npm install\"}"
