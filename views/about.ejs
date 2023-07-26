@@ -15,7 +15,15 @@
 
 <body>
   <%- include('partials/header') %>
-  <%- include('partials/navbar') %>
+  <!-- <%- include('partials/navbar') %> -->
+
+  <!-- Admin check for navbar -->
+  <% if (isAdmin) { %>
+    <%- include('partials/navbarAdmin') %>
+  <% } %>
+  <% if (!isAdmin) { %>
+    <%- include('partials/navbar') %>
+  <% } %>
   
   <div class="p-3 mb-2 bg-dark text-white">
       <h1 class="display-5 fw-bold" style="font-size: 3.2vw; text-align: center">ABOUT CHEMAR</h1>
