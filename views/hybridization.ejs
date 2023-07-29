@@ -7,48 +7,69 @@
   <%- include('partials/navbar') %>
 <% } %>
 
-<!-- Three.js and ARToolKit Scripts -->
-<script src='/js/three.js'></script>
-<script src="/jsartoolkit5/artoolkit.min.js"></script>
-<script src="/jsartoolkit5/artoolkit.api.js"></script>
-<script src="/threex/threex-artoolkitsource.js"></script>
-<script src="/threex/threex-artoolkitcontext.js"></script>
-<script src="/threex/threex-arbasecontrols.js"></script>
-<script src="/threex/threex-armarkercontrols.js"></script>
+
+<script type="importmap">
+    {
+        "imports": {
+            "three": "../js/three.module.js",
+            "OrbitControls": "../js/OrbitControls.js",
+            "OBJLoader": "../js/OBJLoader.js"
+        }
+    }
+</script>
+
+
+<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+
+
 
 <div class="container mb-4">
-  <div class="row content">
-    <div class="col-12 pt-4 text-start text-white bg-dark">
-      <h1 class="display-4 fw-bold">Hybridization Catalog</h1>
-      <div id="model-container"></div>
+    <div class="row content">
+        <div class="col-12 pt-4 text-start text-white bg-dark">
+            <h1 class="display-4 fw-bold">Hybridization Catalog</h1>
+            <div id="model-container" class="container"></div>
+        </div>
     </div>
-  </div>
 </div>
 
-<script>
-  // Three.js Setup
-  const container = document.getElementById('model-container');
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, container.offsetWidth / container.offsetHeight, 1, 1000);
-  const renderer = new THREE.WebGLRenderer();
+<script type="module">
+    import { OrbitControls } from '/js/OrbitControls.js';
+    import * as THREE from '/js/three.module.js';
+    import { OBJLoader } from '/js/OBJLoader.js';
 
-  renderer.setSize(container.offsetWidth, container.offsetHeight);
-  container.appendChild(renderer.domElement);
 
-  // Load 3D Model using MTLLoader and OBJLoader
-  const mtlLoader = new THREE.MTLLoader();
-  mtlLoader.load('/mtlFiles/sp.mtl', (materials) => {
-    materials.preload();
 
-    const objLoader = new THREE.OBJLoader();
-    objLoader.setMaterials(materials);
-    objLoader.load('/objFiles/sp.obj', (object) => {
-      scene.add(object);
-      renderer.render(scene, camera);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    document.body.appendChild( renderer.domElement );
+
+    
+    const mtlLoader = new THREE.MTLLoader();
+    mtlLoader.load('/mtlFiles/sp.mtl', (materials) => {
+        materials.preload();
+
+        const objLoader = new THREE.OBJLoader();
+        objLoader.setMaterials(materials);
+        objLoader.load('/objFiles/sp.obj', (object) => {
+        scene.add(object);
+        renderer.render(scene, camera);
+        });
     });
-  });
 
-  camera.position.z = 5;
+
+
+camera.position.z = 5;
+
+function animate() {
+	requestAnimationFrame( animate );
+	renderer.render( scene, camera );
+}
+animate();
+
 </script>
+
 
 <%- include('partials/footer') %>
