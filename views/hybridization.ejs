@@ -13,9 +13,8 @@
         "imports": {
             "three": "../js/three.module.js",
             "OrbitControls": "../js/OrbitControls.js",
-            "OBJLoader": "../js/OBJLoader.js"
+            "OBJLoader": "../js/OBJLoader.js",
             "MTLLoader": "../js/MTLLoader.js"
-
         }
     }
 </script>
@@ -48,17 +47,20 @@
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
 
-    
-    const mtlLoader = new THREE.MTLLoader();
-    mtlLoader.load('/mtlFiles/sp.mtl', (materials) => {
+    const mtlLoader = new MTLLoader();
+    mtlLoader.load('../mtlFiles/sp.mtl', (materials) => {
         materials.preload();
 
-        const objLoader = new THREE.OBJLoader();
+        const objLoader = new OBJLoader();
         objLoader.setMaterials(materials);
-        objLoader.load('/objFiles/sp.obj', (object) => {
-        scene.add(object);
-        renderer.render(scene, camera);
+        objLoader.load('../objFiles/sp.obj', (object) => {
+            scene.add(object);
+            renderer.render(scene, camera);
+        }, undefined, (error) => {
+            console.error('Error loading OBJ file:', error);
         });
+    }, undefined, (error) => {
+        console.error('Error loading MTL file:', error);
     });
 
 
