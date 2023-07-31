@@ -3,6 +3,9 @@ var router = express.Router();
 var fs = require('fs');
 const { parse } = require('path');
 
+//save button notifier using node
+const sceneNotifier = require('node-notifier');
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.render('addScene', {title: 'Add New Scene'});
@@ -23,12 +26,38 @@ router.post('/', (req, res) => {
   // Check if the scene already exists
   if (fileIsPresent) {
       console.log('This scene already exists.');
+      sceneNotifier.notify({
+        title: 'Unsuccessfull',
+        message: 'This scene already exists.',
+        sound: true,
+        wait: false,
+        timeout: 10,
+      });
   }
   else {
       // Create new scene file in ./public/scenefiles/
       fs.writeFile('./public/scenefiles/'+fileName, sceneFileContent, function (err) {
-          if (err) throw err;
-              console.log('New scene created');
+        if (err){
+          console.log('Error: ', err);
+          sceneNotifier.notify({
+            title: 'Unsuccessfull',
+            message: 'Error'+ err,
+            sound: true,
+            wait: false,
+            timeout: 10,
+          });
+        }
+        else{
+          console.log('New scene created');
+          sceneNotifier.notify({
+            title: 'Successfull',
+            message: 'Saved successfully',
+            sound: true,
+            wait: false,
+            timeout: 10,
+          });
+        }
+            
       });
 
       // Read json file and add info to it
