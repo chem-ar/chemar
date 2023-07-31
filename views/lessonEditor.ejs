@@ -392,6 +392,7 @@
 
                 // Draw each molecule in three when lessonEditor is loaded.
                 for(let item of lesson.molecules) {
+                    console.log(item);
                     drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale);
                 }
 
@@ -587,7 +588,7 @@
                 }
             }
         }
-        let xValue, yValue;
+
         let moleculeList = document.getElementById('molecule-list');
         function lessonMoleculeMenu() {
             moleculeList.innerHTML = "";
@@ -630,7 +631,7 @@
                 moleculePositionXText.classList = 'form-control form-control-sm mb-2';
                 moleculePositionXText.type = 'number';
                 moleculePositionXText.value = molecule.molecule.position.x;
-
+                
                 // molecule pos x
                 moleculePositionXText.addEventListener("input", function(event) {
                     molecule.molecule.position.x = moleculePositionXText.value;
@@ -654,7 +655,8 @@
                 moleculePositionXSlider.addEventListener("input", function(event) {
                     molecule.molecule.position.x = moleculePositionXSlider.value;
                     moleculePositionXText.value = moleculePositionXSlider.value;
-                    xValue = moleculePositionXSlider.value
+            
+
                 });
 
                 let moleculePositionXSliderCol = document.createElement('div');
@@ -674,7 +676,7 @@
                 let moleculePositionYText = document.createElement('input');
                 moleculePositionYText.classList = 'form-control form-control-sm mb-2';
                 moleculePositionYText.type = 'number';
-                moleculePositionYText.value = molecule.molecule.position.y;
+                moleculePositionYText.value = molecule.molecule.position.x;
 
                 // molecule pos y
                 moleculePositionYText.addEventListener("input", function(event) {
@@ -693,12 +695,11 @@
                 moleculePositionYSlider.min = '0';
                 moleculePositionYSlider.max = '11';
                 moleculePositionYSlider.step = '0.01';
-                moleculePositionYSlider.value = molecule.molecule.position.y;
+                moleculePositionYSlider.value = molecule.molecule.position.x;
 
                 moleculePositionYSlider.addEventListener("input", function(event) {
                     molecule.molecule.position.y = moleculePositionYSlider.value;
                     moleculePositionYText.value = moleculePositionYSlider.value;
-                    yValue = moleculePositionYSlider.value
                 });
 
                 let moleculePositionYSliderCol = document.createElement('div');
@@ -718,7 +719,7 @@
                 let moleculePositionZText = document.createElement('input');
                 moleculePositionZText.classList = 'form-control form-control-sm mb-2';
                 moleculePositionZText.type = 'number';
-                moleculePositionZText.value = molecule.molecule.position.z;
+                moleculePositionZText.value = molecule.molecule.position.x;
                 
                 // molecule pos z
                 moleculePositionZText.addEventListener("input", function(event) {
@@ -738,7 +739,7 @@
                 moleculePositionZSlider.min = '0';
                 moleculePositionZSlider.max = '11';
                 moleculePositionZSlider.step = '0.01';
-                moleculePositionZSlider.value = molecule.molecule.position.z;
+                moleculePositionZSlider.value = molecule.molecule.position.x;
                 
                 
                 // molecule Z event listener
@@ -1269,28 +1270,6 @@
             //     }
 
             // moleculeGroup.position.z = centerOffset;
-
-
-            // Make the anchor position default back to the origin.
-
-            document.getElementById('markerYInput').addEventListener('input', function(e){
-                moleculeGroup.position.y =  drawPosition.y + e.target.value;
-                console.log(e.target.value)
-                console.log(drawPosition.y)
-        });
-
-            document.getElementById('markerXSlider').addEventListener('input', function(e){
-                moleculeGroup.position.x =  drawPosition.x + e.target.value;
-
-            });
-
-            document.getElementById('markerYSlider').addEventListener('input', function(e){
-                moleculeGroup.position.y =  drawPosition.y + e.target.value;
-            });
-
-            document.getElementById('markerXInput').addEventListener('input', function(e){
-                    moleculeGroup.position.x =  drawPosition.x + e.target.value;
-            });
 
             moleculeGroup.position.x = drawPosition.x;
             moleculeGroup.position.y = drawPosition.y;
