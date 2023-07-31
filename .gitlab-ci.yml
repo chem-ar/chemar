@@ -17,4 +17,4 @@ kudu-scm-build:
   only:
     - develop
   script: |
-    az rest --method POST --uri "https://archemapp.scm.azurewebsites.net/api/command" --headers "Content-Type=application/json" "Authorization=Basic JGFyY2hlbWFwcDoyYnQzdVR5MVJhd1c3ZkR5dFdpd2wwaXlqSEJoWGJETWtrYWl2bDdaZzV6c3NZUlp0eGpsdUZ0WWRqcWw=" --body "{\"command\": \"sh -c \\\"cd /home/site/wwwroot && npm install\\\"\"}"
+    az rest --method POST --uri "https://archemapp.scm.azurewebsites.net/api/command" --headers "Content-Type=application/json" "Authorization=Basic JGFyY2hlbWFwcDo0eXgwc0h5SDBOOXI2UWlsdThCM2hDOW9qV2o5OVc4TGFaZUZ4dU5NSEU5NW9HQmNXY2Z3emdpckVwWkY=" --body "{\"command\": \"sh -c \\\"cd /home/site/wwwroot && npm install\\\"\"}"
