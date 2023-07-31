@@ -86,6 +86,8 @@
     </div>
 </div>
 
+
+
 <!-- Modal -->
 <div class="modal fade" id="canvasModal" tabindex="-1" aria-labelledby="canvasModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -115,7 +117,38 @@
             <div class="">
                 <div id="qrcode" class="bg-white py-4" align="center"></div>
                 <script type="text/javascript">
-                var qrcode = new QRCode(document.getElementById("qrcode"), "http://jindo.dev.naver.com/collie");
+
+                    var share = document.getElementsByClassName("share");
+                    var el = document.getElementById("qrcode");
+                    var qrcode = null;
+
+
+                    
+                    Array.from(share).forEach(function(element) {
+                        element.addEventListener("click", function(){
+                            itemNumber = element.id.replace("shareBtn", "");
+
+                            var image = el.querySelector("img");
+                            var canvas = el.querySelector("canvas");
+
+                            if (canvas) {
+                                canvas.parentNode.removeChild(canvas);
+                            }
+
+
+                            if (image) {
+                                image.parentNode.removeChild(image);
+                            }
+
+
+
+                            qrcode = new QRCode(document.getElementById("qrcode"), 'https://archemapp.azurewebsites.net/lessonViewer/' + itemNumber);
+                            console.log(el);
+                        })
+                    });
+
+
+
                 </script>
             </div>
         </div>
@@ -125,7 +158,6 @@
   
 
 <script>
-
     async function postNewLesson(lesson){
         const response = await fetch(`/lessonEditor/save/${lesson.name}`,
             {
@@ -210,12 +242,6 @@ var iframePreview = document.getElementById("iframePreview")
 
     var share = document.getElementsByClassName("share");
 
-    Array.from(share).forEach(function(element) {
-        element.addEventListener("click", function(){
-            let itemNumber = element.id.replace("shareBtn", "")
-            qrcode.makeCode(window.location.href + "/lessonViewer/" + itemNumber); 
-        })
-    });
 
 </script>
 
