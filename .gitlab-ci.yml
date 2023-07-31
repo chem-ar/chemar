@@ -11,11 +11,11 @@ deploy-azure:      # This job runs in the deploy stage.
     - main #Change to your branch for testing. Change back to main/develop before merging
   script:
     - az login --username $PRODID --password $PRODPASSWORD
-    - az webapp up --name "dalchemar"
+    - az webapp up --name $PRODAPPNAME --resource-group $PRODRESOURCEGROUP --runtime "NODE|16-lts"
 
 kudu-scm-build:
   stage: post-deploy
   image: mcr.microsoft.com/azure-cli:latest
   script: |
-    az rest --method POST --uri "https://dalchemar.scm.azurewebsites.net/api/command" --headers "Content-Type=application/json" "Authorization=Basic TX3t441iaXTPm9nNr28XWGFnXhCgpmY5Rd83kPQkHDics6Jv1XhWrm9eNgsK=" --body "{\"command\": \"sh -c \\\"cd /home/site/wwwroot && npm install\\\"\"}"
+    az rest --method POST --uri "https://dalchemar.scm.azurewebsites.net/api/command" --headers "Content-Type=application/json" "Authorization=Basic JGRhbGNoZW1hcjpUWDN0NDQxaWFYVFBtOW5OcjI4WFdHRm5YaENncG1ZNVJkODNrUFFrSERpY3M2SnYxWGhXcm05ZU5nc0s=" --body "{\"command\": \"sh -c \\\"cd /home/site/wwwroot && npm install\\\"\"}"
 
