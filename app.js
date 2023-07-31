@@ -16,6 +16,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/session');
 var moleculeRouter = require('./routes/molecules');
@@ -32,6 +34,7 @@ var addScene = require('./routes/addScene');
 var loginRouter = require('./routes/login');
 var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
+var aboutRouter = require('./routes/about');
 
 var app = express();
 app.use(express.json({ limit: '4MB' }));
@@ -77,6 +80,8 @@ app.use('/addScene', addScene);
 app.use('/login', loginRouter);
 app.use('/session', sessionRouter);
 app.use('/logout', logoutRouter);
+app.use('/about', aboutRouter);
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
