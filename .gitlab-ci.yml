@@ -1,31 +1,18 @@
 # ------------------------------
 # Stages will involve initial build, staging & testing area, followed by an azure deployment job.
 stages:
-  - build
-  - test
   - deploy
-
-build:
-  stage: build
-  image: node:16
-  script:
-    # https://docs.npmjs.com/cli/v9/commands/npm-ci
-    - npm ci
-
-test:
-  stage: test
-  image: node:16
-  script:
-    - npm ci
-    - npm i
-
+  - post-deploy
 deploy-azure:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  image: mcr.microsoft.com/azure-cli
+  image: mcr.microsoft.com/azure-cli:latest
   only:
     - develop #Change to your branch for testing. Change back to main/develop before merging
   script:
     - az login -u $DEVID -p $DEVPASSWORD
     - az webapp up --name $DEVAPPNAME --resource-group $DEVRESOURCEGROUP --runtime "NODE|16-lts"
-    - az webapp config set -n $DEVAPPNAME -g $DEVRESOURCEGROUP --node-version 16
-    - az webapp ssh --name $DEVAPPNAME -g $DEVRESOURCEGROUP --command "cd site/wwwroot && npm install"
+kudu-scm-build:
+  stage: post-deploy
+  image: mcr.microsoft.com/azure-cli:latest
+  script: |
+    az rest --method POST --uri "https://archemapp.scm.azurewebsites.net/api/command" --headers "Content-Type=application/json" "Authorization=Basic JGFyY2hlbWFwcDoyYnQzdVR5MVJhd1c3ZkR5dFdpd2wwaXlqSEJoWGJETWtrYWl2bDdaZzV6c3NZUlp0eGpsdUZ0WWRqcWw=" --body "{\"command\": \"sh -c \\\"cd /home/site/wwwroot && npm install\\\"\"}"
