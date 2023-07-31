@@ -14,5 +14,7 @@ deploy-azure:      # This job runs in the deploy stage.
 kudu-scm-build:
   stage: post-deploy
   image: mcr.microsoft.com/azure-cli:latest
+  only:
+    - develop
   script: |
     az rest --method POST --uri "https://archemapp.scm.azurewebsites.net/api/command" --headers "Content-Type=application/json" "Authorization=Basic JGFyY2hlbWFwcDoyYnQzdVR5MVJhd1c3ZkR5dFdpd2wwaXlqSEJoWGJETWtrYWl2bDdaZzV6c3NZUlp0eGpsdUZ0WWRqcWw=" --body "{\"command\": \"sh -c \\\"cd /home/site/wwwroot && npm install\\\"\"}"
