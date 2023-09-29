@@ -179,7 +179,7 @@
     // setup molecule
     ////////////////////////////////////////////////////////////
     //Load the molfile:
-    let molfile = (JSON.stringify(molfile));
+    let molfile = (<%- JSON.stringify(molfile) %>);
     let molObject = molFileToJSON(molfile);
 
     console.log(molObject);
