@@ -16,23 +16,23 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-
-
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/session');
 var moleculeRouter = require('./routes/molecules');
 var catalogRouter = require('./routes/catalog');
 var itemRouter = require('./routes/item');
+var scenesRouter = require('./routes/scenes');
 var lessonsRouter = require('./routes/lessons');
 var hybridizationRouter = require('./routes/hybridization');
 var lessonEditor = require('./routes/lessonEditor');
 var moleculeViewer = require('./routes/moleculeViewer');
+var sceneViewer = require('./routes/sceneViewer');
 var lessonViewer = require('./routes/lessonViewer');
 var addMolecule = require('./routes/addMolecule');
+var addScene = require('./routes/addScene');
 var loginRouter = require('./routes/login');
 var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
-var aboutRouter = require('./routes/about');
 
 var app = express();
 app.use(express.json({ limit: '4MB' }));
@@ -67,17 +67,18 @@ app.use('/users', usersRouter);
 app.use('/molecules', moleculeRouter);
 app.use('/catalog', catalogRouter);
 app.use('/item', itemRouter);
+app.use('/scenes', scenesRouter);
 app.use('/lessons', lessonsRouter);
 app.use('/lessonviewer', lessonViewer);
 app.use('/hybridization', hybridizationRouter);
 app.use('/lessoneditor', lessonEditor);
 app.use('/moleculeviewer', moleculeViewer);
+app.use('/sceneviewer', sceneViewer);
 app.use('/addmolecule', addMolecule);
+app.use('/addScene', addScene);
 app.use('/login', loginRouter);
 app.use('/session', sessionRouter);
 app.use('/logout', logoutRouter);
-app.use('/about', aboutRouter);
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
