@@ -1,0 +1,79 @@
+<%- include('partials/header') %>
+
+<!--ADMIN NAVBAR CHECK-->
+<% if (isAdmin) { %>
+  <%- include('partials/navbarAdmin') %>
+<% } else { %>
+  <%- include('partials/navbar') %>
+<% } %>
+
+
+<script type="importmap">
+    {
+        "imports": {
+            "three": "../js/three.module.js",
+            "OrbitControls": "../js/OrbitControls.js",
+            "OBJLoader": "../js/OBJLoader.js",
+            "MTLLoader": "../js/MTLLoader.js"
+        }
+    }
+</script>
+
+
+<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+
+
+
+<div class="container mb-4">
+    <div class="row content">
+        <div class="col-12 pt-4 text-start text-white bg-dark">
+            <h1 class="display-4 fw-bold">Hybridization Catalog</h1>
+            <div id="model-container" class="container"></div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { OrbitControls } from '/js/OrbitControls.js';
+    import * as THREE from '/js/three.module.js';
+    import { OBJLoader } from '/js/OBJLoader.js';
+    import { MTLLoader } from '/js/MTLLoader.js';
+
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    document.body.appendChild( renderer.domElement );
+
+    const mtlLoader = new MTLLoader();
+    mtlLoader.load('../mtlFiles/sp.mtl', (materials) => {
+        materials.preload();
+
+        const objLoader = new OBJLoader();
+        objLoader.setMaterials(materials);
+        objLoader.load('../objFiles/sp.obj', (object) => {
+            scene.add(object);
+            renderer.render(scene, camera);
+        }, undefined, (error) => {
+            console.error('Error loading OBJ file:', error);
+        });
+    }, undefined, (error) => {
+        console.error('Error loading MTL file:', error);
+    });
+
+
+
+camera.position.z = 5;
+
+function animate() {
+	requestAnimationFrame( animate );
+	renderer.render( scene, camera );
+}
+animate();
+
+</script>
+
+
+<%- include('partials/footer') %>
