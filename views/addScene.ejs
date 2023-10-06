@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar')%>
+
+<div class="container">
+    <div class="row content">
+        <div class="col-12 pt-4 text-start text-white bg-dark">
+            <h1 class="display-4 fw-bold">Add New Scene</h1>
+    
+    <form class="d-flex justify-content-center flex-wrap" action="/addScene" method="POST" id="addSceneForm">
+        <div class="row d-flex flex-wrap">
+            <div class="col-12 col-sm-6 d-flex  flex-wrap">
+                <h4>Scene name:</h4>
+                <input type="text" class="form-control" id="sceneName" name="name" placeholder="Scene name"  required>
+                <h4>Description:</h4>
+                <input type="text" class="form-control" id="sceneDescription" name="description" placeholder="Description"  required>
+                <h4>File:</h4>
+                <input type="file" class="form-control" id="fileName" name="fileName" placeholder="File name" onchange="onReceiptsSelected()" required>
+                <button class="form-control my-4 w-50">Submit</button>
+            </div>
+            <div class="col-12 col-sm-6 d-flex align-content-stretch flex-wrap">
+                <textarea class="form-control" name="preview" id="preview" style="display: none"></textarea>
+            </div>
+        </div>
+    </form> 
+
+<script>
+// Preview the scene file content when selected
+function onReceiptsSelected() {
+    const files = fileName.files;
+    if (files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            document.getElementById("preview").value += e.target.result;
+            //console.log(e.target.result);
+        };
+        reader.readAsText(files[0]);
+    }
+}
+</script>
+<%- include('partials/footer') %>
