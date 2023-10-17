@@ -155,61 +155,6 @@
         })
     });
 
-
-    function deleteScene(fileName) {
-        fetch(`./public/scenefiles/${fileName}`, {
-    method: 'DELETE',
-})
-.then(response => {
-    console.log(fileName);
-    console.log(response.status); // Add this line to log the HTTP status code
-    if (response.ok) {
-        // Scene was deleted successfully
-        // Remove the row from the table
-        const row = document.querySelector(`#Name${fileName}`).closest('tr');
-        console.log(fileName);
-        row.remove();
-    } else {
-        // Handle the error here
-        console.error('Error deleting scene:', response.statusText);
-    }
-})
-.catch(error => {
-    console.error('Error deleting scene:', error);
-});
-
-    //     // Confirm the deletion with a confirmation dialog
-    //     if (confirm("Are you sure you want to delete this scene?")) {
-    //         // Place your delete logic here
-    //         // For example, you can use AJAX to send a delete request to the server
-    //         // and then remove the row from the table if successful
-
-    //         // Example using fetch:
-    //         fetch(`.public/scenefiles/${fileName}`, {
-    //             method: 'DELETE',
-                
-    //         })
-    //         .then(response => {
-    //             console.log(fileName);
-    //             if (response.OK) {
-    //                 // Scene was deleted successfully
-    //                 // Remove the row from the table
-    //                 const row = document.querySelector(`#Name${fileName}`).closest('tr');
-    //                 console.log(fileName);
-    //                 row.remove();
-    //             } else {
-    //                 // Handle the error here
-    //                 console.error('Error deleting scene:', response.statusText);
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error('Error deleting scene:', error);
-    //         });
-    //     }
-    }
-
-    
-
 </script>
 
 <style>

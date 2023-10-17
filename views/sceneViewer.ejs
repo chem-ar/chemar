@@ -115,57 +115,19 @@
         let loader;
         if(requestedFileExt == "wrl"){
             loader = new VRMLLoader();
-        }else if(requestedFileExt == "gltf"){
+        }
+        
+        if(requestedFileExt == "gltf"){
             loader = new GLTFLoader();
-        }else if (requestedFileExt === 'mtl') {
-        loader = new MTLLoader();
-        // You need to specify the path to the MTL and OBJ files here
-        loader.load('public/mtlFiles/lego.mtl', (materials) => {
-            materials.preload();
-            const objLoader = new OBJLoader();
-            objLoader.setMaterials(materials);
-            objLoader.load('./public/objFiles/lego.obj', (loadedObject) => {
-                object = loadedObject;
-                scene.add(object);
-
-                // Position the camera and render the scene
-                camera.position.set(0, 0, 5);
-                camera.lookAt(0, 0, 0);
-
-                // Create an animate function to render the scene continuously
-                function animate() {
-                    requestAnimationFrame(animate);
-                    renderer.render(scene, camera);
-                }
-
-                animate();
-            });
-        });
-    } else if (requestedFileExt === 'obj') {
-        loader = new OBJLoader();
-        // You need to specify the path to the OBJ file here
-        loader.load('./public/objFiles/lego.obj', (loadedObject) => {
-            object = loadedObject;
-            scene.add(object);
-
-            // Position the camera and render the scene
-            camera.position.set(0, 0, 5);
-            camera.lookAt(0, 0, 0);
-
-            // Create an animate function to render the scene continuously
-            function animate() {
-                requestAnimationFrame(animate);
-                renderer.render(scene, camera);
-            }
-
-            animate();
-        });
-    }
-        // else if(requestedFileExt == "mtl"){
-        //     loader = new MTLLoader();
-        // }else if(requestedFileExt == "obj"){
-        //     loader = new OBJLoader();
-        // }
+        }
+        
+        if(requestedFileExt == "mtl"){
+            loader = new MTLLoader();
+        }
+        
+        if(requestedFileExt == "obj"){
+            loader = new OBJLoader();
+        }
 
         
 
@@ -212,16 +174,32 @@
                 if(requestedFileExt == "wrl"){
                     scene.add( object );
                 }
-                else if(requestedFileExt == "gltf" || requestedFileExt == "mtl" || requestedFileExt == "obj"){
+                else if(requestedFileExt == "gltf"){
                     console.log(object);
                     mixer = new THREE.AnimationMixer( object.scene );
                     for(let animation of object.animations){
                         actions.push(mixer.clipAction(animation));
-                        var action = mixer.clipAction( animation);
+                        var action = mixer.clipAction(animation);
                         action.play();
 
                     }
+                    
                     scene.add( object.scene );
+                } 
+                else if(requestedFileExt == "mtl" || requestedFileExt == "obj"){
+                    if (object instanceof THREE.Group) {
+                        // Handle OBJ,or MTL files
+                        mixer = new THREE.AnimationMixer(object);
+                        for (let animation of object.animations) {
+                            actions.push(mixer.clipAction(animation));
+                            var action = mixer.clipAction(animation);
+                            action.play();
+                        }
+
+                        scene.add(object);
+                    } else {
+                        console.error('Loaded object is not a valid instance of THREE.Group.');
+                    }
                 }
             } );
 
