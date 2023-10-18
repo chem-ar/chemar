@@ -186,20 +186,30 @@
                     
                     scene.add( object.scene );
                 } 
-                else if(requestedFileExt == "mtl" || requestedFileExt == "obj"){
-                    if (object instanceof THREE.Group) {
-                        // Handle OBJ,or MTL files
-                        mixer = new THREE.AnimationMixer(object);
-                        for (let animation of object.animations) {
-                            actions.push(mixer.clipAction(animation));
-                            var action = mixer.clipAction(animation);
-                            action.play();
-                        }
-
-                        scene.add(object);
-                    } else {
-                        console.error('Loaded object is not a valid instance of THREE.Group.');
-                    }
+                else if (requestedFileExt === "obj") {
+                    const mtlLoader = new MTLLoader();
+                    const mtlFile = requestedFile.replace(".obj", ".mtl");
+                    
+                    mtlLoader.load('../objAndMtlFiles/' + mtlFile, function (materials) {
+                        materials.preload();
+                        
+                        const objLoader = new OBJLoader();
+                        objLoader.setMaterials(materials);
+                        
+                        objLoader.load('../objAndMtlFiles/' + requestedFile, function (object) {
+                            if (object instanceof THREE.Group) {
+                                mixer = new THREE.AnimationMixer(object);
+                                for (let animation of object.animations) {
+                                    actions.push(mixer.clipAction(animation));
+                                    var action = mixer.clipAction(animation);
+                                    action.play();
+                                }
+                                scene.add(object);
+                            } else {
+                                console.error('Loaded object is not a valid instance of THREE.Group.');
+                            }
+                        });
+                    });
                 }
             } );
 
@@ -209,7 +219,7 @@
 
             controls = new OrbitControls( camera, renderer.domElement );
             controls.dampingFactor = 10;
-            controls.minDistance = 35;
+            // controls.minDistance = 35;
 
             camera.position.x = 0;
             camera.position.y = 0;
