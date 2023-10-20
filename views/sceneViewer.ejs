@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Molecule Viewer</title>
+    <title>Scene Viewer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
@@ -18,7 +18,9 @@
             "imports": {
                 "three": "../js/three.module.js",
                 "OrbitControls": "../js/OrbitControls.js",
-                "VRMLLoader": "../js/VRMLLoader.js"
+                "VRMLLoader": "../js/VRMLLoader.js",
+                "MTLLoader": "../js/MTLLoader.js",
+                "OBJLoader": "../js/OBJLoader.js"
             }
         }
     </script>
@@ -80,6 +82,8 @@
         import { OrbitControls } from '/js/OrbitControls.js';
         import { VRMLLoader } from '/js/VRMLLoader.js';
         import { GLTFLoader } from '/js/GLTFLoader.js';
+        import { MTLLoader } from '/js/MTLLoader.js';
+        import { OBJLoader } from '/js/OBJLoader.js';
 
         import * as THREE from '/js/three.module.js';
         import { ARButton } from '/js/ARButton.js';
@@ -87,12 +91,83 @@
         let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
         let requestedFileExt = requestedFile.substring(requestedFile.lastIndexOf('.') + 1);
 
+        function loadAndRenderModel() {
+        loader.load(requestedFile, (model) => {
+            object = model;
+
+            // Add the loaded 3D model to the scene
+            scene.add(object);
+
+            // Position the camera and render the scene
+            camera.position.set(0, 0, 5);
+            camera.lookAt(0, 0, 0);
+
+            // Create an animate function to render the scene continuously
+            function animate() {
+                requestAnimationFrame(animate);
+                renderer.render(scene, camera);
+            }
+
+            animate();
+        });
+    }
+
         let loader;
         if(requestedFileExt == "wrl"){
             loader = new VRMLLoader();
         }else if(requestedFileExt == "gltf"){
             loader = new GLTFLoader();
-        }
+        }else if (requestedFileExt === 'mtl') {
+        loader = new MTLLoader();
+        // You need to specify the path to the MTL and OBJ files here
+        loader.load('public/mtlFiles/lego.mtl', (materials) => {
+            materials.preload();
+            const objLoader = new OBJLoader();
+            objLoader.setMaterials(materials);
+            objLoader.load('./public/objFiles/lego.obj', (loadedObject) => {
+                object = loadedObject;
+                scene.add(object);
+
+                // Position the camera and render the scene
+                camera.position.set(0, 0, 5);
+                camera.lookAt(0, 0, 0);
+
+                // Create an animate function to render the scene continuously
+                function animate() {
+                    requestAnimationFrame(animate);
+                    renderer.render(scene, camera);
+                }
+
+                animate();
+            });
+        });
+    } else if (requestedFileExt === 'obj') {
+        loader = new OBJLoader();
+        // You need to specify the path to the OBJ file here
+        loader.load('./public/objFiles/lego.obj', (loadedObject) => {
+            object = loadedObject;
+            scene.add(object);
+
+            // Position the camera and render the scene
+            camera.position.set(0, 0, 5);
+            camera.lookAt(0, 0, 0);
+
+            // Create an animate function to render the scene continuously
+            function animate() {
+                requestAnimationFrame(animate);
+                renderer.render(scene, camera);
+            }
+
+            animate();
+        });
+    }
+        // else if(requestedFileExt == "mtl"){
+        //     loader = new MTLLoader();
+        // }else if(requestedFileExt == "obj"){
+        //     loader = new OBJLoader();
+        // }
+
+        
 
         const threeArea = document.getElementById('three-area');
 
@@ -137,7 +212,7 @@
                 if(requestedFileExt == "wrl"){
                     scene.add( object );
                 }
-                else if(requestedFileExt == "gltf"){
+                else if(requestedFileExt == "gltf" || requestedFileExt == "mtl" || requestedFileExt == "obj"){
                     console.log(object);
                     mixer = new THREE.AnimationMixer( object.scene );
                     for(let animation of object.animations){
