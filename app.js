@@ -83,28 +83,6 @@ app.use('/logout', logoutRouter);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Define a DELETE route to handle scene deletion
-app.delete('.public/scenefiles/:fileName', (req, res, next) => {
-  const fileName = req.params.fileName;
-  const filePath = path.join(__dirname, './public/scenefiles/', fileName); // Adjust the file path as needed
-  console.log('File path to delete:', filePath);
-  
-
-
-  // Use fs.unlink to delete the file
-  fs.unlink(filePath, (err) => {
-    if (err) {
-        console.error('Error deleting file:', err);
-        res.status(500).json({ error: 'Error deleting file', message: err.message }); // Send an error response with details
-    } else {
-        console.log('File deleted successfully:', filePath);
-        res.status(204).send(); // Respond with a status code of 204 (No Content)
-    }
-  });
-});
-
-
-
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
