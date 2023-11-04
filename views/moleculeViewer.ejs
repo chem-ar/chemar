@@ -49,35 +49,43 @@
 <body>
     <script src=https://chemapps.stolaf.edu/jmol/files/JSmolMin2.js></script>
     <script type='text/javascript' language='javascript'>
-            Jmol.Info.j2sPath = 'https://chemapps.stolaf.edu/jmol/jsmol/j2s'; Jmol.Info.serverURL = 'https://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php'
-            jmolInitialize('https://chemapps.stolaf.edu/jmol/files', true);
-            jmolApplet(['600', '600'], "set antialiasdisplay\;background black\; load data \"mydata\"|C4H10|APtclcactv10112205513D 0   0.00000     0.00000| | 14 13  0  0  0  0  0  0  0  0999 V2000|    1.9203   -0.1373   -0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0|    0.5462    0.5356    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0|   -0.5462   -0.5356    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0|   -1.9203    0.1373   -0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0|    2.0206   -0.7585    0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0|    2.0206   -0.7585   -0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0|    2.6986    0.6259   -0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0|    0.4459    1.1569    0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0|    0.4459    1.1569   -0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0|   -0.4459   -1.1569   -0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0|   -0.4459   -1.1569    0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0|   -2.0206    0.7585    0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0|   -2.0206    0.7585   -0.8900 H   0  0  0  0  0  0  0  0  0  0  0  0|   -2.6986   -0.6259   -0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0|  1  2  1  0  0  0  0|  2  3  1  0  0  0  0|  3  4  1  0  0  0  0|  1  5  1  0  0  0  0|  1  6  1  0  0  0  0|  1  7  1  0  0  0  0|  2  8  1  0  0  0  0|  2  9  1  0  0  0  0|  3 10  1  0  0  0  0|  3 11  1  0  0  0  0|  4 12  1  0  0  0  0|  4 13  1  0  0  0  0|  4 14  1  0  0  0  0|M  END|$$$$||end \"mydata\";spin on;", '0');
-    
-            const currentURL = window.location.href;
-            const urlParts = currentURL.split('/');
-            const cid = urlParts[urlParts.length - 1];
+        const currentURL = window.location.href;
+        const urlParts = currentURL.split('/');
+        const cid = urlParts[urlParts.length - 1];
 
-            console.log("CID:", cid);
+        console.log("CID:", cid);
 
 
-            const url = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF/?record_type=3d&response_type=display`;
+        const url = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF/?record_type=3d&response_type=display`;
 
-    fetch(url)
-        .then(response => {
+        Jmol.Info.j2sPath = 'https://chemapps.stolaf.edu/jmol/jsmol/j2s';
+        Jmol.Info.serverURL = 'https://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php';
+        jmolInitialize('https://chemapps.stolaf.edu/jmol/files', true);
 
-            if (response.ok) {
-                return response.text();
+        let extractedData;
+
+        function fetchData() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, false); // Make a synchronous request by setting the third parameter to false
+            xhr.send();
+
+            if (xhr.status === 200) {
+                extractedData = xhr.responseText.substring(0, xhr.responseText.indexOf("END")).trim();
+                extractedData = '|' + extractedData.replace(/\n/g, '|').replace(/\r/g, '') + 'END|';
+                return Promise.resolve(extractedData);
             } else {
-
-                throw new Error("Something went wrong");
+                return Promise.reject(new Error("Something went wrong"));
             }
-        })
-        .then(data => {
-            console.log(data);
-        })
-        .catch(error => {
-            console.error(error);
-        });
+        }
+
+        fetchData()
+            .then(data => {
+                console.log(data);
+                jmolApplet(['600', '600'], "set antialiasdisplay\;background black\; load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;", '0');
+            })
+            .catch(error => {
+                console.error(error);
+            });
     </script>
 
 </body>
