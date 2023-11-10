@@ -15,7 +15,7 @@
             height: 100vh;
             margin: 0;
             color: white;
-            background: black;
+            background: #202020;
         }
 
         .content {
@@ -41,6 +41,20 @@
             justify-content: center;
             align-items: center;
     }
+        #control-panel {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            align-items: center;
+            border: 2px solid #333;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        input[type=button] {
+            background-color: rgb(251, 251, 251);
+            border-radius: 4px;
+            border: 2px solid #333;
+        }
 
     </style>
 
@@ -81,12 +95,23 @@
         fetchData()
             .then(data => {
                 console.log(data);
-                jmolApplet(['600', '600'], "set antialiasdisplay\;background black\; load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;", '0');
+                jmolSetAppletColor('0x202020');
+                jmolApplet(['600', '600'],  "set antialiasdisplay\;load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;", '0');
             })
             .catch(error => {
                 console.error(error);
             });
+
+
+
     </script>
+    <div id="control-panel">
+    <input type="button" value="Spin Off" id="spin-on" onclick="jmolScript('spin off;')">
+    <input type="button" value="Spin On" id="spin-off" onclick="jmolScript('spin on;')">
+    <input type="button" value="Open Console" id="console-open" onclick="jmolScript('console;')">
+    <input type="button" value="Space Fill Toggle" id="space-fill" onclick="jmolScript('spacefill ON/OFF;')">
+    </div>
+    
 
 </body>
 
@@ -118,39 +143,6 @@
     </script>
     <script type="text/javascript" src="/js/datgui/dat.gui.min.js"></script>
     <script src="/js/molFileToJSON.js"></script>
-
-    <style>
-        body { 
-            background-color : #202020;
-            margin: 0; 
-        }
-        #three-area{
-            height: 100vh;
-            width: 100%;
-        }
-        #gui-area{
-            position: absolute;
-            top: 0;
-            left: 0;
-            max-width: 500px;
-            z-index: 1000 !important;
-        }
-        .gui-width{
-            max-width: 500px;
-        }
-        #body-container{
-            position: relative;
-        }
-        .bg-black{
-            background-color: #1f2326 !important;
-        }
-        .transparent-blur{
-            background-color: rgba(31, 35, 38, 0.7);
-        }
-        .blur-10{
-            backdrop-filter: blur(10px);
-        }
-    </style> 
 </head>
 <body>
     <div id = "body-container">
