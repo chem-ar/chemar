@@ -36,8 +36,8 @@ var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
 
 var app = express();
-app.use(express.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+app.use(express.json({ limit: '1000gb' }));
+app.use(bodyParser.urlencoded({ limit: '1000gb', extended: true }));
 
 http.createServer(app).listen(8000);
 https

@@ -11,7 +11,8 @@
 
     <script src = "https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
     <script src = "https://cdn.datatables.net/1.13.3/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+
 
     <script type="importmap">
         {
@@ -20,7 +21,8 @@
                 "OrbitControls": "../js/OrbitControls.js",
                 "VRMLLoader": "../js/VRMLLoader.js",
                 "MTLLoader": "../js/MTLLoader.js",
-                "OBJLoader": "../js/OBJLoader.js"
+                "OBJLoader": "../js/OBJLoader.js",
+                "OBJExporter": "../js/OBJExporter.js"
             }
         }
     </script>
@@ -259,7 +261,7 @@
         import { GLTFLoader } from '/js/GLTFLoader.js';
         import { MTLLoader } from '/js/MTLLoader.js';
         import { OBJLoader } from '/js/OBJLoader.js';
-        // import { OBJExporter } from '/js/OBJExporter.js';
+        import { OBJExporter } from '/js/OBJExporter.js';
 
         import * as THREE from '/js/three.module.js';
         import { ARButton } from '/js/ARButton.js';
@@ -430,6 +432,10 @@
                 const mtlLoader = new MTLLoader();
                 const objFileName = file.name;
                 const mtlFileName = objFileName.replace(".obj", ".mtl");
+                console.log('New File Name:', mtlFileName);
+
+                let existingFileName = requestedFile.replace(".obj", ".mtl");
+                console.log('Existing File Name:', existingFileName);
                 
                 mtlLoader.load('../objAndMtlFiles/' + mtlFileName, function (materials) {
                     materials.preload();
@@ -458,94 +464,60 @@
         
         fileInput.addEventListener('change', function (e) {
             const file = fileInput.files[0];
+            const objFileName = file.name;
+            const mtlFileName = objFileName.replace(".obj", ".mtl");
+            let existingFileName = requestedFile.replace(".obj", ".mtl");
+
+            // Retrieve the value from the hidden input field
             loadNewObjFiles(file);
-            
+
+            // Combine and save MTL files
+            combineAndSaveMTLFiles(mtlFileName, existingFileName);
         });
 
-        function saveSceneAsOBJ(scene, sceneObjects, filename) {
+        function saveSceneAsOBJ(filename) {
             const exporter = new OBJExporter();
-            const combinedObject = new THREE.Group();
-
-            // Iterate through sceneObjects and add their 'object' property to the combinedObject
-            sceneObjects.forEach(sceneObject => {
-                combinedObject.add(sceneObject.object); // Use sceneObject.object
-            });
-
-            const objData = exporter.parse(combinedObject);
+            const objData = exporter.parse(scene);
 
             // Create a Blob from the OBJ data
             const blob = new Blob([objData], { type: 'text/plain' });
 
             // Trigger the download using FileSaver.js
-            saveAs(blob, filename + '.obj');
-        }
+            try {
+                saveAs(blob, filename + '.obj');
 
-        saveAsButton.addEventListener('click', function () {
-            const saveObjectName = prompt('Enter a name for the saved scene:');
-            if (saveObjectName) {
-                saveSceneAsOBJ(scene, sceneObjects, saveObjectName);
+            } catch (error) {
+                console.error('Error saving file:', error);
             }
-        });
+        }
 
+        function combineAndSaveMTLFiles(newFileName, existingFileName) {
+            // Load the contents of the new MTL file
+            fetch('../objAndMtlFiles/' + newFileName)
+            .then(response => response.text())
+            .then(newMTLContent => {
+                // Load the contents of the existing MTL file
+                fetch('../objAndMtlFiles/' + existingFileName)
+                .then(response => response.text())
+                .then(existingMTLContent => {
+                    // Combine the contents of the new and existing MTL files
+                    const combinedMTLContent = existingMTLContent + '\n\n' + newMTLContent;
 
-        const searchField = document.getElementById('search-field');
-        const searchButton = document.getElementById('search-button');
+                    // Create a Blob from the combined MTL content
+                    const mtlBlob = new Blob([combinedMTLContent], { type: 'text/plain' });
 
-        searchField.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                searchButton.click();
-                }
-            });
-
-        searchButton.addEventListener("click", function(event) {
-            event.preventDefault();
-            searchChemSpider(searchField.value);
-        });
-        
-        const apikey = '70DYPVRnsRXA4S0tALUyyM2VoD5YZGat';
-        const headers = {
-            "Content-Type": "application/json",
-            "apikey": apikey
-        };
-        function searchChemSpider(compoundName){
-            var URL = `https://api.rsc.org/compounds/v1/filter/name`;
-
-            const bodyContent = {
-                name: compoundName
-            };
-
-            const requestOptions = {
-                method: "POST",
-                headers: headers,
-                body: JSON.stringify(bodyContent)
-            };
-
-            fetch(URL, requestOptions)
-            .then(response => response.json())
-            .then(data => {
-                // get the results of the query-id
-                URL = `https://api.rsc.org/compounds/v1/filter/${data["queryId"]}/results`;
-                const requestOptions = {
-                    method: "GET",
-                    headers: headers,
-                };
-                // this grabs the results of the query-id which is the record-id
-                fetch(URL, requestOptions)
-                .then(response => response.json())
-                .then(data => {
-                    // passes a list of record-ids
-                    displaySearchResults(data["results"], null);
-                })
-                .catch(error => {
-                    console.error("Error:", error);
+                    saveAsButton.addEventListener('click', function () {
+                        const saveObjectName = prompt('Enter a name for the saved scene:');
+                        if (saveObjectName) {
+                            saveSceneAsOBJ(saveObjectName);
+                            saveAs(mtlBlob, saveObjectName + '.mtl');
+                        }
+                    });
                 });
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                // Handle any errors here
             });
         }
+
+        
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
