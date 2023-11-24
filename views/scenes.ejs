@@ -24,8 +24,6 @@
                 <thead>
                     <tr>
                         <th>File</th>
-                        <th>Name</th>
-                        <th>Formula</th>
                         <th>Options</th>
                     </tr>
                 </thead>
@@ -39,11 +37,6 @@
                         <% for (let item of listNumbers){%>
                             <tr id = "sceneRow<%= item %>">
                                 <td><%= String(item).padStart(3, '0' ) %></td>
-                                <td>
-                                    <!-- <a class="text-white" id="Name<%=item %>" href="/sceneViewer/<%=item%>">Name</a> -->
-                                    <p>Name</p>
-                                </td>
-                                <td id="Formula<%=item %>" class="text-white">Formula</td>
                                 <td class>
                                     <div class = "d-grid gap-2">
                                         <button id="<%= "previewBtn" + item %>" type="button" class="preview btn btn-light" data-bs-toggle="modal" data-bs-target="#canvasModal" >
