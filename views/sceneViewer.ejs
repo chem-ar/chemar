@@ -461,63 +461,55 @@
 
         const saveAsButton = document.getElementById('saveAsButton');
         const fileInput = document.getElementById('fileInput');
-        
+
+        let addedObjects = [];
+
         fileInput.addEventListener('change', function (e) {
             const file = fileInput.files[0];
             const objFileName = file.name;
             const mtlFileName = objFileName.replace(".obj", ".mtl");
-            let existingFileName = requestedFile.replace(".obj", ".mtl");
 
-            // Retrieve the value from the hidden input field
             loadNewObjFiles(file);
-
-            // Combine and save MTL files
-            combineAndSaveMTLFiles(mtlFileName, existingFileName);
+            addedObjects.push({ obj: objFileName, mtl: mtlFileName });      
         });
 
         function saveSceneAsOBJ(filename) {
             const exporter = new OBJExporter();
             const objData = exporter.parse(scene);
-
-            // Create a Blob from the OBJ data
             const blob = new Blob([objData], { type: 'text/plain' });
 
-            // Trigger the download using FileSaver.js
             try {
                 saveAs(blob, filename + '.obj');
-
             } catch (error) {
-                console.error('Error saving file:', error);
+                console.error('Error saving OBJ file:', error);
             }
         }
 
-        function combineAndSaveMTLFiles(newFileName, existingFileName) {
-            // Load the contents of the new MTL file
-            fetch('../objAndMtlFiles/' + newFileName)
-            .then(response => response.text())
-            .then(newMTLContent => {
-                // Load the contents of the existing MTL file
-                fetch('../objAndMtlFiles/' + existingFileName)
-                .then(response => response.text())
-                .then(existingMTLContent => {
-                    // Combine the contents of the new and existing MTL files
-                    const combinedMTLContent = existingMTLContent + '\n\n' + newMTLContent;
+        saveAsButton.addEventListener('click', async function () {
+            const saveObjectName = prompt('Enter a name for the saved scene:');
+            if (saveObjectName && addedObjects.length > 0) {
+                saveSceneAsOBJ(saveObjectName);
+                
+                let existingFileName = requestedFile.replace(".obj", ".mtl");
 
-                    // Create a Blob from the combined MTL content
-                    const mtlBlob = new Blob([combinedMTLContent], { type: 'text/plain' });
-
-                    saveAsButton.addEventListener('click', function () {
-                        const saveObjectName = prompt('Enter a name for the saved scene:');
-                        if (saveObjectName) {
-                            saveSceneAsOBJ(saveObjectName);
-                            saveAs(mtlBlob, saveObjectName + '.mtl');
-                        }
-                    });
+                const fetchMTLFiles = addedObjects.map(obj => {
+                    return fetch('../objAndMtlFiles/' + obj.mtl)
+                        .then(response => response.text())
                 });
-            });
-        }
 
-        
+                try {
+                    const allMTLContents = await Promise.all(fetchMTLFiles);
+                    const combinedMTLContent = allMTLContents.join('\n\n');
+                    const existingMTLContent = await fetch('../objAndMtlFiles/' + existingFileName)
+                        .then(response => response.text());
+                    const finalMTLContent = existingMTLContent + '\n\n' + combinedMTLContent;
+                    const mtlBlob = new Blob([finalMTLContent], { type: 'text/plain' });
+                    saveAs(mtlBlob, `${saveObjectName}.mtl`);
+                } catch (error) {
+                    console.error('Error fetching or combining MTL files:', error);
+                }
+            }
+        });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
