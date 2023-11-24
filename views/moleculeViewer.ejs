@@ -96,7 +96,7 @@
             .then(data => {
                 console.log(data);
                 jmolSetAppletColor('0x202020');
-                jmolApplet(['600', '600'],  "set antialiasdisplay\;load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;", '0');
+                jmolApplet(['600', '600'],  "set antialiasdisplay\;load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
             })
             .catch(error => {
                 console.error(error);
@@ -104,12 +104,43 @@
 
 
 
+            jmolButton("spin @ {!_spinning}", "toggle spin")
+
+
+
+// Create a slider element
+var slider = document.createElement("input");
+slider.type = "range";
+slider.min = 0.2; // Minimum value for van der Waals radius
+slider.max = 2.0; // Maximum value for van der Waals radius
+slider.step = 0.1; // Step size for slider
+slider.value = 1.0; // Default value for slider
+
+// Create a label element to show the current value
+var label = document.createElement("span");
+label.innerHTML = slider.value;
+
+// Add an event listener to the slider
+slider.addEventListener("input", function() {
+  // Update the label with the current value
+  label.innerHTML = slider.value;
+  // Send a Jmol script command to change the van der Waals radius
+  jmolScript("spacefill " + slider.value);
+});
+
+// Append the slider and the label to the document body
+document.body.appendChild(slider);
+document.body.appendChild(label);
+
+
     </script>
     <div id="control-panel">
-    <input type="button" value="Spin Off" id="spin-on" onclick="jmolScript('spin off;')">
-    <input type="button" value="Spin On" id="spin-off" onclick="jmolScript('spin on;')">
-    <input type="button" value="Open Console" id="console-open" onclick="jmolScript('console;')">
-    <input type="button" value="Space Fill Toggle" id="space-fill" onclick="jmolScript('spacefill ON/OFF;')">
+    
+        <!--spin switch-->
+        <input type="button" value="Stop Spin" id="stop-spin" onclick="jmolScript('spin off;')">    
+        <input type="button" value="Open Console" id="console-open" onclick="jmolScript('console;')">
+        <input type="button" value="Space Fill Toggle" id="space-fill" onclick="jmolScript('spacefill;')">
+        
     </div>
     
 
