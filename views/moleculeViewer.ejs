@@ -105,16 +105,19 @@
 
 
             jmolButton("spin @ {!_spinning}", "toggle spin")
-
-
+            
 
 // Create a slider element
 var slider = document.createElement("input");
+//add title for the slider
+var title = document.createElement("h5");
+title.innerHTML = "Van der Waals Radius";
+document.body.appendChild(title);
 slider.type = "range";
 slider.min = 0.2; // Minimum value for van der Waals radius
 slider.max = 2.0; // Maximum value for van der Waals radius
 slider.step = 0.1; // Step size for slider
-slider.value = 1.0; // Default value for slider
+slider.value = 0.3; // Default value for slider
 
 // Create a label element to show the current value
 var label = document.createElement("span");
@@ -137,6 +140,7 @@ document.body.appendChild(label);
 
 
     <!-- bond size dropdown -->
+    <label for="bond-size-dropdown">Bond Size</label>
     <select id="bond-size-dropdown" onchange="changeBondSize(this.value)">
         <option value="0.1">0.1</option>
         <option value="0.2">0.2</option>
@@ -157,15 +161,26 @@ document.body.appendChild(label);
 
 </html>
 
+
+
+
+
+</body>
+
+</html>
+
+
+</body>
+
+</html>
+
     
 
     </script>
     <div id="control-panel">
     
         <!--spin switch-->
-        <input type="button" value="Stop Spin" id="stop-spin" onclick="jmolScript('spin off;')">    
         <input type="button" value="Open Console" id="console-open" onclick="jmolScript('console;')">
-        <input type="button" value="Space Fill Toggle" id="space-fill" onclick="jmolScript('spacefill;')">
         
     </div>
     
