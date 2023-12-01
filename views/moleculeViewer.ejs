@@ -45,6 +45,22 @@
             justify-content: center;
             align-items: center;
         }
+
+        #control-panel {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            align-items: center;
+            border: 2px solid #333;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        input[type=button] {
+            background-color: rgb(251, 251, 251);
+            border-radius: 4px;
+            border: 2px solid #333;
+        }
     </style>
 
 </head>
@@ -52,7 +68,6 @@
 <body>
     <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-database-compat.js"></script>
-
     <script src="/jmol-16.1.41/jsmol/JSmol.min.js"></script>
     <script src="/jmol-16.1.41/jsmol/js/Jmol2.js"></script>
 
@@ -68,47 +83,7 @@
         const firebaseConfig = {
             databaseURL: "https://chemar-5845a-default-rtdb.firebaseio.com/",
         };
-        firebase.initializeApp(firebaseConfig);
 
-        async function initializeFirebase() {
-            const keysArray = [];
-            let objPresent = false;
-
-            const database = firebase.database();
-
-            const objRef = database.ref("obj");
-
-            const snapshot = await objRef.once("value");
-            const data = snapshot.val();
-            keysArray.push(...Object.keys(data));
-            console.log(keysArray);
-            if (keysArray.includes(cid)) {
-                objPresent = true;
-                const objRef = database.ref("obj");
-                objRef.child(cid).once("value", function (snapshot) {
-                    const data = snapshot.val();
-                    console.log(data);
-                    jmolApplet(['600', '600'], "set antialiasdisplay\;background black\; load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;", '0');
-                });
-            }
-            else {
-                let extractedData;
-                const xhr = new XMLHttpRequest();
-                xhr.open('GET', url, false);
-                xhr.send();
-                if (xhr.status === 200) {
-                    extractedData = xhr.responseText.substring(0, xhr.responseText.indexOf("END")).trim();
-                    extractedData = '|' + extractedData.replace(/\n/g, '|').replace(/\r/g, '') + 'END|';
-                    const objRef = database.ref("obj");
-                    objRef.child(cid).set(extractedData);
-                    objPresent = true;
-                } else {
-                    return Promise.reject(new Error("Something went wrong"));
-                }
-            }
-            console.log({ objPresent });
-        }
-        initializeFirebase();
         Jmol.Info.j2sPath = '/jmol-16.1.41/jsmol/j2s';
         Jmol.Info.serverURL = '/jmol-16.1.41/jsmol/php/jsmol.php';
         jmolInitialize('/jmol-16.1.41/jsmol', true);
@@ -139,10 +114,47 @@
                 console.error(error);
             });
 
+        firebase.initializeApp(firebaseConfig);
+        async function initializeFirebase() {
+            const keysArray = [];
+            let objPresent = false;
 
+            const database = firebase.database();
 
+            const objRef = database.ref("obj");
+
+            const snapshot = await objRef.once("value");
+            const data = snapshot.val();
+            keysArray.push(...Object.keys(data));
+            console.log(keysArray);
+            if (keysArray.includes(cid)) {
+                objPresent = true;
+                const objRef = database.ref("obj");
+                objRef.child(cid).once("value", function (snapshot) {
+                    const data = snapshot.val();
+                    console.log(data);
+                });
+            }
+            else {
+                let extractedData;
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', url, false);
+                xhr.send();
+                if (xhr.status === 200) {
+                    extractedData = xhr.responseText.substring(0, xhr.responseText.indexOf("END")).trim();
+                    extractedData = '|' + extractedData.replace(/\n/g, '|').replace(/\r/g, '') + 'END|';
+                    const objRef = database.ref("obj");
+                    objRef.child(cid).set(extractedData);
+                    objPresent = true;
+                } else {
+                    return Promise.reject(new Error("Something went wrong"));
+                }
+            }
+            console.log({ objPresent });
+        }
+        initializeFirebase();
+      
         jmolButton("spin @ {!_spinning}", "Toggle Spin")
-
 
         // Create a slider element
         var slider = document.createElement("input");
@@ -174,21 +186,16 @@
 
     </script>
     <div id="control-panel">
-        <br>
-        <br>
-        <input type="button" value="Get obj file" id="get-obj" onclick='jmolScript("write " + cid + ".obj;")'>
-    </div>
 
-
-    <!-- bond size dropdown -->
-    <label for="bond-size-dropdown">Bond Size</label>
-    <select id="bond-size-dropdown" onchange="changeBondSize(this.value)">
-        <option value="0.1">0.1</option>
-        <option value="0.2">0.2</option>
-        <option value="0.3">0.3</option>
-        <option value="0.4">0.4</option>
-        <option value="0.5">0.5</option>
-    </select>
+        <!-- bond size dropdown -->
+        <label for="bond-size-dropdown">Bond Size</label>
+        <select id="bond-size-dropdown" onchange="changeBondSize(this.value)">
+            <option value="0.1">0.1</option>
+            <option value="0.2">0.2</option>
+            <option value="0.3">0.3</option>
+            <option value="0.4">0.4</option>
+            <option value="0.5">0.5</option>
+        </select>
 
     </div>
 
@@ -198,37 +205,19 @@
         }
     </script>
 
-</body>
+    
+    <div id="control-panel">
 
-</html>
-
-
-
-
-
-</body>
-
-</html>
+        <!--spin switch-->
+        <input type="button" value="Open Console" id="console-open" onclick="jmolScript('console;')">
+        <input type="button" value="Get obj file" id="get-obj" onclick='jmolScript("write " + cid + ".obj;")'>
+    </div>
 
 
 </body>
 
 </html>
 
-
-
-</script>
-<div id="control-panel">
-
-    <!--spin switch-->
-    <input type="button" value="Open Console" id="console-open" onclick="jmolScript('console;')">
-
-</div>
-
-
-</body>
-
-</html>
 
 
 
