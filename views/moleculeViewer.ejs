@@ -36,11 +36,12 @@
             border: 2px solid #333;
             padding: 20px;
             margin-bottom: 20px;
-        
+
             display: flex;
             justify-content: center;
             align-items: center;
-    }
+        }
+
         #control-panel {
             display: flex;
             justify-content: center;
@@ -50,19 +51,21 @@
             margin-bottom: 20px;
             border-radius: 4px;
         }
+
         input[type=button] {
             background-color: rgb(251, 251, 251);
             border-radius: 4px;
             border: 2px solid #333;
         }
-
     </style>
 
 </head>
 
 <body>
-    <script src=https://chemapps.stolaf.edu/jmol/files/JSmolMin2.js></script>
-    <script type='text/javascript' language='javascript'>
+    <script src="/jmol-16.1.41/jsmol/JSmol.min.js"></script>
+    <script src="/jmol-16.1.41/jsmol/js/Jmol2.js"></script>
+
+    <script>
         const currentURL = window.location.href;
         const urlParts = currentURL.split('/');
         const cid = urlParts[urlParts.length - 1];
@@ -72,9 +75,9 @@
 
         const url = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF/?record_type=3d&response_type=display`;
 
-        Jmol.Info.j2sPath = 'https://chemapps.stolaf.edu/jmol/jsmol/j2s';
-        Jmol.Info.serverURL = 'https://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php';
-        jmolInitialize('https://chemapps.stolaf.edu/jmol/files', true);
+        Jmol.Info.j2sPath = '/jmol-16.1.41/jsmol/j2s';
+        Jmol.Info.serverURL = '/jmol-16.1.41/jsmol/php/jsmol.php';
+        jmolInitialize('/jmol-16.1.41/jsmol', true);
 
         let extractedData;
 
@@ -96,7 +99,7 @@
             .then(data => {
                 console.log(data);
                 jmolSetAppletColor('0x202020');
-                jmolApplet(['600', '600'],  "set antialiasdisplay\;load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
+                jmolApplet(['600', '600'], "set antialiasdisplay\;load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
             })
             .catch(error => {
                 console.error(error);
@@ -104,86 +107,86 @@
 
 
 
-            jmolButton("spin @ {!_spinning}", "toggle spin")
-            
+        jmolButton("spin @ {!_spinning}", "toggle spin")
 
-// Create a slider element
-var slider = document.createElement("input");
-//add title for the slider
-var title = document.createElement("h5");
-title.innerHTML = "Van der Waals Radius";
-document.body.appendChild(title);
-slider.type = "range";
-slider.min = 0.2; // Minimum value for van der Waals radius
-slider.max = 2.0; // Maximum value for van der Waals radius
-slider.step = 0.1; // Step size for slider
-slider.value = 0.3; // Default value for slider
 
-// Create a label element to show the current value
-var label = document.createElement("span");
-label.innerHTML = slider.value;
+        // Create a slider element
+        var slider = document.createElement("input");
+        //add title for the slider
+        var title = document.createElement("h5");
+        title.innerHTML = "Van der Waals Radius";
+        document.body.appendChild(title);
+        slider.type = "range";
+        slider.min = 0.2; // Minimum value for van der Waals radius
+        slider.max = 2.0; // Maximum value for van der Waals radius
+        slider.step = 0.1; // Step size for slider
+        slider.value = 0.3; // Default value for slider
 
-// Add an event listener to the slider
-slider.addEventListener("input", function() {
-  // Update the label with the current value
-  label.innerHTML = slider.value;
-  // Send a Jmol script command to change the van der Waals radius
-  jmolScript("spacefill " + slider.value);
-});
+        // Create a label element to show the current value
+        var label = document.createElement("span");
+        label.innerHTML = slider.value;
 
-// Append the slider and the label to the document body
-document.body.appendChild(slider);
-document.body.appendChild(label);
+        // Add an event listener to the slider
+        slider.addEventListener("input", function () {
+            // Update the label with the current value
+            label.innerHTML = slider.value;
+            // Send a Jmol script command to change the van der Waals radius
+            jmolScript("spacefill " + slider.value);
+        });
+
+        // Append the slider and the label to the document body
+        document.body.appendChild(slider);
+        document.body.appendChild(label);
+
+    </script>
+    <div id="control-panel">
+
+
+        <!-- bond size dropdown -->
+        <label for="bond-size-dropdown">Bond Size</label>
+        <select id="bond-size-dropdown" onchange="changeBondSize(this.value)">
+            <option value="0.1">0.1</option>
+            <option value="0.2">0.2</option>
+            <option value="0.3">0.3</option>
+            <option value="0.4">0.4</option>
+            <option value="0.5">0.5</option>
+        </select>
+
+    </div>
+
+    <script>
+        function changeBondSize(value) {
+            jmolScript("wireframe " + value);
+        }
+    </script>
+
+</body>
+
+</html>
+
+
+
+
+
+</body>
+
+</html>
+
+
+</body>
+
+</html>
+
+
 
 </script>
 <div id="control-panel">
 
-
-    <!-- bond size dropdown -->
-    <label for="bond-size-dropdown">Bond Size</label>
-    <select id="bond-size-dropdown" onchange="changeBondSize(this.value)">
-        <option value="0.1">0.1</option>
-        <option value="0.2">0.2</option>
-        <option value="0.3">0.3</option>
-        <option value="0.4">0.4</option>
-        <option value="0.5">0.5</option>
-    </select>
+    <!--spin switch-->
+    <input type="button" value="Open Console" id="console-open" onclick="jmolScript('console;')">
 
 </div>
 
-<script>
-    function changeBondSize(value) {
-        jmolScript("wireframe " + value);
-    }
-</script>
-
-</body>
-
-</html>
-
-
-
-
-
-</body>
-
-</html>
-
-
-</body>
-
-</html>
-
-    
-
-    </script>
-    <div id="control-panel">
-    
-        <!--spin switch-->
-        <input type="button" value="Open Console" id="console-open" onclick="jmolScript('console;')">
-        
-    </div>
-    
 
 </body>
 

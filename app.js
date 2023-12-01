@@ -32,6 +32,7 @@ var addScene = require('./routes/addScene');
 var loginRouter = require('./routes/login');
 var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
+var jmolRouter = require('./routes/jmol');
 
 var app = express();
 app.use(express.json({ limit: '4MB' }));
@@ -77,6 +78,7 @@ app.use('/addScene', addScene);
 app.use('/login', loginRouter);
 app.use('/session', sessionRouter);
 app.use('/logout', logoutRouter);
+app.use('/jmol', jmolRouter);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
