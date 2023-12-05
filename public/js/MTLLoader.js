@@ -479,7 +479,7 @@ class MaterialCreator {
 					if ( n > 0 ) {
 
 						params.opacity = 1 - n;
-						params.transparent = true;
+						params.transparent = false;
 
 					}
 

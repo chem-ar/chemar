@@ -12,4 +12,5 @@ router.get('/', function(req, res, next) {
   res.render('scenes', {title: 'Scene Manager', list: list, isAdmin: isAdmin});
 });
 
+
 module.exports = router;
