@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scene Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.3/css/dataTables.bootstrap5.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+    <script src = "https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
+    <script src = "https://cdn.datatables.net/1.13.3/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "../js/three.module.js",
+                "OrbitControls": "../js/OrbitControls.js",
+                "VRMLLoader": "../js/VRMLLoader.js",
+                "MTLLoader": "../js/MTLLoader.js",
+                "OBJLoader": "../js/OBJLoader.js",
+                "OBJExporter": "../js/OBJExporter.js"
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color : #202020;
+            margin: 0; 
+        }
+        #three-area{
+            height: 100vh;
+            width: 100%;
+        }
+        #gui-area{
+            position: absolute;
+            top: 0;
+            left: 0;
+            max-width: 500px;
+            z-index: 1000 !important;
+        }
+        .gui-width{
+            max-width: 500px;
+        }
+        #body-container{
+            position: relative;
+        }
+        .bg-black{
+            background-color: #1f2326 !important;
+        }
+        .transparent-blur{
+            background-color: rgba(31, 35, 38, 0.7);
+        }
+        .blur-10{
+            backdrop-filter: blur(10px);
+        }
+    </style> 
+</head>
+<body>
+    <div id = "body-container">
+        <div id ="three-area"></div>
+        <div id="gui-area">
+            <div class="gui-width">
+                <div class = "container">
+                    <div class = "row mt-3">
+                        <div class = "col">
+                            <button type="button" id = "main-menu-button" class="btn btn-outline-light" data-bs-toggle="offcanvas" data-bs-target="#mainMenu" aria-controls="mainMenu">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-menu-app-fill" viewBox="0 0 16 16">
+                                    <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h2A1.5 1.5 0 0 1 5 1.5v2A1.5 1.5 0 0 1 3.5 5h-2A1.5 1.5 0 0 1 0 3.5v-2zM0 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8zm1 3v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2H1zm14-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2h14zM2 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z"/>
+                                </svg>
+                                Menu
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="offcanvas offcanvas-start text-white transparent-blur blur-10" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="mainMenu" aria-labelledby="mainMenu">
+                        <div class="offcanvas-header bg-black border-bottom">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="offcanvas" aria-label="Close">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-menu-app" viewBox="0 0 16 16">
+                                <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h2A1.5 1.5 0 0 1 5 1.5v2A1.5 1.5 0 0 1 3.5 5h-2A1.5 1.5 0 0 1 0 3.5v-2zM1.5 1a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5h-2zM0 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8zm1 3v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2H1zm14-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2h14zM2 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z"/>
+                            </svg>
+                            Menu
+                        </button>
+    
+                        <h3 class="offcanvas-title fw-bold" id="offcanvasScrollingLabel">
+                            Scene Files Menu
+                        </h3>
+                        </div>
+                        <div class="offcanvas-body">
+                            <div class = "row">
+                                <h4>Scene</h4>
+                                <div class = "col-12">
+                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#fileMenu" role="button" aria-expanded="false" aria-controls="fileMenu">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-fill" viewBox="0 0 16 16">
+                                            <path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3z"/>
+                                          </svg>
+                                        Load Scene File
+                                    </button>
+                                    <button type="button" id="saveAsButton" class="btn btn-outline-light" data-bs-toggle="collapse" href="#fileMenu" role="button" aria-expanded="false" aria-controls="fileMenu">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-fill" viewBox="0 0 16 16">
+                                            <path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3z"/>
+                                          </svg>
+                                        Save As
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mt-2">
+                                  <div class="collapse multi-collapse" id="fileMenu">
+                                    <div class="mb-3">
+                                        <input class="form-control form-control-lg" type="file" id="fileInput" accept=".obj">
+                                      </div>
+                                  </div>
+                                </div>
+                            </div>
+        
+        
+                            <div class = "row">
+                                <div class = "col-12 mt-2">
+                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#searchMenu" role="button" aria-expanded="false" aria-controls="searchMenu">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                          </svg>
+                                        Search ChemSpider
+                                    </button>   
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mt-2">
+                                  <div class="collapse multi-collapse" id="searchMenu">
+                                    <div class="input-group flex-nowrap">
+                                        <span class="input-group-text" id="addon-wrapping">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+                                            </svg>
+                                        </span>
+                                        <input type="text" id = "search-field" class="form-control form-control-lg" placeholder="Scene Name" aria-label="Username" aria-describedby="addon-wrapping">
+                                        <button class="btn btn-light" type="button" id="search-button">Search</button>
+                                    </div>
+                                    <div class = "row">
+                                        <div class = "col-12">
+                                            <div id = "search-results">
+                                            </div>
+                                        </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class = "row">
+                                <h4>Appearance</h4>
+                                <div class = "col-12">
+                                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                        <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+                                        <label class="btn btn-outline-light" for="btnradio1">Stick</label>
+                                      
+                                        <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+                                        <label class="btn btn-outline-light" for="btnradio2">Ball and Stick</label>
+                                      
+                                        <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
+                                        <label class="btn btn-outline-light" for="btnradio3">Space Filling</label>
+                                      </div>
+                                </div>
+                                <div class = "col-12 mt-3">
+                                    <button type="button" class="btn btn-outline-light" data-bs-toggle="collapse" href="#appearanceMenu" role="button" aria-expanded="false" aria-controls="appearanceMenu">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-brush" viewBox="0 0 16 16">
+                                            <path d="M15.825.12a.5.5 0 0 1 .132.584c-1.53 3.43-4.743 8.17-7.095 10.64a6.067 6.067 0 0 1-2.373 1.534c-.018.227-.06.538-.16.868-.201.659-.667 1.479-1.708 1.74a8.118 8.118 0 0 1-3.078.132 3.659 3.659 0 0 1-.562-.135 1.382 1.382 0 0 1-.466-.247.714.714 0 0 1-.204-.288.622.622 0 0 1 .004-.443c.095-.245.316-.38.461-.452.394-.197.625-.453.867-.826.095-.144.184-.297.287-.472l.117-.198c.151-.255.326-.54.546-.848.528-.739 1.201-.925 1.746-.896.126.007.243.025.348.048.062-.172.142-.38.238-.608.261-.619.658-1.419 1.187-2.069 2.176-2.67 6.18-6.206 9.117-8.104a.5.5 0 0 1 .596.04zM4.705 11.912a1.23 1.23 0 0 0-.419-.1c-.246-.013-.573.05-.879.479-.197.275-.355.532-.5.777l-.105.177c-.106.181-.213.362-.32.528a3.39 3.39 0 0 1-.76.861c.69.112 1.736.111 2.657-.12.559-.139.843-.569.993-1.06a3.122 3.122 0 0 0 .126-.75l-.793-.792zm1.44.026c.12-.04.277-.1.458-.183a5.068 5.068 0 0 0 1.535-1.1c1.9-1.996 4.412-5.57 6.052-8.631-2.59 1.927-5.566 4.66-7.302 6.792-.442.543-.795 1.243-1.042 1.826-.121.288-.214.54-.275.72v.001l.575.575zm-4.973 3.04.007-.005a.031.031 0 0 1-.007.004zm3.582-3.043.002.001h-.002z"/>
+                                        </svg>
+                                        Edit
+                                    </button>   
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 mt-2">
+                                  <div class="collapse multi-collapse" id="appearanceMenu">
+                                        <input type="button" class="btn-check btn-block" name="btnradio" id="atomAppearanceButton" autocomplete="off" data-bs-toggle="collapse" href="#atomAppearanceMenu" role="button" aria-expanded="false" aria-controls="atomAppearanceMenu">
+                                        <label class="btn btn-outline-light" for="atomAppearanceButton">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrows-angle-expand" viewBox="0 0 24 24">
+                                                <path d="M16 7c0 2.21-1.79 4-4 4S8 9.21 8 7s1.79-4 4-4 4 1.79 4 4zm-9 6c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm10 0c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z"></path>
+                                            </svg>
+                                            Atoms
+                                        </label>
+                                    
+                                        <input type="button" class="btn-check btn-block" name="btnradio" id="bondAppearanceButton" autocomplete="off" data-bs-toggle="collapse"  href="#bondsAppearanceMenu" role="button" aria-expanded="false" aria-controls="bondsAppearanceMenu">
+                                        <label class="btn btn-outline-light" for="bondAppearanceButton">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrows-angle-expand" viewBox="0 0 24 24">
+                                            <path d="M8.4 18.2c.38.5.6 1.12.6 1.8 0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3c.44 0 .85.09 1.23.26l1.41-1.77c-.92-1.03-1.29-2.39-1.09-3.69l-2.03-.68c-.54.83-1.46 1.38-2.52 1.38-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3c0 .07 0 .14-.01.21l2.03.68c.64-1.21 1.82-2.09 3.22-2.32V5.91C9.96 5.57 9 4.4 9 3c0-1.66 1.34-3 3-3s3 1.34 3 3c0 1.4-.96 2.57-2.25 2.91v2.16c1.4.23 2.58 1.11 3.22 2.32L18 9.71V9.5c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3c-1.06 0-1.98-.55-2.52-1.37l-2.03.68c.2 1.29-.16 2.65-1.09 3.69l1.41 1.77c.38-.18.79-.27 1.23-.27 1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3c0-.68.22-1.3.6-1.8l-1.41-1.77c-1.35.75-3.01.76-4.37 0L8.4 18.2z"></path>
+                                            </svg>
+                                            Bonds
+                                        </label>
+                                        <div class="row">
+                                            <div class="col-12 mt-2">
+                                              <div class="collapse multi-collapse" id="atomAppearanceMenu">
+                                                <div id = "atomMaterialEditor"></div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 mt-2">
+                                              <div class="collapse multi-collapse" id="bondsAppearanceMenu">
+                                                Bonds
+                                                <div id = "bondMaterialEditor"></div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script type= "module">
+        if(/iPhone|iPad/.test(navigator.userAgent)){
+            const webxrViewerScheme = "ios-webxr-viewer://"
+            const xrViewerApp = "https://apps.apple.com/ca/app/webxr-viewer/id1295998056";
+            const webViewerUrl = "ios-webxr-viewer://load?url=" + window.location.href;
+            const isAppInstalled = window.navigator.registerProtocolHandler(webxrViewerScheme, window.location.href, "webxr")  
+            if (isAppInstalled == false){
+                const modal = document.createElement("div");
+                modal.innerHTML = `
+                    <div>
+                    <h2>Download WebXR Viewer to Use This IOS</h2>
+                    <p>Would you like to download our app from the App Store?</p>
+                    <button id="downloadButton">Download</button>
+                    <button id="cancelButton">Cancel</button>
+                    </div>
+                    `;
+                modal.id = "appDownloadModal";
+                modal.style.display = "block";
+                modal.style.position = "fixed";
+                modal.style.top = 0;
+                modal.style.left =  0;
+                modal.style.width = "100%";
+                modal.style.height = "100%";
+                modal.style.backgroundColor = "black";
+                modal.style.zIndex = "9999";
+                document.appendChild(modal);
+                    const downloadButton = document.createElement("button");
+                    const cancelButton = document.createElement("button");
+                    downloadButton.addEventListener("click", () => {
+                window.location.href = xrViewerApp;
+                    });
+                    cancelButton.addEventListener("click", () => {
+                        modal.style.display = "none";});
+            }
+        }
+       
+        import { OrbitControls } from '/js/OrbitControls.js';
+        import { VRMLLoader } from '/js/VRMLLoader.js';
+        import { GLTFLoader } from '/js/GLTFLoader.js';
+        import { MTLLoader } from '/js/MTLLoader.js';
+        import { OBJLoader } from '/js/OBJLoader.js';
+        import { OBJExporter } from '/js/OBJExporter.js';
+
+        import * as THREE from '/js/three.module.js';
+        import { ARButton } from '/js/ARButton.js';
+
+        let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
+        let requestedFileExt = requestedFile.substring(requestedFile.lastIndexOf('.') + 1);
+
+        function loadAndRenderModel() {
+        loader.load(requestedFile, (model) => {
+            object = model;
+
+            // Add the loaded 3D model to the scene
+            scene.add(object);
+
+            // Position the camera and render the scene
+            camera.position.set(0, 0, 5);
+            camera.lookAt(0, 0, 0);
+
+            // Create an animate function to render the scene continuously
+            function animate() {
+                requestAnimationFrame(animate);
+                renderer.render(scene, camera);
+            }
+
+            animate();
+        });
+    }
+
+        let loader;
+        if(requestedFileExt == "wrl"){
+            loader = new VRMLLoader();
+        }
+        
+        if(requestedFileExt == "gltf"){
+            loader = new GLTFLoader();
+        }
+        
+        if(requestedFileExt == "mtl"){
+            loader = new MTLLoader();
+        }
+        
+        if(requestedFileExt == "obj"){
+            loader = new OBJLoader();
+        }
+        
+
+        const threeArea = document.getElementById('three-area');
+
+        let scene, camera, renderer, controls, clock;
+        let mixer;
+
+        let axesHelper;
+        let spotLightTop, spotLightBottom, ambientLight;
+
+        clock = new THREE.Clock();
+        let deltaTime = 0;
+        let totalTime = 0;
+        let actions = [];
+
+
+        function init(){
+
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 4000 );
+
+            renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setClearColor( 0x000000, 0 );
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            threeArea.appendChild( renderer.domElement );
+
+            const activateAR = document.body.appendChild( ARButton.createButton( renderer ) );
+                renderer.xr.enabled = true;
+                renderer.setAnimationLoop( function () {
+                    renderer.render( scene, camera );
+                } );
+
+            
+            spotLightTop = new THREE.SpotLight( 0xffffff );
+            spotLightTop.position.set( 0, 0, 1000 );
+            scene.add( spotLightTop );
+
+            ambientLight = new THREE.AmbientLight( 0xffffff );
+            scene.add( ambientLight );
+
+
+            loader.load( '../scenefiles/' + requestedFile, function ( object ) {
+                if(requestedFileExt == "wrl"){
+                    scene.add( object );
+                }
+                else if(requestedFileExt == "gltf"){
+                    console.log(object);
+                    mixer = new THREE.AnimationMixer( object.scene );
+                    for(let animation of object.animations){
+                        actions.push(mixer.clipAction(animation));
+                        var action = mixer.clipAction(animation);
+                        action.play();
+
+                    }
+                    
+                    scene.add( object.scene );
+                } 
+                else if (requestedFileExt === "obj") {
+                    const mtlLoader = new MTLLoader();
+                    const mtlFile = requestedFile.replace(".obj", ".mtl");
+                    
+                    mtlLoader.load('../objAndMtlFiles/' + mtlFile, function (materials) {
+                        materials.preload();
+                        
+                        const objLoader = new OBJLoader();
+                        objLoader.setMaterials(materials);
+                        
+                        objLoader.load('../objAndMtlFiles/' + requestedFile, function (object) {
+                            if (object instanceof THREE.Group) {
+                                mixer = new THREE.AnimationMixer(object);
+                                for (let animation of object.animations) {
+                                    actions.push(mixer.clipAction(animation));
+                                    var action = mixer.clipAction(animation);
+                                    action.play();
+                                }
+                                scene.add(object);
+                            } else {
+                                console.error('Loaded object is not a valid instance of THREE.Group.');
+                            }
+                        });
+                    });
+                }
+            } );
+
+
+            axesHelper = new THREE.AxesHelper( 50 );
+            scene.add( axesHelper );
+
+            controls = new OrbitControls( camera, renderer.domElement );
+            controls.dampingFactor = 10;
+            // controls.minDistance = 35;
+
+            camera.position.x = 0;
+            camera.position.y = 0;
+            camera.position.z = 100;
+
+        }
+
+        function animate() {
+            requestAnimationFrame( animate );
+            var delta = clock.getDelta();
+            if ( mixer ) mixer.update( delta );
+
+            renderer.render( scene, camera );
+            controls.update();
+        }
+
+        init();
+        animate();
+
+        window.addEventListener('resize', onResize, false);
+
+        function onResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        const sceneObjects = []; // Define the sceneObjects array to store added objects
+        function loadNewObjFiles(file) {
+            if (file) {
+                const reader = new FileReader();
+                
+                const mtlLoader = new MTLLoader();
+                const objFileName = file.name;
+                const mtlFileName = objFileName.replace(".obj", ".mtl");
+                console.log('New File Name:', mtlFileName);
+
+                let existingFileName = requestedFile.replace(".obj", ".mtl");
+                console.log('Existing File Name:', existingFileName);
+                
+                mtlLoader.load('../objAndMtlFiles/' + mtlFileName, function (materials) {
+                    materials.preload();
+                    reader.onload = function (e) {
+                        const text = reader.result;
+                        
+                        const objLoader = new OBJLoader();
+                        objLoader.setMaterials(materials);
+                        const object = objLoader.parse(text);
+                        scene.add(object);
+
+                        // Store the added object
+                        sceneObjects.push({ name: 'Custom Name', description: 'Custom Description', object });
+
+                        // Enable the "Save As" button
+                        document.getElementById('saveAsButton').disabled = false;
+                    };
+                    reader.readAsText(file);
+                });
+            }
+            animate();
+        }
+
+        const saveAsButton = document.getElementById('saveAsButton');
+        const fileInput = document.getElementById('fileInput');
+
+        let addedObjects = [];
+
+        fileInput.addEventListener('change', function (e) {
+            const file = fileInput.files[0];
+            const objFileName = file.name;
+            const mtlFileName = objFileName.replace(".obj", ".mtl");
+
+            loadNewObjFiles(file);
+            addedObjects.push({ obj: objFileName, mtl: mtlFileName });      
+        });
+
+        function saveSceneAsOBJ(filename) {
+            const exporter = new OBJExporter();
+            const objData = exporter.parse(scene);
+            const blob = new Blob([objData], { type: 'text/plain' });
+
+            try {
+                saveAs(blob, filename + '.obj');
+            } catch (error) {
+                console.error('Error saving OBJ file:', error);
+            }
+        }
+
+        saveAsButton.addEventListener('click', async function () {
+            const saveObjectName = prompt('Enter a name for the saved scene:');
+            if (saveObjectName && addedObjects.length > 0) {
+                saveSceneAsOBJ(saveObjectName);
+                
+                let existingFileName = requestedFile.replace(".obj", ".mtl");
+
+                const fetchMTLFiles = addedObjects.map(obj => {
+                    return fetch('../objAndMtlFiles/' + obj.mtl)
+                        .then(response => response.text())
+                });
+
+                try {
+                    const allMTLContents = await Promise.all(fetchMTLFiles);
+                    const combinedMTLContent = allMTLContents.join('\n\n');
+                    const existingMTLContent = await fetch('../objAndMtlFiles/' + existingFileName)
+                        .then(response => response.text());
+                    const finalMTLContent = existingMTLContent + '\n\n' + combinedMTLContent;
+                    const mtlBlob = new Blob([finalMTLContent], { type: 'text/plain' });
+                    saveAs(mtlBlob, `${saveObjectName}.mtl`);
+                } catch (error) {
+                    console.error('Error fetching or combining MTL files:', error);
+                }
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+</body>
+</html>
