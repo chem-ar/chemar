@@ -29,7 +29,6 @@ var Jmol1Info = {
 	jarFile: "JmolAppletSigned.jar",
   j2sPath: "j2s",
 	isSigned: true,
-  //defaultModel: ":morphine",
 	script: "set loadStructCallback 'loadCallback';set picking on; set pickcallback 'pickCallback';set antialiasdisplay;"
 }
 
@@ -39,11 +38,7 @@ var JMEInfo = {
 	use: "HTML5"
   ,visible: true
   ,divId: "jmediv"
-  ,options : "autoez;nocanonize"
-	//,jarPath: "jme",
-	//,jarFile: "JME.jar"
-  //optional parameters
-  //,"jme" : startingStructure   
+  ,options : "autoez;nocanonize" 
 }
 
 function loadCallback(app,b,c,d) {

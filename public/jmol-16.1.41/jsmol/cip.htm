@@ -9,8 +9,6 @@
 
 <script type="text/javascript">
 
-//Jmol._debugCode = true;//(s.indexOf("debugcode") >= 0);
-
 
 calcscript = ";select *;calculate chirality;set labelfor {*} \"%[chirality]\";"
 styleYellow = ";select *;font label 20;set labeloffset 10 10; background label yellow;color labels black;set labelfor {*} \"%[chirality]\";"
@@ -52,15 +50,8 @@ var JMEInfo = {
 	use: "HTML5"
   ,visible: true
   ,divId: "jmediv"
-  ,options : "autoez;nocanonize"
-	//,jarPath: "jme",
-	//,jarFile: "JME.jar"
-  //optional parameters
-  //,"jme" : startingStructure   
+  ,options : "autoez;nocanonize"  
 }
-
-//Jmol.setGrabberOptions([[":", "PubChem"]])
-//Jmol.setGrabberOptions([["$", "NCI"]])
         
         
 function showSmiles(from3d) {
@@ -100,7 +91,6 @@ for that compound. You can save your work as an <a target=_blank href=https://en
 jmol = Jmol.getApplet(jmol, JmolInfo)
 jme = Jmol.getJMEApplet(jme, JMEInfo, jmol);
 
-//Jmol.jmolButton(jmol, "load $glucose;" + calcscript + //styleYellow, "glucose");
 Jmol.jmolHtml("<center>")
 Jmol.jmolHtml("<br>")
 Jmol.jmolButton(jmol, calcscript + styleYellow,"show R/S")
