@@ -1,8 +1,10 @@
 <!-- Add Molecule -->
 <div class="row content">
     <div class="col-12 text-start text-white bg-dark">
+        <!-- Button to trigger molecule search -->
         <button class="btn btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#searchMenu"
             aria-expanded="false" aria-controls="searchMenu">
+            <!-- Search icon -->
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
             </svg>
@@ -10,13 +12,17 @@
         </button>
         <div class="row">
             <div class="col-12 mt-2">
+                <!-- Search menu collapse -->
                 <div class="collapse multi-collapse" id="searchMenu">
+                    <!-- Input field for molecule name -->
                     <div class="input-group flex-nowrap">
                         <input type="text" id="search-field" class="form-control" placeholder="Molecule Name" aria-label="Username" aria-describedby="addon-wrapping">
+                        <!-- Button to initiate molecule search -->
                         <button class="btn btn-info" type="button" id="search-button">Search</button>
                     </div>
                     <div class="row">
                         <div class="col-12 mb-2">
+                            <!-- Container for displaying search results -->
                             <div id="search-results">
                             </div>
                         </div>
@@ -27,17 +33,176 @@
     </div>
 </div>
 
-    <script>
-        // Preview the .mol file content when selected
-        function onReceiptsSelected() {
-            const files = fileName.files;
-            if (files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById("preview").value += e.target.result;
-                    //console.log(e.target.result);
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // API key for accessing ChemSpider
+        const apikey = '70DYPVRnsRXA4S0tALUyyM2VoD5YZGat';
+        const searchButton = document.getElementById("search-button");
+        const searchField = document.getElementById("search-field");
+        const searchResults = document.getElementById("search-results");
+
+        // Event listener for search button click
+        searchButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            // Initiate ChemSpider search
+            searchChemSpider(searchField.value);
+        });
+
+        // Function to perform ChemSpider search
+        function searchChemSpider(compoundName) {
+            if (compoundName === "") {
+                // Display a warning if search term is empty
+                searchResults.innerHTML = `<div class="text-warning pt-2 px-2">Please enter a search term</div>`;
+            } else {
+                const headers = {
+                    "Content-Type": "application/json",
+                    "apikey": apikey
                 };
-                reader.readAsText(files[0]);
+                var URL = `https://api.rsc.org/compounds/v1/filter/name`;
+                searchResults.innerHTML = `<div class="pt-2 px-2">Searching</div>`;
+
+                const bodyContent = {
+                    name: compoundName
+                };
+
+                const requestOptions = {
+                    method: "POST",
+                    headers: headers,
+                    body: JSON.stringify(bodyContent)
+                };
+
+                // Perform initial search to get query ID
+                fetch(URL, requestOptions)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Get the results of the query-id
+                        URL = `https://api.rsc.org/compounds/v1/filter/${data["queryId"]}/results`;
+                        const requestOptions = {
+                            method: "GET",
+                            headers: headers,
+                        };
+                        // Fetch results of the query-id (record-id)
+                        fetch(URL, requestOptions)
+                            .then(response => response.json())
+                            .then(data => {
+                                // Display search results
+                                displaySearchResults(data["results"], searchResults);
+                            })
+                            .catch(error => {
+                                console.error("Error:", error);
+                            });
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        // Handle any errors here
+                    });
             }
         }
-    </script>
+
+        // Function to display search results
+        function displaySearchResults(data, container) {
+            // Data contains a list of record-ids
+            if (data.length === 0) {
+                // Display message if no results found
+                container.innerHTML = `<p class="text-danger p-2">No results found</p>`;
+            } else {
+                container.innerHTML = ``;
+
+                const searchResultTable = document.createElement('table');
+                searchResultTable.classList = 'table text-white mb-0';
+                container.appendChild(searchResultTable);
+
+                const tableBody = document.createElement('tbody');
+                searchResultTable.appendChild(tableBody);
+
+                // Use Promise.all to wait for all details to be fetched before updating the table
+                Promise.all(data.map(recordId => getRecordIdDetails(recordId)))
+                    .then(detailsList => {
+                        detailsList.forEach(listDetails => {
+                            const row = tableBody.insertRow();
+                            const cell1 = row.insertCell(0);
+                            const cell2 = row.insertCell(1);
+
+                            cell1.classList.add('text-break');
+                            cell1.innerHTML = listDetails[0] + "<br>" + listDetails[1];
+                            let viewButton = document.createElement('button');
+                            viewButton.classList = 'btn btn-outline-light btn-block';
+                            viewButton.innerHTML =
+                                `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                                </svg> <br>Add Molecule`;
+
+                            viewButton.addEventListener("click", function (event) {
+                                event.preventDefault();
+                                // Fetch and display molecule details
+                                const itemURL = `https://api.rsc.org/compounds/v1/records/${recordId}/mol`;
+                                getMolecule(itemURL, listDetails[1]);
+                            });
+
+                            cell2.appendChild(viewButton);
+                            cell2.classList = 'w-25';
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                    });
+            }
+        }
+
+        // Function to fetch details of a record-id
+        function getRecordIdDetails(recordId) {
+            var URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=Formula`;
+            const headers = {
+                "Content-Type": "application/json",
+                "apikey": apikey
+            };
+            const requestOptions = {
+                method: "GET",
+                headers: headers,
+            };
+
+            return new Promise((resolve, reject) => {
+                fetch(URL, requestOptions)
+                    .then(response => response.json())
+                    .then(data => {
+                        var recordDetails = [];
+                        // Make string look more formatted
+                        var newFormula = data["formula"].replaceAll("{", "").replaceAll("}", "").replaceAll("^", "").replaceAll("_", "");
+                        recordDetails.push(newFormula);
+
+                        URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=CommonName`;
+                        fetch(URL, requestOptions)
+                            .then(response => response.json())
+                            .then(data => {
+                                recordDetails.push(data["commonName"]);
+                                resolve(recordDetails);
+                            })
+                            .catch(error => {
+                                console.error("Error:", error);
+                                reject(error);
+                            });
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        reject(error);
+                    });
+            });
+        }
+    });
+</script>
+
+<script>
+    // Preview the .mol file content when selected
+    function onReceiptsSelected() {
+        const files = fileName.files;
+        if (files.length > 0) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById("preview").value += e.target.result;
+                //console.log(e.target.result);
+            };
+            reader.readAsText(files[0]);
+        }
+    }
+</script>
