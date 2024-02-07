@@ -1,3 +1,11 @@
+<%- include('partials/header') %>
+<% if (isAdmin) { %>
+  <%- include('partials/navbarAdmin') %>
+<% } %>
+<% if (!isAdmin) { %>
+  <%- include('partials/navbar') %>
+<% } %>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -5,22 +13,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
       rel="stylesheet"
-      href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css"
-    />
+      href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css"/>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
-      crossorigin="anonymous"
-    />
+      crossorigin="anonymous"/>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
-      crossorigin="anonymous"
-    ></script>
-    <link rel="stylesheet" href="home.css" />
-
-    <title>ABOUT US</title>
+      crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="home.css"/>
+    <title> <%=title%> </title>
   </head>
 
   <body>
@@ -33,8 +37,7 @@
     <div class="p-3 mb-2 bg-dark text-white">
       <h1
         class="display-5 fw-bold"
-        style="font-size: 2.8vw; text-align: center"
-      >
+        style="font-size: 2.8vw; text-align: center">
         About ChemAR
       </h1>
       <p class="text-center">
@@ -49,11 +52,9 @@
         representation, ensuring both accuracy and familiarity for users
         engaging with chemical structures. <br /><br /><br />
       </p>
-
       <h1
         class="display-5 fw-bold"
-        style="font-size: 2.5vw; text-align: center"
-      >
+        style="font-size: 2.5vw; text-align: center">
         Team Mission
       </h1>
       <div class="row">
@@ -74,11 +75,9 @@
           </p>
         </div>
       </div>
-
       <h1
         class="display-5 fw-bold"
-        style="font-size: 2.5vw; text-align: center"
-      >
+        style="font-size: 2.5vw; text-align: center">
         Project Features
       </h1>
       <ul class="list-group text-center">
@@ -94,17 +93,13 @@
           </p>
           <p>
             Read more about the PubChem API
-            <a
-              href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6030920/"
-              target="_blank"
-              >here</a>.
+            <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6030920/" target="_blank">here</a>.
           </p>
           <p>
             Read more about the ChemSpider API
             <a href="https://developer.rsc.org/" target="_blank">here</a>.
           </p>
         </li>
-
         <li class="list-group-item bg-dark text-white">
           <h4>Molecules</h4>
           <p class="text-left">
@@ -146,8 +141,7 @@
 
       <h1
         class="display-5 fw-bold"
-        style="font-size: 3.2vw; text-align: center"
-      >
+        style="font-size: 3.2vw; text-align: center">
       Privacy Policy
       </h1>
       <br />
@@ -155,11 +149,11 @@
           <li class="list-group-item bg-dark text-white">
             <h4>Statement</h4>
             <p>
-        The ChemAR project is committed to protecting the
-        privacy of its users. The following outlines our privacy policy and
-        practices.
-      </p>
-      </li>
+              The ChemAR project is committed to protecting the
+              privacy of its users. The following outlines our privacy policy and
+              practices.
+            </p>
+          </li>
           <li class="list-group-item bg-dark text-white">
             <h4>Personal Information</h4>
             <p> We do not collect any personal information from our users.</p>
@@ -170,18 +164,16 @@
               The ChemAR project website may contain links to other websites.
               The ChemAR project is not responsible for the privacy practices
               or the content of such websites.
-              <p>
-    </li>
-    </ul>
+            <p>
+          </li>
+        </ul>
     <br /><br /><br />
 
       <h1
         class="display-5 fw-bold"
-        style="font-size: 3.2vw; text-align: center"
-      >
+        style="font-size: 3.2vw; text-align: center">
         Contact us
       </h1>
-      
       <p class="text-center">
         Your feedback and suggestions are highly valuable to us. If you have any
         questions, concerns, please feel free to contact us at
@@ -189,8 +181,6 @@
           >Email Us</a>
       </p>
     </div>
-
     <%- include('partials/footer') %>
   </body>
 </html>
-//need actual mail id
