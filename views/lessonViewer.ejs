@@ -260,10 +260,6 @@ const moleculeMaterials = {
   
   
   function drawMolecule(molObject, Title, drawPosition, drawRotation, drawScale, offset){
-    // console.log(molObject);
-    // console.log(drawPosition);
-    // console.log(drawRotation);
-    // console.log(drawScale);
     console.log(offset);
 
 
@@ -343,37 +339,6 @@ const moleculeMaterials = {
         moleculeGroup.add( sphere );
     }
 
-            // for(let bond of molObject.bonds){
-
-            //     let index1 = Number(bond[0])-1;
-            //     let index2 = Number(bond[1])-1;
-
-            //     let atom1 = molObject.atoms[index1];
-            //     let atom2 = molObject.atoms[index2];
-
-            //     let point1 = new THREE.Vector3( atom1.position.x - moleculeCenter.x, atom1.position.y- moleculeCenter.y, atom1.position.z - moleculeCenter.z );
-            //     let point2 = new THREE.Vector3( atom2.position.x - moleculeCenter.x, atom2.position.y- moleculeCenter.y, atom2.position.z - moleculeCenter.z );
-                
-            //     let distance = point1.distanceTo(point2);
-
-            //     let cylinderRadius = bond[2] == 1 ? .05 : .15;
-
-            //     const cylinderGeometry = new THREE.CylinderGeometry( cylinderRadius, cylinderRadius, distance, 8 );
-            //     cylinderGeometry.translate(0, distance / 2, 0);
-            //     cylinderGeometry.rotateX(Math.PI / 2);
-
-            //     const cylinder = new THREE.Mesh( cylinderGeometry, cylinderMaterial );
-            //     cylinder.position.x = atom1.position.x - moleculeCenter.x;
-            //     cylinder.position.y = atom1.position.y - moleculeCenter.y;
-            //     cylinder.position.z = atom1.position.z - moleculeCenter.z;
-            //     cylinder.lookAt(point2);
-
-            //     moleculeGroup.add( cylinder );
-
-            //     }
-
-            // moleculeGroup.position.z = centerOffset;
-
             //Sets the position
             moleculeGroup.position.x = drawPosition.x;
             moleculeGroup.position.y = drawPosition.z;
@@ -384,9 +349,6 @@ const moleculeMaterials = {
             moleculeGroup.position.z -= offset.z;
 
             //Sets the rotation
-            // moleculeGroup.rotation.x = drawRotation._x;
-            // moleculeGroup.rotation.y = drawRotation._y;
-            // moleculeGroup.rotation.z = drawRotation._z;
             
             //Sets the scale
             moleculeGroup.scale.x = drawScale.x;
@@ -489,22 +451,13 @@ const moleculeMaterials = {
       type: 'pattern', patternUrl: "/data/kanji.patt",
     })
 
-    // let geometry1	= new THREE.CubeGeometry(1,1,1);
-    // let material1	= new THREE.MeshNormalMaterial({
-    //   transparent: true,
-    //   opacity: 0.5,
-    //   side: THREE.DoubleSide
-    // }); 
-    
-    // mesh1 = new THREE.Mesh( geometry1, material1 );
-    // mesh1.position.y = 0.5;
+ 
 
     console.log(moleculeData.trackingMarker);
 
     for(let item of moleculeData.molecules){
 
       let molecule = drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale, moleculeData.trackingMarker.position);
-      // console.log(molecule);
 
       markerRoot1.add( molecule ); 
 

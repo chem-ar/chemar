@@ -28,6 +28,12 @@
   </head>
 
   <body>
+    <%- include('partials/header') %>
+
+    <!-- Admin check for navbar -->
+    <% if (isAdmin) { %> <%- include('partials/navbarAdmin') %> <% } %> <% if
+    (!isAdmin) { %> <%- include('partials/navbar') %> <% } %>
+
     <div class="p-3 mb-2 bg-dark text-white">
       <h1
         class="display-5 fw-bold"

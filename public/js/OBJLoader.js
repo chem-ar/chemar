@@ -641,7 +641,6 @@ class OBJLoader extends Loader {
 				// g group_name
 
 				// WORKAROUND: https://bugs.chromium.org/p/v8/issues/detail?id=2869
-				// let name = result[ 0 ].slice( 1 ).trim();
 				const name = ( ' ' + result[ 0 ].slice( 1 ).trim() ).slice( 1 );
 
 				state.startObject( name );

@@ -28,7 +28,6 @@ router.post('/', (req, res) => {
     console.log(molDescription);
     var fileName = req.body.fileName;
     var molFileContent = req.body.preview;
-    //const csid = fileName.substring(0, fileName.indexOf("."));
 
     var molfiles = fs.readdirSync('./public/molfiles/');
     var fileIsPresent = molfiles.includes(fileName);

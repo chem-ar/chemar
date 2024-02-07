@@ -96,7 +96,6 @@ JSVInfo = {
   addSelectionOptions: true,
 }
 
-//Jmol.setAppletSync(["jsv", "jmol"], ["", ""], true);
 
 $(document).ready(function() {
  $("#infodiv").show();
@@ -122,13 +121,7 @@ Jmol.getJMEApplet("jme", JMEInfo);
 </script>
 <br>
 <br>
-<!--
-<textarea id=test cols=40 rows=3>
-insert mol file data here
-</textarea>
-<a href="javascript:jme._applet.readMolFile($('#test').val())">test</a>
-<a href="javascript:x = jmol._getMol();jme._applet.readMolFile(x);void($('#test').val(x));">test2</a>
--->
+
 </td><td>
 <input class="btn" type="button" onclick="predictSpectrum(0)" value="&#8594" />
 </td>
