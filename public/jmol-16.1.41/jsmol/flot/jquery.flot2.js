@@ -159,8 +159,6 @@
         // initialize
         parseOptions(options_);
         
-//        alert(options_.xaxis.majorTicks)
-//        alert(xaxis.majorTicks)
         setData(data_);
         constructCanvas();
         setupGrid();
@@ -2083,13 +2081,6 @@
     
     $.plot = function(target, data, options) {
         var plot = new Plot(target, data, options);
-        /*var t0 = new Date();     
-        var t1 = new Date();
-        var tstr = "time used (msecs): " + (t1.getTime() - t0.getTime())
-        if (window.console)
-            console.log(tstr);
-        else
-            alert(tstr);*/
         return plot;
     };
 
