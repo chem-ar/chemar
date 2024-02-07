@@ -8,7 +8,7 @@ router.get('/', function(req, res, next) {
   res.render('lessonEditor', { title: 'Scene Viewer'});
 });
 
-//lessonList: fs.readdirSync(lessons) 
+
 
 
 router.get('/:id', function(req , res){

@@ -1,4 +1,4 @@
-//hello world
+//these are the required modules for the server (I think)
 var fs = require("fs");
 var http = require("http");
 var https = require("https");
