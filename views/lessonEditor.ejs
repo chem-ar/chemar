@@ -358,6 +358,7 @@
             .then(data => {
                 lesson = data;
                 console.log(lesson);
+                
 
                 fileName.innerHTML = "File name: " + requestedFile;
                 lessonName.innerHTML = "Lesson name: " + lesson.name;
@@ -958,6 +959,7 @@
         import { ARButton } from '/js/ARButton.js';
 
         const loader = new THREE.TextureLoader();
+        
 
         const threeArea = document.getElementById('three-area');
 
@@ -1234,7 +1236,7 @@
                 moleculeGroup.add( sphere );
             }
 
-            // Make the anchor position default back to the origin.
+
 
             document.getElementById('markerYInput').addEventListener('input', function(e){
                 moleculeGroup.position.y =  drawPosition.y + e.target.value;
@@ -1285,12 +1287,15 @@
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 4000 );
 
+            
             scene.add( camera );
 
             renderer = new THREE.WebGLRenderer({ alpha: true });
             renderer.setClearColor( 0x000000, 0 );
             renderer.setSize( window.innerWidth, window.innerHeight );
             threeArea.appendChild( renderer.domElement );
+
+          
 
             ambientLight = new THREE.AmbientLight( 0xffffff );
             scene.add( ambientLight );
@@ -1411,6 +1416,7 @@
             // Check if name changed.
             var newLessonName = document.getElementById("newNameInput").value;
             console.log(newLessonName);
+            
             let offsetArray = [];
             for(let item of lessonMolecules){
                 offsetArray.push(item.molecule.position);
@@ -1447,6 +1453,8 @@
                 },
                 "molecules" : lessonMolecules,
             }
+
+            
 
             console.log(lesson);
 
