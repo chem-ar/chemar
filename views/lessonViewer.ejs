@@ -260,6 +260,7 @@ const moleculeMaterials = {
   
   
   function drawMolecule(molObject, Title, drawPosition, drawRotation, drawScale, offset){
+   
     console.log(offset);
 
 
@@ -339,6 +340,8 @@ const moleculeMaterials = {
         moleculeGroup.add( sphere );
     }
 
+          
+
             //Sets the position
             moleculeGroup.position.x = drawPosition.x;
             moleculeGroup.position.y = drawPosition.z;
@@ -348,7 +351,7 @@ const moleculeMaterials = {
             moleculeGroup.position.y -= offset.y;
             moleculeGroup.position.z -= offset.z;
 
-            //Sets the rotation
+            
             
             //Sets the scale
             moleculeGroup.scale.x = drawScale.x;
@@ -451,13 +454,14 @@ const moleculeMaterials = {
       type: 'pattern', patternUrl: "/data/kanji.patt",
     })
 
- 
+    
 
     console.log(moleculeData.trackingMarker);
 
     for(let item of moleculeData.molecules){
 
       let molecule = drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale, moleculeData.trackingMarker.position);
+      
 
       markerRoot1.add( molecule ); 
 
