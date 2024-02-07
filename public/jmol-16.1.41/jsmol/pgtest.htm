@@ -188,11 +188,9 @@ doCheck = function() {
       break;
      case "improper rotation":
       theta += 180;
-      // S3 = (Cn+180)*inv = 360/n + 180
       break;
      }
      v = (theta = 0 ? "" : "(quaternion([" + pgop + "]," + theta +")%'matrix')") + (v ? ".mul("+v+")" : "");
-//console.log("v=" + v);
      var m = Jmol.evaluateVar(jmol, v);
      m = "[[" + m[0] + "][" + m[1] + "][" + m[2] + "]]";
      if (isOp(m, atoms)) {
@@ -226,7 +224,6 @@ function isOp(m, atoms) {
        var v = m + ".mul(" +atoms[i] + ").distance(" + atoms[j] +")";
        var test = Jmol.evaluateVar(jmol, v);
 
-//console.log("isOp " + i + "/" + j + "=" + test + " " + v);
 
        if (test < 0.01) {
           nOK++;
@@ -307,8 +304,6 @@ $(document).ready(function(){
 		+ Jmol.jmolButton(jmol,"select *;if ($s1) {isosurface s1 delete} else {calculate partialcharge;isosurface s1 vdw map MEP translucent}","show/hide MEP")
 		+ "<br><br>"
 		+ (isApplet ?
-// no longer works		Jmol.jmolButton(jmol,"show NMR","Predict NMR")
-//		+ "<br><br>"
 		Jmol.jmolButton(jmol,"write FILE ?","Save FILE")
 		+ "<br>"
 		+ Jmol.jmolButton(jmol,"write PNGJ jsmol.png","Save PNG")

@@ -49,22 +49,6 @@ router.post('/upload/images/', function(req , res){
   
 });
 
-/*
-POST to <domain>/lessonEditor/save/<lessonName>
-Header: Content-Type = application/json
-Body example:
-{
-    "title": "Lesson 1",
-    "description": "Introduction to Chemistry",
-    "content": "This is the content of Lesson 2"
-}
-Response example:
-{
-    "successful": true,
-    "overwritten": true,
-    "path": "./public/lessons/lesson10.json"
-}
-*/
 router.post('/save/:lesson', (req, res) => {
   
   // Get the lesson name from the params.

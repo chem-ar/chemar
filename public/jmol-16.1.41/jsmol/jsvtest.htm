@@ -49,9 +49,6 @@ function Blkdisplay(n) {
          Jmol.script(jsvApplet, "spectrum " + n);
 }
 
-/*
-##$PEAKS={index=12, value=<Peaks type="IR"...
-*/
 
 function getDataTypes() {
   var items = Jmol.getPropertyAsJavaObject(jsvApplet, "all").get("items")

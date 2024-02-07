@@ -23,29 +23,6 @@
 <script type="text/javascript" src="js/JSmolJME.js"></script>
 <script type="text/javascript" language="javascript" src="jsme/jsme/jsme.nocache.js"></script>
 
-<!-- Jmol_functions 
-//var x = load("https://cactus.nci.nih.gov/chemical/structure/tylenol/file?format=mrv")
-
-function getJMEHs() {
-select visible
-var x= show("chemical mrv")
-var x2 = x.split('x2="')[2].split('"')[1].split(" ")
-var y2 = x.split('y2="')[2].split('"')[1].split(" ")
-var s =  "" + {*}.size + " " + {*}.bonds.size
-for (var i = 1; i <= x2.length; i++) {
- s += " " + {*}[i].element + " " + x2[i] + " " + y2[i]
-}
-var b = x.split("<bond ")
-for (var i = 2; i <= b.length; i++) {
- var bi = b[i]
- var at = bi.split("atomRefs2=\"")[2].split('"')[1].replace("a","").split(" ")
- var n = (bi.find(">W<") ? -1 : bi.find(">H<") ? -2 : bi.split("order=\"")[2].split('"')[1])  
- s += " " +  at[1] + " " + at[2] + " " + n
-}
-return s
-}
-
---> 
 
 <script type="text/javascript">
 
@@ -104,8 +81,6 @@ var JmolInfo = {
   disableJ2SLoadMonitor: false,
   disableInitialConsole: false,
   script: "set antialiasdisplay;"
- // script: "x = load('" 
- // + document.location.href + "').split('Jmol_functions')[2].split('--')[1];script inline @x"
 }
 
 
@@ -122,8 +97,6 @@ JSVInfo = {
   disableInitialConsole: false,
   addSelectionOptions: true,
 }
-
-//Jmol.setAppletSync(["jsv", "jmol"], ["", ""], true);
 
 $(document).ready(function() {
  $("#infodiv").show();
@@ -149,13 +122,7 @@ Jmol.getJMEApplet("jme", JMEInfo);
 </script>
 <br>
 <br>
-<!--
-<textarea id=test cols=40 rows=3>
-insert mol file data here
-</textarea>
-<a href="javascript:jme._applet.readMolFile($('#test').val())">test</a>
-<a href="javascript:x = jmol._getMol();jme._applet.readMolFile(x);void($('#test').val(x));">test2</a>
--->
+
 </td><td>
 <input style="width:80px" type="button" onclick="predictSpectrum(0, true)" value="H1&C13 &#8594" />
 </td>

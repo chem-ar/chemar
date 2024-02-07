@@ -41,7 +41,6 @@
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     document.getElementById("preview").value += e.target.result;
-                    //console.log(e.target.result);
                 };
                 reader.readAsText(files[0]);
             }
