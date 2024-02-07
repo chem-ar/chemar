@@ -1726,7 +1726,6 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
 	for (var i in _jmol.params)
 		if (_jmol.params[i] != "")
 			Info[i] || (Info[i] = _jmol.params[i]);
-	//  alert(JSON.stringify(Info).replace(/\,/g,"\n\n\n\n"))
 	return _jmol.applets[id] = Jmol.getApplet(id, Info)
 }
 
@@ -1928,9 +1927,7 @@ function jmolSetMemoryMb(nMb) {
 
 
 function jmolSetCallback(callbackName, funcName) {
-	//if(!self[funcName])alert(funcName + " is not defined yet in jmolSetCallback")
 	Jmol.Info[callbackName] = funcName
-	//document.title=("jmolSetCallback " + callbackName + "/" + funcName + " must be included in Info definition")
 }
 
 function jmolSetSyncId(n) {

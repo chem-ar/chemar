@@ -9,7 +9,6 @@
 
 <script type="text/javascript">
 
-//Jmol._debugCode = true;//(s.indexOf("debugcode") >= 0);
 
 var jmol="jmol";
 var jme = "jme";
@@ -28,7 +27,6 @@ var JmolInfo = {
 	jarFile: "JmolAppletSigned.jar",
   j2sPath: "j2s",
 	isSigned: true,
-  //defaultModel: ":morphine",
 	script: ""
 }
 
@@ -37,13 +35,8 @@ var JMEInfo = {
   ,visible: true
   ,divId: "jmediv"
   ,options : "autoez;nocanonize"
-	//,jarPath: "jme",
-	//,jarFile: "JME.jar"
-  //optional parameters
-  //,"jme" : startingStructure   
 }
 
-//Jmol.setGrabberOptions([[":", "PubChem"]])
 Jmol.setGrabberOptions([["$", "NCI"]])
         
         
