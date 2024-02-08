@@ -46,25 +46,6 @@
 
         firebase.initializeApp(firebaseConfig);
 
-        /**
-         * Function to test the connection to Firebase.
-         */
-        function testFirebaseConnection() {
-            const testValue = "Hello, Firebase!"; // Change this to any test value
-
-            // Create a reference to a test path in your Firebase database
-            const testRef = firebase.database().ref("testPath");
-
-            // Set the test value to the specified path
-            testRef.set(testValue)
-                .then(() => {
-                    console.log("Firebase connection test successful!");
-                })
-                .catch(error => {
-                    console.error("Firebase connection test failed:", error);
-                });
-        }
-
         const apikey = '70DYPVRnsRXA4S0tALUyyM2VoD5YZGat';
         const searchField = document.getElementById("search-field");
         const searchButton = document.getElementById("search-button");
