@@ -43,13 +43,10 @@ var Info = {
 	jarPath: "./java",// this needs to point to where the java directory is.
 	jarFile: "JmolAppletSigned.jar",
 	isSigned: true,
-	//script: "set antialiasDisplay;load data/caffeine.mol",
 	serverURL: "https://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
 	disableJ2SLoadMonitor: true,
   disableInitialConsole: true,
   allowJavaScript: true
-	//defaultModel: "$dopamine",
-	//console: "none", // default will be jmolApplet0_infodiv, but you can designate another div here or "none"
 }
 
 Info.script = "load data/1crn.pdb;cartoon on;color cartoon structure;javascript \"sync(1)\" ";

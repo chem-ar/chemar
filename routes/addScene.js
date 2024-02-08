@@ -18,7 +18,6 @@ router.post('/', (req, res) => {
   var sceneDescription = req.body.description;
   var fileName = req.body.fileName;
   var sceneFileContent = req.body.preview;
-  //const csid = fileName.substring(0, fileName.indexOf("."));
 
   var scenefiles = fs.readdirSync('./public/scenefiles/');
   var fileIsPresent = scenefiles.includes(fileName);
