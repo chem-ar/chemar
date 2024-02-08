@@ -357,10 +357,7 @@
             .then(data => {
                 lesson = data;
                 console.log(lesson);
-                // <h4 id="currentLesson">Lesson</h4>
-                // <p id = "fileName           "></p>
-                // <p id = "lessonName        "></p>
-                // <p id = "lessonDescription"></p
+                
 
                 fileName.innerHTML = "File name: " + requestedFile;
                 lessonName.innerHTML = "Lesson name: " + lesson.name;
@@ -961,7 +958,7 @@
         import { ARButton } from '/js/ARButton.js';
 
         const loader = new THREE.TextureLoader();
-        // let requestedFileExt = requestedFile.substring(requestedFile.lastIndexOf('.') + 1);
+        
 
         const threeArea = document.getElementById('three-area');
 
@@ -1238,39 +1235,7 @@
                 moleculeGroup.add( sphere );
             }
 
-            // for(let bond of molObject.bonds){
 
-            //     let index1 = Number(bond[0])-1;
-            //     let index2 = Number(bond[1])-1;
-
-            //     let atom1 = molObject.atoms[index1];
-            //     let atom2 = molObject.atoms[index2];
-
-            //     let point1 = new THREE.Vector3( atom1.position.x - moleculeCenter.x, atom1.position.y- moleculeCenter.y, atom1.position.z - moleculeCenter.z );
-            //     let point2 = new THREE.Vector3( atom2.position.x - moleculeCenter.x, atom2.position.y- moleculeCenter.y, atom2.position.z - moleculeCenter.z );
-                
-            //     let distance = point1.distanceTo(point2);
-
-            //     let cylinderRadius = bond[2] == 1 ? .05 : .15;
-
-            //     const cylinderGeometry = new THREE.CylinderGeometry( cylinderRadius, cylinderRadius, distance, 8 );
-            //     cylinderGeometry.translate(0, distance / 2, 0);
-            //     cylinderGeometry.rotateX(Math.PI / 2);
-
-            //     const cylinder = new THREE.Mesh( cylinderGeometry, cylinderMaterial );
-            //     cylinder.position.x = atom1.position.x - moleculeCenter.x;
-            //     cylinder.position.y = atom1.position.y - moleculeCenter.y;
-            //     cylinder.position.z = atom1.position.z - moleculeCenter.z;
-            //     cylinder.lookAt(point2);
-
-            //     moleculeGroup.add( cylinder );
-
-            //     }
-
-            // moleculeGroup.position.z = centerOffset;
-
-
-            // Make the anchor position default back to the origin.
 
             document.getElementById('markerYInput').addEventListener('input', function(e){
                 moleculeGroup.position.y =  drawPosition.y + e.target.value;
@@ -1321,7 +1286,7 @@
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 4000 );
 
-            // camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, .0001, 1000 );
+            
             scene.add( camera );
 
             renderer = new THREE.WebGLRenderer({ alpha: true });
@@ -1329,16 +1294,7 @@
             renderer.setSize( window.innerWidth, window.innerHeight );
             threeArea.appendChild( renderer.domElement );
 
-            // const activateAR = document.body.appendChild( ARButton.createButton( renderer ) );
-            //     renderer.xr.enabled = true;
-            //     renderer.setAnimationLoop( function () {
-            //         renderer.render( scene, camera );
-            //     } );
-
-            
-            // spotLightTop = new THREE.SpotLight( 0xffffff );
-            // spotLightTop.position.set( 0, 0, 1000 );
-            // scene.add( spotLightTop );
+          
 
             ambientLight = new THREE.AmbientLight( 0xffffff );
             scene.add( ambientLight );
@@ -1459,8 +1415,7 @@
             // Check if name changed.
             var newLessonName = document.getElementById("newNameInput").value;
             console.log(newLessonName);
-            // if (newLessonName != (lesson[name] + ""))
-            //     lesson[name] = newLessonName;
+            
             let offsetArray = [];
             for(let item of lessonMolecules){
                 offsetArray.push(item.molecule.position);
@@ -1498,9 +1453,7 @@
                 "molecules" : lessonMolecules,
             }
 
-            // lessonMolecules.forEach(mol => {
-            //     lesson["molecules"][mol.Title] = mol.molecule;
-            // })
+            
 
             console.log(lesson);
 
@@ -1587,7 +1540,6 @@
         }
 
 
-        //updateLessonsList();
         init();
         animate();
     </script>

@@ -41,25 +41,19 @@ jmol_isReady = function(applet) {
 	Jmol._getElement(applet, "appletdiv").style.border="1px solid blue"
 }
 
-//jsv_isReady = function(applet) {
-//	document.title = (applet._id + " is ready")
-//	Jmol._getElement(applet, "appletdiv").style.border="1px solid blue"
-//}
 
 SInfo = {
 	width: 800,
 	height: 300,
 	debug: false,
 	color: "0xC0C0C0",
-//	addSelectionOptions: true,
-//	serverURL: "https://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
+
 	use: "HTML5",
 	j2sPath: "j2s",
   disableJ2SLoadMonitor: true,
   disableInitialConsole: true,
 	readyFunction: null,      //   jsv_isReady
   allowjavascript: true
-//        console: "consolediv"
 }
 
 MInfo = {
@@ -67,8 +61,7 @@ MInfo = {
 	height: 300,
 	debug: false,
 	color: "0xF0F0F0",
-//	addSelectionOptions: true,
-//	serverURL: "https://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
+
 	use: "HTML5",
 	j2sPath: "j2s",
 	disableJ2SLoadMonitor: true,
@@ -76,8 +69,7 @@ MInfo = {
 	readyFunction: null ,      //         jmol_isReady
   allowjavascript: true,
 	script: "sync on;"
-//	script: "load data/acetophenone.jdx;",
-//        console: "consolediv1"
+
 
 }
 

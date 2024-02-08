@@ -1,4 +1,4 @@
-//hello world
+//these are the required modules for the server (I think)
 var fs = require("fs");
 var http = require("http");
 var https = require("https");
@@ -17,6 +17,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
+
+var aboutRouter = require('./routes/about');
+
 var usersRouter = require('./routes/session');
 var moleculeRouter = require('./routes/molecules');
 var catalogRouter = require('./routes/catalog');
@@ -71,6 +74,9 @@ app.use('/catalog', catalogRouter);
 app.use('/item', itemRouter);
 app.use('/scenes', scenesRouter);
 app.use('/lessons', lessonsRouter);
+
+app.use('/about', aboutRouter);
+
 app.use('/lessonviewer', lessonViewer);
 app.use('/lessoneditor', lessonEditor);
 app.use('/moleculeviewer', moleculeViewer);

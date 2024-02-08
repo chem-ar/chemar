@@ -66,17 +66,7 @@ var JMEInfo = {
 }
 
 Jmol.setGrabberOptions([["$", "NCI"]]) // allows 2D reading
-/*
-var JmolInfo = {     
-  viewSet: 1,
-	use: "HTML5",
-  width: 300,
-  height:250,
-  addSelectionOptions: false,
-  disableJ2SLoadMonitor: false,
-  disableInitialConsole: false
-}
-*/
+
 
 JSVInfo = {
   viewSet: 1,
@@ -95,11 +85,8 @@ JSVInfo = {
 //Jmol.setAppletSync(["jsv", "jmol"], ["", ""], true);
 
 $(document).ready(function() {
-// $("#infodiv").show();
-// $("#jsvdiv").hide(); 
-// $("#jmol_query").val("ethanol");
+
  $("#jme_query").val("ethanol");
-// $("#jsv_query").val("ethanol");
  $(".btn").css({width:"30px"});
  $("a").css({"text-decoration":"none"});
  $("#enableEdit").prop('checked', false);
@@ -129,13 +116,7 @@ Jmol.getJMEApplet("jme", JMEInfo);
 </script>
 <br>
 <br>
-<!--
-<textarea id=test cols=40 rows=3>
-insert mol file data here
-</textarea>
-<a href="javascript:jme._applet.readMolFile($('#test').val())">test</a>
-<a href="javascript:x = jmol._getMol();jme._applet.readMolFile(x);void($('#test').val(x));">test2</a>
--->
+
 </td><td>
 <input class="btn" type="button" onclick="predictSpectrum(0)" value="&#8594" />
 </td>
@@ -156,14 +137,7 @@ along with JSpecView to quickly get a simulated spectrum for a compound of our c
 JSmol on this page calls servers in Frederick, Maryland (NIH resolver, for name-to-structure)
 and Lausanne, Switzerland (nmrdb, for structure-to-spectrum).
 </span>
-<!--
-<script>
-Jmol.getApplet("jmol", JmolInfo)
-</script>
 
-</td><td>
-<input class="btn" type="button" onclick="predictSpectrum(1)" value="&#8594" />
--->
 </td>
 </tr>
 </table>
