@@ -1,4 +1,4 @@
-<!-- fire base links -->
+<!-- Firebase links -->
 <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-database-compat.js"></script>
 
@@ -46,6 +46,9 @@
 
         firebase.initializeApp(firebaseConfig);
 
+        /**
+         * Function to test the connection to Firebase.
+         */
         function testFirebaseConnection() {
             const testValue = "Hello, Firebase!"; // Change this to any test value
 
@@ -67,11 +70,18 @@
         const searchButton = document.getElementById("search-button");
         const searchResults = document.getElementById("search-results");
 
+        /**
+         * Event listener for the search button to trigger molecule search.
+         */
         searchButton.addEventListener("click", function (event) {
             event.preventDefault();
             searchChemSpider(searchField.value);
         });
 
+        /**
+         * Function to search ChemSpider for a given compound name.
+         * @param {string} compoundName - The name of the compound to search for.
+         */
         function searchChemSpider(compoundName) {
             if (compoundName === "") {
                 searchResults.innerHTML = `<div class="text-warning pt-2 px-2">Please enter a search term</div>`;
@@ -120,6 +130,11 @@
             }
         }
 
+        /**
+         * Function to display search results in a table.
+         * @param {Array} data - List of record-ids.
+         * @param {HTMLElement} container - Container to display the search results.
+         */
         function displaySearchResults(data, container) {
             // data contains a list of record-ids
             if (data.length === 0) {
@@ -163,6 +178,11 @@
             }
         }
 
+        /**
+         * Function to get details of a recordId.
+         * @param {string} recordId - The ID of the record to get details for.
+         * @returns {Promise} - Promise resolving to the details of the record.
+         */
         function getRecordIdDetails(recordId) {
             var URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=Formula`;
             const headers = {
@@ -202,49 +222,53 @@
             });
         }
 
+        /**
+         * Function to add a molecule to Firebase.
+         * @param {string} formula - The formula of the molecule.
+         * @param {string} commonName - The common name of the molecule.
+         */
         function addToFirebase(formula, commonName) {
-    // Create a reference to the 'molecules' path in your Firebase database
-    const moleculesRef = firebase.database().ref("molecules");
+            // Create a reference to the 'molecules' path in your Firebase database
+            const moleculesRef = firebase.database().ref("molecules");
 
-    // Check if the molecule already exists in the database
-    moleculesRef.orderByChild("formula").equalTo(formula).once("value")
-        .then(snapshot => {
-            if (!snapshot.exists()) {
-                // Molecule does not exist, proceed with adding to Firebase
-                // Generate a unique key for the new molecule
-                const newMoleculeKey = moleculesRef.push().key;
+            // Check if the molecule already exists in the database
+            moleculesRef.orderByChild("formula").equalTo(formula).once("value")
+                .then(snapshot => {
+                    if (!snapshot.exists()) {
+                        // Molecule does not exist, proceed with adding to Firebase
+                        // Generate a unique key for the new molecule
+                        const newMoleculeKey = moleculesRef.push().key;
 
-                // Prepare the data for the new molecule
-                const newMoleculeData = {
-                    formula: formula,
-                    commonName: commonName,
-                    // Add any other properties you want to store
-                };
+                        // Prepare the data for the new molecule
+                        const newMoleculeData = {
+                            formula: formula,
+                            commonName: commonName,
+                            // Add any other properties you want to store
+                        };
 
-                // Set the data for the new molecule at the generated key
-                moleculesRef.child(newMoleculeKey).set(newMoleculeData)
-                    .then(() => {
-                        console.log("Molecule added to Firebase successfully!");
-                        alert("Molecule added to Firebase successfully!");
-                    })
-                    .catch(error => {
-                        console.error("Error adding molecule to Firebase:", error);
-                        alert("Error adding molecule to Firebase. Please try again.");
-                    });
-            } else {
-                console.log("Molecule already exists in Firebase!");
-                alert("Molecule already exists in Firebase!");
-            }
-        })
-        .catch(error => {
-            console.error("Error checking for existing molecule:", error);
-            alert("Error checking for existing molecule. Please try again.");
-        });
-}
+                        // Set the data for the new molecule at the generated key
+                        moleculesRef.child(newMoleculeKey).set(newMoleculeData)
+                            .then(() => {
+                                console.log("Molecule added to Firebase successfully!");
+                                alert("Molecule added to Firebase successfully!");
+                            })
+                            .catch(error => {
+                                console.error("Error adding molecule to Firebase:", error);
+                                alert("Error adding molecule to Firebase. Please try again.");
+                            });
+                    } else {
+                        console.log("Molecule already exists in Firebase!");
+                        alert("Molecule already exists in Firebase!");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error checking for existing molecule:", error);
+                    alert("Error checking for existing molecule. Please try again.");
+                });
+        }
 
     });
 </script>
-
 
 <script>
     // Preview the .mol file content when selected
