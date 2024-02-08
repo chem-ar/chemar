@@ -1,3 +1,7 @@
+<!-- fire base links -->
+<script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-database-compat.js"></script>
+
 <!-- Add Molecule -->
 <div class="row content">
     <div class="col-12 text-start text-white bg-dark">
@@ -35,23 +39,41 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // API key for accessing ChemSpider
+        // Initialize Firebase with your credentials
+        const firebaseConfig = {
+            databaseURL: "https://chemar-5845a-default-rtdb.firebaseio.com/",
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        function testFirebaseConnection() {
+            const testValue = "Hello, Firebase!"; // Change this to any test value
+
+            // Create a reference to a test path in your Firebase database
+            const testRef = firebase.database().ref("testPath");
+
+            // Set the test value to the specified path
+            testRef.set(testValue)
+                .then(() => {
+                    console.log("Firebase connection test successful!");
+                })
+                .catch(error => {
+                    console.error("Firebase connection test failed:", error);
+                });
+        }
+
         const apikey = '70DYPVRnsRXA4S0tALUyyM2VoD5YZGat';
-        const searchButton = document.getElementById("search-button");
         const searchField = document.getElementById("search-field");
+        const searchButton = document.getElementById("search-button");
         const searchResults = document.getElementById("search-results");
 
-        // Event listener for search button click
         searchButton.addEventListener("click", function (event) {
             event.preventDefault();
-            // Initiate ChemSpider search
             searchChemSpider(searchField.value);
         });
 
-        // Function to perform ChemSpider search
         function searchChemSpider(compoundName) {
             if (compoundName === "") {
-                // Display a warning if search term is empty
                 searchResults.innerHTML = `<div class="text-warning pt-2 px-2">Please enter a search term</div>`;
             } else {
                 const headers = {
@@ -71,21 +93,20 @@
                     body: JSON.stringify(bodyContent)
                 };
 
-                // Perform initial search to get query ID
                 fetch(URL, requestOptions)
                     .then(response => response.json())
                     .then(data => {
-                        // Get the results of the query-id
+                        // get the results of the query-id
                         URL = `https://api.rsc.org/compounds/v1/filter/${data["queryId"]}/results`;
                         const requestOptions = {
                             method: "GET",
                             headers: headers,
                         };
-                        // Fetch results of the query-id (record-id)
+                        // this grabs the results of the query-id which is the record-id
                         fetch(URL, requestOptions)
                             .then(response => response.json())
                             .then(data => {
-                                // Display search results
+                                // passes a list of record-ids
                                 displaySearchResults(data["results"], searchResults);
                             })
                             .catch(error => {
@@ -99,11 +120,9 @@
             }
         }
 
-        // Function to display search results
         function displaySearchResults(data, container) {
-            // Data contains a list of record-ids
+            // data contains a list of record-ids
             if (data.length === 0) {
-                // Display message if no results found
                 container.innerHTML = `<p class="text-danger p-2">No results found</p>`;
             } else {
                 container.innerHTML = ``;
@@ -125,22 +144,16 @@
 
                             cell1.classList.add('text-break');
                             cell1.innerHTML = listDetails[0] + "<br>" + listDetails[1];
-                            let viewButton = document.createElement('button');
-                            viewButton.classList = 'btn btn-outline-light btn-block';
-                            viewButton.innerHTML =
-                                `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
-                                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
-                                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-                                </svg> <br>Add Molecule`;
-
-                            viewButton.addEventListener("click", function (event) {
+                            let addButton = document.createElement('button');
+                            addButton.classList = 'btn btn-outline-light btn-block';
+                            addButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 0 1 0 2H9v6a1 1 0 0 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/></svg> Add Molecule`;
+                            
+                            addButton.addEventListener("click", function (event) {
                                 event.preventDefault();
-                                // Fetch and display molecule details
-                                const itemURL = `https://api.rsc.org/compounds/v1/records/${recordId}/mol`;
-                                getMolecule(itemURL, listDetails[1]);
+                                addToFirebase(listDetails[0], listDetails[1]);
                             });
 
-                            cell2.appendChild(viewButton);
+                            cell2.appendChild(addButton);
                             cell2.classList = 'w-25';
                         });
                     })
@@ -150,7 +163,6 @@
             }
         }
 
-        // Function to fetch details of a record-id
         function getRecordIdDetails(recordId) {
             var URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=Formula`;
             const headers = {
@@ -167,7 +179,7 @@
                     .then(response => response.json())
                     .then(data => {
                         var recordDetails = [];
-                        // Make string look more formatted
+                        // make string look more formatted
                         var newFormula = data["formula"].replaceAll("{", "").replaceAll("}", "").replaceAll("^", "").replaceAll("_", "");
                         recordDetails.push(newFormula);
 
@@ -189,8 +201,33 @@
                     });
             });
         }
+
+        function addToFirebase(formula, commonName) {
+            // Create a reference to the 'molecules' path in your Firebase database
+            const moleculesRef = firebase.database().ref("molecules");
+
+            // Generate a unique key for the new molecule
+            const newMoleculeKey = moleculesRef.push().key;
+
+            // Prepare the data for the new molecule
+            const newMoleculeData = {
+                formula: formula,
+                commonName: commonName,
+                // Add any other properties you want to store
+            };
+
+            // Set the data for the new molecule at the generated key
+            moleculesRef.child(newMoleculeKey).set(newMoleculeData)
+                .then(() => {
+                    console.log("Molecule added to Firebase successfully!");
+                })
+                .catch(error => {
+                    console.error("Error adding molecule to Firebase:", error);
+                });
+        }
     });
 </script>
+
 
 <script>
     // Preview the .mol file content when selected
