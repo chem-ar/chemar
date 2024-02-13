@@ -38,217 +38,258 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Initialize Firebase with your credentials
-        const firebaseConfig = {
-            databaseURL: "https://chemar-5845a-default-rtdb.firebaseio.com/",
-        };
+document.addEventListener("DOMContentLoaded", function () {
+    // Initialize Firebase with your credentials
+    const firebaseConfig = {
+        databaseURL: "https://chemar-5845a-default-rtdb.firebaseio.com/",
+    };
 
-        firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
 
-        const apikey = '70DYPVRnsRXA4S0tALUyyM2VoD5YZGat';
-        const searchField = document.getElementById("search-field");
-        const searchButton = document.getElementById("search-button");
-        const searchResults = document.getElementById("search-results");
+    const apikey = '70DYPVRnsRXA4S0tALUyyM2VoD5YZGat';
+    const searchField = document.getElementById("search-field");
+    const searchButton = document.getElementById("search-button");
+    const searchResults = document.getElementById("search-results");
 
-        /**
-         * Event listener for the search button to trigger molecule search.
-         */
-        searchButton.addEventListener("click", function (event) {
-            event.preventDefault();
-            searchChemSpider(searchField.value);
-        });
+    /**
+     * Event listener for the search button to trigger molecule search.
+     */
+    searchButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        searchChemSpider(searchField.value);
+    });
 
-        /**
-         * Function to search ChemSpider for a given compound name.
-         * @param {string} compoundName - The name of the compound to search for.
-         */
-        function searchChemSpider(compoundName) {
-            if (compoundName === "") {
-                searchResults.innerHTML = `<div class="text-warning pt-2 px-2">Please enter a search term</div>`;
-            } else {
-                const headers = {
-                    "Content-Type": "application/json",
-                    "apikey": apikey
-                };
-                var URL = `https://api.rsc.org/compounds/v1/filter/name`;
-                searchResults.innerHTML = `<div class="pt-2 px-2">Searching</div>`;
-
-                const bodyContent = {
-                    name: compoundName
-                };
-
-                const requestOptions = {
-                    method: "POST",
-                    headers: headers,
-                    body: JSON.stringify(bodyContent)
-                };
-
-                fetch(URL, requestOptions)
-                    .then(response => response.json())
-                    .then(data => {
-                        // get the results of the query-id
-                        URL = `https://api.rsc.org/compounds/v1/filter/${data["queryId"]}/results`;
-                        const requestOptions = {
-                            method: "GET",
-                            headers: headers,
-                        };
-                        // this grabs the results of the query-id which is the record-id
-                        fetch(URL, requestOptions)
-                            .then(response => response.json())
-                            .then(data => {
-                                // passes a list of record-ids
-                                displaySearchResults(data["results"], searchResults);
-                            })
-                            .catch(error => {
-                                console.error("Error:", error);
-                            });
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        // Handle any errors here
-                    });
-            }
-        }
-
-        /**
-         * Function to display search results in a table.
-         * @param {Array} data - List of record-ids.
-         * @param {HTMLElement} container - Container to display the search results.
-         */
-        function displaySearchResults(data, container) {
-            // data contains a list of record-ids
-            if (data.length === 0) {
-                container.innerHTML = `<p class="text-danger p-2">No results found</p>`;
-            } else {
-                container.innerHTML = ``;
-
-                const searchResultTable = document.createElement('table');
-                searchResultTable.classList = 'table text-white mb-0';
-                container.appendChild(searchResultTable);
-
-                const tableBody = document.createElement('tbody');
-                searchResultTable.appendChild(tableBody);
-
-                // Use Promise.all to wait for all details to be fetched before updating the table
-                Promise.all(data.map(recordId => getRecordIdDetails(recordId)))
-                    .then(detailsList => {
-                        detailsList.forEach(listDetails => {
-                            const row = tableBody.insertRow();
-                            const cell1 = row.insertCell(0);
-                            const cell2 = row.insertCell(1);
-
-                            cell1.classList.add('text-break');
-                            cell1.innerHTML = listDetails[0] + "<br>" + listDetails[1];
-                            let addButton = document.createElement('button');
-                            addButton.classList = 'btn btn-outline-light btn-block';
-                            addButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 0 1 0 2H9v6a1 1 0 0 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/></svg> Add Molecule`;
-                            
-                            addButton.addEventListener("click", function (event) {
-                                event.preventDefault();
-                                addToFirebase(listDetails[0], listDetails[1]);
-                            });
-
-                            cell2.appendChild(addButton);
-                            cell2.classList = 'w-25';
-                        });
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                    });
-            }
-        }
-
-        /**
-         * Function to get details of a recordId.
-         * @param {string} recordId - The ID of the record to get details for.
-         * @returns {Promise} - Promise resolving to the details of the record.
-         */
-        function getRecordIdDetails(recordId) {
-            var URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=Formula`;
+    /**
+     * Function to search ChemSpider for a given compound name.
+     * @param {string} compoundName - The name of the compound to search for.
+     */
+    function searchChemSpider(compoundName) {
+        if (compoundName === "") {
+            searchResults.innerHTML = `<div class="text-warning pt-2 px-2">Please enter a search term</div>`;
+        } else {
             const headers = {
                 "Content-Type": "application/json",
                 "apikey": apikey
             };
-            const requestOptions = {
-                method: "GET",
-                headers: headers,
+            var URL = `https://api.rsc.org/compounds/v1/filter/name`;
+            searchResults.innerHTML = `<div class="pt-2 px-2">Searching</div>`;
+
+            const bodyContent = {
+                name: compoundName
             };
 
-            return new Promise((resolve, reject) => {
-                fetch(URL, requestOptions)
-                    .then(response => response.json())
-                    .then(data => {
-                        var recordDetails = [];
-                        // make string look more formatted
-                        var newFormula = data["formula"].replaceAll("{", "").replaceAll("}", "").replaceAll("^", "").replaceAll("_", "");
-                        recordDetails.push(newFormula);
+            const requestOptions = {
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify(bodyContent)
+            };
 
-                        URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=CommonName`;
-                        fetch(URL, requestOptions)
-                            .then(response => response.json())
-                            .then(data => {
-                                recordDetails.push(data["commonName"]);
-                                resolve(recordDetails);
-                            })
-                            .catch(error => {
-                                console.error("Error:", error);
-                                reject(error);
-                            });
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        reject(error);
-                    });
-            });
-        }
-
-        /**
-         * Function to add a molecule to Firebase.
-         * @param {string} formula - The formula of the molecule.
-         * @param {string} commonName - The common name of the molecule.
-         */
-        function addToFirebase(formula, commonName) {
-            // Create a reference to the 'molecules' path in your Firebase database
-            const moleculesRef = firebase.database().ref("molecules");
-
-            // Check if the molecule already exists in the database
-            moleculesRef.orderByChild("formula").equalTo(formula).once("value")
-                .then(snapshot => {
-                    if (!snapshot.exists()) {
-                        // Molecule does not exist, proceed with adding to Firebase
-                        // Generate a unique key for the new molecule
-                        const newMoleculeKey = moleculesRef.push().key;
-
-                        // Prepare the data for the new molecule
-                        const newMoleculeData = {
-                            formula: formula,
-                            commonName: commonName,
-                            // Add any other properties you want to store
-                        };
-
-                        // Set the data for the new molecule at the generated key
-                        moleculesRef.child(newMoleculeKey).set(newMoleculeData)
-                            .then(() => {
-                                console.log("Molecule added to Firebase successfully!");
-                                alert("Molecule added to Firebase successfully!");
-                            })
-                            .catch(error => {
-                                console.error("Error adding molecule to Firebase:", error);
-                                alert("Error adding molecule to Firebase. Please try again.");
-                            });
-                    } else {
-                        console.log("Molecule already exists in Firebase!");
-                        alert("Molecule already exists in Firebase!");
-                    }
+            fetch(URL, requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    // get the results of the query-id
+                    URL = `https://api.rsc.org/compounds/v1/filter/${data["queryId"]}/results`;
+                    const requestOptions = {
+                        method: "GET",
+                        headers: headers,
+                    };
+                    // this grabs the results of the query-id which is the record-id
+                    fetch(URL, requestOptions)
+                        .then(response => response.json())
+                        .then(data => {
+                            // passes a list of record-ids
+                            displaySearchResults(data["results"], searchResults);
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                        });
                 })
                 .catch(error => {
-                    console.error("Error checking for existing molecule:", error);
-                    alert("Error checking for existing molecule. Please try again.");
+                    console.error("Error:", error);
+                    // Handle any errors here
                 });
         }
+    }
 
-    });
+    /**
+     * Function to display search results in a table.
+     * @param {Array} data - List of record-ids.
+     * @param {HTMLElement} container - Container to display the search results.
+     */
+    function displaySearchResults(data, container) {
+        // data contains a list of record-ids
+        if (data.length === 0) {
+            container.innerHTML = `<p class="text-danger p-2">No results found</p>`;
+        } else {
+            container.innerHTML = ``;
+
+            const searchResultTable = document.createElement('table');
+            searchResultTable.classList = 'table text-white mb-0';
+            container.appendChild(searchResultTable);
+
+            const tableBody = document.createElement('tbody');
+            searchResultTable.appendChild(tableBody);
+
+            // Use Promise.all to wait for all details to be fetched before updating the table
+            Promise.all(data.map(recordId => getRecordIdDetails(recordId)))
+                .then(detailsList => {
+                    detailsList.forEach((listDetails, index) => {
+                        const row = tableBody.insertRow();
+                        const cell1 = row.insertCell(0);
+                        const cell2 = row.insertCell(1);
+
+                        cell1.classList.add('text-break');
+                        cell1.innerHTML = listDetails[0] + "<br>" + listDetails[1];
+                        let addButton = document.createElement('button');
+                        addButton.classList = 'btn btn-outline-light btn-block';
+                        addButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 0 1 0 2H9v6a1 1 0 0 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/></svg> Add Molecule`;
+                        
+                        let clickedRecordId;
+                        addButton.addEventListener("click", function (event) {
+                            event.preventDefault();
+                            clickedRecordId = data[index];
+                            addToFirebase(listDetails[0], listDetails[1], clickedRecordId);
+                        });
+
+                        cell2.appendChild(addButton);
+                        cell2.classList = 'w-25';
+                    });
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+        }
+    }
+
+    /**
+     * Function to get details of a recordId.
+     * @param {string} recordId - The ID of the record to get details for.
+     * @returns {Promise} - Promise resolving to the details of the record.
+     */
+    function getRecordIdDetails(recordId) {
+        console.log("Record ID:", recordId);
+        var URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=Formula`;
+        const headers = {
+            "Content-Type": "application/json",
+            "apikey": apikey
+        };
+        const requestOptions = {
+            method: "GET",
+            headers: headers,
+        };
+
+        return new Promise((resolve, reject) => {
+            fetch(URL, requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    var recordDetails = [];
+                    // make string look more formatted
+                    var newFormula = data["formula"].replaceAll("{", "").replaceAll("}", "").replaceAll("^", "").replaceAll("_", "");
+                    recordDetails.push(newFormula);
+
+                    URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=CommonName`;
+                    fetch(URL, requestOptions)
+                        .then(response => response.json())
+                        .then(data => {
+                            recordDetails.push(data["commonName"]);
+                            resolve(recordDetails);
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            reject(error);
+                        });
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    reject(error);
+                });
+        });
+    }
+
+    /**
+     * Function to get the MOLfile for a given recordId.
+     * @param {string} recordId - The ID of the record to get the MOLfile for.
+     * @returns {Promise} - Promise resolving to the MOLfile.
+     */
+    function getMolFile(recordId) {
+        const apikey = '70DYPVRnsRXA4S0tALUyyM2VoD5YZGat';
+        const endpoint = `${recordId}/mol`;
+        const URL = `https://api.rsc.org/compounds/v1/records/${endpoint}`;
+        
+        const headers = {
+            "Content-Type": "application/json",
+            "apikey": apikey
+        };
+
+        const requestOptions = {
+            method: "GET",
+            headers: headers,
+        };
+
+        return fetch(URL, requestOptions)
+            .then(response => response.json())
+            .then(data => data.sdf) // Assuming MOLfile is in 'sdf' property
+            .catch(error => {
+                console.error("Error getting MOLfile:", error);
+                throw error;
+            });
+    }
+
+    /**
+     * Function to add a molecule to Firebase.
+     * @param {string} formula - The formula of the molecule.
+     * @param {string} commonName - The common name of the molecule.
+     * @param {string} recordId - The ID of the record for fetching the MOLfile.
+     */
+    function addToFirebase(formula, commonName, recordId) {
+        // Create a reference to the 'molecules' path in your Firebase database
+        const moleculesRef = firebase.database().ref("molecules");
+
+        // Check if the molecule already exists in the database
+        moleculesRef.orderByChild("formula").equalTo(formula).once("value")
+            .then(snapshot => {
+                if (!snapshot.exists()) {
+                    // Molecule does not exist, proceed with adding to Firebase
+                    // Generate a unique key for the new molecule
+                    const newMoleculeKey = moleculesRef.push().key;
+
+                    // Get the MOLfile for the molecule
+                    getMolFile(recordId)
+                        .then(molFile => {
+                            // Prepare the data for the new molecule
+                            const newMoleculeData = {
+                                recordId: recordId,
+                                formula: formula,
+                                commonName: commonName,
+                                molFile: molFile,
+                            };
+
+                            // Set the data for the new molecule at the generated key
+                            moleculesRef.child(newMoleculeKey).set(newMoleculeData)
+                                .then(() => {
+                                    console.log("Molecule added to Firebase successfully!");
+                                    alert("Molecule added to Firebase successfully!");
+                                })
+                                .catch(error => {
+                                    console.error("Error adding molecule to Firebase:", error);
+                                    alert("Error adding molecule to Firebase. Please try again.");
+                                });
+                        })
+                        .catch(error => {
+                            console.error("Error getting MOLfile:", error);
+                            alert("Error getting MOLfile. Please try again.");
+                        });
+                } else {
+                    console.log("Molecule already exists in Firebase!");
+                    alert("Molecule already exists in Firebase!");
+                }
+            })
+            .catch(error => {
+                console.error("Error checking for existing molecule:", error);
+                alert("Error checking for existing molecule. Please try again.");
+            });
+    }
+});
 </script>
 
 <script>
