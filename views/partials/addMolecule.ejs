@@ -165,6 +165,7 @@
          * @returns {Promise} - Promise resolving to the details of the record.
          */
         function getRecordIdDetails(recordId) {
+            console.log("Record ID:", recordId);
             var URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=Formula`;
             const headers = {
                 "Content-Type": "application/json",
@@ -204,49 +205,86 @@
         }
 
         /**
-         * Function to add a molecule to Firebase.
-         * @param {string} formula - The formula of the molecule.
-         * @param {string} commonName - The common name of the molecule.
-         */
-        function addToFirebase(formula, commonName) {
-            // Create a reference to the 'molecules' path in your Firebase database
-            const moleculesRef = firebase.database().ref("molecules");
+     * Function to get the MOLfile for a given recordId.
+     * @param {string} recordId - The ID of the record to get the MOLfile for.
+     * @returns {Promise} - Promise resolving to the MOLfile.
+     */
+    function getMolFile(recordId) {
+        
+        const headers = {
+            "Content-Type": "application/json",
+            "apikey": apikey
+        };
 
-            // Check if the molecule already exists in the database
-            moleculesRef.orderByChild("formula").equalTo(formula).once("value")
-                .then(snapshot => {
-                    if (!snapshot.exists()) {
-                        // Molecule does not exist, proceed with adding to Firebase
-                        // Generate a unique key for the new molecule
-                        const newMoleculeKey = moleculesRef.push().key;
+        const URL = `https://api.rsc.org/compounds/v1/records/${recordId}/get_mol`;
+        const requestOptions = {
+            method: "GET",
+            headers: headers,
+        };
 
-                        // Prepare the data for the new molecule
-                        const newMoleculeData = {
-                            formula: formula,
-                            commonName: commonName,
-                            // Add any other properties you want to store
-                        };
+        return fetch(URL, requestOptions)
+            .then(response => response.text())
+            .catch(error => {
+                console.error("Error getting MOLfile:", error);
+                throw error;
+            });
+    }
 
-                        // Set the data for the new molecule at the generated key
-                        moleculesRef.child(newMoleculeKey).set(newMoleculeData)
-                            .then(() => {
-                                console.log("Molecule added to Firebase successfully!");
-                                alert("Molecule added to Firebase successfully!");
-                            })
-                            .catch(error => {
-                                console.error("Error adding molecule to Firebase:", error);
-                                alert("Error adding molecule to Firebase. Please try again.");
-                            });
-                    } else {
-                        console.log("Molecule already exists in Firebase!");
-                        alert("Molecule already exists in Firebase!");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error checking for existing molecule:", error);
-                    alert("Error checking for existing molecule. Please try again.");
-                });
-        }
+    /**
+     * Function to add a molecule to Firebase.
+     * @param {string} formula - The formula of the molecule.
+     * @param {string} commonName - The common name of the molecule.
+     * @param {string} recordId - The ID of the record for fetching the MOLfile.
+     */
+    function addToFirebase(formula, commonName, recordId) {
+        // Create a reference to the 'molecules' path in your Firebase database
+        const moleculesRef = firebase.database().ref("molecules");
+
+        // Check if the molecule already exists in the database
+        moleculesRef.orderByChild("formula").equalTo(formula).once("value")
+            .then(snapshot => {
+                if (!snapshot.exists()) {
+                    // Molecule does not exist, proceed with adding to Firebase
+                    // Generate a unique key for the new molecule
+                    const newMoleculeKey = moleculesRef.push().key;
+
+                    // Get the MOLfile for the molecule
+                    getMolFile(recordId)
+                        .then(molFile => {
+                            // Prepare the data for the new molecule
+                            const newMoleculeData = {
+                                formula: formula,
+                                commonName: commonName,
+                                molFile: molFile,
+                                // Add any other properties you want to store
+                            };
+
+                            // Set the data for the new molecule at the generated key
+                            moleculesRef.child(newMoleculeKey).set(newMoleculeData)
+                                .then(() => {
+                                    console.log("Molecule added to Firebase successfully!");
+                                    alert("Molecule added to Firebase successfully!");
+                                })
+                                .catch(error => {
+                                    console.error("Error adding molecule to Firebase:", error);
+                                    alert("Error adding molecule to Firebase. Please try again.");
+                                });
+                        })
+                        .catch(error => {
+                            console.error("Error getting MOLfile:", error);
+                            alert("Error getting MOLfile. Please try again.");
+                        });
+                } else {
+                    console.log("Molecule already exists in Firebase!");
+                    alert("Molecule already exists in Firebase!");
+                }
+            })
+            .catch(error => {
+                console.error("Error checking for existing molecule:", error);
+                alert("Error checking for existing molecule. Please try again.");
+            });
+    }
+
 
     });
 </script>
