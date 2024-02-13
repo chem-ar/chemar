@@ -54,8 +54,8 @@
   <body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
   <div id="gui_container"></div>
   <div id="text">
-    <a href = "/lessons/" style = "text-decoration: none">
-      ◄ <span style = "text-decoration: underline"> Back to Lessons</span> 
+    <a href = "/scenes/" style = "text-decoration: none">
+      ◄ <span style = "text-decoration: underline"> Back to Scenes</span> 
     </a>
     <br>
   </div>
@@ -70,7 +70,7 @@
   let moleculeData;
 
 
-  fetch('/lessons' + '/' + requestedFile)
+  fetch('/scenes' + '/' + requestedFile)
     .then(response => response.json())
     .then(data => {
       moleculeData = data;

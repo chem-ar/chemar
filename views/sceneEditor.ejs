@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Lesson Editor</title>
+    <title>Scene Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
@@ -121,7 +121,7 @@
                 <div class = "container">
                     <div class = "row mt-3">
                         <div class = "col">
-                            <a href="/lessons" id="editor-back-button" class="btn btn-outline-light">
+                            <a href="/scenes" id="editor-back-button" class="btn btn-outline-light">
                                 Back
                             </a>
                             <button type="button" id = "main-menu-button" class="btn btn-outline-light" data-bs-toggle="offcanvas" data-bs-target="#mainMenu" aria-controls="mainMenu">
@@ -135,7 +135,7 @@
                     
                     <div class="offcanvas offcanvas-start text-white transparent-blur blur-10" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="mainMenu" aria-labelledby="mainMenu">
                         <div class="offcanvas-header bg-black border-bottom">
-                            <a href="/lessons" id="editor-back-button" class="btn btn-outline-light">
+                            <a href="/scenes" id="editor-back-button" class="btn btn-outline-light">
                                 Back
                             </a>
                         <button type="button" class="btn btn-light" data-bs-dismiss="offcanvas" aria-label="Close">
@@ -151,17 +151,17 @@
                         </div>
                         <div class="offcanvas-body">
                             <div class = "row">
-                                <h4 id="currentLesson">Lesson</h4>
+                                <h4 id="currentScene">Scene</h4>
                                 <p id = "fileName"></p>
-                                <p id = "lessonName"></p>
-                                <p id = "lessonDescription"></p>
+                                <p id = "sceneName"></p>
+                                <p id = "sceneDescription"></p>
 
                                 <div class = "col-12">
                                     <div  class="input-group mb-2">
-                                        <select id="lessonMenuList" class="form-select" id="inputGroupSelect02">
+                                        <select id="sceneMenuList" class="form-select" id="inputGroupSelect02">
                                             <option selected>Choose...</option>
                                         </select>
-                                        <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loadModal">Load Lesson</button>
+                                        <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loadModal">Load Scene</button>
                                     </div>  
                                 </div>
                             </div>
@@ -178,7 +178,7 @@
                             <hr>
                             <div class = "row">
                                 <div class = "col-4 ">
-                                    <h4>Lesson Sheet</h4>
+                                    <h4>Scene Sheet</h4>
                                 </div>
                                 <div class = "col-4 offset-4">
                                     <button type="button" class="btn btn-outline-light float-end" data-bs-toggle="collapse" href="#fileMenu" role="button" aria-expanded="false" aria-controls="fileMenu">
@@ -194,7 +194,7 @@
                                 <div class="col-12 mt-2">
                                   <div class="collapse multi-collapse" id="fileMenu">
                                     <div class="mb-3">
-                                        <input class="form-control" type="file" id="lessonFileInput" accept=".png">
+                                        <input class="form-control" type="file" id="sceneFileInput" accept=".png">
                                       </div>
                                   </div>
                                 </div>
@@ -308,7 +308,7 @@
                         This will overwrite the current version of the file saved on the server.
                     </p>
                     <div class="col-4">
-                        <h4>Lesson Name</h4>
+                        <h4>Scene Name</h4>
                     </div>
                     <div class = "col-8">
                                 <div>
@@ -333,7 +333,7 @@
                 </div>
                 <div class="modal-body">
                     <p>
-                        Do you want to save your changes before opening another lesson?
+                        Do you want to save your changes before opening another scene?
                     </p>
                     <p class = "text-warning">
                         This will overwrite the current version of the file saved on the server.
@@ -353,26 +353,26 @@
     <script type= "module">
 
         var fileName = document.getElementById("fileName");
-        var lessonName = document.getElementById("lessonName");
-        var lessonDescription = document.getElementById("lessonDescription");
+        var sceneName = document.getElementById("sceneName");
+        var sceneDescription = document.getElementById("sceneDescription");
 
-        let lesson;
+        let scene;
         let markerData;
 
         let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
         console.log(requestedFile);
 
-        fetch('/lessons' + '/' + requestedFile)
+        fetch('/scenes' + '/' + requestedFile)
             .then(response => response.json())
             .then(data => {
-                lesson = data;
-                console.log(lesson);
+                scene = data;
+                console.log(scene);
                 
 
                 fileName.innerHTML = "File name: " + requestedFile;
-                lessonName.innerHTML = "Lesson name: " + lesson.name;
-                lessonDescription.innerHTML = "Lesson desc: " + lesson.desc;
-                markerData = lesson.trackingMarker
+                sceneName.innerHTML = "Scene name: " + scene.name;
+                sceneDescription.innerHTML = "Scene desc: " + scene.desc;
+                markerData = scene.trackingMarker
                 console.log(markerData);
                
                 markerLocationHelper.position.x = markerData.position.x;
@@ -396,8 +396,8 @@
 
 
 
-                // Draw each molecule in three when lessonEditor is loaded.
-                for(let item of lesson.molecules) {
+                // Draw each molecule in three when sceneEditor is loaded.
+                for(let item of scene.molecules) {
                     drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale);
                 }
 
@@ -412,17 +412,17 @@
             }
             return true;
         }
-        var lessonsListMenu = document.getElementById("lessonMenuList");
-        fetch('/lessons/list')
+        var scenesListMenu = document.getElementById("sceneMenuList");
+        fetch('/scenes/list')
             .then(response => response.json())
             .then(data => {
-                const lessonsList = data;
+                const scenesList = data;
 
-                lessonsList.map(lesson => {
+                scenesList.map(scene => {
                     const newOption = document.createElement("option");
-                    newOption.value = lesson;
-                    newOption.text = lesson.replace('.json', '');
-                    lessonsListMenu.appendChild(newOption);
+                    newOption.value = scene;
+                    newOption.text = scene.replace('.json', '');
+                    scenesListMenu.appendChild(newOption);
                 });
             })
             .catch(error => console.error(error));
@@ -576,7 +576,7 @@
                             `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"     class="bi bi-eye-fill" viewBox="0 0 16 16">
                                 <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
                                 <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-                            </svg> <br>Add to Lesson`;
+                            </svg> <br>Add to Scene`;
 
                             viewButton.addEventListener("click", function(event) {
                                 event.preventDefault();
@@ -595,10 +595,10 @@
         }
         let xValue, yValue;
         let moleculeList = document.getElementById('molecule-list');
-        function lessonMoleculeMenu() {
+        function sceneMoleculeMenu() {
             moleculeList.innerHTML = "";
 
-            for(let molecule of lessonMolecules){
+            for(let molecule of sceneMolecules){
                 console.log(molecule)
                 let moleculeItem = document.createElement('div');
                 moleculeItem.classList = 'list-group-item list-group-item-action mb-2';
@@ -972,7 +972,7 @@
 
         const threeArea = document.getElementById('three-area');
 
-        let scene, camera, renderer, controls, clock;
+        let scene1, camera, renderer, controls, clock;
 
         let axesHelper, markerLocationHelper;
         let spotLightTop, spotLightBottom, ambientLight;
@@ -1159,7 +1159,7 @@
             "Au": new THREE.MeshPhongMaterial( { color: 0xffcc00, opacity: 0.9, transparent: true} )
         }
         
-        let lessonMolecules = [];
+        let sceneMolecules = [];
         
         function drawMoleculeFromMolFile(molFile, Title){
             let molObject = molFileToJSON(molFile);
@@ -1284,20 +1284,20 @@
 
             
 
-            lessonMolecules.push({Title: Title, molecule: moleculeGroup, cjson: molObject, position: moleculeGroup.position, rotation: moleculeGroup.rotation, scale: moleculeGroup.scale})
-            scene.add( moleculeGroup );
+            sceneMolecules.push({Title: Title, molecule: moleculeGroup, cjson: molObject, position: moleculeGroup.position, rotation: moleculeGroup.rotation, scale: moleculeGroup.scale})
+            scene1.add( moleculeGroup );
 
-            lessonMoleculeMenu();
+            sceneMoleculeMenu();
         }
 
 
         function init(){
 
-            scene = new THREE.Scene();
+            scene1 = new THREE.Scene();
             camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 4000 );
 
             
-            scene.add( camera );
+            scene1.add( camera );
 
             renderer = new THREE.WebGLRenderer({ alpha: true });
             renderer.setClearColor( 0x000000, 0 );
@@ -1307,18 +1307,18 @@
           
 
             ambientLight = new THREE.AmbientLight( 0xffffff );
-            scene.add( ambientLight );
+            scene1.add( ambientLight );
 
             // Load an image file into a custom material
             paperMaterial = new THREE.MeshLambertMaterial({
-                map: loader.load('/images/lesson1.png')
+                map: loader.load('/images/scene1.png')
             });
             paperMaterial.side = THREE.DoubleSide;
 
             let paperDimensions = new THREE.Vector2( 8.5, 11 );
             paperGeometry = new THREE.PlaneGeometry( paperDimensions.y, paperDimensions.x );
             paperPlane = new THREE.Mesh( paperGeometry, paperMaterial );
-            scene.add( paperPlane );
+            scene1.add( paperPlane );
             paperPlane.position.z = 0;
             paperPlane.position.x = paperDimensions.y/2;
             paperPlane.position.y = paperDimensions.x/2;
@@ -1332,13 +1332,13 @@
             markerGeometry = new THREE.PlaneGeometry( markerDimensions.x, markerDimensions.y );
             markerPlane = new THREE.Mesh( markerGeometry, markerMaterial );
             markerPlane.position.z = 0.1;
-            scene.add( markerPlane );
+            scene1.add( markerPlane );
 
             markerLocationHelper = new THREE.AxesHelper( 10 );
-            scene.add( markerLocationHelper );
+            scene1.add( markerLocationHelper );
 
             axesHelper = new THREE.AxesHelper( 50 );
-            scene.add( axesHelper );
+            scene1.add( axesHelper );
 
             controls = new OrbitControls( camera, renderer.domElement );
             controls.dampingFactor = 10;
@@ -1391,19 +1391,19 @@
 
         });
 
-        var loadedLesson = {};
+        var loadedScene = {};
 
         document.getElementById('loadSaveBtn').addEventListener('click', () => {
             
-            var selectedLesson = document.getElementById("lessonMenuList").value;
-            console.log(selectedLesson);
+            var selectedScene = document.getElementById("sceneMenuList").value;
+            console.log(selectedScene);
             
-            fetch(`/lessons/${selectedLesson}`)
+            fetch(`/scenes/${selectedScene}`)
                 .then(response => response.json())
                 .then(data => {
-                    loadedLesson = JSON.stringify(data);
-                    console.log(loadedLesson);
-                    window.location.href = "/lessonEditor/" + selectedLesson;
+                    loadedScene = JSON.stringify(data);
+                    console.log(loadedScene);
+                    window.location.href = "/sceneEditor/" + selectedScene;
                 });
         });
 
@@ -1411,38 +1411,38 @@
             console.log("No save and loaded.");
         });
 
-        let lessonNameInput = document.getElementById('newNameInput');
+        let sceneNameInput = document.getElementById('newNameInput');
 
-        // When the admin saves changes to the lesson editor.
+        // When the admin saves changes to the scene editor.
         document.getElementById("saveBtn").addEventListener('click', () => {
             
             if(!validateName()){
                 alert("Please enter a name");
             }else{
             console.log("Saved changes");
-            var lessonName = lessonNameInput.value;
+            var sceneName = sceneNameInput.value;
 
             // Check if name changed.
-            var newLessonName = document.getElementById("newNameInput").value;
-            console.log(newLessonName);
+            var newSceneName = document.getElementById("newNameInput").value;
+            console.log(newSceneName);
             
             let offsetArray = [];
-            for(let item of lessonMolecules){
+            for(let item of sceneMolecules){
                 offsetArray.push(item.molecule.position);
             }
 
             let rotationArray = [];
-            for(let item of lessonMolecules){
+            for(let item of sceneMolecules){
                 rotationArray.push(item.molecule.rotation);
             }
 
             let scaleArray = [];
-            for(let item of lessonMolecules){
+            for(let item of sceneMolecules){
                 scaleArray.push(item.molecule.scale);
             }
 
-            lesson = {
-                "name" : lessonName,
+            scene = {
+                "name" : sceneName,
                 "trackingMarker" : {
                     "position" : {
                         "x" : markerPlane.position.x,
@@ -1460,19 +1460,19 @@
                        "z" : markerPlane.scale.z, 
                     }
                 },
-                "molecules" : lessonMolecules,
+                "molecules" : sceneMolecules,
             }
 
             
 
-            console.log(lesson);
+            console.log(scene);
 
-            fetch(`/lessonEditor/save/${lesson.name}`, {
+            fetch(`/sceneEditor/save/${scene.name}`, {
                 method: "POST",
                 headers: {
                     'Content-Type': "application/json"
                 },
-                body: JSON.stringify(lesson)
+                body: JSON.stringify(scene)
             })
             .catch(err => {
                 console.error(err)
@@ -1481,8 +1481,8 @@
         }
         })
 
-        function updateLessonsList() {
-            fetch('https://localhost:4000/lessons/list')
+        function updateScenesList() {
+            fetch('https://localhost:4000/scenes/list')
                 .then(response => response.text())
                 .then(data => {
                     console.log(data); // log the data to the console
@@ -1492,17 +1492,17 @@
             });
         }
 
-        const lessonFileInput = document.getElementById('lessonFileInput');
+        const sceneFileInput = document.getElementById('sceneFileInput');
         
-        lessonFileInput.addEventListener('change', function(e) {
-            const file = lessonFileInput.files[0];
+        sceneFileInput.addEventListener('change', function(e) {
+            const file = sceneFileInput.files[0];
 
             const reader = new FileReader();
             reader.addEventListener("load", () => {
                 // convert image file to base64 string
                 console.log(reader.result);
                 var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'lessonEditor/upload/images', true);
+                xhr.open('POST', 'sceneEditor/upload/images', true);
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.onload = function() {
                     if (xhr.status === 200) {
@@ -1538,7 +1538,7 @@
             requestAnimationFrame( animate );
             var delta = clock.getDelta();
 
-            renderer.render( scene, camera );
+            renderer.render( scene1, camera );
             controls.update();
         }
 
