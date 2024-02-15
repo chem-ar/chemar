@@ -80,11 +80,9 @@
     <script>
         const currentURL = window.location.href;
         const urlParts = currentURL.split('/');
-        const cid = urlParts[urlParts.length - 1];
+        const chemSpiderId = urlParts[urlParts.length - 1];
 
-        console.log("CID:", cid);
-
-        const url = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF/?record_type=3d&response_type=display`;
+        console.log("ChemSpider ID:", chemSpiderId);
 
         const firebaseConfig = {
             databaseURL: "https://chemar-5845a-default-rtdb.firebaseio.com/",
@@ -94,18 +92,12 @@
         Jmol.Info.serverURL = '/jmol-16.1.41/jsmol/php/jsmol.php';
         jmolInitialize('/jmol-16.1.41/jsmol', true);
 
-        let extractedData;
-
-        function fetchData() {
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', url, false);
-            xhr.send();
-
-            if (xhr.status === 200) {
-                extractedData = xhr.responseText.substring(0, xhr.responseText.indexOf("END")).trim();
-                extractedData = '|' + extractedData.replace(/\n/g, '|').replace(/\r/g, '') + 'END|';
-                return Promise.resolve(extractedData);
-            } else {
+        async function fetchData() {
+            try {
+                const response = await fetch(`https://chemar-5845a-default-rtdb.firebaseio.com/molecules/${chemSpiderId}.json`);
+                const data = await response.json();
+                return Promise.resolve(data);
+            } catch (error) {
                 return Promise.reject(new Error("Something went wrong"));
             }
         }
@@ -113,131 +105,50 @@
         fetchData()
             .then(data => {
                 console.log(data);
+                const molFile = data.molFile;
+
+                // Extract data between V2000 and M END
+                const startIndex = molFile.indexOf("V2000");
+                const endIndex = molFile.indexOf("M END") + 5;
+                const extractedMolfile = molFile.substring(startIndex, endIndex);
+
+                console.log("Extracted Molfile:", extractedMolfile);
+
                 jmolSetAppletColor('0x202020');
-                jmolApplet(['600', '600'], "set antialiasdisplay\;load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
+                jmolApplet(['600', '600'], 'background HOVER[NONE];', '0');
+
+                const loadCommand = `load molFile ${extractedMolfile}`;
+                console.log("Load Command:", loadCommand);
+
+                jmolSetAppletColor('0x202020');
+                jmolApplet(['600', '600'], 'background HOVER[NONE];', '0');
+
+                jmolScriptWait(`${loadCommand}\nspin on;`);
             })
             .catch(error => {
                 console.error(error);
             });
 
-        firebase.initializeApp(firebaseConfig);
-        async function initializeFirebase() {
-            const keysArray = [];
-            let objPresent = false;
-
-            const database = firebase.database();
-
-            const objRef = database.ref("obj");
-
-            const snapshot = await objRef.once("value");
-            const data = snapshot.val();
-            keysArray.push(...Object.keys(data));
-            console.log(keysArray);
-            if (keysArray.includes(cid)) {
-                objPresent = true;
-                const objRef = database.ref("obj");
-                objRef.child(cid).once("value", function (snapshot) {
-                    const data = snapshot.val();
-                    console.log(data);
-                });
-            }
-            else {
-                let extractedData;
-                const xhr = new XMLHttpRequest();
-                xhr.open('GET', url, false);
-                xhr.send();
-                if (xhr.status === 200) {
-                    extractedData = xhr.responseText.substring(0, xhr.responseText.indexOf("END")).trim();
-                    extractedData = '|' + extractedData.replace(/\n/g, '|').replace(/\r/g, '') + 'END|';
-                    const objRef = database.ref("obj");
-                    objRef.child(cid).set(extractedData);
-                    objPresent = true;
-                } else {
-                    return Promise.reject(new Error("Something went wrong"));
-                }
-            }
-            console.log({ objPresent });
-        }
-        initializeFirebase();
-      
-        jmolButton("spin @ {!_spinning}", "Toggle Spin")
-
-        // Create a slider element
-        var slider = document.createElement("input");
-        //add title for the slider
-        var title = document.createElement("h5");
-        title.innerHTML = "Van der Waals Radius";
-        document.body.appendChild(title);
-        slider.type = "range";
-        slider.min = 0.2; // Minimum value for van der Waals radius
-        slider.max = 2.0; // Maximum value for van der Waals radius
-        slider.step = 0.1; // Step size for slider
-        slider.value = 0.3; // Default value for slider
-
-        // Create a label element to show the current value
-        var label = document.createElement("span");
-        label.innerHTML = slider.value;
-
-        // Add an event listener to the slider
-        slider.addEventListener("input", function () {
-            // Update the label with the current value
-            label.innerHTML = slider.value;
-            // Send a Jmol script command to change the van der Waals radius
-            jmolScript("spacefill " + slider.value);
-        });
-
-        // Append the slider and the label to the document body
-        document.body.appendChild(slider);
-        document.body.appendChild(label);
-
+        jmolButton("spin @ {!_spinning}", "Toggle Spin");
     </script>
 
-    <script>
-        // Create a slider element
-        var bondSizeSlider = document.createElement("input");
-        //add title for the slider
-        var bondSize = document.createElement("h5");
-        bondSize.innerHTML = "Bond Size";
-        document.body.appendChild(bondSize);
-        bondSizeSlider.type = "range";
-        bondSizeSlider.min = 0.1; // Minimum value for van der Waals radius
-        bondSizeSlider.max = 0.5; // Maximum value for van der Waals radius
-        bondSizeSlider.step = 0.1; // Step size for slider
-        bondSizeSlider.value = 0.2; // Default value for slider
-
-        // Create a label element to show the current value
-        var currentValue = document.createElement("span");
-        currentValue.innerHTML = bondSizeSlider.value;
-
-        // Add an event listener to the slider
-        bondSizeSlider.addEventListener("input", function () {
-            // Update the label with the current value
-            currentValue.innerHTML = bondSizeSlider.value;
-            // Send a Jmol script command to change the van der Waals radius
-            // jmolScript("spacefill " + slider1.value);
-            changeBondSize(bondSizeSlider.value);
-        });
-
-        // Append the slider and the label to the document body
-        document.body.appendChild(bondSizeSlider);
-        document.body.appendChild(currentValue);
-    </script>
-    
-    <script>
-        function changeBondSize(value) {
-            jmolScript("wireframe " + value);
-        }
-    </script>
-
-    
     <div id="control-panel">
-
-        <!--spin switch-->
-        <input type="button" value="Open Console" id="console-open" onclick="jmolScript('console;')">
-        <input type="button" value="Get obj file" id="get-obj" onclick='jmolScript("write " + cid + ".obj;")'>
+        <!-- bond size dropdown -->
+        <label for="bond-size-dropdown">Bond Size</label>
+        <select id="bond-size-dropdown" onchange="changeBondSize(this.value)">
+            <option value="0.1">0.1</option>
+            <option value="0.2">0.2</option>
+            <option value="0.3">0.3</option>
+            <option value="0.4">0.4</option>
+            <option value="0.5">0.5</option>
+        </select>
     </div>
 
-
+    <div id="control-panel2">
+        <!--spin switch-->
+        <input type="button" value="Open Console" id="console-open" onclick="jmolScript('console;')">
+        <input type="button" value="Get obj file" id="get-obj" onclick='jmolScript("write " + chemSpiderId + ".obj;")'>
+    </div>
 </body>
 
 </html>
