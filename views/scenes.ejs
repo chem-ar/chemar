@@ -11,11 +11,11 @@
 <div class="container mb-4">
     <div class="row content">
         <div class="col-12 pt-4 text-start text-white bg-dark">
-            <h1 class="display-4 fw-bold">Lessons Catalog</h1>
+            <h1 class="display-4 fw-bold">Scenes Catalog</h1>
 
              <!--ADMIN CHECK-->
              <% if (isAdmin){%>
-                <%- include('partials/addLesson') %>
+                <%- include('partials/addScene') %>
             <%}%>
 
             <p></p>
@@ -44,7 +44,7 @@
                                 <td id="Description<%=item %>" class="text-white">Description</td>
                                 <td >
                                     <div class = "d-grid gap-2">
-                                        <button onclick="window.location.href='<%= '/lessonViewer/' + item %>'" id="<%= "previewBtn" + item %>" type="button" class="preview btn btn-light">
+                                        <button onclick="window.location.href='<%= '/sceneViewer/' + item %>'" id="<%= "previewBtn" + item %>" type="button" class="preview btn btn-light">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
                                                 <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
                                                 <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
@@ -57,7 +57,7 @@
                                         </button>
                                          <!--ADMIN CHECK-->
                                         <% if (isAdmin){%>
-                                            <button onclick="goToPage('../lessonEditor')" type="button" class="btn btn-outline-warning">
+                                            <button onclick="goToPage('../sceneEditor')" type="button" class="btn btn-outline-warning">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
                                                     <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                                                 </svg> Edit
@@ -126,14 +126,14 @@
 
 <script>
 
-    async function postNewLesson(lesson){
-        const response = await fetch(`/lessonEditor/save/${lesson.name}`,
+    async function postNewScene(scene){
+        const response = await fetch(`/sceneEditor/save/${scene.name}`,
             {
                 method: "POST",
                 headers: {
                     'Content-Type': "application/json"
                 },
-                body: JSON.stringify(lesson)
+                body: JSON.stringify(scene)
             }
         );
         const content = await response.json();
@@ -142,23 +142,23 @@
         console.log(content.successful);
 
         if(content.successful){
-            window.location.href = `/lessonEditor/${content.path.replace("./public/lessons/", "")}`;
+            window.location.href = `/sceneEditor/${content.path.replace("./public/scenes/", "")}`;
         }
         else{
-            alert("Lesson already exists!");
+            alert("Scene already exists!");
         }
 
         return content;
     }
 
-    document.getElementById("newLessonAddBtn").addEventListener('click', () => {
-        // Get new lesson info from form.
-        var newLessonName = document.getElementById("newLessonName").value;
-        var newLessonDesc = document.getElementById("newLessonDesc").value;
+    document.getElementById("newSceneAddBtn").addEventListener('click', () => {
+        // Get new scene info from form.
+        var newSceneName = document.getElementById("newSceneName").value;
+        var newSceneDesc = document.getElementById("newSceneDesc").value;
 
-        lesson = {
-            "name" : newLessonName,
-            "desc" : newLessonDesc,
+        scene = {
+            "name" : newSceneName,
+            "desc" : newSceneDesc,
             "trackingMarker" : {
                 "position" : {
                     "x" : 0,
@@ -169,9 +169,9 @@
             "molecules" : []
         }
 
-        postNewLesson(lesson);
+        postNewScene(scene);
         
-        console.log(newLessonName + " " + newLessonDesc);
+        console.log(newSceneName + " " + newSceneDesc);
     });
 
     // Preview the .mol file content when selected
@@ -212,7 +212,7 @@ var iframePreview = document.getElementById("iframePreview")
     Array.from(share).forEach(function(element) {
         element.addEventListener("click", function(){
             let itemNumber = element.id.replace("shareBtn", "")
-            qrcode.makeCode(window.location.href + "/lessonViewer/" + itemNumber); 
+            qrcode.makeCode(window.location.href + "/sceneViewer/" + itemNumber); 
         })
     });
 
