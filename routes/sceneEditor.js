@@ -3,26 +3,26 @@ var router = express.Router();
 var fs = require('fs'); 
 
 router.get('/', function(req, res, next) {
-  const lessons = './public/lessons/'
+  const scenes = './public/scenes/'
 
-  res.render('lessonEditor', { title: 'Scene Viewer'});
+  res.render('sceneEditor', { title: 'Scene Viewer'});
 });
 
 
 
 
 router.get('/:id', function(req , res){
-  var lessonfiles = fs.readdirSync('./public/lessons/')
+  var scenefiles = fs.readdirSync('./public/scene/')
 
-  if(lessonfiles.includes(req.params.id)){
-    res.render('lessonEditor', {
+  if(scenefiles.includes(req.params.id)){
+    res.render('sceneEditor', {
       title: 'Scene Viewer', 
       item: req.params.id
     });
   }
   
   else{
-    res.render('error', { title: 'ChemAR - Error', message: 'Lesson not found', error: {status: 404, stack: 'Lesson not found'}});
+    res.render('error', { title: 'ChemAR - Error', message: 'Scene not found', error: {status: 404, stack: 'Scene not found'}});
   }
 });
 
@@ -49,20 +49,20 @@ router.post('/upload/images/', function(req , res){
   
 });
 
-router.post('/save/:lesson', (req, res) => {
+router.post('/save/:scene', (req, res) => {
   
-  // Get the lesson name from the params.
-  const lessonName = req.params.lesson;
-  const lessonPath = `./public/lessons/${lessonName}.json`; // Save the file path.
+  // Get the scene name from the params.
+  const sceneName = req.params.scene;
+  const scenePath = `./public/scenes/${sceneName}.json`; // Save the file path.
   var success = false;
   var overwritten = false;
 
-  // Check if lesson doesn't exist.
-  if (fs.existsSync(lessonPath))
+  // Check if scene doesn't exist.
+  if (fs.existsSync(scenePath))
     overwritten = true;
 
   // Write the file with template.
-  fs.writeFile(lessonPath, JSON.stringify(req.body), (err) => {
+  fs.writeFile(scenePath, JSON.stringify(req.body), (err) => {
 
     if (err) {
         success = false;
@@ -76,7 +76,7 @@ router.post('/save/:lesson', (req, res) => {
   res.status(200).send({
     successful: success,
     overwritten: overwritten,
-    path: lessonPath
+    path: scenePath
   })
 
 });
