@@ -1,13 +1,13 @@
 <%- include('partials/header') %>
 
 <!-- ADMIN NAVBAR CHECK -->
-<% if (isAdmin){%>
+<% if (isAdmin) { %>
     <%- include('partials/navbarAdmin') %>
-<%}%>
+<% } %>
 
-<% if (!isAdmin){%>
+<% if (!isAdmin) { %>
     <%- include('partials/navbar') %>
-<%}%>
+<% } %>
 
 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 
@@ -17,11 +17,14 @@
             <h1 class="display-4 fw-bold">Molecule Catalog</h1>
 
             <!-- ADMIN CHECK -->
-            <% if (isAdmin){%>
+            <% if (isAdmin) { %>
+                <!-- Include the partial for adding a molecule (if admin) -->
                 <%- include('partials/addMolecule') %>
-            <%}%>
+            <% } %>
 
             <p></p>
+            
+            <!-- Molecule Table -->
             <table id="molTable" class="table table-striped text-white" style="width:100%">
                 <thead>
                     <tr>
@@ -37,8 +40,6 @@
         </div>
     </div>
 </div>
-
-
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -59,9 +60,11 @@
     </div>
 </div>
 
+<!-- Firebase Scripts -->
 <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-database-compat.js"></script>
 
+<!-- Main Script -->
 <script>
     let dataTable;
 
@@ -76,72 +79,60 @@
         moleculesRef.once("value")
             .then(snapshot => {
                 dataTable = snapshot.val();
-                populateTable();
+                initializeDataTable();
             })
             .catch(error => {
                 console.error("Error fetching data from Firebase:", error);
             });
     });
 
-    function populateTable() {
-    const tableBody = document.getElementById("moleculeTableBody");
+    function initializeDataTable() {
+        const table = $('#molTable').DataTable({
+            data: convertDataToArray(),
+            columns: [
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        return '<a href="/moleculeViewer/' + data.id + '">' + data.commonName + '</a>';
+                    }
+                },
+                { data: 'formula' },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        let buttonsHtml = '';
 
-    // Clear existing rows
-    tableBody.innerHTML = "";
+                        // Check if user is an admin
+                        if (<%= isAdmin %>) {
+                            // Admin-specific buttons
+                            buttonsHtml += '<button class="btn btn-outline-warning">Edit</button>' +
+                                '<button class="btn btn-outline-danger" onclick="showDeleteModal(\'' + data.id + '\')">Delete</button>';
+                        }
 
-    for (let id in dataTable) {
-        const row = tableBody.insertRow();
-        const cellName = row.insertCell(0);
-        const cellFormula = row.insertCell(1);
-        const cellOptions = row.insertCell(2);
+                        // Common buttons
+                        buttonsHtml += '<button class="btn btn-light" onclick="handlePreview(\'' + data.id + '\')">Preview</button>' +
+                            '<button class="btn btn-light" onclick="handleShare(\'' + data.id + '\')">Share</button>';
 
-        // Wrap the molecule name and formula in an anchor tag
-        const moleculeLink = document.createElement("a");
-        moleculeLink.href = `/moleculeViewer/${id}`; // Assuming the URL pattern is "/moleculeViewer/{moleculeId}"
-        moleculeLink.textContent = dataTable[id].commonName;
-        cellName.appendChild(moleculeLink);
-
-        cellFormula.innerHTML = dataTable[id].formula;
-
-        // Check if user is authenticated
-        <% if (isAdmin){%>
-            const editBtn = document.createElement("button");
-            editBtn.className = "btn btn-outline-warning";
-            editBtn.innerHTML = "Edit";
-            editBtn.addEventListener('click', () => {
-                // Handle edit button click 
-            });
-
-            const deleteBtn = document.createElement("button");
-            deleteBtn.className = "btn btn-outline-danger";
-            deleteBtn.innerHTML = "Delete";
-            deleteBtn.addEventListener('click', () => {
-                showDeleteModal(id);
-            });
-
-            cellOptions.appendChild(editBtn);
-            cellOptions.appendChild(deleteBtn);
-        <%}%>
-
-        const previewBtn = document.createElement("button");
-        previewBtn.className = "btn btn-light";
-        previewBtn.innerHTML = "Preview";
-        previewBtn.addEventListener('click', () => {
-            // Handle preview button click 
+                        return buttonsHtml;
+                    },
+                    orderable: false
+                }
+            ],
+            pageLength: 10,
+            searching: true,
+            ordering: true,
         });
-
-        const shareBtn = document.createElement("button");
-        shareBtn.className = "btn btn-light";
-        shareBtn.innerHTML = "Share";
-        shareBtn.addEventListener('click', () => {
-            // Handle share button click 
-        });
-
-        cellOptions.appendChild(previewBtn);
-        cellOptions.appendChild(shareBtn);
     }
-}
 
+    function convertDataToArray() {
+        const dataArray = [];
+        for (let id in dataTable) {
+            const molecule = dataTable[id];
+            molecule.id = id; // Add the ID to the data for later reference
+            dataArray.push(molecule);
+        }
+        return dataArray;
+    }
 
     function showDeleteModal(moleculeId) {
         const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
@@ -160,7 +151,6 @@
         moleculesRef.child(moleculeId).remove()
             .then(() => {
                 console.log("Molecule deleted successfully");
-                // Optionally, you can update the table or perform other actions after deletion
                 // Show success message
                 alert("Molecule deleted successfully");
             })
@@ -170,7 +160,15 @@
                 alert("Error deleting molecule");
             });
     }
+
+    // Additional functions for handling preview and share buttons
+    function handlePreview(moleculeId) {
+        // Implement functionality for preview button
+    }
+
+    function handleShare(moleculeId) {
+        // Implement functionality for share button
+    }
 </script>
 
 <%- include('partials/footer') %>
-
