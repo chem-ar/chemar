@@ -3,15 +3,15 @@ var router = express.Router();
 var fs = require('fs'); 
 
 router.get('/', function(req, res, next) {
-  res.redirect('/lessons');
+  res.redirect('/scenes');
 });
 
 
 router.get('/:id', function(req , res){
-  var lessonFiles = fs.readdirSync(`./public/lessons/`);
+  var sceneFiles = fs.readdirSync(`./public/scenes/`);
 
-  if(lessonFiles.includes(req.params.id + ".json")){
-    res.render('lessonViewer', {
+  if(sceneFiles.includes(req.params.id + ".json")){
+    res.render('sceneViewer', {
       title: 'Scene Viewer', 
       item: req.params.id
     });
