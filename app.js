@@ -72,8 +72,8 @@ app.use('/scenes', scenesRouter);
 
 app.use('/about', aboutRouter);
 
-// app.use('/sceneviewer', sceneViewer);
-// app.use('/sceneeditor', sceneEditor);
+app.use('/sceneviewer', sceneViewer);
+app.use('/sceneeditor', sceneEditor);
 app.use('/moleculeviewer', moleculeViewer);
 app.use('/addmolecule', addMolecule);
 app.use('/login', loginRouter);
