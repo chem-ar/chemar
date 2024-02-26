@@ -29,17 +29,17 @@ router.get('/:id', function(req , res){
 
 router.use('/getMolFile', express.static(path.join(__dirname, '../public/molfiles')));
 router.get('/getMolFile/:cid', async (req, res) => {
-  try{
+  try {
     const cid = req.params.cid;
+    const filePath = path.join(__dirname, `./public/molfiles/${cid}.mol`);
     
-    const filePath = path.join(__dirname, `../public/molfiles/${cid}.mol`)
-
-    const fileContent = await fs.readFileSync(filePath, 'utf8');
-
-    res.send(fileContent);
-  } catch(error){
+    // Use res.sendFile to send the file itself
+    res.sendFile(filePath);
+  } catch (error) {
     console.log("Error:", error);
+    res.status(500).send('Internal Server Error');
   }
-})
+});
+  
 
 module.exports = router;
