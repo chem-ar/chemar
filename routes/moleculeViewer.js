@@ -34,7 +34,7 @@ router.get('/getMolFile/:cid', async (req, res) => {
     
     const filePath = path.join(__dirname, `../public/molfiles/${cid}.mol`)
 
-    const fileContent = await fs.readFile(filePath, 'utf8');
+    const fileContent = await fs.readFileSync(filePath, 'utf8');
 
     res.send(fileContent);
   } catch(error){

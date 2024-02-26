@@ -134,7 +134,7 @@
                 const cid = 702;
 
                 const response = await fetch(`/molfiles/${encodeURIComponent(cid)}.mol`);
-                const molData = await response.text();
+                const molData =  await response.text();
 
                 // Process the response text similar to the provided JavaScript code
                 const extractedData = `|${molData.substring(0, molData.indexOf("END")).trim().replace(/\n/g, '|').replace(/\r/g, '')} END|`;
@@ -142,7 +142,7 @@
                 console.log(extractedData);
                 console.log('Initializing Jmol Applet');
                 jmolSetAppletColor('0x202020');
-                jmolApplet(['600', '600'], "set antialiasdisplay\;load data \"mydata\"" + extractedData + "$$$$||end \"mydata\";spin on;background HOVER[NONE]; refresh;", '0');
+                jmolApplet(['600', '600'], `set antialiasdisplay\;load data "mydata"${extractedData}$$$$||end "mydata";spin on;background HOVER[NONE];`, '0');
                 console.log('Jmol Applet Initialized');
             } catch (error) {
                 console.error('Error loading Mol file:', error); // Log the error
@@ -150,8 +150,9 @@
             }
         }
 
-        loadMolFile();
-
+        molFile = loadMolFile();
+        molFile.then(data =>(console.log(data)));
+        
         jmolButton("spin @ {!_spinning}", "Toggle Spin");
     </script>
 
