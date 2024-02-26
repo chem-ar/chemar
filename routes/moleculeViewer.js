@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs'); 
-
+var path = require('path');
 
 router.get('/', function(req, res, next) {
   res.render('moleculeViewer', { title: 'Molecule Viewer', item: 2519 });
@@ -26,5 +26,20 @@ router.get('/:id', function(req , res){
     });  
   }
 });
+
+router.use('/getMolFile', express.static(path.join(__dirname, '../public/molfiles')));
+router.get('/getMolFile/:cid', async (req, res) => {
+  try{
+    const cid = req.params.cid;
+    
+    const filePath = path.join(__dirname, `../public/molfiles/${cid}.mol`)
+
+    const fileContent = await fs.readFile(filePath, 'utf8');
+
+    res.send(fileContent);
+  } catch(error){
+    console.log("Error:", error);
+  }
+})
 
 module.exports = router;
