@@ -99,5 +99,20 @@ app.use(function (err, req, res, next) {
   res.render("error", { title: "MoleculAR - Error" });
 });
 
+app.use('/getMolFile', express.static(path.join(__dirname, 'public/molfiles')))
+
+app.get('/getMolFile/:cid', async (req, res) => {
+  try {
+    const cid = req.params.cid;
+
+    const filePath = path.join(__dirname, `molfiles/${cid}`)
+    const fileContent = await fs.readFile(filePath, 'utf8');
+
+    res.send(fileContent);
+  } catch(error) {
+    console.error('Error:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 module.exports = app;

@@ -92,42 +92,64 @@
         Jmol.Info.serverURL = '/jmol-16.1.41/jsmol/php/jsmol.php';
         jmolInitialize('/jmol-16.1.41/jsmol', true);
 
-        async function fetchData() {
+        // async function fetchData() {
+        //     try {
+        //         const response = await fetch(`https://chemar-5845a-default-rtdb.firebaseio.com/molecules/${chemSpiderId}.json`);
+        //         const data = await response.json();
+        //         return Promise.resolve(data);
+        //     } catch (error) {
+        //         return Promise.reject(new Error("Something went wrong"));
+        //     }
+        // }
+
+        // fetchData()
+        //     .then(data => {
+        //         console.log(data);
+        //         const molFile = data.molFile;
+
+        //         // Extract data between V2000 and M END
+        //         const startIndex = molFile.indexOf("V2000");
+        //         const endIndex = molFile.indexOf("M END") + 5;
+        //         const extractedMolfile = molFile.substring(startIndex, endIndex);
+
+        //         console.log("Extracted Molfile:", extractedMolfile);
+
+        //         jmolSetAppletColor('0x202020');
+        //         jmolApplet(['600', '600'], 'background HOVER[NONE];', '0');
+
+        //         const loadCommand = `load molFile ${extractedMolfile}`;
+        //         console.log("Load Command:", loadCommand);
+
+        //         jmolSetAppletColor('0x202020');
+        //         jmolApplet(['600', '600'], 'background HOVER[NONE];', '0');
+
+        //         jmolScriptWait(`${loadCommand}\nspin on;`);
+        //     })
+        //     .catch(error => {
+        //         console.error(error);
+        //     });
+
+        async function loadMolFile() {
             try {
-                const response = await fetch(`https://chemar-5845a-default-rtdb.firebaseio.com/molecules/${chemSpiderId}.json`);
-                const data = await response.json();
-                return Promise.resolve(data);
+                const cid = 702;
+
+                const response = await fetch(`/molfiles/${encodeURIComponent(cid)}.mol`);
+                const molData = await response.text();
+
+                // Process the response text similar to the provided JavaScript code
+                const extractedData = `|${molData.substring(0, molData.indexOf("END")).trim().replace(/\n/g, '|').replace(/\r/g, '')} END|`;
+
+                console.log(extractedData);
+                jmolSetAppletColor('0x202020');
+                jmolApplet(['600', '600'], "set antialiasdisplay\;load data \"mydata\"" + extractedData + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
+
             } catch (error) {
-                return Promise.reject(new Error("Something went wrong"));
+                console.error('Error loading Mol file:', error); // Log the error
+                alert('Error loading Mol file');
             }
         }
 
-        fetchData()
-            .then(data => {
-                console.log(data);
-                const molFile = data.molFile;
-
-                // Extract data between V2000 and M END
-                const startIndex = molFile.indexOf("V2000");
-                const endIndex = molFile.indexOf("M END") + 5;
-                const extractedMolfile = molFile.substring(startIndex, endIndex);
-
-                console.log("Extracted Molfile:", extractedMolfile);
-
-                jmolSetAppletColor('0x202020');
-                jmolApplet(['600', '600'], 'background HOVER[NONE];', '0');
-
-                const loadCommand = `load molFile ${extractedMolfile}`;
-                console.log("Load Command:", loadCommand);
-
-                jmolSetAppletColor('0x202020');
-                jmolApplet(['600', '600'], 'background HOVER[NONE];', '0');
-
-                jmolScriptWait(`${loadCommand}\nspin on;`);
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        loadMolFile();
 
         jmolButton("spin @ {!_spinning}", "Toggle Spin");
     </script>
