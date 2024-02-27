@@ -131,18 +131,19 @@
 
         async function loadMolFile() {
             try {
-                jmolInitialize('/jmol-16.1.41/jsmol', true);
                 const cid = 702;
 
                 const response = await fetch(`/molfiles/${encodeURIComponent(cid)}.mol`);
-                const molData = await response.text();
+                var molData = await response.text();
                 console.log(molData);
-                
 
-                jmolSetAppletColor('0x202020');
-                jmolApplet(500, `load INLINE "${molData}";`, '0');
+            
+                molData = molData.split("END")[0];
+                const modifiedMolData = '|' + molData.replace(/\n/g, '|').replace(/\r/g, '') + 'END|';
+                // extractedData = xhr.responseText.substring(0, xhr.responseText.indexOf("END")).trim();
+                // extractedData = '|' + extractedData.replace(/\n/g, '|').replace(/\r/g, '') + 'END|';
                 
-                return(Promise.resolve("Hello"));
+                return(Promise.resolve(modifiedMolData));
             } catch (error) {
                 console.error('Error loading Mol file:', error);
                 alert('Error loading Mol file');
@@ -152,6 +153,8 @@
 
         loadMolFile().then(data => {
             console.log(data)
+            jmolSetAppletColor('0x202020');
+            jmolApplet(500, `load INLINE "${data}";`, '0');
         }).catch(error => {
             console.log(error)
         });
