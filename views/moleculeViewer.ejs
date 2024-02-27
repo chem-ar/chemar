@@ -135,13 +135,10 @@
 
                 const response = await fetch(`/molfiles/${encodeURIComponent(cid)}.mol`);
                 var molData = await response.text();
-                console.log(molData);
+                // console.log(molData);
 
-            
                 molData = molData.split("END")[0];
                 const modifiedMolData = '|' + molData.replace(/\n/g, '|').replace(/\r/g, '') + 'END|';
-                // extractedData = xhr.responseText.substring(0, xhr.responseText.indexOf("END")).trim();
-                // extractedData = '|' + extractedData.replace(/\n/g, '|').replace(/\r/g, '') + 'END|';
                 
                 return(Promise.resolve(modifiedMolData));
             } catch (error) {
@@ -154,7 +151,7 @@
         loadMolFile().then(data => {
             console.log(data)
             jmolSetAppletColor('0x202020');
-            jmolApplet(500, `load INLINE "${data}";`, '0');
+            jmolApplet(['600', '600'], "set antialiasdisplay\;load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
         }).catch(error => {
             console.log(error)
         });
