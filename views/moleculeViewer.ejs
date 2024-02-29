@@ -76,6 +76,8 @@
             <input type="button" value="Back to Molecules">        
         </a>
     </div>
+    
+    <div id="jmolApplet"></div>
 
     <script>
         const currentURL = window.location.href;
@@ -129,37 +131,49 @@
         //         console.error(error);
         //     });
 
-        async function loadMolFile() {
-            try {
-                const cid = 702;
+        async function loadHardcodedMolFile() {
+    try {
+        // Hardcoded mol file for testing
+        const hardcodedMolFile = `
+            702
+             -OEChem-02292409473D
 
-                const response = await fetch(`/molfiles/${encodeURIComponent(cid)}.mol`);
-                var molData = await response.text();
-                // console.log(molData);
+             9  8  0     0  0  0  0  0  0999 V2000
+              -1.1712    0.2997    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+              -0.0463   -0.5665    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+               1.2175    0.2668    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+              -0.0958   -1.2120    0.8819 H   0  0  0  0  0  0  0  0  0  0  0  0
+              -0.0952   -1.1938   -0.8946 H   0  0 0 0  0  0  0  0  0  0  0  0
+               2.1050   -0.3720   -0.0177 H   0  0 0 0  0  0  0  0  0  0  0  0
+               1.2426    0.9307   -0.8704 H   0  0 0 0  0  0  0  0  0  0  0  0
+               1.2616    0.9052    0.8886 H   0  0 0 0  0  0  0  0  0  0  0  0
+              -1.1291    0.8364    0.8099 H   0  0 0 0  0  0  0  0  0  0  0  0
+            M  END
+        `;
 
-                molData = molData.split("END")[0];
-                const modifiedMolData = '|' + molData.replace(/\n/g, '|').replace(/\r/g, '') + 'END|';
-                
-                return(Promise.resolve(modifiedMolData));
-            } catch (error) {
-                console.error('Error loading Mol file:', error);
-                alert('Error loading Mol file');
-                return(Promise.reject(new Error("Something went wrong")))
-            }
-        }
+        jmolSetAppletColor('0x202020');
+        jmolApplet(['600', '600'], "set antialiasdisplay\;load data \"mydata\"" + "|702|  -OEChem-02292410153D||  9  8  0     0  0  0  0  0  0999 V2000|   -1.1712    0.2997    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0|   -0.0463   -0.5665    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0|    1.2175    0.2668    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0|   -0.0958   -1.2120    0.8819 H   0  0  0  0  0  0  0  0  0  0  0  0|   -0.0952   -1.1938   -0.8946 H   0  0  0  0  0  0  0  0  0  0  0  0|    2.1050   -0.3720   -0.0177 H   0  0  0  0  0  0  0  0  0  0  0  0|    1.2426    0.9307   -0.8704 H   0  0  0  0  0  0  0  0  0  0  0  0|    1.2616    0.9052    0.8886 H   0  0  0  0  0  0  0  0  0  0  0  0|   -1.1291    0.8364    0.8099 H   0  0  0  0  0  0  0  0  0  0  0  0|  1  2  1  0  0  0  0|  1  9  1  0  0  0  0|  2  3  1  0  0  0  0|  2  4  1  0  0  0  0|  2  5  1  0  0  0  0|  3  6  1  0  0  0  0|  3  7  1  0  0  0  0|  3  8  1  0  0  0  0|MEND|" + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
 
-        loadMolFile().then(data => {
-            console.log(data)
-            jmolSetAppletColor('0x202020');
-            jmolApplet(['600', '600'], "set antialiasdisplay\;load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
-        }).catch(error => {
-            console.log(error)
-        });
+        return Promise.resolve("Molecule loaded successfully");
+    } catch (error) {
+        console.error('Error loading Mol file:', error);
+        alert('Error loading Mol file');
+        return Promise.reject(new Error("Something went wrong"));
+    }
+
+}
+// Call the function to load the hardcoded molecule
+loadHardcodedMolFile()
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.log(error);
+    });
         
         jmolButton("spin @ {!_spinning}", "Toggle Spin");
     </script>
 
-    <div id="jmolApplet"></div>
     <div id="control-panel">
         <!-- bond size dropdown -->
         <label for="bond-size-dropdown">Bond Size</label>
