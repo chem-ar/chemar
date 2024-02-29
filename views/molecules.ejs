@@ -177,7 +177,7 @@
     Array.from(share).forEach(function(element) {
         element.addEventListener("click", function(){
             let itemNumber = element.id.replace("shareBtn", "");
-            qrcode.makeCode(window.location.href + "/viewer/" + itemNumber); 
+            qrcode.makeCode(window.location.host + "/moleculeViewer/" + itemNumber); 
         })
     });
 </script>
