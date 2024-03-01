@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
 
 
 router.get('/:id', function(req , res){
-  var scenefiles = fs.readdirSync('./public/scene/')
+  var scenefiles = fs.readdirSync('./public/scenes/');
 
   if(scenefiles.includes(req.params.id)){
     res.render('sceneEditor', {
