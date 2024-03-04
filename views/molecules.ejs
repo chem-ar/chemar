@@ -68,34 +68,33 @@
     let dataTable;
 
     fetch("/catalog/molfileCatalog.json")
-        .then((response) => response.json())
-        .then((data) => {
-            dataTable = data;
-            // Iterates through the json file
-            for (let item in data) {
-                var id = item.replace(".mol", "");
-                // Check if the molecule ID exists before trying to update the name and formula
-                if (document.getElementById("Name"+id) != null) {
-                    var molName = document.getElementById("Name"+id);
-                    var molFormula = document.getElementById("Formula"+id); 
-                    molName.innerHTML = data[item].name;
-                    molFormula.innerHTML = data[item].formula;
-                }
+    .then((response) => response.json())
+    .then((data) => {
+        dataTable = data;
+        // Iterates through the json file
+        for (let item in data) {
+            var id = item.replace(".mol", "");
+            // Check if the molecule ID exists before trying to update the name and formula
+            if (document.getElementById("Name"+id) != null) {
+                var molName = document.getElementById("Name"+id);
+                var molFormula = document.getElementById("Formula"+id); 
+                molName.innerHTML = data[item].name;
+                molFormula.innerHTML = data[item].formula;
             }
-            // Initialize DataTable
-            $('#molTable').DataTable();
-        });
+        }
+        // Initialize DataTable
+        $('#molTable').DataTable();
+    });
 
-        const moleculesRef = firebase.database().ref("molecules");
+    const moleculesRef = firebase.database().ref("molecules");
 
-        moleculesRef.once("value")
-            .then(snapshot => {
-                dataTable = snapshot.val();
-                initializeDataTable();
-            })
-            .catch(error => {
-                console.error("Error fetching data from Firebase:", error);
-            });
+    moleculesRef.once("value")
+    .then(snapshot => {
+        dataTable = snapshot.val();
+        initializeDataTable();
+    })
+    .catch(error => {
+        console.error("Error fetching data from Firebase:", error);
     });
 
     function initializeDataTable() {
@@ -113,16 +112,14 @@
                     data: null,
                     render: function (data, type, row) {
                         let buttonsHtml = '';
-
                         // Check if user is an admin
                         if (<%= isAdmin %>) {
                             // Admin-specific buttons
-                            buttonsHtml += '<button class="btn btn-outline-warning">Edit</button>' +
-                                '<button class="btn btn-outline-danger" onclick="showDeleteModal(\'' + data.id + '\')">Delete</button>';
+                            buttonsHtml = buttonsHtml +  '<button class="btn btn-outline-warning">Edit</button>' +
+                                '<button class="btn btn-outline-danger" onclick="showDeleteModal(\'' + data.id + '\')">Delete</button>'
                         }
-
                         // Common buttons
-                        buttonsHtml += '<button class="btn btn-light" onclick="handlePreview(\'' + data.id + '\')">Preview</button>' +
+                        buttonsHtml = buttonsHtml + '<button class="btn btn-light" onclick="handlePreview(\'' + data.id + '\')">Preview</button>' +
                             '<button class="btn btn-light" onclick="handleShare(\'' + data.id + '\')">Share</button>';
 
                         return buttonsHtml;
@@ -146,7 +143,8 @@
         return dataArray;
     }
 
-    $(document).ready(function () {
+    $(document).ready(
+        function func () {
         $('#molTable').DataTable({
             scrollY: false,
             scrollX: true,
@@ -155,7 +153,7 @@
         });
 
         deleteModal.show();
-    }
+    })
 
     function deleteMolecule(moleculeId) {
         const moleculesRef = firebase.database().ref("molecules");
