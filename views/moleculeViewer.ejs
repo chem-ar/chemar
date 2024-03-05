@@ -86,93 +86,52 @@
 
         console.log("ChemSpider ID:", chemSpiderId);
 
-        const firebaseConfig = {
-            databaseURL: "https://chemar-5845a-default-rtdb.firebaseio.com/",
-        };
-
         Jmol.Info.j2sPath = '/jmol-16.1.41/jsmol/j2s';
         Jmol.Info.serverURL = '/jmol-16.1.41/jsmol/php/jsmol.php';
         jmolInitialize('/jmol-16.1.41/jsmol', true);
 
-        async function fetchData() {
+        async function loadMolFile() {
             try {
-                const response = await fetch(`https://chemar-5845a-default-rtdb.firebaseio.com/molecules/${chemSpiderId}.json`);
-                const data = await response.json();
-                return Promise.resolve(data);
+
+                var cid = 34668;
+                var molFile = await fetch(`/molfiles/${cid}.mol`);
+                var molFileData = await molFile.text();
+
+                console.log(molFileData);
+                molData = molFileData.split("END")[0].trim();
+                const modifiedMolData = '|' + molData.replace(/\n/g, '|').replace(/^\|+|\|+$/g, '') + " END|";
+                console.log(modifiedMolData)
+
+                // jmolSetAppletColor('0x202020');
+                // jmolApplet(['600', '600'], `set antialiasdisplay;load inline "${modifiedMolData}"$$$$;spin on;background HOVER[NONE];`, '0');
+
+                return Promise.resolve(modifiedMolData);
             } catch (error) {
+                console.error('Error loading Mol file:', error);
+                alert('Error loading Mol file');
                 return Promise.reject(new Error("Something went wrong"));
             }
         }
 
-        // fetchData()
-        //     .then(data => {
-        //         console.log(data);
-        //         const molFile = data.molFile;
+        function loadJmol(data) {   
+            jmolSetAppletColor('0x202020');
+            jmolApplet(['600', '600'], `set antialiasdisplay;load data \"mydata\""${data}"$$$$||end\"mydata\"";spin on;background HOVER[NONE];`, '0');
+            jmolButton("spin @ {!_spinning}", "Toggle Spin");
+        }
 
-        //         // Extract data between V2000 and M END
-        //         const startIndex = molFile.indexOf("V2000");
-        //         const endIndex = molFile.indexOf("M END") + 5;
-        //         const extractedMolfile = molFile.substring(startIndex, endIndex);
+        loadMolFile()
+            .then(data => {
+                console.log(data);
+                loadJmol(data);
+            })
+            .catch(error => {
+                console.log(error);
+            });
 
-        //         console.log("Extracted Molfile:", extractedMolfile);
-
-        //         jmolSetAppletColor('0x202020');
-        //         jmolApplet(['600', '600'], 'background HOVER[NONE];', '0');
-
-        //         const loadCommand = `load molFile ${extractedMolfile}`;
-        //         console.log("Load Command:", loadCommand);
-
-        //         jmolSetAppletColor('0x202020');
-        //         jmolApplet(['600', '600'], 'background HOVER[NONE];', '0');
-
-        //         jmolScriptWait(`${loadCommand}\nspin on;`);
-        //     })
-        //     .catch(error => {
-        //         console.error(error);
-        //     });
-
-        async function loadHardcodedMolFile() {
-    try {
-        // Hardcoded mol file for testing
-        const hardcodedMolFile = `
-            702
-             -OEChem-02292409473D
-
-             9  8  0     0  0  0  0  0  0999 V2000
-              -1.1712    0.2997    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-              -0.0463   -0.5665    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-               1.2175    0.2668    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-              -0.0958   -1.2120    0.8819 H   0  0  0  0  0  0  0  0  0  0  0  0
-              -0.0952   -1.1938   -0.8946 H   0  0 0 0  0  0  0  0  0  0  0  0
-               2.1050   -0.3720   -0.0177 H   0  0 0 0  0  0  0  0  0  0  0  0
-               1.2426    0.9307   -0.8704 H   0  0 0 0  0  0  0  0  0  0  0  0
-               1.2616    0.9052    0.8886 H   0  0 0 0  0  0  0  0  0  0  0  0
-              -1.1291    0.8364    0.8099 H   0  0 0 0  0  0  0  0  0  0  0  0
-            M  END
-        `;
-
-        jmolSetAppletColor('0x202020');
-        jmolApplet(['600', '600'], "set antialiasdisplay\;load data \"mydata\"" + "|702|  -OEChem-02292410153D||  9  8  0     0  0  0  0  0  0999 V2000|   -1.1712    0.2997    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0|   -0.0463   -0.5665    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0|    1.2175    0.2668    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0|   -0.0958   -1.2120    0.8819 H   0  0  0  0  0  0  0  0  0  0  0  0|   -0.0952   -1.1938   -0.8946 H   0  0  0  0  0  0  0  0  0  0  0  0|    2.1050   -0.3720   -0.0177 H   0  0  0  0  0  0  0  0  0  0  0  0|    1.2426    0.9307   -0.8704 H   0  0  0  0  0  0  0  0  0  0  0  0|    1.2616    0.9052    0.8886 H   0  0  0  0  0  0  0  0  0  0  0  0|   -1.1291    0.8364    0.8099 H   0  0  0  0  0  0  0  0  0  0  0  0|  1  2  1  0  0  0  0|  1  9  1  0  0  0  0|  2  3  1  0  0  0  0|  2  4  1  0  0  0  0|  2  5  1  0  0  0  0|  3  6  1  0  0  0  0|  3  7  1  0  0  0  0|  3  8  1  0  0  0  0|MEND|" + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
-
-        return Promise.resolve("Molecule loaded successfully");
-    } catch (error) {
-        console.error('Error loading Mol file:', error);
-        alert('Error loading Mol file');
-        return Promise.reject(new Error("Something went wrong"));
-    }
-
-}
-// Call the function to load the hardcoded molecule
-loadHardcodedMolFile()
-    .then(data => {
-        console.log(data);
-    })
-    .catch(error => {
-        console.log(error);
-    });
-        
-        jmolButton("spin @ {!_spinning}", "Toggle Spin");
-    </script>
+    // jmolSetAppletColor('0x202020');
+    // jmolApplet(['600', '600'], `set antialiasdisplay;load inline"$$$$;spin on;background HOVER[NONE];`, '0');
+    // jmolButton("spin @ {!_spinning}", "Toggle Spin");
+</script>
 
     <div id="control-panel">
         <!-- bond size dropdown -->
