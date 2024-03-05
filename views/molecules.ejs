@@ -258,23 +258,7 @@ var iframePreview = document.getElementById("iframePreview")
     });
 
 // delete molecule
-    var deleteBtn = document.getElementsByClassName("deleteMoleculeBtn");
-
-    Array.from(deleteBtn).forEach(function(element) {
-        element.addEventListener("click", function(){
-            let itemNumber = element.id.replace("deleteBtn", "");
-            console.log(itemNumber);
-            fetch("/molecule/delete/" + itemNumber, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-            })
-        })
+    
 
     
 </script>
@@ -285,6 +269,16 @@ var iframePreview = document.getElementById("iframePreview")
 <style>
 
 </style>
+
+<php>
+    // we will delete molecules when the button is clicked
+    if (isset($_POST['deleteMolecule'])) {
+        $moleculeToDelete = $_POST['deleteMolecule'];
+        $moleculeToDelete = str_replace(".mol", "", $moleculeToDelete);
+        $moleculeToDelete = "public/molecules/" . $moleculeToDelete . ".mol";
+        unlink($moleculeToDelete);
+    }
+</php>
 
 
 <%- include('partials/footer') %>
