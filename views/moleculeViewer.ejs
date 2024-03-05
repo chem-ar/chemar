@@ -82,21 +82,24 @@
     <script>
         const currentURL = window.location.href;
         const urlParts = currentURL.split('/');
-        const chemSpiderId = urlParts[urlParts.length - 1];
+        const cid = urlParts[urlParts.length - 1];
 
-        console.log("ChemSpider ID:", chemSpiderId);
+        console.log("CID:", cid);
 
         Jmol.Info.j2sPath = '/jmol-16.1.41/jsmol/j2s';
         Jmol.Info.serverURL = '/jmol-16.1.41/jsmol/php/jsmol.php';
         jmolInitialize('/jmol-16.1.41/jsmol', true);
 
         let extractedData;
-        const url = `/molfiles/34668.mol`;
+        //Path to the mol file to render
+        const url = `/molfiles/${cid}.mol`;
         function fetchData() {
-            const xhr = new XMLHttpRequest();
+            //Sends a request to the server to get the data at the specified url
+            const xhr = new XMLHttpRequest( );
             xhr.open('GET', url, false);
             xhr.send();
 
+            //If the server responds with the file then format the data for Jmol
             if (xhr.status === 200) {
                 extractedData = xhr.responseText.substring(0, xhr.responseText.indexOf("END")).trim();
                 extractedData = '|' + extractedData.replace(/\n/g, '|').replace(/\r/g, '') + 'END|';
@@ -106,6 +109,7 @@
             }
         }
 
+        //Handling the promise returned by fetchData()
         fetchData()
             .then(data => {
                 console.log(data);
