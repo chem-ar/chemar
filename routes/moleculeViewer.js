@@ -27,21 +27,4 @@ router.get('/:id', function(req , res){
   }
 });
 
-
-router.get('/getMolFile/:cid', async (req, res) => {
-  try {
-    const cid = 702;
-    const filePath = path.join(__dirname, `public/molfiles/${cid}`);
-    console.log(filePath)
-    const molData = await fs.promises.readFile(filePath, 'utf-8')
-    console.log(molData)
-    
-    res.status(200).send(molData);
-  } catch (error) {
-    console.log("Error:", error);
-    res.status(500).send('Internal Server Error');
-  }
-});
-  
-
 module.exports = router;

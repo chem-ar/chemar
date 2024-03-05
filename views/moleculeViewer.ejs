@@ -90,47 +90,32 @@
         Jmol.Info.serverURL = '/jmol-16.1.41/jsmol/php/jsmol.php';
         jmolInitialize('/jmol-16.1.41/jsmol', true);
 
-        async function loadMolFile() {
-            try {
+        let extractedData;
+        const url = `/molfiles/34668.mol`;
+        function fetchData() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, false);
+            xhr.send();
 
-                var cid = 702;
-                var molFile = await fetch(`/molfiles/${cid}.mol`);
-                var molFileData = await molFile.text();
-
-                console.log(molFileData);
-                molData = molFileData.split("END")[0].trim();
-                const modifiedMolData = '|' + molData.replace(/\n/g, '|').replace(/^\|+|\|+$/g, '') + " END|";
-                console.log(modifiedMolData)
-
-                // jmolSetAppletColor('0x202020');
-                // jmolApplet(['600', '600'], `set antialiasdisplay;load inline "${modifiedMolData}"$$$$;spin on;background HOVER[NONE];`, '0');
-
-                return Promise.resolve(modifiedMolData);
-            } catch (error) {
-                console.error('Error loading Mol file:', error);
-                alert('Error loading Mol file');
+            if (xhr.status === 200) {
+                extractedData = xhr.responseText.substring(0, xhr.responseText.indexOf("END")).trim();
+                extractedData = '|' + extractedData.replace(/\n/g, '|').replace(/\r/g, '') + 'END|';
+                return Promise.resolve(extractedData);
+            } else {
                 return Promise.reject(new Error("Something went wrong"));
             }
         }
 
-        function loadJmol(data) {   
-            jmolSetAppletColor('0x202020');
-            jmolApplet(['600', '600'], `set antialiasdisplay;load data \"mydata\""${data}"$$$$||end\"mydata\"";spin on;background HOVER[NONE];`, '0');
-            jmolButton("spin @ {!_spinning}", "Toggle Spin");
-        }
-
-        loadMolFile()
+        fetchData()
             .then(data => {
                 console.log(data);
-                loadJmol(data);
+                jmolSetAppletColor('0x202020');
+                jmolApplet(['600', '600'], "set antialiasdisplay\;load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
             })
             .catch(error => {
-                console.log(error);
+                console.error(error);
             });
 
-    // jmolSetAppletColor('0x202020');
-    // jmolApplet(['600', '600'], `set antialiasdisplay;load inline"$$$$;spin on;background HOVER[NONE];`, '0');
-    // jmolButton("spin @ {!_spinning}", "Toggle Spin");
 </script>
 
     <div id="control-panel">
