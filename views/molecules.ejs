@@ -257,25 +257,24 @@ var iframePreview = document.getElementById("iframePreview")
 
     });
 
-// delete button to remomve molecule from local storage
-function deleteMol() {
-    var mol = document.getElementById("deleteMol").value;
-    //path to the local storage
-    //path is: \public\molfiles
-    var path = "/molfiles/" + mol + ".mol";
-    // confirmation before deleting
-    if (confirm("Are you sure you want to delete " + mol + "?")) {
-        //delete the file
-        fs.unlink(path, (err) => {
-            if (err) {
-                console.error(err)
-                return
-            }
+// delete molecule
+    var deleteBtn = document.getElementsByClassName("deleteMoleculeBtn");
+
+    Array.from(deleteBtn).forEach(function(element) {
+        element.addEventListener("click", function(){
+            let itemNumber = element.id.replace("deleteBtn", "");
+            console.log(itemNumber);
+            fetch("/molecule/delete/" + itemNumber, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            })
         })
-    }
-    
-    
-}
 
     
 </script>
