@@ -257,7 +257,12 @@ var iframePreview = document.getElementById("iframePreview")
 
     });
 
-        
+// delete button to remomve molecule from local storage
+function deleteMol() {
+    var mol = document.getElementById("deleteMol").value;
+    localStorage.removeItem(mol);
+    location.reload();
+}
 
     
 </script>
@@ -268,6 +273,8 @@ var iframePreview = document.getElementById("iframePreview")
 <style>
 
 </style>
-
+<php>
+    
+</php>
 
 <%- include('partials/footer') %>
