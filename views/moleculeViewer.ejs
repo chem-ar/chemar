@@ -22,31 +22,23 @@
             background: #202020;
         }
 
-        .content {
+        .content,
+        .content-display,
+        .content-jsmol {
             border: 2px solid #333;
             padding: 20px;
             margin-bottom: 20px;
             border-radius: 4px;
         }
 
-        .content-display {
-            border: 2px solid #333;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
         .content-jsmol {
-
-            border: 2px solid #333;
-            padding: 20px;
-            margin-bottom: 20px;
-
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        #control-panel {
+        #control-panel,
+        #control-panel2 {
             display: flex;
             justify-content: center;
             padding: 20px;
@@ -62,7 +54,6 @@
             border: 2px solid #333;
         }
     </style>
-
 </head>
 
 <body>
@@ -71,15 +62,18 @@
     <script src="/jmol-16.1.41/jsmol/JSmol.min.js"></script>
     <script src="/jmol-16.1.41/jsmol/js/Jmol2.js"></script>
 
-    <div id="backButton"> 
+    <!-- Back Button -->
+    <div id="backButton">
         <a href="/molecules">
-            <input type="button" value="Back to Molecules">        
+            <input type="button" value="Back to Molecules">
         </a>
     </div>
-    
+
+    <!-- Jmol Applet -->
     <div id="jmolApplet"></div>
 
     <script>
+        // Extract CID from the current URL
         const currentURL = window.location.href;
         const urlParts = currentURL.split('/');
         const cid = urlParts[urlParts.length - 1];
@@ -91,15 +85,14 @@
         jmolInitialize('/jmol-16.1.41/jsmol', true);
 
         let extractedData;
-        //Path to the mol file to render
         const url = `/molfiles/${cid}`;
+
+        // Function to fetch data from the server
         function fetchData() {
-            //Sends a request to the server to get the data at the specified url
-            const xhr = new XMLHttpRequest( );
+            const xhr = new XMLHttpRequest();
             xhr.open('GET', url, false);
             xhr.send();
 
-            //If the server responds with the file then format the data for Jmol
             if (xhr.status === 200) {
                 extractedData = xhr.responseText.substring(0, xhr.responseText.indexOf("END")).trim();
                 extractedData = '|' + extractedData.replace(/\n/g, '|').replace(/\r/g, '') + 'END|';
@@ -109,7 +102,7 @@
             }
         }
 
-        //Handling the promise returned by fetchData()
+        // Fetch data and render the Jmol applet
         fetchData()
             .then(data => {
                 console.log(data);
@@ -120,41 +113,34 @@
                 console.error(error);
             });
 
-            jmolButton("spin @ {!_spinning}", "Toggle Spin")
+        // Toggle Spin button
+        jmolButton("spin @ {!_spinning}", "Toggle Spin");
 
-        // Create a slider element
+        // Slider for Van der Waals Radius
         var slider = document.createElement("input");
-        //add title for the slider
         var title = document.createElement("h5");
         title.innerHTML = "Van der Waals Radius";
         document.body.appendChild(title);
         slider.type = "range";
-        slider.min = 0.2; // Minimum value for van der Waals radius
-        slider.max = 2.0; // Maximum value for van der Waals radius
-        slider.step = 0.1; // Step size for slider
-        slider.value = 0.3; // Default value for slider
+        slider.min = 0.2;
+        slider.max = 2.0;
+        slider.step = 0.1;
+        slider.value = 0.3;
 
-        // Create a label element to show the current value
         var label = document.createElement("span");
         label.innerHTML = slider.value;
 
-        // Add an event listener to the slider
         slider.addEventListener("input", function () {
-            // Update the label with the current value
             label.innerHTML = slider.value;
-            // Send a Jmol script command to change the van der Waals radius
             jmolScript("spacefill " + slider.value);
         });
 
-        // Append the slider and the label to the document body
         document.body.appendChild(slider);
         document.body.appendChild(label);
+    </script>
 
-
-</script>
-
+    <!-- Bond Size Control Panel -->
     <div id="control-panel">
-        <!-- bond size dropdown -->
         <label for="bond-size-dropdown">Bond Size</label>
         <select id="bond-size-dropdown" onchange="changeBondSize(this.value)">
             <option value="0.1">0.1</option>
@@ -166,16 +152,16 @@
     </div>
 
     <script>
+        // Function to change bond size
         function changeBondSize(value) {
             jmolScript("wireframe " + value);
         }
     </script>
 
+    <!-- Additional Control Panel -->
     <div id="control-panel2">
-        <!--spin switch-->
         <input type="button" value="Open Console" id="console-open" onclick="jmolScript('console;')">
         <input type="button" value="Get obj file" id="get-obj" onclick='jmolScript("write " + chemSpiderId + ".obj;")'>
     </div>
 </body>
-
 </html>
