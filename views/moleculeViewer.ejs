@@ -120,6 +120,37 @@
                 console.error(error);
             });
 
+            jmolButton("spin @ {!_spinning}", "Toggle Spin")
+
+        // Create a slider element
+        var slider = document.createElement("input");
+        //add title for the slider
+        var title = document.createElement("h5");
+        title.innerHTML = "Van der Waals Radius";
+        document.body.appendChild(title);
+        slider.type = "range";
+        slider.min = 0.2; // Minimum value for van der Waals radius
+        slider.max = 2.0; // Maximum value for van der Waals radius
+        slider.step = 0.1; // Step size for slider
+        slider.value = 0.3; // Default value for slider
+
+        // Create a label element to show the current value
+        var label = document.createElement("span");
+        label.innerHTML = slider.value;
+
+        // Add an event listener to the slider
+        slider.addEventListener("input", function () {
+            // Update the label with the current value
+            label.innerHTML = slider.value;
+            // Send a Jmol script command to change the van der Waals radius
+            jmolScript("spacefill " + slider.value);
+        });
+
+        // Append the slider and the label to the document body
+        document.body.appendChild(slider);
+        document.body.appendChild(label);
+
+
 </script>
 
     <div id="control-panel">
@@ -133,6 +164,12 @@
             <option value="0.5">0.5</option>
         </select>
     </div>
+
+    <script>
+        function changeBondSize(value) {
+            jmolScript("wireframe " + value);
+        }
+    </script>
 
     <div id="control-panel2">
         <!--spin switch-->
