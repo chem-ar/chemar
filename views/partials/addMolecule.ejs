@@ -46,7 +46,6 @@
 
         firebase.initializeApp(firebaseConfig);
 
-        const apikey = '70DYPVRnsRXA4S0tALUyyM2VoD5YZGat';
         const searchField = document.getElementById("search-field");
         const searchButton = document.getElementById("search-button");
         const searchResults = document.getElementById("search-results");
@@ -54,201 +53,250 @@
         /**
          * Event listener for the search button to trigger molecule search.
          */
-        searchButton.addEventListener("click", function (event) {
-            event.preventDefault();
-            searchChemSpider(searchField.value);
-        });
+         searchButton.addEventListener("click", function (event) {
+    event.preventDefault();
+    searchPubChem(searchField.value);
+});
 
-        /**
-         * Function to search ChemSpider for a given compound name.
-         * @param {string} compoundName - The name of the compound to search for.
-         */
-        function searchChemSpider(compoundName) {
-            if (compoundName === "") {
-                searchResults.innerHTML = `<div class="text-warning pt-2 px-2">Please enter a search term</div>`;
-            } else {
-                const headers = {
-                    "Content-Type": "application/json",
-                    "apikey": apikey
-                };
-                var URL = `https://api.rsc.org/compounds/v1/filter/name`;
-                searchResults.innerHTML = `<div class="pt-2 px-2">Searching</div>`;
+/**
+ * Function to search PubChem for a given compound name.
+ * @param {string} compoundName - The name of the compound to search for.
+ */
+ function searchPubChem(compoundName) {
+    if (compoundName === "") {
+        searchResults.innerHTML = `<div class="text-warning pt-2 px-2">Please enter a search term</div>`;
+    } else {
+        const pubChemUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${compoundName}/cids/JSON`;
 
-                const bodyContent = {
-                    name: compoundName
-                };
+        searchResults.innerHTML = `<div class="pt-2 px-2">Searching</div>`;
 
-                const requestOptions = {
-                    method: "POST",
-                    headers: headers,
-                    body: JSON.stringify(bodyContent)
-                };
+        fetch(pubChemUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`PubChem API request failed with status ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('PubChem API data:', data);
+                
+                // Check if the 'IdentifierList' property is present
+                if (!data.IdentifierList) {
+                    throw new Error('Invalid response format');
+                }
 
-                fetch(URL, requestOptions)
-                    .then(response => response.json())
-                    .then(data => {
-                        // get the results of the query-id
-                        URL = `https://api.rsc.org/compounds/v1/filter/${data["queryId"]}/results`;
-                        const requestOptions = {
-                            method: "GET",
-                            headers: headers,
-                        };
-                        // this grabs the results of the query-id which is the record-id
-                        fetch(URL, requestOptions)
-                            .then(response => response.json())
-                            .then(data => {
-                                // passes a list of record-ids
-                                displaySearchResults(data["results"], searchResults);
-                            })
-                            .catch(error => {
-                                console.error("Error:", error);
-                            });
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        // Handle any errors here
-                    });
-            }
-        }
+                // Extract CID array from the 'IdentifierList'
+                const cids = data.IdentifierList.CID || [];
 
-        /**
-         * Function to display search results in a table.
-         * @param {Array} data - List of record-ids.
-         * @param {HTMLElement} container - Container to display the search results.
-         */
-        function displaySearchResults(data, container) {
-            // data contains a list of record-ids
-            if (data.length === 0) {
-                container.innerHTML = `<p class="text-danger p-2">No results found</p>`;
-            } else {
-                container.innerHTML = ``;
-
-                const searchResultTable = document.createElement('table');
-                searchResultTable.classList = 'table text-white mb-0';
-                container.appendChild(searchResultTable);
-
-                const tableBody = document.createElement('tbody');
-                searchResultTable.appendChild(tableBody);
-
-                // Use Promise.all to wait for all details to be fetched before updating the table
-                Promise.all(data.map(recordId => getRecordIdDetails(recordId)))
-                    .then(detailsList => {
-                        detailsList.forEach(listDetails => {
-                            const row = tableBody.insertRow();
-                            const cell1 = row.insertCell(0);
-                            const cell2 = row.insertCell(1);
-
-                            cell1.classList.add('text-break');
-                            cell1.innerHTML = listDetails[0] + "<br>" + listDetails[1];
-                            let addButton = document.createElement('button');
-                            addButton.classList = 'btn btn-outline-light btn-block';
-                            addButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 0 1 0 2H9v6a1 1 0 0 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/></svg> Add Molecule`;
-                            
-                            addButton.addEventListener("click", function (event) {
-                                event.preventDefault();
-                                addToFirebase(listDetails[0], listDetails[1]);
-                            });
-
-                            cell2.appendChild(addButton);
-                            cell2.classList = 'w-25';
-                        });
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                    });
-            }
-        }
-
-        /**
-         * Function to get details of a recordId.
-         * @param {string} recordId - The ID of the record to get details for.
-         * @returns {Promise} - Promise resolving to the details of the record.
-         */
-        function getRecordIdDetails(recordId) {
-            var URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=Formula`;
-            const headers = {
-                "Content-Type": "application/json",
-                "apikey": apikey
-            };
-            const requestOptions = {
-                method: "GET",
-                headers: headers,
-            };
-
-            return new Promise((resolve, reject) => {
-                fetch(URL, requestOptions)
-                    .then(response => response.json())
-                    .then(data => {
-                        var recordDetails = [];
-                        // make string look more formatted
-                        var newFormula = data["formula"].replaceAll("{", "").replaceAll("}", "").replaceAll("^", "").replaceAll("_", "");
-                        recordDetails.push(newFormula);
-
-                        URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=CommonName`;
-                        fetch(URL, requestOptions)
-                            .then(response => response.json())
-                            .then(data => {
-                                recordDetails.push(data["commonName"]);
-                                resolve(recordDetails);
-                            })
-                            .catch(error => {
-                                console.error("Error:", error);
-                                reject(error);
-                            });
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        reject(error);
-                    });
+                if (cids.length === 0) {
+                    throw new Error('No results found');
+                }
+                displaySearchResults(cids, searchResults);
+            })
+            .catch(error => {
+                console.error("Error:", error.message);
+                searchResults.innerHTML = `<p class="text-danger p-2">${error.message}</p>`;
             });
-        }
+    }
+}
+
+
+
+
+
+
+
+/**
+ * Function to display search results in a table.
+ * @param {Array} cids - List of PubChem Compound IDs.
+ * @param {HTMLElement} container - Container to display the search results.
+ */
+ function displaySearchResults(cids, container) {
+    if (cids.length === 0) {
+        container.innerHTML = `<p class="text-danger p-2">No results found</p>`;
+    } else {
+        container.innerHTML = ``;
+
+        const searchResultTable = document.createElement('table');
+        searchResultTable.classList = 'table text-white mb-0';
+        container.appendChild(searchResultTable);
+
+        const tableBody = document.createElement('tbody');
+        searchResultTable.appendChild(tableBody);
+
+        // Use Promise.all to wait for all details to be fetched before updating the table
+        Promise.all(cids.map(cid => getPubChemCompoundDetails(cid)))
+            .then(detailsList => {
+                detailsList.forEach(compoundDetails => {
+                    const row = tableBody.insertRow();
+                    const cell1 = row.insertCell(0);
+                    const cell2 = row.insertCell(1);
+
+                    cell1.classList.add('text-break');
+                    cell1.innerHTML = `${compoundDetails.name}<br>${compoundDetails.formula}<br>PubChem ID: ${compoundDetails.pubChemId}`;
+
+                    let addButton = document.createElement('button');
+                    addButton.classList = 'btn btn-outline-light btn-block';
+                    addButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 0 1 0 2H9v6a1 1 0 0 1 1-1zm0 0a1 1 0 0 1 1 1v6h6a1 1 0 0 1 0 2H9v6a1 1 0 0 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/></svg> Add Molecule`;
+
+                    addButton.addEventListener("click", function (event) {
+                        event.preventDefault();
+                        addToFirebase(compoundDetails.name, compoundDetails.formula, compoundDetails.pubChemId);
+                    });
+
+                    cell2.appendChild(addButton);
+                    cell2.classList = 'w-25';
+                });
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+    }
+}
+
+/**
+ * Function to get details of a PubChem compound using its CID.
+ * @param {number} cid - PubChem Compound ID.
+ * @returns {Promise<Object>} - Promise resolving to an object with compound details.
+ */
+function getPubChemCompoundDetails(cid) {
+    const pubChemCompoundUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/JSON`;
+
+    return fetch(pubChemCompoundUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`PubChem API request failed with status ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Check if the 'PC_Compounds' property is present
+            if (!data.PC_Compounds) {
+                throw new Error('Invalid response format');
+            }
+
+            const compound = data.PC_Compounds[0] || {};
+
+            // Extract compound details
+            const name = compound.props.find(prop => prop.urn.label === 'IUPAC Name').value.sval;
+            const formula = compound.props.find(prop => prop.urn.label === 'Molecular Formula').value.sval;
+            console.log(``)
+            return { name, formula, pubChemId: cid };
+        });
+}
 
         /**
-         * Function to add a molecule to Firebase.
-         * @param {string} formula - The formula of the molecule.
-         * @param {string} commonName - The common name of the molecule.
-         */
-        function addToFirebase(formula, commonName) {
-            // Create a reference to the 'molecules' path in your Firebase database
-            const moleculesRef = firebase.database().ref("molecules");
+ * Function to add a molecule to Firebase.
+ * @param {string} formula - The formula of the molecule.
+ * @param {string} commonName - The common name of the molecule.
+ * @param {number} cid - PubChem Compound ID.
+ */
+function addToFirebase(formula, commonName, cid) {
+    // Create a reference to the 'molecules' path in your Firebase database
+    const moleculesRef = firebase.database().ref("molecules");
 
-            // Check if the molecule already exists in the database
-            moleculesRef.orderByChild("formula").equalTo(formula).once("value")
-                .then(snapshot => {
-                    if (!snapshot.exists()) {
-                        // Molecule does not exist, proceed with adding to Firebase
-                        // Generate a unique key for the new molecule
-                        const newMoleculeKey = moleculesRef.push().key;
+    // Check if the molecule already exists in the database
+    moleculesRef.orderByChild("formula").equalTo(formula).once("value")
+        .then(snapshot => {
+            if (!snapshot.exists()) {
+                // Molecule does not exist, proceed with adding to Firebase
+                // Generate a unique key for the new molecule
+                const newMoleculeKey = moleculesRef.push().key;
 
-                        // Prepare the data for the new molecule
-                        const newMoleculeData = {
-                            formula: formula,
-                            commonName: commonName,
-                            // Add any other properties you want to store
-                        };
+                // Prepare the data for the new molecule
+                const newMoleculeData = {
+                    formula: formula,
+                    commonName: commonName,
+                    cid: cid,
+                    // Add any other properties you want to store
+                };
 
-                        // Set the data for the new molecule at the generated key
-                        moleculesRef.child(newMoleculeKey).set(newMoleculeData)
-                            .then(() => {
-                                console.log("Molecule added to Firebase successfully!");
-                                alert("Molecule added to Firebase successfully!");
+                // Set the data for the new molecule at the generated key
+                moleculesRef.child(newMoleculeKey).set(newMoleculeData)
+                    .then(() => {
+                        console.log("Molecule added to Firebase successfully!");
+
+                        // Fetch and log the content from the provided URL
+                        const pubChem3DMolUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF/?record_type=3d&response_type=display`;
+                        storeAsMolFile(pubChem3DMolUrl, cid)
+                        fetchData(pubChem3DMolUrl)
+                            .then(extractedData => {
+                                console.log("Extracted Data:", extractedData);
                             })
                             .catch(error => {
-                                console.error("Error adding molecule to Firebase:", error);
-                                alert("Error adding molecule to Firebase. Please try again.");
+                                console.error("Error fetching data:", error.message);
                             });
-                    } else {
-                        console.log("Molecule already exists in Firebase!");
-                        alert("Molecule already exists in Firebase!");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error checking for existing molecule:", error);
-                    alert("Error checking for existing molecule. Please try again.");
-                });
+
+                        alert("Molecule added to Firebase successfully!");
+                    })
+                    .catch(error => {
+                        console.error("Error adding molecule to Firebase:", error);
+                        alert("Error adding molecule to Firebase. Please try again.");
+                    });
+            } else {
+                console.log("Molecule already exists in Firebase!");
+                alert("Molecule already exists in Firebase!");
+            }
+        })
+        .catch(error => {
+            console.error("Error checking for existing molecule:", error);
+            alert("Error checking for existing molecule. Please try again.");
+        });
+}
+
+/**
+ * Function to fetch data from a URL.
+ * @param {string} url - The URL to fetch.
+ * @returns {Promise<string>} - Promise resolving to the fetched data.
+ */
+function fetchData(url) {
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Request failed with status ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(data => {
+            return data.trim();
+        });
+}
+
+/**
+     * Function to fetch data from a URL and store it as a .mol file.
+     * @param {string} url - The URL to fetch.
+     * @param {number} cid - PubChem Compound ID.
+     * @returns {Promise<void>} - Promise resolving when the .mol file is stored.
+     */
+     async function storeAsMolFile(url, cid) {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Request failed with status ${response.status}`);
         }
 
-    });
+        const molData = await response.text();
+        const fileName = `public/molfile/${cid}.mol`;
+
+        // Use the File System Access API to write data to a file
+        try {
+            const fileHandle = await window.showSaveFilePicker({
+                suggestedName: `${cid}.mol`,
+                types: [{
+                    description: 'MOL Files',
+                    accept: {
+                        'text/mol': ['.mol'],
+                    },
+                }],
+            });
+
+            const writableStream = await fileHandle.createWritable();
+            await writableStream.write(molData);
+            await writableStream.close();
+        } catch (error) {
+            throw new Error(`Error saving mol file: ${error.message}`);
+        }
+    }
+});
 </script>
 
 <script>
