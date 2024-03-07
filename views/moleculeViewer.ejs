@@ -22,31 +22,23 @@
             background: #202020;
         }
 
-        .content {
+        .content,
+        .content-display,
+        .content-jsmol {
             border: 2px solid #333;
             padding: 20px;
             margin-bottom: 20px;
             border-radius: 4px;
         }
 
-        .content-display {
-            border: 2px solid #333;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
         .content-jsmol {
-
-            border: 2px solid #333;
-            padding: 20px;
-            margin-bottom: 20px;
-
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        #control-panel {
+        #control-panel,
+        #control-panel2 {
             display: flex;
             justify-content: center;
             padding: 20px;
@@ -62,7 +54,6 @@
             border: 2px solid #333;
         }
     </style>
-
 </head>
 
 <body>
@@ -71,69 +62,85 @@
     <script src="/jmol-16.1.41/jsmol/JSmol.min.js"></script>
     <script src="/jmol-16.1.41/jsmol/js/Jmol2.js"></script>
 
-    <div id="backButton"> 
+    <!-- Back Button -->
+    <div id="backButton">
         <a href="/molecules">
-            <input type="button" value="Back to Molecules">        
+            <input type="button" value="Back to Molecules">
         </a>
     </div>
 
+    <!-- Jmol Applet -->
+    <div id="jmolApplet"></div>
+
     <script>
+        // Extract CID from the current URL
         const currentURL = window.location.href;
         const urlParts = currentURL.split('/');
-        const chemSpiderId = urlParts[urlParts.length - 1];
+        const cid = urlParts[urlParts.length - 1];
 
-        console.log("ChemSpider ID:", chemSpiderId);
-
-        const firebaseConfig = {
-            databaseURL: "https://chemar-5845a-default-rtdb.firebaseio.com/",
-        };
+        console.log("CID:", cid);
 
         Jmol.Info.j2sPath = '/jmol-16.1.41/jsmol/j2s';
         Jmol.Info.serverURL = '/jmol-16.1.41/jsmol/php/jsmol.php';
         jmolInitialize('/jmol-16.1.41/jsmol', true);
 
-        async function fetchData() {
-            try {
-                const response = await fetch(`https://chemar-5845a-default-rtdb.firebaseio.com/molecules/${chemSpiderId}.json`);
-                const data = await response.json();
-                return Promise.resolve(data);
-            } catch (error) {
+        let extractedData;
+        const url = `/molfiles/${cid}`;
+
+        // Function to fetch data from the server
+        function fetchData() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, false);
+            xhr.send();
+
+            if (xhr.status === 200) {
+                extractedData = xhr.responseText.substring(0, xhr.responseText.indexOf("END")).trim();
+                extractedData = '|' + extractedData.replace(/\n/g, '|').replace(/\r/g, '') + 'END|';
+                return Promise.resolve(extractedData);
+            } else {
                 return Promise.reject(new Error("Something went wrong"));
             }
         }
 
+        // Fetch data and render the Jmol applet
         fetchData()
             .then(data => {
                 console.log(data);
-                const molFile = data.molFile;
-
-                // Extract data between V2000 and M END
-                const startIndex = molFile.indexOf("V2000");
-                const endIndex = molFile.indexOf("M END") + 5;
-                const extractedMolfile = molFile.substring(startIndex, endIndex);
-
-                console.log("Extracted Molfile:", extractedMolfile);
-
                 jmolSetAppletColor('0x202020');
-                jmolApplet(['600', '600'], 'background HOVER[NONE];', '0');
-
-                const loadCommand = `load molFile ${extractedMolfile}`;
-                console.log("Load Command:", loadCommand);
-
-                jmolSetAppletColor('0x202020');
-                jmolApplet(['600', '600'], 'background HOVER[NONE];', '0');
-
-                jmolScriptWait(`${loadCommand}\nspin on;`);
+                jmolApplet(['600', '600'], "set antialiasdisplay\;load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
             })
             .catch(error => {
                 console.error(error);
             });
 
+        // Toggle Spin button
         jmolButton("spin @ {!_spinning}", "Toggle Spin");
+
+        // Slider for Van der Waals Radius
+        var slider = document.createElement("input");
+        var title = document.createElement("h5");
+        title.innerHTML = "Van der Waals Radius";
+        document.body.appendChild(title);
+        slider.type = "range";
+        slider.min = 0.2;
+        slider.max = 2.0;
+        slider.step = 0.1;
+        slider.value = 0.3;
+
+        var label = document.createElement("span");
+        label.innerHTML = slider.value;
+
+        slider.addEventListener("input", function () {
+            label.innerHTML = slider.value;
+            jmolScript("spacefill " + slider.value);
+        });
+
+        document.body.appendChild(slider);
+        document.body.appendChild(label);
     </script>
 
+    <!-- Bond Size Control Panel -->
     <div id="control-panel">
-        <!-- bond size dropdown -->
         <label for="bond-size-dropdown">Bond Size</label>
         <select id="bond-size-dropdown" onchange="changeBondSize(this.value)">
             <option value="0.1">0.1</option>
@@ -144,11 +151,17 @@
         </select>
     </div>
 
+    <script>
+        // Function to change bond size
+        function changeBondSize(value) {
+            jmolScript("wireframe " + value);
+        }
+    </script>
+
+    <!-- Additional Control Panel -->
     <div id="control-panel2">
-        <!--spin switch-->
         <input type="button" value="Open Console" id="console-open" onclick="jmolScript('console;')">
         <input type="button" value="Get obj file" id="get-obj" onclick='jmolScript("write " + chemSpiderId + ".obj;")'>
     </div>
 </body>
-
 </html>
