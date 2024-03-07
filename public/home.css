@@ -72,7 +72,16 @@ tbody {
   h4{
     font-size: 2vw;
   }
-
+  a.btn.btn-primary{
+    background-color: grey;
+    outline-color: grey;
+    text-decoration: none;
+    border-color: grey;
+    padding: 0.5vw 1vw;
+    padding-bottom: 0.5vw;
+    text-align: center;
+    font-size: 18px;
+  }
 }
 
 @media screen and (max-width: 600px) {
@@ -92,6 +101,13 @@ tbody {
     padding-left: 0rem;
   }
   a.btn.btn-primary{
-    size: 1vw;
+    background-color: grey;
+    outline-color: grey;
+    text-decoration: none;
+    border-color: grey;
+    padding: 0.5vw 1vw;
+    padding-bottom: 0.5vw;
+    text-align: center;
+    font-size: 15px;
   }
 }
