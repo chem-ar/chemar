@@ -115,7 +115,7 @@
             <div class="">
                 <div id="qrcode" class="bg-white py-4" align="center"></div>
                 <script type="text/javascript">
-                var qrcode = new QRCode(document.getElementById("qrcode"), "http://jindo.dev.naver.com/collie");
+                    let qrcode = new QRCode(document.getElementById("qrcode"), "https://webisora.com");
                 </script>
             </div>
         </div>
@@ -151,7 +151,7 @@
         return content;
     }
 
-    document.getElementById("newSceneAddBtn").addEventListener('click', () => {
+    function newScene(){
         // Get new scene info from form.
         var newSceneName = document.getElementById("newSceneName").value;
         var newSceneDesc = document.getElementById("newSceneDesc").value;
@@ -172,7 +172,7 @@
         postNewScene(scene);
         
         console.log(newSceneName + " " + newSceneDesc);
-    });
+    };
 
     // Preview the .mol file content when selected
     function onReceiptsSelected() {
@@ -212,7 +212,7 @@ var iframePreview = document.getElementById("iframePreview")
     Array.from(share).forEach(function(element) {
         element.addEventListener("click", function(){
             let itemNumber = element.id.replace("shareBtn", "")
-            qrcode.makeCode(window.location.href + "/sceneViewer/" + itemNumber); 
+            qrcode.makeCode(window.location.host + "/sceneViewer/" + itemNumber); 
         })
     });
 
