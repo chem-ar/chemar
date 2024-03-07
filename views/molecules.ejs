@@ -280,21 +280,22 @@ var iframePreview = document.getElementById("iframePreview")
     // Add event listener to delete buttons
     var deleteButtons = document.getElementsByClassName("deleteMoleculeBtn");
 
+    // event listener that we will delete with
     Array.from(deleteButtons).forEach(function(button) {
         button.addEventListener("click", function() {
             var file = this.getAttribute("data-file");
             var confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
             confirmDeleteBtn.addEventListener("click", function() {
-                fetch("/deleteMolecule/" + file, {
+                fetch("/deleteMolecule/" + file, { //replace with actual route we are using in cache
                     method: "DELETE"
                 })
                 .then(response => {
                     if (response.ok) {
                         // if successful, reload the page
-                        console.log("Molecule deleted successfully. Why are you here?");
+                        console.log("Molecule deleted successfully.");
                         location.reload(); // Reload the page to reflect changes
                     } else {
-                        console.error("Failed to delete molecule");
+                        console.error("Failed to delete molecule.");
                     }
                 })
                 .catch(error => {
@@ -303,6 +304,7 @@ var iframePreview = document.getElementById("iframePreview")
             });
         });
     });
+    
 </script>
 
 </script>
