@@ -72,6 +72,7 @@ tbody {
   h4{
     font-size: 2.4vw;
   }
+
 }
 
 @media screen and (max-width: 600px) {
@@ -89,5 +90,8 @@ tbody {
   }
   ul{
     padding-left: 0rem;
+  }
+  a.btn.btn-primary{
+    size: 1vw;
   }
 }
