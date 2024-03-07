@@ -1,7 +1,3 @@
-<!-- Firebase links -->
-<script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-database-compat.js"></script>
-
 <!-- Add Molecule -->
 <div class="row content">
     <div class="col-12 text-start text-white bg-dark">
@@ -39,13 +35,6 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Initialize Firebase with your credentials
-        const firebaseConfig = {
-            databaseURL: "https://chemar-5845a-default-rtdb.firebaseio.com/",
-        };
-
-        firebase.initializeApp(firebaseConfig);
-
         const searchField = document.getElementById("search-field");
         const searchButton = document.getElementById("search-button");
         const searchResults = document.getElementById("search-results");
@@ -99,12 +88,6 @@
             });
     }
 }
-
-
-
-
-
-
 
 /**
  * Function to display search results in a table.
@@ -182,65 +165,6 @@ function getPubChemCompoundDetails(cid) {
             const formula = compound.props.find(prop => prop.urn.label === 'Molecular Formula').value.sval;
             console.log(``)
             return { name, formula, pubChemId: cid };
-        });
-}
-
-        /**
- * Function to add a molecule to Firebase.
- * @param {string} formula - The formula of the molecule.
- * @param {string} commonName - The common name of the molecule.
- * @param {number} cid - PubChem Compound ID.
- */
-function addToFirebase(formula, commonName, cid) {
-    // Create a reference to the 'molecules' path in your Firebase database
-    const moleculesRef = firebase.database().ref("molecules");
-
-    // Check if the molecule already exists in the database
-    moleculesRef.orderByChild("formula").equalTo(formula).once("value")
-        .then(snapshot => {
-            if (!snapshot.exists()) {
-                // Molecule does not exist, proceed with adding to Firebase
-                // Generate a unique key for the new molecule
-                const newMoleculeKey = moleculesRef.push().key;
-
-                // Prepare the data for the new molecule
-                const newMoleculeData = {
-                    formula: formula,
-                    commonName: commonName,
-                    cid: cid,
-                    // Add any other properties you want to store
-                };
-
-                // Set the data for the new molecule at the generated key
-                moleculesRef.child(newMoleculeKey).set(newMoleculeData)
-                    .then(() => {
-                        console.log("Molecule added to Firebase successfully!");
-
-                        // Fetch and log the content from the provided URL
-                        const pubChem3DMolUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF/?record_type=3d&response_type=display`;
-                        storeAsMolFile(pubChem3DMolUrl, cid)
-                        fetchData(pubChem3DMolUrl)
-                            .then(extractedData => {
-                                console.log("Extracted Data:", extractedData);
-                            })
-                            .catch(error => {
-                                console.error("Error fetching data:", error.message);
-                            });
-
-                        alert("Molecule added to Firebase successfully!");
-                    })
-                    .catch(error => {
-                        console.error("Error adding molecule to Firebase:", error);
-                        alert("Error adding molecule to Firebase. Please try again.");
-                    });
-            } else {
-                console.log("Molecule already exists in Firebase!");
-                alert("Molecule already exists in Firebase!");
-            }
-        })
-        .catch(error => {
-            console.error("Error checking for existing molecule:", error);
-            alert("Error checking for existing molecule. Please try again.");
         });
 }
 
