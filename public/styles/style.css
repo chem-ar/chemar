@@ -42,6 +42,12 @@
   color: white ;
 }
 
+/* @media screen and (max-width=600px) {
+  .table.table-striped.text-white{
+    max-width: 500px;
+  }
+} */
+
 .card-body{
   background-color: #202020;
   border-radius: 1rem;
