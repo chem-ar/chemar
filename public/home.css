@@ -54,3 +54,14 @@ tbody {
   color: white;
   background-color: transparent;
 }
+
+/* @media screen and (max-width=600px) { */
+  /* .dataTables_filter{ */
+    
+  /* } */
+  /* .row{ */
+    /* flex-direction: column-reverse; */
+    /* display: grid; */
+    
+  /* } */
+/* } */
