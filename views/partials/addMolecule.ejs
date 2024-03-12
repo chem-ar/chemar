@@ -42,19 +42,54 @@
                 </svg> -->
                 Upload File 
             </button>
-            </div>
+        </div>
     </div>
 
     <div class="row">
         <div class="col-12 mt-2">
             <div class="collapse multi-collapse" id="uploadFile">
                 <div class="input-group flex-nowrap">
-                    <input class="form-control" type="file" id="uploadFile" >
+                    <form id="upload" action="" method="post" enctype="multipart/form-data">
+                    <input id="uploadFile" name="uploadFile" class="form-control" type="file" >
+                    <button class="btn btn-success">Submit</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Uploading files to molecule cache 
+    const form = document.getElementById('upload');
+    form.addEventListener('submit', handleSubmit)
+
+    function handleSubmit(event){
+        const form = event.currentTarget;
+        const url = new URL(form.action);
+        const formData = new FormData(form);
+        const searchParams = new URLSearchParams(formData);
+
+        const fetchOptions = {
+            method: form.method,
+        };
+
+        if (form.method.toLowerCase() === 'post') {
+            if (form.enctype === 'multipart/form-data') {
+            fetchOptions.body = formData;
+            } else {
+            fetchOptions.body = searchParams;
+            }
+        } else {
+            url.search = searchParams;
+        }
+
+        fetch(url, fetchOptions);
+        event.preventDefault();
+
+    }
+
+</script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
