@@ -224,41 +224,6 @@ function fetchData(url) {
             return data.trim();
         });
 }
-
-/**
-     * Function to fetch data from a URL and store it as a .mol file.
-     * @param {string} url - The URL to fetch.
-     * @param {number} cid - PubChem Compound ID.
-     * @returns {Promise<void>} - Promise resolving when the .mol file is stored.
-     */
-     async function storeAsMolFile(url, cid) {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Request failed with status ${response.status}`);
-        }
-
-        const molData = await response.text();
-        const fileName = `public/molfile/${cid}.mol`;
-
-        // Use the File System Access API to write data to a file
-        try {
-            const fileHandle = await window.showSaveFilePicker({
-                suggestedName: `${cid}.mol`,
-                types: [{
-                    description: 'MOL Files',
-                    accept: {
-                        'text/mol': ['.mol'],
-                    },
-                }],
-            });
-
-            const writableStream = await fileHandle.createWritable();
-            await writableStream.write(molData);
-            await writableStream.close();
-        } catch (error) {
-            throw new Error(`Error saving mol file: ${error.message}`);
-        }
-    }
 });
 </script>
 
