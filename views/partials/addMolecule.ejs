@@ -53,7 +53,7 @@
                     <h4>File:</h4>
                     <input type="file" class="form-control" id="fileName" name="fileName" placeholder="File name" onchange="onReceiptsSelected()" 
                     required accept=".obj, .mtl" multiple>
-                    <button class="form-control my-4 w-50">Upload</button>
+                    <button class="form-control my-4 w-50" id="uploadBtn">Upload</button>
                 </div>
                 <div class="col-12 col-sm-6 d-flex align-content-stretch flex-wrap">
                     <textarea class="form-control" name="preview" id="preview" style="display: none"></textarea>
@@ -62,6 +62,19 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.getElementById('fileName').addEventListener('change', function () {
+        if (this.files.length > 2){
+            alert('You can only select 2 files');
+            console.log(this.files);
+            document.getElementById('uploadFile').reset();
+        }
+        // else{
+        //     // document.getElementById('uploadBtn').submit();
+        // }
+    })
+</script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
