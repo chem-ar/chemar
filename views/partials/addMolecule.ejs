@@ -139,12 +139,7 @@
                         }).then(response => {
                             if (!response.ok){
                                 throw new Error('Failed to add molecule')
-                            }
-                            return response.json();
-                        }).then(() => {
-                            console.log("Molecule created succesfully")
-                        }).catch(error => {
-                            console.error("Error adding molecule: ", error)
+                            };
                         })
                         addToFirebase(compoundDetails.name, compoundDetails.formula, compoundDetails.pubChemId);
                     });
