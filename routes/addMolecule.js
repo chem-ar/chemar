@@ -79,19 +79,23 @@ router.post('/saveMolFile', async (req, res) => {
     } 
     else {
         // Create new mol file in ./public/molefiles/
-        const url = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid.pubchemId}/record/SDF/?record_type=3d&response_type=display`;
+        const url = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF/?record_type=3d&response_type=display`;
         const response = await fetch(url);
 
         if (!response.ok) {
             throw new Error(`Failed to fetch molecule data from PubChem API. Status: ${response.status}`);
         }
         
-        var molFileData = await response.text();
-        
-        // Read json file and add info to it
+        const molFileData = await response.text();
+       
+        // Read molfileCatalog json file and add info to it
         var rawdata = fs.readFileSync('./public/catalog/molfileCatalog.json');
         var parsedData = JSON.parse(rawdata);
-        var fileName = `${cid.pubchemId}.mol`
+
+        var fileName = `${cid}.mol`
+        var molName = req.body.name;
+        var molFormula = req.body.formula
+        var molDescription = "blabalbla"
         console.log(fileName)
 
         parsedData[fileName] = {
@@ -103,6 +107,7 @@ router.post('/saveMolFile', async (req, res) => {
         var newMol = JSON.stringify(parsedData);
         fs.writeFileSync('./public/catalog/molfileCatalog.json', newMol);
         console.log('Molecule created');
+        res.send()
     }
 
     // Return to catalog page
