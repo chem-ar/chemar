@@ -204,8 +204,10 @@
                     molFormula.innerHTML = data[item].formula;
                 }
             }
-            // Initialize DataTable
-            $('#molTable').DataTable();
+            if(!$.fn.DataTable.isDataTable('#molTable')){
+                // Initialize DataTable
+                $('#molTable').DataTable();
+            }
         });
 
     // Adding edit button functionality.
