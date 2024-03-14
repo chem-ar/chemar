@@ -124,7 +124,7 @@
 
                     addButton.addEventListener("click", function (event) {
                         event.preventDefault();
-                        const pubchemId = compoundDetails.pubChemId;
+                        const cid = compoundDetails.pubChemId;
 
                         fetch(`/addmolecule/saveMolFile`, {
                             method: 'POST',
@@ -132,7 +132,9 @@
                                 'Content-type': 'application/json'
                             },
                             body: JSON.stringify({
-                                pubchemId: pubchemId
+                                pubchemId: cid,
+                                name: compoundDetails.name,
+                                formula: compoundDetails.formula
                             })
                         }).then(response => {
                             if (!response.ok){

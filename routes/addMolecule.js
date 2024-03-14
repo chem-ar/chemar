@@ -61,7 +61,9 @@ router.post('/test', (req, res) => {
 // Post request when clicking submit button
 router.post('/saveMolFile', async (req, res) => {
     // Assign values from form to variables
-    const cid = req.body;
+    const cid = req.body.pubchemId;
+    console.log(cid);
+    fileName = `${cid}`
     
 
     var molfiles = fs.readdirSync('./public/molfiles/');
@@ -83,13 +85,16 @@ router.post('/saveMolFile', async (req, res) => {
         if (!response.ok) {
             throw new Error(`Failed to fetch molecule data from PubChem API. Status: ${response.status}`);
         }
-
+        
         var molFileData = await response.text();
         
         // Read json file and add info to it
         var rawdata = fs.readFileSync('./public/catalog/molfileCatalog.json');
         var parsedData = JSON.parse(rawdata);
-        var fileName = `${cid}.mol`
+        var fileName = `${cid}.mol`;
+        var molDescription = "Blablablabla";
+        var molName = req.body.name;
+        var molFormula = req.body.formula;
 
         parsedData[fileName] = {
             name: molName,
@@ -99,6 +104,7 @@ router.post('/saveMolFile', async (req, res) => {
 
         var newMol = JSON.stringify(parsedData);
         fs.writeFileSync('./public/catalog/molfileCatalog.json', newMol);
+        console.log('This molecule already exists.');
     }
 
     // Return to catalog page
