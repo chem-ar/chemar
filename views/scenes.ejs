@@ -38,7 +38,7 @@
                         <% for (let item of listNumbers){%>
                             <tr>
                                 <td>
-                                    <a class="text-white" id="Name<%=item %>" href="/item/<%=item%>"><%=item %></a>
+                                    <a class="text-white" id="Name<%=item %>" href="/sceneViewer/<%=item%>"><%=item %></a>
                                 </td>
                                 <td id="Description<%=item %>" class="text-white">Description</td>
                                 <td >
@@ -216,10 +216,4 @@ var iframePreview = document.getElementById("iframePreview")
     });
 
 </script>
-
-<style>
-
-</style>
-
-
 <%- include('partials/footer') %>
