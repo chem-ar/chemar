@@ -87,16 +87,25 @@ router.post('/saveMolFile', async (req, res) => {
         }
         
         const molFileData = await response.text();
-       
+        console.log(molFileData)
+        
+        filePath = `public/molfiles/${cid}.mol`;
+        fs.writeFile(filePath, molFileData, (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                console.log('Molecule file saved:', fileName);
+            }
+        });
         // Read molfileCatalog json file and add info to it
         var rawdata = fs.readFileSync('./public/catalog/molfileCatalog.json');
         var parsedData = JSON.parse(rawdata);
 
+        // Variables to be added to molfileCatalog
         var fileName = `${cid}.mol`
         var molName = req.body.name;
         var molFormula = req.body.formula
         var molDescription = "blabalbla"
-        console.log(fileName)
 
         parsedData[fileName] = {
             name: molName,
