@@ -22,14 +22,14 @@
             <table id="molTable" class="table table-striped text-white" style="width:100%">
                 <thead>
                     <tr>
-                        <th>File</th>
                         <th>Name</th>
                         <th>Description</th>
                         <th>Options</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% let listNumbers = list.map((item)=> {
+                    <% 
+                        let listNumbers = list.map((item)=> {
                             return item.replace(".json", "")
                         })
                         listNumbers.sort(function(a, b) {
@@ -37,9 +37,8 @@
                         %>
                         <% for (let item of listNumbers){%>
                             <tr>
-                                <td><%= String(item).padStart(3, '0' ) %></td>
                                 <td>
-                                    <a class="text-white" id="Name<%=item %>" href="/item/<%=item%>">Name</a>
+                                    <a class="text-white" id="Name<%=item %>" href="/sceneViewer/<%=item%>"><%=item %></a>
                                 </td>
                                 <td id="Description<%=item %>" class="text-white">Description</td>
                                 <td >
@@ -217,10 +216,4 @@ var iframePreview = document.getElementById("iframePreview")
     });
 
 </script>
-
-<style>
-
-</style>
-
-
 <%- include('partials/footer') %>
