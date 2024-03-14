@@ -22,8 +22,8 @@
             <table id="molTable" class="table table-striped text-white" style="width:100%">
                 <thead>
                     <tr>
-                        <th>File</th>
                         <th>Name</th>
+                        <th>Description</th>
                         <th>Formula</th>
                         <th>Options</th>
                     </tr>
@@ -43,10 +43,10 @@
                     for (let item of sortedList) {
                     %>
                     <tr>
-                        <td><%= String(item.file).padStart(3, '0' ) %></td>
                         <td>
                             <a class="text-white" id="Name<%=item.file %>" href="/moleculeViewer/<%=item.file%>"><%=item.name%></a>
                         </td>
+                        <td><%= String(item.description).padStart(3, '0' ) %></td>
                         <td id="Formula<%=item.file %>" class="text-white"><%=item.formula%></td>
                         <td class>
                             <div class = "d-grid gap-2">
@@ -323,9 +323,5 @@ var iframePreview = document.getElementById("iframePreview")
 </script>
 
 </script>
-
-<style>
-
-</style>
 
 <%- include('partials/footer') %>
