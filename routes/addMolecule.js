@@ -102,7 +102,7 @@ router.post('/saveMolFile', async (req, res) => {
 
         var newMol = JSON.stringify(parsedData);
         fs.writeFileSync('./public/catalog/molfileCatalog.json', newMol);
-        console.log('This molecule already exists.');
+        console.log('Molecule created');
     }
 
     // Return to catalog page
