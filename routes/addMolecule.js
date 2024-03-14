@@ -8,6 +8,47 @@ router.get('/', function(req, res, next) {
     res.render('addMolecule', {title: 'Add New Molecule'});
 });
 
+/**
+ * Function to fetch data from a URL and store it as a .mol file on the server.
+ * @param {string} molData - The URL to fetch.
+ * @param {number} cid - PubChem Compound ID.
+ * @returns {Promise<void>} - Promise resolving when the .mol file is stored.
+ */
+async function storeAsMolFileOnServer(molData, cid) {
+    const filePath = `public/molfiles/${cid}.mol`;
+    
+    return new Promise((resolve, reject) => {
+        const url = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF/?record_type=3d&response_type=display`;
+        const data = fetchData(url)
+        fs.writeFile(filePath, data, (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                console.log('Molecule file saved:', fileName);
+                resolve();
+            }
+        });
+    });
+}
+
+/**
+ * Function to fetch data from a URL.
+ * @param {string} url - The URL to fetch.
+ * @returns {Promise<string>} - Promise resolving to the fetched data.
+ */
+function fetchData(url) {
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Request failed with status ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(data => {
+            return data.trim();
+        });
+}
+
 router.post('/test', (req, res) => {
     var molfiles = fs.readdirSync('./public/molfiles/')
     var testCheck = "702.mol"
@@ -18,16 +59,9 @@ router.post('/test', (req, res) => {
 });
 
 // Post request when clicking submit button
-router.post('/', (req, res) => {
+router.post('/saveMolFile', async (req, res) => {
     // Assign values from form to variables
-    var molName = req.body.name;
-    console.log(molName);
-    var molFormula = req.body.formula;
-    console.log(molFormula);
-    var molDescription = req.body.description;
-    console.log(molDescription);
-    var fileName = req.body.fileName;
-    var molFileContent = req.body.preview;
+    const cid = req.body;
     
 
     var molfiles = fs.readdirSync('./public/molfiles/');
@@ -43,25 +77,19 @@ router.post('/', (req, res) => {
     } 
     else {
         // Create new mol file in ./public/molefiles/
-        fs.writeFile('./public/molfiles/'+fileName, molFileContent, function (err) {
-            if (err) {
-                console.log('Error saving file:', err);
-                notifier.notify({
-                    title: 'Save Unsuccessful',
-                    message: 'Cannot save the molecule: ' + err,
-                });
-            } else {
-                console.log('New molecule created');
-                notifier.notify({
-                    title: 'Save Successful!',
-                    message: 'Successfully saved the molecule!',
-                });
-            }
-        });
+        const pubChemUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${pubChemId}/record/SDF/?record_type=3d&response_type=display`;
+        const response = await fetch(pubChemUrl);
 
+        if (!response.ok) {
+            throw new Error(`Failed to fetch molecule data from PubChem API. Status: ${response.status}`);
+        }
+
+        var molFileData = await response.text();
+        
         // Read json file and add info to it
         var rawdata = fs.readFileSync('./public/catalog/molfileCatalog.json');
         var parsedData = JSON.parse(rawdata);
+        var fileName = `${cid}.mol`
 
         parsedData[fileName] = {
             name: molName,
