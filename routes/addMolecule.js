@@ -77,8 +77,8 @@ router.post('/saveMolFile', async (req, res) => {
     } 
     else {
         // Create new mol file in ./public/molefiles/
-        const pubChemUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${pubChemId}/record/SDF/?record_type=3d&response_type=display`;
-        const response = await fetch(pubChemUrl);
+        const url = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid.pubchemId}/record/SDF/?record_type=3d&response_type=display`;
+        const response = await fetch(url);
 
         if (!response.ok) {
             throw new Error(`Failed to fetch molecule data from PubChem API. Status: ${response.status}`);
@@ -89,7 +89,8 @@ router.post('/saveMolFile', async (req, res) => {
         // Read json file and add info to it
         var rawdata = fs.readFileSync('./public/catalog/molfileCatalog.json');
         var parsedData = JSON.parse(rawdata);
-        var fileName = `${cid}.mol`
+        var fileName = `${cid.pubchemId}.mol`
+        console.log(fileName)
 
         parsedData[fileName] = {
             name: molName,
