@@ -137,16 +137,36 @@
     </script>
 
     <!-- Bond Size Control Panel -->
-    <div id="control-panel">
-        <label for="bond-size-dropdown">Bond Size</label>
-        <select id="bond-size-dropdown" onchange="changeBondSize(this.value)">
-            <option value="0.1">0.1</option>
-            <option value="0.2">0.2</option>
-            <option value="0.3">0.3</option>
-            <option value="0.4">0.4</option>
-            <option value="0.5">0.5</option>
-        </select>
-    </div>
+    <script>
+        var bondSizeSlider = document.createElement("input");
+        //add title for the slider
+        var bondSize = document.createElement("h5");
+        bondSize.innerHTML = "Bond Size";
+        document.body.appendChild(bondSize);
+        bondSizeSlider.type = "range";
+        bondSizeSlider.min = 0.1; // Minimum value for van der Waals radius
+        bondSizeSlider.max = 0.5; // Maximum value for van der Waals radius
+        bondSizeSlider.step = 0.1; // Step size for slider
+        bondSizeSlider.value = 0.2; // Default value for slider
+
+        // Create a label element to show the current value
+        var currentValue = document.createElement("span");
+        currentValue.innerHTML = bondSizeSlider.value;
+
+        // Add an event listener to the slider
+        bondSizeSlider.addEventListener("input", function () {
+            // Update the label with the current value
+            currentValue.innerHTML = bondSizeSlider.value;
+            // Send a Jmol script command to change the van der Waals radius
+            // jmolScript("spacefill " + slider1.value);
+            changeBondSize(bondSizeSlider.value);
+        });
+
+        // Append the slider and the label to the document body
+        document.body.appendChild(bondSizeSlider);
+        document.body.appendChild(currentValue);
+
+    </script>
 
     <script>
         // Function to change bond size
