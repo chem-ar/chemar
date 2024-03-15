@@ -1,5 +1,9 @@
 446220
+<<<<<<< HEAD
   -OEChem-03142411143D
+=======
+  -OEChem-03142411083D
+>>>>>>> parent of dc2fed1 (added check to see if molecule already exists)
 
  43 45  0     1  0  0  0  0  0999 V2000
    -0.6923   -0.1549    0.4068 O   0  0  0  0  0  0  0  0  0  0  0  0
