@@ -33,15 +33,19 @@ router.put('/', function(req, res) {
 })
 
 // Delete molecule
-router.post('/delete', function(req, res) {
-    const path = './file.txt'
+router.delete('/deleteMolecule/:file', function(req, res) {
+    const file = req.params.file;
+    const path = `./public/molfiles/${file}`;
 
     try {
-        fs.unlinkSync(path)
-    //file removed
+        fs.unlinkSync(path);
+        console.log(`Molecule '${file}' deleted successfully.`);
+        res.sendStatus(200); // Send success response
     } catch(err) {
-        console.error(err)
+        console.error(`Failed to delete molecule '${file}':`, err);
+        res.sendStatus(500); // Send error response
     }
-})
+});
+
 
 module.exports = router;
