@@ -78,7 +78,7 @@
     // Define storage for uploaded files
     const storage = multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, '/Users/callumpotts/ChemAR/chemar-winter-2023/public/molfiles') // save files to the uploads directory
+            cb(null, '/public/molfiles') // save files to the uploads directory
         },
         filename: function (req, file, cb) {
             cb(null, file.originalname)
@@ -120,72 +120,6 @@
             .then((res) => console.log(res))
             .catch((err) => console.error("Error occurred", err));
         }
-
-    // const express = require('express');
-    // const multer = require('multer');
-    // const fs = require('fs');
-
-    // const app = express();
-    // const upload = multer({ dest: '/chemar-winter-2023/public/molfiles/' });
-
-    // app.post('/upload', upload.single('uploadFile'), (req, res) => {
-    //     // Handle the uploaded file here
-    //     const file = req.file;
-    //     fs.renameSync(file.path, '/chemar-winter-2023/public/molfiles/' + file.originalname);
-    //     res.send('File uploaded successfully.');
-    // });
-
-    // app.listen(4000, () => {
-    //     console.log('Server is running on port 4000');
-    // });
-
-
-    // Uploading files to molecule cache 
-
-    // var fs = require('fs');
-
-    // function uploadFile()
-    // {
-    //     fs.appendFile('', 'Hello content!', function(err)
-    //     {
-    //     if (err) throw err;
-    //     console.log("Saved!");
-    //     });
-    
-    // }
-    
-
-    
-    
-
-    // Uploading files to molecule cache 
-    // const form = document.getElementById('upload');
-    // form.addEventListener('submit', handleSubmit)
-
-    // function handleSubmit(event){
-    //     const form = event.currentTarget;
-    //     const url = new URL(form.action);
-    //     const formData = new FormData(form);
-    //     const searchParams = new URLSearchParams(formData);
-
-    //     const fetchOptions = {
-    //         method: form.method,
-    //     };
-
-    //     if (form.method.toLowerCase() === 'post') {
-    //         if (form.enctype === 'multipart/form-data') {
-    //         fetchOptions.body = formData;
-    //         } else {
-    //         fetchOptions.body = searchParams;
-    //         }
-    //     } else {
-    //         url.search = searchParams;
-    //     }
-
-    //     fetch(url, fetchOptions);
-    //     event.preventDefault();
-
-    // }
 
 </script>
 
