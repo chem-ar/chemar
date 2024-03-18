@@ -33,28 +33,95 @@
             </div>
         </div>
 
+
         <div>
             <button class="btn btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#uploadFile"
-                aria-expanded="false" aria-controls="uploadFile">
-                <!-- Search icon -->
-                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                </svg> -->
-                Upload File 
-            </button>
-            </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12 mt-2">
-            <div class="collapse multi-collapse" id="uploadFile">
-                <div class="input-group flex-nowrap">
-                    <input class="form-control" type="file" id="uploadFile" >
+                    aria-expanded="false" aria-controls="uploadFile">
+                    Upload File 
+                </button>
+            
+            <form class="" action="/addMolecule" method="POST" id="addMolForm">
+                <div class="row ">
+                    <div class="col-12 col-sm-9 col-md-6">
+                        <div class="collapse multi-collapse" id="uploadFile">
+                        <h4 class="mb-1 mt-2">Name:</h4>
+                        <input type="text" class="form-control" id="moleculeName" name="name" placeholder="Name" required>
+                        <h4 class="mb-1 mt-2">Formula:</h4>
+                        <input type="text" class="form-control" id="formula" name="formula" placeholder="Formula" required>
+                        <h4 class="mb-1 mt-2">Description:</h4>
+                        <input type="text" class="form-control" id="moleculeDescription" name="description" placeholder="Description" required>
+                        <h4 class="mb-1 mt-2">File:</h4>
+                        <input type="file" class="form-control" id="fileName" name="fileName" placeholder="File name" onchange="onReceiptsSelected()" required>
+                        <button class="btn btn-success form-control my-2">Submit</button>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-3">
+                        <textarea class="form-control d-none" name="preview" id="preview"></textarea>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
-    </div>
+
 </div>
+
+<script>
+
+    // Server-Side Code (server.js)
+    const express = require("express");
+    const multer = require("multer");
+    const path = require("path");
+
+    const app = express();
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+
+    // Define storage for uploaded files
+    const storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, '/public/molfiles') // save files to the uploads directory
+        },
+        filename: function (req, file, cb) {
+            cb(null, file.originalname)
+        }
+    });
+
+        const upload = multer({ storage: storage });
+
+        app.post("/upload", upload.single('fileToUpload'), uploadFiles);
+
+        function uploadFiles(req, res) {
+            console.log(req.file); // This will log the uploaded file information
+            res.send("File uploaded successfully.");
+        }
+
+        app.listen(4000, () => {
+            console.log(`Server started...`);
+        });
+
+            // Client-Side Code (script.js)
+        const form = document.getElementById("uploadForm");
+
+        form.addEventListener("submit", submitForm);
+
+        function submitForm(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById("fileToUpload");
+            const formData = new FormData();
+            formData.append("fileToUpload", fileInput.files[0]); // Access the first selected file
+            // No need to loop through file inputs
+
+            fetch("http://localhost:4000/upload", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            })
+            .then((res) => console.log(res))
+            .catch((err) => console.error("Error occurred", err));
+        }
+
+</script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
