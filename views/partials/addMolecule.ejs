@@ -10,7 +10,6 @@
             </svg>
             Add New Molecule
         </button>
-        
         <div class="row">
             <div class="col-12 mt-2">
                 <!-- Search menu collapse -->
@@ -28,27 +27,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div>
-            <button class="btn btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#uploadFile"
-                aria-expanded="false" aria-controls="uploadFile">
-                <!-- Search icon -->
-                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                </svg> -->
-                Upload File 
-            </button>
-            </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12 mt-2">
-            <div class="collapse multi-collapse" id="uploadFile">
-                <div class="input-group flex-nowrap">
-                    <input class="form-control" type="file" id="uploadFile" >
                 </div>
             </div>
         </div>
@@ -146,6 +124,23 @@
 
                     addButton.addEventListener("click", function (event) {
                         event.preventDefault();
+                        const cid = compoundDetails.pubChemId;
+
+                        fetch(`/addmolecule/saveMolFile`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                pubchemId: cid,
+                                name: compoundDetails.name,
+                                formula: compoundDetails.formula
+                            })
+                        }).then(response => {
+                            if (!response.ok){
+                                throw new Error('Failed to add molecule')
+                            };
+                        })
                         addToFirebase(compoundDetails.name, compoundDetails.formula, compoundDetails.pubChemId);
                     });
 
@@ -229,41 +224,6 @@ function fetchData(url) {
             return data.trim();
         });
 }
-
-/**
-     * Function to fetch data from a URL and store it as a .mol file.
-     * @param {string} url - The URL to fetch.
-     * @param {number} cid - PubChem Compound ID.
-     * @returns {Promise<void>} - Promise resolving when the .mol file is stored.
-     */
-     async function storeAsMolFile(url, cid) {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Request failed with status ${response.status}`);
-        }
-
-        const molData = await response.text();
-        const fileName = `public/molfile/${cid}.mol`;
-
-        // Use the File System Access API to write data to a file
-        try {
-            const fileHandle = await window.showSaveFilePicker({
-                suggestedName: `${cid}.mol`,
-                types: [{
-                    description: 'MOL Files',
-                    accept: {
-                        'text/mol': ['.mol'],
-                    },
-                }],
-            });
-
-            const writableStream = await fileHandle.createWritable();
-            await writableStream.write(molData);
-            await writableStream.close();
-        } catch (error) {
-            throw new Error(`Error saving mol file: ${error.message}`);
-        }
-    }
 });
 </script>
 
