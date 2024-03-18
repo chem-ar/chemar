@@ -78,8 +78,6 @@
         const urlParts = currentURL.split('/');
         const cid = urlParts[urlParts.length - 1];
 
-        console.log("CID:", cid);
-
         Jmol.Info.j2sPath = '/jmol-16.1.41/jsmol/j2s';
         Jmol.Info.serverURL = '/jmol-16.1.41/jsmol/php/jsmol.php';
         jmolInitialize('/jmol-16.1.41/jsmol', true);
@@ -105,7 +103,6 @@
         // Fetch data and render the Jmol applet
         fetchData()
             .then(data => {
-                console.log(data);
                 jmolSetAppletColor('0x202020');
                 jmolApplet(['600', '600'], "set antialiasdisplay\;load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
             })
@@ -170,6 +167,7 @@
         document.body.appendChild(currentValue);
 
     </script>
+
 
     <script>
         // Function to change bond size
