@@ -1,47 +1,107 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
+const notifier = require('node-notifier'); // Node Notifiers: https://www.npmjs.com/package/node-notifier
 
-/* GET home page. */
 router.get('/', function(req, res, next) {
     const molfiles = './public/molfiles/';
 
     //Admin check
     let isAdmin = (req.signedCookies.admin == 'true');
 
+    try {
+        let listItems = fs.readdirSync(molfiles);
+        let molfileJSON = fs.readFileSync('./public/catalog/molfileCatalog.json', 'utf8');
+        let molfileObject = JSON.parse(molfileJSON);
 
-    let listItems =  fs.readdirSync(molfiles);
-    let molfileJSON = fs.readFileSync('./public/catalog/molfileCatalog.json', 'utf8');
-    let molfileObject = JSON.parse(molfileJSON);
-    
+        let finalList = [];
 
-    let finalList = [];
+        for (let item of listItems) {
+            // Check if the item exists in the molfileObject before accessing its properties
+            if (molfileObject.hasOwnProperty(item)) {
+                molfileObject[item].file = item;
+                finalList.push(molfileObject[item]);
+            } else {
+                console.error(`Molecule '${item}' not found in catalog.`);
+            }
+        }
 
-    for(let item of listItems){
+        console.log(finalList);
 
-        molfileObject[item].file = item;
-        finalList.push(molfileObject[item])
+        res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin });
+    } catch (error) {
+        console.error('Error:', error);
+        res.sendStatus(500); // Send error response
     }
-    console.log(finalList)
-
-    res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin});
 });
 
-// Edit molecule
-router.put('/', function(req, res) {
-    
-})
 
-// Delete molecule
-router.post('/delete', function(req, res) {
-    const path = './file.txt'
+// Edit molecule
+router.put('/editMolecule/:file', function(req, res) {
+    const file = req.params.file;
+    const filePath = `./public/molfiles/${file}`;
 
     try {
-        fs.unlinkSync(path)
-    //file removed
+        // Read the updated molecule data from the request body
+        const updatedMoleculeData = req.body;
+
+        // Update the molecule catalog JSON file
+        const catalogPath = './public/catalog/molfileCatalog.json';
+        const rawdata = fs.readFileSync(catalogPath);
+        const parsedData = JSON.parse(rawdata);
+
+        // Update the molecule information
+        parsedData[file] = updatedMoleculeData;
+
+        // Write back to the JSON file
+        fs.writeFileSync(catalogPath, JSON.stringify(parsedData));
+
+        // Notify success
+        notifier.notify({
+            title: 'Edit Successful',
+            message: `Molecule '${file}' updated successfully.`,
+        });
+
+        res.sendStatus(200); // Send success response
     } catch(err) {
-        console.error(err)
+        console.error(`Failed to update molecule file '${file}':`, err);
+        res.sendStatus(500); // Send error response
     }
-})
+});
+
+
+// Delete molecule
+router.post('/deleteMolecule/:file', function(req, res) {
+    const file = req.params.file;
+    const filePath = `./public/molfiles/${file}`;
+
+    try {
+        fs.unlinkSync(filePath);
+        console.log(`Molecule file '${file}' deleted successfully.`);
+
+        // Update molecule catalog JSON file
+        var catalogPath = './public/catalog/molfileCatalog.json';
+        var rawdata = fs.readFileSync(catalogPath);
+        var parsedData = JSON.parse(rawdata);
+
+        // Remove the entry from the catalog
+        delete parsedData[file];
+
+        // Write back to the JSON file
+        fs.writeFileSync(catalogPath, JSON.stringify(parsedData));
+
+        // Notify success
+        notifier.notify({
+            title: 'Delete Successful',
+            message: `Molecule '${file}' deleted successfully.`,
+        });
+
+        res.sendStatus(200); // Send success response
+    } catch(err) {
+        console.error(`Failed to delete molecule file '${file}':`, err);
+        res.sendStatus(500); // Send error response
+    }
+});
+
 
 module.exports = router;
