@@ -4,37 +4,16 @@ var fs = require('fs');
 const notifier = require('node-notifier'); // Node Notifiers: https://www.npmjs.com/package/node-notifier
 
 router.get('/', function(req, res, next) {
-    res.render('addMolecule', {title: 'Add New Molecule'});
+    res.render('addModel', {title: 'Add New Model'});
 });
 
-/**
- * Function to fetch data from a URL and store it as a .mol file on the server.
- * @param {string} molData - The URL to fetch.
- * @param {number} cid - PubChem Compound ID.
- * @returns {Promise<void>} - Promise resolving when the .mol file is stored.
- */
-async function storeAsMolFileOnServer(molData, cid) {
-    const filePath = `public/molfiles/${cid}.mol`;
-
-    return new Promise((resolve, reject) => {
-        fs.writeFile(filePath, molData, 'utf8', (err) => {
-            if (err) {
-                reject(err);
-            } else {
-                console.log('Molecule file saved:', filePath);
-                resolve();
-            }
-        });
-    });
-}
-
-router.post('/saveMolFile', async (req, res) => {
+router.post('/saveModel', async (req, res) => {
     // Assign values from form to variables
     const cid = req.body.pubchemId;
     console.log(cid);
     fileName = `${cid}`
 
-    var molfiles = fs.readdirSync('./public/molfiles/');
+    var models = fs.readdirSync('./public/molfiles/');
     var fileIsPresent = molfiles.includes(fileName);
 
     // Check if the molecule already exists
