@@ -214,7 +214,7 @@ var moleculeDescriptionEditInput = document.getElementById("moleculeDescriptionE
 var editSubmitBtn = document.getElementById("editSubmitBtn");
 editSubmitBtn.addEventListener('click', () => {
     // Get the molecule ID from the submit button's data-id attribute
-    var id = btn.id.replace("edit", "") + ".mol"; // Remove the extra .mol
+    var id = editSubmitBtn.getAttribute("data-id"); // Get the molecule ID from data-id attribute
 
     let updatedMolecule = {
         name: moleculeNameEditInput.value,
