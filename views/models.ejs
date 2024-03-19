@@ -1,12 +1,21 @@
 <%- include('partials/header') %>
-<%- include('partials/navbarAdmin') %>
+<!--ADMIN NAVBAR CHECK-->
+<% if (isAdmin){%>
+    <%- include('partials/navbarAdmin') %>
+<%}%>
+<% if (!isAdmin){%>
+    <%- include('partials/navbar') %>
+<%}%>
 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 
 <div class="container mb-4">
     <div class="row content">
         <div class="col-12 pt-4 text-start text-white bg-dark">
             <h1 class="display-4 fw-bold">Model Catalog</h1>
-            <%- include('partials/addModel') %>                
+            <!--ADMIN CHECK-->
+            <% if (isAdmin){%>
+                <%- include('partials/addModel') %>
+            <%}%>               
             <p></p>
             <table id="modelTable" class="table table-striped text-white" style="width:100%">
                 <thead>
