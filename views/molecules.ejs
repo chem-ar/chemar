@@ -274,8 +274,8 @@ Array.from(deleteButtons).forEach(function(button) {
         deleteModalBody.textContent = `Are you sure you want to delete ${moleculeName}?`;
 
         confirmDeleteBtn.addEventListener("click", function() {
-            fetch(`/deleteMolecule/${file}`, { // Use the correct route
-                method: "DELETE"
+            fetch(`/molecules/deleteMolecule/${file}`, { // Change the route to match your server-side route
+                method: "POST" // Change method to POST
             })
             .then(response => {
                 if (response.ok) {
@@ -291,9 +291,7 @@ Array.from(deleteButtons).forEach(function(button) {
             });
         });
     });
-});
-
-    
+}); 
 </script>
 
 </script>
