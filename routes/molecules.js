@@ -33,16 +33,34 @@ router.put('/', function(req, res) {
 })
 
 // Delete molecule
-router.delete('/deleteMolecule/:file', function(req, res) {
+router.post('/deleteMolecule/:file', function(req, res) {
     const file = req.params.file;
-    const path = `./public/molfiles/${file}`;
+    const filePath = `./public/molfiles/${file}`;
 
     try {
-        fs.unlinkSync(path);
-        console.log(`Molecule '${file}' deleted successfully.`);
+        fs.unlinkSync(filePath);
+        console.log(`Molecule file '${file}' deleted successfully.`);
+
+        // Update molecule catalog JSON file
+        var catalogPath = './public/catalog/molfileCatalog.json';
+        var rawdata = fs.readFileSync(catalogPath);
+        var parsedData = JSON.parse(rawdata);
+
+        // Remove the entry from the catalog
+        delete parsedData[file];
+
+        // Write back to the JSON file
+        fs.writeFileSync(catalogPath, JSON.stringify(parsedData));
+
+        // Notify success
+        notifier.notify({
+            title: 'Delete Successful',
+            message: `Molecule '${file}' deleted successfully.`,
+        });
+
         res.sendStatus(200); // Send success response
     } catch(err) {
-        console.error(`Failed to delete molecule '${file}':`, err);
+        console.error(`Failed to delete molecule file '${file}':`, err);
         res.sendStatus(500); // Send error response
     }
 });
