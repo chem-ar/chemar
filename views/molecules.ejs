@@ -150,24 +150,6 @@
     </div>
 </div>
 
-<!-- Delete Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content bg-dark">
-            <div class="modal-header">
-                <h5 class="modal-title text-white" id="deleteModalLabel">Confirm Delete</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" style="color: white;">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="confirmDeleteBtn" class="btn btn-danger" data-bs-dismiss="modal">Delete</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <style>
     .modal-content .modal-body {
         color: white;
@@ -180,6 +162,12 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
 
 <script>
+    $(document).ready(function() {
+    $('#deleteModal').appendTo("body");
+    $('#shareModal').appendTo("body");
+    $('#editModal').appendTo("body");
+});
+
     let dataTable;
 
     fetch("/catalog/molfileCatalog.json")
