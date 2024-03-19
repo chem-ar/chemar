@@ -10,8 +10,6 @@
             </svg>
             Add New Molecule
         </button>
-
-
         <div class="row">
             <div class="col-12 mt-2">
                 <!-- Search menu collapse -->
@@ -32,8 +30,38 @@
                 </div>
             </div>
         </div>
-    </div>
+
+
+        <div>
+            <button class="btn btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#uploadFile"
+                    aria-expanded="false" aria-controls="uploadFile">
+                    Upload File 
+                </button>
+            
+            <form class="" action="/addMolecule" method="POST" id="addMolForm">
+                <div class="row ">
+                    <div class="col-12 col-sm-9 col-md-6">
+                        <div class="collapse multi-collapse" id="uploadFile">
+                        <h4 class="mb-1 mt-2">Name:</h4>
+                        <input type="text" class="form-control" id="moleculeName" name="name" placeholder="Name" required>
+                        <h4 class="mb-1 mt-2">Formula:</h4>
+                        <input type="text" class="form-control" id="formula" name="formula" placeholder="Formula" required>
+                        <h4 class="mb-1 mt-2">Description:</h4>
+                        <input type="text" class="form-control" id="moleculeDescription" name="description" placeholder="Description" required>
+                        <h4 class="mb-1 mt-2">File:</h4>
+                        <input type="file" class="form-control" id="fileName" name="fileName" placeholder="File name" onchange="onReceiptsSelected()" required>
+                        <button class="btn btn-success form-control my-2">Submit</button>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-3">
+                        <textarea class="form-control d-none" name="preview" id="preview"></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
 </div>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -126,6 +154,23 @@
 
                     addButton.addEventListener("click", function (event) {
                         event.preventDefault();
+                        const cid = compoundDetails.pubChemId;
+
+                        fetch(`/addmolecule/saveMolFile`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                pubchemId: cid,
+                                name: compoundDetails.name,
+                                formula: compoundDetails.formula
+                            })
+                        }).then(response => {
+                            if (!response.ok){
+                                throw new Error('Failed to add molecule')
+                            };
+                        })
                         addToFirebase(compoundDetails.name, compoundDetails.formula, compoundDetails.pubChemId);
                     });
 
@@ -209,41 +254,6 @@ function fetchData(url) {
             return data.trim();
         });
 }
-
-/**
-     * Function to fetch data from a URL and store it as a .mol file.
-     * @param {string} url - The URL to fetch.
-     * @param {number} cid - PubChem Compound ID.
-     * @returns {Promise<void>} - Promise resolving when the .mol file is stored.
-     */
-     async function storeAsMolFile(url, cid) {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Request failed with status ${response.status}`);
-        }
-
-        const molData = await response.text();
-        const fileName = `public/molfile/${cid}.mol`;
-
-        // Use the File System Access API to write data to a file
-        try {
-            const fileHandle = await window.showSaveFilePicker({
-                suggestedName: `${cid}.mol`,
-                types: [{
-                    description: 'MOL Files',
-                    accept: {
-                        'text/mol': ['.mol'],
-                    },
-                }],
-            });
-
-            const writableStream = await fileHandle.createWritable();
-            await writableStream.write(molData);
-            await writableStream.close();
-        } catch (error) {
-            throw new Error(`Error saving mol file: ${error.message}`);
-        }
-    }
 });
 </script>
 
