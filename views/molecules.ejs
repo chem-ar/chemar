@@ -204,33 +204,64 @@
         });
 
     // Adding edit button functionality.
-    var editBtnArray = document.getElementsByClassName("editMoleculeBtn");
+var editBtnArray = document.getElementsByClassName("editMoleculeBtn");
 
-    var moleculeNameEditInput = document.getElementById("moleculeNameEdit");
-    var formulaEditInput = document.getElementById("formulaEdit");
-    var moleculeDescriptionEditInput = document.getElementById("moleculeDescriptionEdit");
-    // Get array of all the HTML edit buttons.
-    Array.from(editBtnArray).forEach(btn => {
-        var id = btn.id.replace("edit", "") + ".mol";
+var moleculeNameEditInput = document.getElementById("moleculeNameEdit");
+var formulaEditInput = document.getElementById("formulaEdit");
+var moleculeDescriptionEditInput = document.getElementById("moleculeDescriptionEdit");
 
-        // On click, we want to do this:
-        btn.addEventListener('click', () => {
+// Event listener for edit submit button
+var editSubmitBtn = document.getElementById("editSubmitBtn");
+editSubmitBtn.addEventListener('click', () => {
+    // Get the molecule ID from the submit button's data-id attribute
+    var id = btn.id.replace("edit", "") + ".mol"; // Remove the extra .mol
 
+    let updatedMolecule = {
+        name: moleculeNameEditInput.value,
+        formula: formulaEditInput.value,
+        description: moleculeDescriptionEditInput.value
+    };
+
+    fetch(`/molecules/editMolecule/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updatedMolecule)
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Molecule updated successfully.");
+            location.reload(); // Reload the page to reflect changes
+        } else {
+            console.error("Failed to update molecule.");
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+});
+
+// Loop through each edit button and attach click event listener
+Array.from(editBtnArray).forEach(btn => {
+    var id = btn.id.replace("edit", ""); // Adjusted ID generation
+    btn.addEventListener('click', () => {
+        // Check if the id exists in the dataTable object
+        if (dataTable.hasOwnProperty(id)) {
             let currentMolecule = dataTable[id];
 
             moleculeNameEditInput.value = currentMolecule.name;
             formulaEditInput.value = currentMolecule.formula;
             moleculeDescriptionEditInput.value = currentMolecule.description;
 
-            var submitButton = document.getElementById("editSubmitBtn");
-            submitButton.addEventListener('click', () => {
-                
-            });
+            // Set the data-id attribute of the submit button to the molecule ID
+            editSubmitBtn.setAttribute("data-id", id);
+        } else {
+            console.error(`Molecule with ID ${id} not found in the dataTable.`);
+        }
+    });
+});
 
-            selectActiveMolecule();
-
-        });
-    })
 
     function selectActiveMolecule() {
 

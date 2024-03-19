@@ -29,9 +29,38 @@ router.get('/', function(req, res, next) {
 });
 
 // Edit molecule
-router.put('/', function(req, res) {
-    
-})
+router.put('/editMolecule/:file', function(req, res) {
+    const file = req.params.file;
+    const filePath = `./public/molfiles/${file}`;
+
+    try {
+        // Read the updated molecule data from the request body
+        const updatedMoleculeData = req.body;
+
+        // Update the molecule catalog JSON file
+        const catalogPath = './public/catalog/molfileCatalog.json';
+        const rawdata = fs.readFileSync(catalogPath);
+        const parsedData = JSON.parse(rawdata);
+
+        // Update the molecule information
+        parsedData[file] = updatedMoleculeData;
+
+        // Write back to the JSON file
+        fs.writeFileSync(catalogPath, JSON.stringify(parsedData));
+
+        // Notify success
+        notifier.notify({
+            title: 'Edit Successful',
+            message: `Molecule '${file}' updated successfully.`,
+        });
+
+        res.sendStatus(200); // Send success response
+    } catch(err) {
+        console.error(`Failed to update molecule file '${file}':`, err);
+        res.sendStatus(500); // Send error response
+    }
+});
+
 
 // Delete molecule
 router.post('/deleteMolecule/:file', function(req, res) {
