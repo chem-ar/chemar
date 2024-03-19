@@ -3,30 +3,38 @@ var router = express.Router();
 var fs = require('fs');
 const notifier = require('node-notifier'); // Node Notifiers: https://www.npmjs.com/package/node-notifier
 
-/* GET home page. */
 router.get('/', function(req, res, next) {
     const molfiles = './public/molfiles/';
 
     //Admin check
     let isAdmin = (req.signedCookies.admin == 'true');
 
+    try {
+        let listItems = fs.readdirSync(molfiles);
+        let molfileJSON = fs.readFileSync('./public/catalog/molfileCatalog.json', 'utf8');
+        let molfileObject = JSON.parse(molfileJSON);
 
-    let listItems =  fs.readdirSync(molfiles);
-    let molfileJSON = fs.readFileSync('./public/catalog/molfileCatalog.json', 'utf8');
-    let molfileObject = JSON.parse(molfileJSON);
-    
+        let finalList = [];
 
-    let finalList = [];
+        for (let item of listItems) {
+            // Check if the item exists in the molfileObject before accessing its properties
+            if (molfileObject.hasOwnProperty(item)) {
+                molfileObject[item].file = item;
+                finalList.push(molfileObject[item]);
+            } else {
+                console.error(`Molecule '${item}' not found in catalog.`);
+            }
+        }
 
-    for(let item of listItems){
+        console.log(finalList);
 
-        molfileObject[item].file = item;
-        finalList.push(molfileObject[item])
+        res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin });
+    } catch (error) {
+        console.error('Error:', error);
+        res.sendStatus(500); // Send error response
     }
-    console.log(finalList)
-
-    res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin});
 });
+
 
 // Edit molecule
 router.put('/editMolecule/:file', function(req, res) {
