@@ -255,7 +255,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                                           </svg>
-                                        Search ChemSpider
+                                        Search Molecules
                                     </button>
                                 </div>
                             </div>
@@ -346,6 +346,30 @@
             </div>
         </div>
     </div>
+
+    <!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title text-white" id="deleteModalLabel">Confirm Removal</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger" data-bs-dismiss="modal">Remove</button>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .modal-content .modal-body {
+        color: white;
+    }
+</style>
+      
 
 
     <script src="/js/molFileToJSON.js"></script>
@@ -443,156 +467,210 @@
             });
         }
         
-        const apikey = '70DYPVRnsRXA4S0tALUyyM2VoD5YZGat';
-        const headers = {
-            "Content-Type": "application/json",
-            "apikey": apikey
-        };
-        function searchChemSpider(compoundName){
-            if(compoundName === ""){
-                searchResults.innerHTML = `<div class="text-warning pt-2 px-2">Please enter a search term</div>`;
-            }
-            else{
-                var URL = `https://api.rsc.org/compounds/v1/filter/name`;
-                searchResults.innerHTML = `<div class="pt-2 px-2">Searching</div>`;
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchField = document.getElementById("search-field");
+            const searchButton = document.getElementById("search-button");
+            const searchResults = document.getElementById("search-results");
 
-                const bodyContent = {
-                    name: compoundName
-                };
-
-                const requestOptions = {
-                    method: "POST",
-                    headers: headers,
-                    body: JSON.stringify(bodyContent)
-                };
-
-                fetch(URL, requestOptions)
-                .then(response => response.json())
-                .then(data => {
-                    // get the results of the query-id
-                    URL = `https://api.rsc.org/compounds/v1/filter/${data["queryId"]}/results`;
-                    const requestOptions = {
-                        method: "GET",
-                        headers: headers,
-                    };
-                    // this grabs the results of the query-id which is the record-id
-                    fetch(URL, requestOptions)
-                    .then(response => response.json())
-                    .then(data => {
-                        // passes a list of record-ids
-                        displaySearchResults(data["results"], null);
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                    });
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    // Handle any errors here
-                });
-            }
-        }
-        
-        function getRecordIdDetails(recordId) {
-            var URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=Formula`;
-            const headers = {
-                "Content-Type": "application/json",
-                "apikey": apikey
-            };
-            const requestOptions = {
-                method: "GET",
-                headers: headers,
-            };
-
-            return new Promise((resolve, reject) => {
-                fetch(URL, requestOptions)
-                .then(response => response.json())
-                .then(data => {
-                    var recordDetails = [];
-                    // make string look more formatted
-                    var newFormula = data["formula"].replaceAll("{", "").replaceAll("}", "").replaceAll("^", "").replaceAll("_", "");
-                    recordDetails.push(newFormula);
-
-                    URL = `https://api.rsc.org/compounds/v1/records/${recordId}/details?fields=CommonName`;
-                    fetch(URL, requestOptions)
-                    .then(response => response.json())
-                    .then(data => {
-                        recordDetails.push(data["commonName"]);
-                        resolve(recordDetails);
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        reject(error);
-                    });
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    reject(error);
-                });
+            searchButton.addEventListener("click", function (event) {
+                event.preventDefault();
+                searchPubChem(searchField.value);
             });
-        }
 
-        function displaySearchResults(data, error){
-            // data contains list of record-id
-            if(data.length === 0){
-                searchResults.innerHTML = `<p class="text-danger p-2">No results found</p>`;
+            function searchPubChem(compoundName) {
+                if (compoundName === "") {
+                    searchResults.innerHTML = `<div class="text-warning pt-2 px-2">Please enter a search term</div>`;
+                } else {
+                    const pubChemUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${compoundName}/cids/JSON`;
+
+                    searchResults.innerHTML = `<div class="pt-2 px-2">Searching</div>`;
+
+                    fetch(pubChemUrl)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`PubChem API request failed with status ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('PubChem API data:', data);
+                            
+                            if (!data.IdentifierList) {
+                                throw new Error('Invalid response format');
+                            }
+
+                            const cids = data.IdentifierList.CID || [];
+
+                            if (cids.length === 0) {
+                                throw new Error('No results found');
+                            }
+                            displaySearchResults(cids, searchResults);
+                        })
+                        .catch(error => {
+                            console.error("Error:", error.message);
+                            searchResults.innerHTML = `<p class="text-danger p-2">${error.message}</p>`;
+                        });
+                }
             }
-            else{
-                searchResults.innerHTML = ``;
 
-                const searchResultTable = document.createElement('table');
-                searchResultTable.classList = 'table text-white mb-0';
-                searchResults.appendChild(searchResultTable);
+            function displaySearchResults(cids, container) {
+                if (cids.length === 0) {
+                    container.innerHTML = `<p class="text-danger p-2">No results found</p>`;
+                } else {
+                    container.innerHTML = ``;
 
-                const tableHead = document.createElement('thead');
-                searchResultTable.appendChild(tableHead);
-                const tableHeadRow = document.createElement('tr');
-                tableHead.appendChild(tableHeadRow);
-                const tableHeadCell1 = document.createElement('th');
-                const tableHeadCell2 = document.createElement('th');
-                tableHeadCell1.innerHTML = "";
-                tableHeadCell2.innerHTML = "";
+                    const searchResultTable = document.createElement('table');
+                    searchResultTable.classList = 'table text-white mb-0';
+                    container.appendChild(searchResultTable);
 
-                tableHeadRow.appendChild(tableHeadCell1);
-                tableHeadRow.appendChild(tableHeadCell2);
+                    const tableBody = document.createElement('tbody');
+                    searchResultTable.appendChild(tableBody);
 
+                    Promise.all(cids.map(cid => getPubChemCompoundDetails(cid)))
+                        .then(detailsList => {
+                            detailsList.forEach(compoundDetails => {
+                                const row = tableBody.insertRow();
+                                const cell1 = row.insertCell(0);
+                                const cell2 = row.insertCell(1);
 
-                const tableBody = document.createElement('tbody');
-                searchResultTable.appendChild(tableBody);
+                                cell1.classList.add('text-break');
+                                cell1.innerHTML = `${compoundDetails.name}<br>${compoundDetails.formula}<br>PubChem ID: ${compoundDetails.pubChemId}`;
 
-                for(let i = 0; i < data.length; i++){
-                    getRecordIdDetails(data[i])
-                        .then(listDetails => {
-                            const row = tableBody.insertRow();
-                            const cell1 = row.insertCell(0);
-                            const cell2 = row.insertCell(1);
-
-
-                            cell1.classList.add('text-break');
-                            cell1.innerHTML = listDetails[0] + "<br>" + listDetails[1];
-                            let viewButton = document.createElement('button');
-                            viewButton.classList = 'btn btn-outline-light btn-block';
-                            viewButton.innerHTML = 
+                                let addButton = document.createElement('button');
+                                addButton.classList = 'btn btn-outline-light btn-block';
+                                addButton.innerHTML = 
                             `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"     class="bi bi-eye-fill" viewBox="0 0 16 16">
                                 <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
                                 <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
                             </svg> <br>Add to Scene`;
 
-                            viewButton.addEventListener("click", function(event) {
-                                event.preventDefault();
-                                const itemURL = `https://api.rsc.org/compounds/v1/records/${data[i]}/mol`;
-                                getMolecule(itemURL, listDetails[1]);
-                            });
+                                addButton.addEventListener("click", function (event) {
+                                    event.preventDefault();
+                                    const cid = compoundDetails.pubChemId;
 
-                            cell2.appendChild(viewButton);
-                            cell2.classList = 'w-25';
+                                    fetch(`/addmolecule/saveMolFile`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            pubchemId: cid,
+                                            name: compoundDetails.name,
+                                            formula: compoundDetails.formula
+                                        })
+                                    }).then(response => {
+                                        if (!response.ok){
+                                            throw new Error('Failed to add molecule')
+                                        };
+                                    })
+                                    addToFirebase(compoundDetails.name, compoundDetails.formula, compoundDetails.pubChemId);
+                                });
+
+                                cell2.appendChild(addButton);
+                                cell2.classList = 'w-25';
+                            });
                         })
                         .catch(error => {
                             console.error("Error:", error);
                         });
                 }
             }
+
+            function getPubChemCompoundDetails(cid) {
+                const pubChemCompoundUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/JSON`;
+
+                return fetch(pubChemCompoundUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`PubChem API request failed with status ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (!data.PC_Compounds) {
+                            throw new Error('Invalid response format');
+                        }
+
+                        const compound = data.PC_Compounds[0] || {};
+
+                        const name = compound.props.find(prop => prop.urn.label === 'IUPAC Name').value.sval;
+                        const formula = compound.props.find(prop => prop.urn.label === 'Molecular Formula').value.sval;
+
+                        return { name, formula, pubChemId: cid };
+                    });
+            }
+        });
+
+        // Keep track of added molecules
+        const addedMolecules = new Set();
+
+        /**
+         * Function to add a molecule to a local collection or log the details.
+         * @param {string} name - The name of the molecule.
+         * @param {string} formula - The chemical formula of the molecule.
+         * @param {string} pubChemId - The PubChem Compound ID of the molecule.
+         */
+        function addToFirebase(name, formula, pubChemId) {
+            // Check if the molecule has already been added
+            if (addedMolecules.has(pubChemId)) {
+                // Alert the user or handle the case where the molecule is already added
+                console.log(`Molecule with PubChem ID ${pubChemId} has already been added.`);
+                return;
+            }
+
+            // Add the molecule to the set of added molecules
+            addedMolecules.add(pubChemId);
+
+            const moleculeData = {
+                name: name,
+                formula: formula,
+                description: "blablabla" // Add your fake description here
+            };
+
+            const fileName = `${pubChemId}.mol`;
+            const moleculeObject = {};
+            moleculeObject[fileName] = moleculeData;
+
+            // Create a new HTML element representing the molecule
+            const moleculeListItem = document.createElement("div");
+            moleculeListItem.className = "molecule-item";
+            moleculeListItem.innerHTML = `
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Formula:</strong> ${formula}</p>
+                <button class="btn btn-danger btn-sm delete-molecule">Delete</button>
+            `;
+
+            // Append the molecule element to the "Current Molecules" section
+            document.getElementById("molecule-list").appendChild(moleculeListItem);
+
+            // Add event listener to the delete button
+            const deleteButton = moleculeListItem.querySelector('.delete-molecule');
+            // Add event listener to the delete button
+            deleteButton.addEventListener('click', function() {
+            // Extract the name of the molecule
+            const moleculeName = moleculeData.name; // Assuming moleculeData is accessible here
+
+            // Update the content of the delete modal with the molecule name and apply the white-text class
+            const deleteModalBody = document.querySelector('#deleteModal .modal-body');
+            deleteModalBody.textContent = `Are you sure you want to remove '${moleculeName}' from the scene?`;
+            deleteModalBody.classList.add('white-text');
+
+
+            // Show the modal dialog
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'), {});
+            modal.show();
+
+            // Handle confirm delete button click
+            document.getElementById('confirmDeleteBtn').onclick = function() {
+                // Remove the molecule element from the DOM
+                moleculeListItem.remove();
+                // Remove the molecule from the set of added molecules
+                addedMolecules.delete(pubChemId);
+                modal.hide();
+            }
+        });
         }
+
         let xValue, yValue;
         let moleculeList = document.getElementById('molecule-list');
         function sceneMoleculeMenu() {
@@ -1363,11 +1441,6 @@
                 }
             });
 
-        searchButton.addEventListener("click", function(event) {
-            event.preventDefault();
-            searchChemSpider(searchField.value);
-        });
-
         document.getElementById('markerXSlider').addEventListener('input', function(e){
             markerLocationHelper.position.x = e.target.value;
             markerPlane.position.x = e.target.value;
@@ -1555,7 +1628,5 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-
-   
 </body>
 </html>
