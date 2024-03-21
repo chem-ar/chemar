@@ -59,6 +59,28 @@
         </div>
     </div>
 </div>
+<script>
+    let dataTable;
+    
+    fetch("catalog/modelFileCatalog.json")
+        .then((response) => response.json())
+        .then((data) => {
+            dataTable = data;
+
+            for (let item in data) {
+                var id = item.replace(".mtl", "");
+                // Check if model exists already before updating name
+                if (document.getElementByID("Name" + id) != null) {
+                    var modelName = document.getElementById("Name" + id);
+                    modelName.innerHTML = data[item].name;
+                }
+            }
+            if(!$.fn.DataTable.isDataTable('#modelTable')){
+                // Initialize DataTable
+                $('#modelTable').DataTable();
+            }
+        });
+</script>
 
 <%- include('partials/footer') %>
 
