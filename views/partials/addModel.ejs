@@ -35,5 +35,71 @@
             console.log(this.files);
             document.getElementById('uploadFile').reset();
         }
-    })
+    });
+
+    /**
+ * Function to display search results in a table.
+ * @param {Array} cids - List of PubChem Compound IDs.
+ * @param {HTMLElement} container - Container to display the search results.
+ */
+ function displaySearchResults(cids, container) {
+    if (cids.length === 0) {
+        container.innerHTML = `<p class="text-danger p-2">No results found</p>`;
+    } else {
+        container.innerHTML = ``;
+
+        const searchResultTable = document.createElement('table');
+        searchResultTable.classList = 'table text-white mb-0';
+        container.appendChild(searchResultTable);
+
+        const tableBody = document.createElement('tbody');
+        searchResultTable.appendChild(tableBody);
+
+        // Use Promise.all to wait for all details to be fetched before updating the table
+        Promise.all(cids.map(cid => getPubChemCompoundDetails(cid)))
+            .then(detailsList => {
+                detailsList.forEach(compoundDetails => {
+                    const row = tableBody.insertRow();
+                    const cell1 = row.insertCell(0);
+                    const cell2 = row.insertCell(1);
+
+                    cell1.classList.add('text-break');
+                    cell1.innerHTML = `${compoundDetails.name}<br>${compoundDetails.formula}<br>PubChem ID: ${compoundDetails.pubChemId}`;
+
+                    let addButton = document.createElement('button');
+                    addButton.classList = 'btn btn-outline-light btn-block';
+                    addButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 0 1 0 2H9v6a1 1 0 0 1 1-1zm0 0a1 1 0 0 1 1 1v6h6a1 1 0 0 1 0 2H9v6a1 1 0 0 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/></svg> Add Molecule`;
+
+                    addButton.addEventListener("click", function (event) {
+                        event.preventDefault();
+                        const cid = compoundDetails.pubChemId;
+
+                        fetch(`/addModel/saveModelFile`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                pubchemId: cid,
+                                name: compoundDetails.name,
+                                formula: compoundDetails.formula
+                            })
+                        }).then(response => {
+                            if (!response.ok){
+                                throw new Error('Failed to add molecule')
+                            };
+                        })
+                        //addToFirebase(compoundDetails.name, compoundDetails.formula, compoundDetails.pubChemId);
+                    });
+
+                    cell2.appendChild(addButton);
+                    cell2.classList = 'w-25';
+                });
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+    }
+}
+
 </script>

@@ -79,6 +79,7 @@ app.use('/sceneviewer', sceneViewer);
 app.use('/sceneeditor', sceneEditor);
 app.use('/moleculeviewer', moleculeViewer);
 app.use('/addmolecule', addMolecule);
+app.use('/addmodel', addModel);
 app.use('/login', loginRouter);
 app.use('/session', sessionRouter);
 app.use('/logout', logoutRouter);

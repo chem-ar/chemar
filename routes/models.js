@@ -4,7 +4,7 @@ var fs = require('fs');
 const notifier = require('node-notifier'); // Node Notifiers: https://www.npmjs.com/package/node-notifier
 
 router.get('/', function(req, res, next) {
-    const molfiles = './public/modelfiles/';
+    const modelfiles = './public/modelfiles/';
 
     //Admin check
     let isAdmin = (req.signedCookies.admin == 'true');

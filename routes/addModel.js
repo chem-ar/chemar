@@ -27,7 +27,7 @@ router.post('/', (req, res) => {
         });
     } 
     else {
-        // Create new mol file in ./public/molefiles/
+        // Create new mol file in ./public/modelfiles/
         fs.writeFile('./public/modelfiles/'+fileName, modelFileContent, function (err) {
             if (err) {
                 console.log('Error saving file:', err);
@@ -60,7 +60,7 @@ router.post('/', (req, res) => {
     res.redirect('/models');
 });
 
-router.post('/saveMolFile', async (req, res) => {
+router.post('/saveModelFile', async (req, res) => {
     // Assign values from form to variables
     
     fileName = `${fileName}`
