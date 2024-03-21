@@ -9,64 +9,50 @@ router.get('/', function(req, res, next) {
 
 router.post('/saveModel', async (req, res) => {
     // Assign values from form to variables
-    const cid = req.body.pubchemId;
-    console.log(cid);
-    fileName = `${cid}`
-
-    var models = fs.readdirSync('./public/molfiles/');
-    var fileIsPresent = molfiles.includes(fileName);
+    var fileName = req.body.modelName;
+    console.log(fileName);
+    
+    var models = fs.readdirSync('./public/modelfiles/');
+    var fileIsPresent = modelfiles.includes(fileName);
 
     // Check if the molecule already exists
     if (fileIsPresent) {
-        console.log('This molecule already exists.');
+        console.log('This model already exists.');
         notifier.notify({
             title: 'Save Unsuccessful.',
-            message: 'Cannot save file This molecule already exists.',
+            message: 'Cannot save file This model already exists.',
         });
         // Redirect back to the catalog page
-        return res.redirect('/molecules');
-    } else {
-        // Create new mol file in ./public/molefiles/
-        const url = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF/?record_type=3d&response_type=display`;
-        const response = await fetch(url);
+        return res.redirect('/models');
+    }
 
-        if (!response.ok) {
-            throw new Error(`Failed to fetch molecule data from PubChem API. Status: ${response.status}`);
-        }
-
-        const molFileData = await response.text();
-
-        const filePath = `public/molfiles/${cid}.mol`;
+        const filePath = `public/modelfiles/${fileName}`;
         try {
-            fs.writeFileSync(filePath, molFileData, 'utf8');
-            console.log('Molecule file saved:', filePath);
+            fs.writeFileSync(filePath, modelFileData, 'utf8');
+            console.log('Model file saved:', filePath);
         } catch (error) {
-            console.error('Error saving molecule file:', error);
+            console.error('Error saving model file:', error);
         }
 
-        // Read molfileCatalog json file and add info to it
-        var rawdata = fs.readFileSync('./public/catalog/molfileCatalog.json');
+        // Read modelFileCatalog json file and add info to it
+        var rawdata = fs.readFileSync('./public/catalog/modelFileCatalog.json');
         var parsedData = JSON.parse(rawdata);
 
-        // Variables to be added to molfileCatalog
-        var fileName = `${cid}.mol`
-        var molName = req.body.name;
-        var molFormula = req.body.formula
-        var molDescription = "blabalbla"
-
+        // Variables to be added to modelFileCatalog
+        
+        var modelName = req.body.name;
+        
         parsedData[fileName] = {
-            name: molName,
-            formula: molFormula,
-            description: molDescription
+            name: modelName
         };
 
-        var newMol = JSON.stringify(parsedData);
-        fs.writeFileSync('./public/catalog/molfileCatalog.json', newMol);
-        console.log('Molecule created');
+        var newModel = JSON.stringify(parsedData);
+        fs.writeFileSync('./public/catalog/modelFileCatalog.json', newModel);
+        console.log('Model created');
 
         // Redirect back to the catalog page
-        return res.redirect('/molecules');
+        return res.redirect('/models');
     }
-});
+);
 
 module.exports = router;
