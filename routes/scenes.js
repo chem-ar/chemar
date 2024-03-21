@@ -47,6 +47,7 @@ router.put('/addScene', (req, res) => {
 router.post('/deleteScene/:scene', function(req, res) {
     const sceneName = req.params.scene;
     const scenePath = `./public/scenes/${sceneName}.json`;
+    console.log(scenePath)
 
     try {
         fs.unlinkSync(scenePath);
