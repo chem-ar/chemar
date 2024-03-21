@@ -43,6 +43,21 @@ router.put('/addScene', (req, res) => {
     }
 });
 
+// Endpoint to delete a scene
+router.post('/deleteScene/:scene', function(req, res) {
+    const sceneName = req.params.scene;
+    const scenePath = `./public/scenes/${sceneName}.json`;
+
+    try {
+        fs.unlinkSync(scenePath);
+        console.log(`Scene file '${sceneName}.json' deleted successfully.`);
+        res.sendStatus(200); // Send success response
+    } catch(err) {
+        console.error(`Failed to delete scene file '${sceneName}.json':`, err);
+        res.sendStatus(500); // Send error response
+    }
+});
+
 router.get('/list', function(req, res) {
     const scenes = './public/scenes/';
 
