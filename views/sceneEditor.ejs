@@ -601,75 +601,75 @@
             }
         });
 
-// Keep track of added molecules
-const addedMolecules = new Set();
+        // Keep track of added molecules
+        const addedMolecules = new Set();
 
-/**
- * Function to add a molecule to a local collection or log the details.
- * @param {string} name - The name of the molecule.
- * @param {string} formula - The chemical formula of the molecule.
- * @param {string} pubChemId - The PubChem Compound ID of the molecule.
- */
-function addToFirebase(name, formula, pubChemId) {
-    // Check if the molecule has already been added
-    if (addedMolecules.has(pubChemId)) {
-        // Alert the user or handle the case where the molecule is already added
-        console.log(`Molecule with PubChem ID ${pubChemId} has already been added.`);
-        return;
-    }
+        /**
+         * Function to add a molecule to a local collection or log the details.
+         * @param {string} name - The name of the molecule.
+         * @param {string} formula - The chemical formula of the molecule.
+         * @param {string} pubChemId - The PubChem Compound ID of the molecule.
+         */
+        function addToFirebase(name, formula, pubChemId) {
+            // Check if the molecule has already been added
+            if (addedMolecules.has(pubChemId)) {
+                // Alert the user or handle the case where the molecule is already added
+                console.log(`Molecule with PubChem ID ${pubChemId} has already been added.`);
+                return;
+            }
 
-    // Add the molecule to the set of added molecules
-    addedMolecules.add(pubChemId);
+            // Add the molecule to the set of added molecules
+            addedMolecules.add(pubChemId);
 
-    const moleculeData = {
-        name: name,
-        formula: formula,
-        description: "blablabla" // Add your fake description here
-    };
+            const moleculeData = {
+                name: name,
+                formula: formula,
+                description: "blablabla" // Add your fake description here
+            };
 
-    const fileName = `${pubChemId}.mol`;
-    const moleculeObject = {};
-    moleculeObject[fileName] = moleculeData;
+            const fileName = `${pubChemId}.mol`;
+            const moleculeObject = {};
+            moleculeObject[fileName] = moleculeData;
 
-    // Create a new HTML element representing the molecule
-    const moleculeListItem = document.createElement("div");
-    moleculeListItem.className = "molecule-item";
-    moleculeListItem.innerHTML = `
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Formula:</strong> ${formula}</p>
-        <button class="btn btn-danger btn-sm delete-molecule">Delete</button>
-    `;
+            // Create a new HTML element representing the molecule
+            const moleculeListItem = document.createElement("div");
+            moleculeListItem.className = "molecule-item";
+            moleculeListItem.innerHTML = `
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Formula:</strong> ${formula}</p>
+                <button class="btn btn-danger btn-sm delete-molecule">Delete</button>
+            `;
 
-    // Append the molecule element to the "Current Molecules" section
-    document.getElementById("molecule-list").appendChild(moleculeListItem);
+            // Append the molecule element to the "Current Molecules" section
+            document.getElementById("molecule-list").appendChild(moleculeListItem);
 
-    // Add event listener to the delete button
-    const deleteButton = moleculeListItem.querySelector('.delete-molecule');
-    // Add event listener to the delete button
-deleteButton.addEventListener('click', function() {
-    // Extract the name of the molecule
-    const moleculeName = moleculeData.name; // Assuming moleculeData is accessible here
+            // Add event listener to the delete button
+            const deleteButton = moleculeListItem.querySelector('.delete-molecule');
+            // Add event listener to the delete button
+            deleteButton.addEventListener('click', function() {
+            // Extract the name of the molecule
+            const moleculeName = moleculeData.name; // Assuming moleculeData is accessible here
 
-    // Update the content of the delete modal with the molecule name and apply the white-text class
-const deleteModalBody = document.querySelector('#deleteModal .modal-body');
-deleteModalBody.textContent = `Are you sure you want to remove '${moleculeName}' from the scene?`;
-deleteModalBody.classList.add('white-text');
+            // Update the content of the delete modal with the molecule name and apply the white-text class
+            const deleteModalBody = document.querySelector('#deleteModal .modal-body');
+            deleteModalBody.textContent = `Are you sure you want to remove '${moleculeName}' from the scene?`;
+            deleteModalBody.classList.add('white-text');
 
 
-    // Show the modal dialog
-    const modal = new bootstrap.Modal(document.getElementById('deleteModal'), {});
-    modal.show();
+            // Show the modal dialog
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'), {});
+            modal.show();
 
-    // Handle confirm delete button click
-    document.getElementById('confirmDeleteBtn').onclick = function() {
-        // Remove the molecule element from the DOM
-        moleculeListItem.remove();
-        // Remove the molecule from the set of added molecules
-        addedMolecules.delete(pubChemId);
-        modal.hide();
-    }
-});
-}
+            // Handle confirm delete button click
+            document.getElementById('confirmDeleteBtn').onclick = function() {
+                // Remove the molecule element from the DOM
+                moleculeListItem.remove();
+                // Remove the molecule from the set of added molecules
+                addedMolecules.delete(pubChemId);
+                modal.hide();
+            }
+        });
+        }
 
         let xValue, yValue;
         let moleculeList = document.getElementById('molecule-list');
