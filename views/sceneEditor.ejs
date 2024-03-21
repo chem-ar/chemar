@@ -347,6 +347,30 @@
         </div>
     </div>
 
+    <!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title text-white" id="deleteModalLabel">Confirm Removal</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger" data-bs-dismiss="modal">Remove</button>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .modal-content .modal-body {
+        color: white;
+    }
+</style>
+      
+
 
     <script src="/js/molFileToJSON.js"></script>
 
@@ -577,7 +601,26 @@
             }
         });
 
-        function addToFirebase(name, formula, pubChemId) {
+// Keep track of added molecules
+const addedMolecules = new Set();
+
+/**
+ * Function to add a molecule to a local collection or log the details.
+ * @param {string} name - The name of the molecule.
+ * @param {string} formula - The chemical formula of the molecule.
+ * @param {string} pubChemId - The PubChem Compound ID of the molecule.
+ */
+function addToFirebase(name, formula, pubChemId) {
+    // Check if the molecule has already been added
+    if (addedMolecules.has(pubChemId)) {
+        // Alert the user or handle the case where the molecule is already added
+        console.log(`Molecule with PubChem ID ${pubChemId} has already been added.`);
+        return;
+    }
+
+    // Add the molecule to the set of added molecules
+    addedMolecules.add(pubChemId);
+
     const moleculeData = {
         name: name,
         formula: formula,
@@ -600,7 +643,32 @@
     // Append the molecule element to the "Current Molecules" section
     document.getElementById("molecule-list").appendChild(moleculeListItem);
 
-    // You can add event listeners for additional functionalities like deletion if needed
+    // Add event listener to the delete button
+    const deleteButton = moleculeListItem.querySelector('.delete-molecule');
+    // Add event listener to the delete button
+deleteButton.addEventListener('click', function() {
+    // Extract the name of the molecule
+    const moleculeName = moleculeData.name; // Assuming moleculeData is accessible here
+
+    // Update the content of the delete modal with the molecule name and apply the white-text class
+const deleteModalBody = document.querySelector('#deleteModal .modal-body');
+deleteModalBody.textContent = `Are you sure you want to remove '${moleculeName}' from the scene?`;
+deleteModalBody.classList.add('white-text');
+
+
+    // Show the modal dialog
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'), {});
+    modal.show();
+
+    // Handle confirm delete button click
+    document.getElementById('confirmDeleteBtn').onclick = function() {
+        // Remove the molecule element from the DOM
+        moleculeListItem.remove();
+        // Remove the molecule from the set of added molecules
+        addedMolecules.delete(pubChemId);
+        modal.hide();
+    }
+});
 }
 
         let xValue, yValue;
