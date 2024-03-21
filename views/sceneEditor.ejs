@@ -577,14 +577,7 @@
             }
         });
 
-        /**
- * Function to add a molecule to a local collection or log the details.
- * @param {string} name - The name of the molecule.
- * @param {string} formula - The chemical formula of the molecule.
- * @param {string} pubChemId - The PubChem Compound ID of the molecule.
- */
- function addToFirebase(name, formula, pubChemId) {
-    // Modify this function to log the details or add to a local collection as needed
+        function addToFirebase(name, formula, pubChemId) {
     const moleculeData = {
         name: name,
         formula: formula,
@@ -595,9 +588,21 @@
     const moleculeObject = {};
     moleculeObject[fileName] = moleculeData;
 
-    console.log(moleculeObject);
-    // You can use the logged object as needed (e.g., store it locally, send it to a server, etc.)
+    // Create a new HTML element representing the molecule
+    const moleculeListItem = document.createElement("div");
+    moleculeListItem.className = "molecule-item";
+    moleculeListItem.innerHTML = `
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Formula:</strong> ${formula}</p>
+        <button class="btn btn-danger btn-sm delete-molecule">Delete</button>
+    `;
+
+    // Append the molecule element to the "Current Molecules" section
+    document.getElementById("molecule-list").appendChild(moleculeListItem);
+
+    // You can add event listeners for additional functionalities like deletion if needed
 }
+
         let xValue, yValue;
         let moleculeList = document.getElementById('molecule-list');
         function sceneMoleculeMenu() {
