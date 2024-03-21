@@ -80,7 +80,11 @@ app.use('/sceneviewer', sceneViewer);
 app.use('/sceneeditor', sceneEditor);
 app.use('/moleculeviewer', moleculeViewer);
 app.use('/addmolecule', addMolecule);
+<<<<<<< HEAD
 app.use('/addmodel', addmodel);
+=======
+app.use('/addmodel', addModel);
+>>>>>>> 3ee41719567f108f48dd56aaebcbd07cedf10709
 app.use('/login', loginRouter);
 app.use('/session', sessionRouter);
 app.use('/logout', logoutRouter);
