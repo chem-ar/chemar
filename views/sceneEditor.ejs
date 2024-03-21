@@ -572,6 +572,28 @@
                     });
             }
         });
+
+        /**
+ * Function to add a molecule to a local collection or log the details.
+ * @param {string} name - The name of the molecule.
+ * @param {string} formula - The chemical formula of the molecule.
+ * @param {string} pubChemId - The PubChem Compound ID of the molecule.
+ */
+ function addToFirebase(name, formula, pubChemId) {
+    // Modify this function to log the details or add to a local collection as needed
+    const moleculeData = {
+        name: name,
+        formula: formula,
+        description: "blablabla" // Add your fake description here
+    };
+
+    const fileName = `${pubChemId}.mol`;
+    const moleculeObject = {};
+    moleculeObject[fileName] = moleculeData;
+
+    console.log(moleculeObject);
+    // You can use the logged object as needed (e.g., store it locally, send it to a server, etc.)
+}
         let xValue, yValue;
         let moleculeList = document.getElementById('molecule-list');
         function sceneMoleculeMenu() {
@@ -1341,11 +1363,6 @@
                 searchButton.click();
                 }
             });
-
-        searchButton.addEventListener("click", function(event) {
-            event.preventDefault();
-            searchChemSpider(searchField.value);
-        });
 
         document.getElementById('markerXSlider').addEventListener('input', function(e){
             markerLocationHelper.position.x = e.target.value;
