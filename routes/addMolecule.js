@@ -28,6 +28,66 @@ async function storeAsMolFileOnServer(molData, cid) {
     });
 }
 
+// Post request when clicking submit button
+router.post('/', (req, res) => {
+    // Assign values from form to variables
+    var molName = req.body.name;
+    console.log(molName);
+    var molFormula = req.body.formula;
+    console.log(molFormula);
+    var molDescription = req.body.description;
+    console.log(molDescription);
+    var fileName = req.body.fileName;
+    var molFileContent = req.body.preview;
+    //const csid = fileName.substring(0, fileName.indexOf("."));
+
+    var molfiles = fs.readdirSync('./public/molfiles/');
+    var fileIsPresent = molfiles.includes(fileName);
+
+    // Check if the molecule already exists
+    if (fileIsPresent) {
+        console.log('This molecule already exists.');
+        notifier.notify({
+            title: 'Save Unsuccessful.',
+            message: 'Cannot save file This molecule already exists.',
+        });
+    } 
+    else {
+        // Create new mol file in ./public/molefiles/
+        fs.writeFile('./public/molfiles/'+fileName, molFileContent, function (err) {
+            if (err) {
+                console.log('Error saving file:', err);
+                notifier.notify({
+                    title: 'Save Unsuccessful',
+                    message: 'Cannot save the molecule: ' + err,
+                });
+            } else {
+                console.log('New molecule created');
+                notifier.notify({
+                    title: 'Save Successful!',
+                    message: 'Successfully saved the molecule!',
+                });
+            }
+        });
+
+        // Read json file and add info to it
+        var rawdata = fs.readFileSync('./public/catalog/molfileCatalog.json');
+        var parsedData = JSON.parse(rawdata);
+
+        parsedData[fileName] = {
+            name: molName,
+            formula: molFormula,
+            description: molDescription
+        };
+
+        var newMol = JSON.stringify(parsedData);
+        fs.writeFileSync('./public/catalog/molfileCatalog.json', newMol);
+    }
+
+    // Return to catalog page
+    res.redirect('/molecules');
+});
+
 router.post('/saveMolFile', async (req, res) => {
     // Assign values from form to variables
     const cid = req.body.pubchemId;
