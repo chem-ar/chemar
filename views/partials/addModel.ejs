@@ -14,11 +14,13 @@
             <div class="row d-flex flex-wrap">
                 <div class="col-12 col-sm-6 d-flex  flex-wrap">
                     <h4>Model name:</h4>
-                    <input type="text" class="form-control" id="modelName" name="name" placeholder="Model name"  required>
+                    <input type="text" class="form-control" id="modelName" name="name" placeholder="Ex: molecule_diagramName_number"  required>
+                    <h4>Description:</h4>
+                    <input type="text" class="form-control" id="modelDescription" name="modelDescription" placeholder="Model description" required>
                     <h4>File:</h4>
                     <input type="file" class="form-control" id="fileName" name="fileName" placeholder="File name" onchange="" 
                     required accept=".obj, .mtl" multiple>
-                    <button class="form-control my-4 w-50" id="uploadBtn">Upload</button>
+                    <button class="btn btn-success form-control my-2" id="uploadBtn">Upload</button>
                 </div>
                 <div class="col-12 col-sm-6 d-flex align-content-stretch flex-wrap">
                     <textarea class="form-control" name="preview" id="preview" style="display: none"></textarea>
