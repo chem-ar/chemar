@@ -13,7 +13,7 @@ router.post('/saveModel', async (req, res) => {
     console.log(fileName);
     
     var models = fs.readdirSync('./public/modelfiles/');
-    var fileIsPresent = modelfiles.includes(fileName);
+    var fileIsPresent = models.includes(fileName);
 
     // Check if the molecule already exists
     if (fileIsPresent) {
