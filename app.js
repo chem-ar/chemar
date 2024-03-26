@@ -30,7 +30,7 @@ var sceneEditor = require('./routes/sceneEditor');
 var moleculeViewer = require('./routes/moleculeViewer');
 var sceneViewer = require('./routes/sceneViewer');
 var addMolecule = require('./routes/addMolecule');
-var addmodel = require('./routes/addModel');
+var addModel = require('./routes/addModel');
 var loginRouter = require('./routes/login');
 var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
@@ -80,11 +80,7 @@ app.use('/sceneviewer', sceneViewer);
 app.use('/sceneeditor', sceneEditor);
 app.use('/moleculeviewer', moleculeViewer);
 app.use('/addmolecule', addMolecule);
-<<<<<<< HEAD
-app.use('/addmodel', addmodel);
-=======
 app.use('/addmodel', addModel);
->>>>>>> 3ee41719567f108f48dd56aaebcbd07cedf10709
 app.use('/login', loginRouter);
 app.use('/session', sessionRouter);
 app.use('/logout', logoutRouter);
