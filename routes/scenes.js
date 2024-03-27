@@ -55,11 +55,39 @@ router.post('/addScene', function(req, res) {
             res.sendStatus(500); // Send error response
         } else {
             console.log(`Scene file '${newSceneName}.json' created successfully.`);
-            res.sendStatus(200); // Send success response
+
+            // Update scene catalog
+            const sceneCatalogPath = './public/catalog/sceneCatalog.json';
+            let sceneCatalog = [];
+
+            try {
+                // Read the current scene catalog
+                if (fs.existsSync(sceneCatalogPath)) {
+                    const sceneCatalogData = fs.readFileSync(sceneCatalogPath, 'utf8');
+                    if (sceneCatalogData.trim().length > 0) {
+                        sceneCatalog = JSON.parse(sceneCatalogData);
+                    }
+                }
+
+                // Add new scene entry to the scene catalog
+                sceneCatalog.push({
+                    "filename": `${newSceneName}.json`,
+                    "name": newSceneName,
+                    "desc": newSceneDesc
+                });
+
+                // Write updated scene catalog back to the file
+                fs.writeFileSync(sceneCatalogPath, JSON.stringify(sceneCatalog, null, 2));
+
+                console.log(`Scene '${newSceneName}' added to the scene catalog.`);
+                res.sendStatus(200); // Send success response
+            } catch (catalogErr) {
+                console.error('Error updating scene catalog:', catalogErr);
+                res.sendStatus(500); // Send error response
+            }
         }
     });
 });
-
 
 router.get('/list', function(req, res) {
     const scenes = './public/scenes/';
