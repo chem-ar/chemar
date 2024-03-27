@@ -4,13 +4,50 @@ var fs = require('fs');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    const scenes = './public/scenes/';
+    const scenesDirectory = './public/scenes/';
 
     //Admin check
     let isAdmin = (req.signedCookies.admin == 'true');
 
-    res.render('scenes', { title: 'Catalog', list: fs.readdirSync(scenes), isAdmin: isAdmin});
+    // Load the scene catalog data
+    let sceneCatalog;
+    try {
+        const sceneCatalogJSON = fs.readFileSync('./public/catalog/sceneCatalog.json', 'utf8');
+        sceneCatalog = JSON.parse(sceneCatalogJSON);
+    } catch (error) {
+        console.error('Error loading scene catalog:', error);
+        res.sendStatus(500); // Send error response if scene catalog cannot be loaded
+        return;
+    }
+
+    // Get the list of scene files
+    let sceneFiles;
+    try {
+        sceneFiles = fs.readdirSync(scenesDirectory);
+    } catch (error) {
+        console.error('Error reading scene files:', error);
+        res.sendStatus(500); // Send error response if scene files cannot be read
+        return;
+    }
+
+    // Combine scene catalog data with scene files
+    let finalList = [];
+    for (let filename of sceneFiles) {
+        // Check if the scene file exists in the scene catalog
+        if (sceneCatalog.hasOwnProperty(filename)) {
+            finalList.push({
+                filename: filename,
+                name: sceneCatalog[filename].name,
+                desc: sceneCatalog[filename].desc
+            });
+        } else {
+            console.error(`Scene '${filename}' not found in catalog.`);
+        }
+    }
+
+    res.render('scenes', { title: 'Catalog', list: finalList, isAdmin: isAdmin, sceneCatalog: sceneCatalog });
 });
+
 
 // Endpoint to delete a scene
 router.post('/deleteScene/:scene', function(req, res) {
