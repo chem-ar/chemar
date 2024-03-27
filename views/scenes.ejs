@@ -171,6 +171,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(response => {
             if (response.ok) {
                 console.log('Scene added successfully.');
+                location.reload();
                 // Reload the page or handle success as needed
             } else {
                 console.error('Failed to add scene.');
