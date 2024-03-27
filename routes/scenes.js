@@ -31,13 +31,13 @@ router.post('/deleteScene/:scene', function(req, res) {
 // Handle adding a new scene
 router.post('/addScene', function(req, res) {
     // Get new scene info from request body
-    var newSceneName = req.body.name; // Corrected: 'name' instead of 'newSceneName'
-    var newSceneDesc = req.body.description; // Corrected: 'description' instead of 'newSceneDesc'
+    var newSceneName = req.body.name;
+    var newSceneDesc = req.body.desc; // Check if 'description' is correctly accessed
 
     // Create scene object
     var scene = {
         "name": newSceneName,
-        "desc": newSceneDesc,
+        "desc": newSceneDesc, // Make sure the 'desc' field is populated
         "trackingMarker": {
             "position": {
                 "x": 0,
@@ -59,6 +59,7 @@ router.post('/addScene', function(req, res) {
         }
     });
 });
+
 
 router.get('/list', function(req, res) {
     const scenes = './public/scenes/';
