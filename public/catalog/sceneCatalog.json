@@ -38,5 +38,9 @@
   "test123.json": {
     "name": "test123",
     "desc": "test"
+  },
+  "Connor MacIntyre.json": {
+    "name": "Connor MacIntyre",
+    "desc": "testing features"
   }
 }
