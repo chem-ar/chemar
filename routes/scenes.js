@@ -12,37 +12,6 @@ router.get('/', function(req, res, next) {
     res.render('scenes', { title: 'Catalog', list: fs.readdirSync(scenes), isAdmin: isAdmin});
 });
 
-// Post to name that already exists, update file.
-// If post to name that doesn't exist, make new file.
-
-// This endpoint is where you can update scenes.
-// Example put '/scenes/add/exampleScene'
-router.put('/addScene', (req, res) => {
-
-    // Grab info from the request.
-    const sceneName = req.params.scene;
-    const scenePath = `./public/scenes/${sceneName}.json`;
-
-    // Check if scene doesn't exist.
-    if (!fs.existsSync(scenePath)) {
-
-        // Basic template for scene file if file doesn't exist.
-        const sceneTemplate = { name: sceneName };
-
-        // Write the file with template.
-        fs.writeFile(scenePath, JSON.stringify(sceneTemplate), (err) => {
-            
-            if (err) {
-                // Send err in response if it fails.
-                res.status(500).send(err);
-            } else {
-                res.send("Scene added successfully.");
-            }
-        });
-
-    }
-});
-
 // Endpoint to delete a scene
 router.post('/deleteScene/:scene', function(req, res) {
     const sceneName = req.params.scene;
@@ -57,6 +26,38 @@ router.post('/deleteScene/:scene', function(req, res) {
         console.error(`Failed to delete scene file '${sceneName}.json':`, err);
         res.sendStatus(500); // Send error response
     }
+});
+
+// Handle adding a new scene
+router.post('/addScene', function(req, res) {
+    // Get new scene info from request body
+    var newSceneName = req.body.name; // Corrected: 'name' instead of 'newSceneName'
+    var newSceneDesc = req.body.description; // Corrected: 'description' instead of 'newSceneDesc'
+
+    // Create scene object
+    var scene = {
+        "name": newSceneName,
+        "desc": newSceneDesc,
+        "trackingMarker": {
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        "molecules": []
+    };
+
+    // Write scene data to a new JSON file
+    fs.writeFile(`./public/scenes/${newSceneName}.json`, JSON.stringify(scene), (err) => {
+        if (err) {
+            console.error('Error writing scene file:', err);
+            res.sendStatus(500); // Send error response
+        } else {
+            console.log(`Scene file '${newSceneName}.json' created successfully.`);
+            res.sendStatus(200); // Send success response
+        }
+    });
 });
 
 router.get('/list', function(req, res) {
