@@ -1300,7 +1300,7 @@
         });
 
         let sceneNameInput = document.getElementById('newNameInput');
-let sceneDescriptionInput = document.getElementById('newDescriptionInput');
+        let sceneDescriptionInput = document.getElementById('newDescriptionInput');
 
 // When the admin saves changes to the scene editor.
 document.getElementById("saveBtn").addEventListener('click', () => {
@@ -1357,6 +1357,7 @@ document.getElementById("saveBtn").addEventListener('click', () => {
 
         console.log(scene);
 
+        // Update scene catalog file
         fetch(`/sceneEditor/save/${scene.name}`, {
             method: "POST",
             headers: {
@@ -1367,6 +1368,7 @@ document.getElementById("saveBtn").addEventListener('click', () => {
         .then(response => response.json())
         .then(data => {
             console.log(data); // log the response data to the console
+            updateSceneCatalog(scene.name, newSceneName, newSceneDescription);
             updateScenesList(); // Call the function to update the scenes list
         })
         .catch(err => {
@@ -1374,6 +1376,26 @@ document.getElementById("saveBtn").addEventListener('click', () => {
         });
     }
 });
+
+function updateSceneCatalog(oldSceneName, newSceneName, newSceneDescription) {
+    fetch(`/sceneEditor/updateCatalog/${oldSceneName}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': "application/json"
+        },
+        body: JSON.stringify({
+            name: newSceneName,
+            description: newSceneDescription
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data); // Log the response data to the console
+    })
+    .catch(err => {
+        console.error(err);
+    });
+}
 
 function updateScenesList() {
     fetch('https://localhost:4000/scenes/list')
@@ -1386,6 +1408,7 @@ function updateScenesList() {
             console.error('Error fetching data:', error);
     });
 }
+
 
 
         const sceneFileInput = document.getElementById('sceneFileInput');
