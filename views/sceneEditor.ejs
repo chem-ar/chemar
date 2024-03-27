@@ -297,31 +297,35 @@
             <div class="modal-content bg-dark text-white">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="saveModalLabel">Save Changes?</h1>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>
-                        Do you want to save your changes?
-                    </p>
-                    <p class = "text-warning">
-                        This will overwrite the current version of the file saved on the server.
-                    </p>
-                    <div class="col-4">
-                        <h4>Scene Name</h4>
+                    <p>Do you want to save your changes?</p>
+                    <p class="text-warning">This will overwrite the current version of the file saved on the server.</p>
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="newNameInput" class="form-label">Scene Name</label>
+                        </div>
+                        <div class="col-8">
+                            <input type="text" class="form-control" id="newNameInput" required>
+                        </div>
                     </div>
-                    <div class = "col-8">
-                                <div>
-                                        <input type="text" class="form-control" id="newNameInput" oninput="" >
-                                </div>
+                    <div class="row mt-3">
+                        <div class="col-4">
+                            <label for="newDescriptionInput" class="form-label">Scene Description</label>
+                        </div>
+                        <div class="col-8">
+                            <input type="text" class="form-control" id="newDescriptionInput" required>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="saveBtn" form = "newNameInput" class = "btn btn-warning">Save changes</button>
+                    <button type="button" id="saveBtn" class="btn btn-warning">Save changes</button>
                 </div>
             </div>
         </div>
     </div>
+    
 
     <div class="modal fade" id="loadModal" tabindex="-1" aria-labelledby="loadModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -429,13 +433,17 @@
             .catch(error => console.error(error));
 
 
-        function validateName(){
-            const input = document.getElementById("newNameInput").value;
-            if (input == "") {
-                return false;
+            function validateName() {
+                const nameInput = document.getElementById("newNameInput").value;
+                const descriptionInput = document.getElementById("newDescriptionInput").value;
+
+                if (nameInput.trim() === "" || descriptionInput.trim() === "") {
+                    return false;
+                }
+                
+                return true;
             }
-            return true;
-        }
+
         var scenesListMenu = document.getElementById("sceneMenuList");
         fetch('/scenes/list')
             .then(response => response.json())
@@ -1292,85 +1300,93 @@
         });
 
         let sceneNameInput = document.getElementById('newNameInput');
+let sceneDescriptionInput = document.getElementById('newDescriptionInput');
 
-        // When the admin saves changes to the scene editor.
-        document.getElementById("saveBtn").addEventListener('click', () => {
-            
-            if(!validateName()){
-                alert("Please enter a name");
-            }else{
-            console.log("Saved changes");
-            var sceneName = sceneNameInput.value;
+// When the admin saves changes to the scene editor.
+document.getElementById("saveBtn").addEventListener('click', () => {
+    if (!validateName()) {
+        alert("Please enter a name and description");
+    } else {
+        console.log("Saved changes");
+        var sceneName = sceneNameInput.value;
+        var sceneDescription = sceneDescriptionInput.value;
 
-            // Check if name changed.
-            var newSceneName = document.getElementById("newNameInput").value;
-            console.log(newSceneName);
-            
-            let offsetArray = [];
-            for(let item of sceneMolecules){
-                offsetArray.push(item.molecule.position);
-            }
+        // Check if name changed.
+        var newSceneName = sceneNameInput.value;
+        var newSceneDescription = sceneDescriptionInput.value;
+        console.log(newSceneName);
+        console.log(newSceneDescription);
 
-            let rotationArray = [];
-            for(let item of sceneMolecules){
-                rotationArray.push(item.molecule.rotation);
-            }
-
-            let scaleArray = [];
-            for(let item of sceneMolecules){
-                scaleArray.push(item.molecule.scale);
-            }
-
-            scene = {
-                "name" : sceneName,
-                "trackingMarker" : {
-                    "position" : {
-                        "x" : markerPlane.position.x,
-                        "y" : markerPlane.position.y,
-                        "z" : markerPlane.position.z,
-                    },
-                    "rotation" : {
-                        "x" : markerPlane.rotation.x,
-                        "y" : markerPlane.rotation.y,
-                        "z" : markerPlane.rotation.z,
-                    },
-                    "scale" : {
-                       "x" : markerPlane.scale.x,
-                       "y" : markerPlane.scale.y,
-                       "z" : markerPlane.scale.z, 
-                    }
-                },
-                "molecules" : sceneMolecules,
-            }
-
-            
-
-            console.log(scene);
-
-            fetch(`/sceneEditor/save/${scene.name}`, {
-                method: "POST",
-                headers: {
-                    'Content-Type': "application/json"
-                },
-                body: JSON.stringify(scene)
-            })
-            .catch(err => {
-                console.error(err)
-            });
-
+        let offsetArray = [];
+        for (let item of sceneMolecules) {
+            offsetArray.push(item.molecule.position);
         }
+
+        let rotationArray = [];
+        for (let item of sceneMolecules) {
+            rotationArray.push(item.molecule.rotation);
+        }
+
+        let scaleArray = [];
+        for (let item of sceneMolecules) {
+            scaleArray.push(item.molecule.scale);
+        }
+
+        scene = {
+            "name": sceneName,
+            "desc": sceneDescription,
+            "trackingMarker": {
+                "position": {
+                    "x": markerPlane.position.x,
+                    "y": markerPlane.position.y,
+                    "z": markerPlane.position.z,
+                },
+                "rotation": {
+                    "x": markerPlane.rotation.x,
+                    "y": markerPlane.rotation.y,
+                    "z": markerPlane.rotation.z,
+                },
+                "scale": {
+                    "x": markerPlane.scale.x,
+                    "y": markerPlane.scale.y,
+                    "z": markerPlane.scale.z,
+                }
+            },
+            "molecules": sceneMolecules,
+        }
+
+        console.log(scene);
+
+        fetch(`/sceneEditor/save/${scene.name}`, {
+            method: "POST",
+            headers: {
+                'Content-Type': "application/json"
+            },
+            body: JSON.stringify(scene)
         })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data); // log the response data to the console
+            updateScenesList(); // Call the function to update the scenes list
+        })
+        .catch(err => {
+            console.error(err)
+        });
+    }
+});
 
-        function updateScenesList() {
-            fetch('https://localhost:4000/scenes/list')
-                .then(response => response.text())
-                .then(data => {
-                    console.log(data); // log the data to the console
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-            });
-        }
+function updateScenesList() {
+    fetch('https://localhost:4000/scenes/list')
+        .then(response => response.text())
+        .then(data => {
+            console.log(data); // log the data to the console
+            // Here you can update your scenes list on the frontend if needed
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+    });
+}
+
 
         const sceneFileInput = document.getElementById('sceneFileInput');
         
