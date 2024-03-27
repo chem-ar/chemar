@@ -21,26 +21,23 @@ router.post('/updateCatalog/:oldSceneName', (req, res) => {
           return res.status(500).json({ success: false, error: 'Error reading scene catalog file' });
       }
 
-      try {
-          // Parse the JSON data
-          let sceneCatalog = JSON.parse(data);
+      // Parse the JSON data
+      const sceneCatalog = JSON.parse(data);
 
-          // Check if sceneCatalog is an array
-          if (!Array.isArray(sceneCatalog)) {
-              console.error('Scene catalog data is not an array');
-              return res.status(500).json({ success: false, error: 'Scene catalog data is not an array' });
-          }
+      // Check if sceneCatalog is an object
+      if (typeof sceneCatalog === 'object') {
+          // Iterate over the keys (filenames) in the sceneCatalog object
+          Object.keys(sceneCatalog).forEach(filename => {
+              // Access the scene object using the filename
+              const scene = sceneCatalog[filename];
 
-          // Find the scene with the old name in the catalog
-          const sceneIndex = sceneCatalog.findIndex(scene => scene.name === oldSceneName);
-
-          if (sceneIndex === -1) {
-              return res.status(404).json({ success: false, error: 'Scene not found in scene catalog' });
-          }
-
-          // Update the scene's name and description
-          sceneCatalog[sceneIndex].name = newSceneName;
-          sceneCatalog[sceneIndex].description = newSceneDescription;
+              // Perform your operations with the scene object
+              if (scene.name === oldSceneName) {
+                  // Update the scene's name and description
+                  scene.name = newSceneName;
+                  scene.desc = newSceneDescription;
+              }
+          });
 
           // Write the updated scene catalog back to the file
           fs.writeFile('./public/catalog/sceneCatalog.json', JSON.stringify(sceneCatalog, null, 2), err => {
@@ -52,9 +49,8 @@ router.post('/updateCatalog/:oldSceneName', (req, res) => {
               // Return success response
               res.status(200).json({ success: true });
           });
-      } catch (parseError) {
-          console.error('Error parsing scene catalog data:', parseError);
-          return res.status(500).json({ success: false, error: 'Error parsing scene catalog data' });
+      } else {
+          return res.status(400).json({ success: false, error: 'Invalid scene catalog data' });
       }
   });
 });
