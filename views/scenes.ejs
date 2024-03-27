@@ -32,7 +32,7 @@
                         <% let scene = sceneCatalog[filename]; %>
                             <tr>
                                 <td>
-                                    <a class="text-white" id="Name<%= filename %>" href="/sceneViewer/<%= filename.slice(0, -5) %>"><%= filename %></a>
+                                    <a class="text-white" id="Name<%= filename %>" href="/sceneViewer/<%= filename.slice(0, -5) %>"><%= filename.slice(0, -5) %></a>
                                 </td>
                                 <td id="Description<%=filename %>" class="text-white"><%= scene.desc %></td>
                                 <td >
