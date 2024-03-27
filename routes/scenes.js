@@ -16,17 +16,34 @@ router.get('/', function(req, res, next) {
 router.post('/deleteScene/:scene', function(req, res) {
     const sceneName = req.params.scene;
     const scenePath = `./public/scenes/${sceneName}.json`;
-    console.log(scenePath)
+    console.log(scenePath);
 
     try {
+        // Delete scene file
         fs.unlinkSync(scenePath);
         console.log(`Scene file '${sceneName}.json' deleted successfully.`);
-        res.sendStatus(200); // Send success response
+        
+        // Update scene catalog
+        const sceneCatalogPath = './public/catalog/sceneCatalog.json';
+
+        if (fs.existsSync(sceneCatalogPath)) {
+            let sceneCatalog = JSON.parse(fs.readFileSync(sceneCatalogPath, 'utf8'));
+            delete sceneCatalog[sceneName + '.json'];
+
+            fs.writeFileSync(sceneCatalogPath, JSON.stringify(sceneCatalog, null, 2));
+            console.log(`Entry for scene '${sceneName}' removed from scene catalog.`);
+            res.sendStatus(200); // Send success response
+        } else {
+            console.error('Scene catalog file not found.');
+            res.sendStatus(500); // Send error response
+        }
     } catch(err) {
         console.error(`Failed to delete scene file '${sceneName}.json':`, err);
         res.sendStatus(500); // Send error response
     }
 });
+
+
 
 // Handle adding a new scene
 router.post('/addScene', function(req, res) {
