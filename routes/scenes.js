@@ -58,7 +58,7 @@ router.post('/addScene', function(req, res) {
 
             // Update scene catalog
             const sceneCatalogPath = './public/catalog/sceneCatalog.json';
-            let sceneCatalog = [];
+            let sceneCatalog = {};
 
             try {
                 // Read the current scene catalog
@@ -70,11 +70,10 @@ router.post('/addScene', function(req, res) {
                 }
 
                 // Add new scene entry to the scene catalog
-                sceneCatalog.push({
-                    "filename": `${newSceneName}.json`,
+                sceneCatalog[newSceneName + ".json"] = {
                     "name": newSceneName,
                     "desc": newSceneDesc
-                });
+                };
 
                 // Write updated scene catalog back to the file
                 fs.writeFileSync(sceneCatalogPath, JSON.stringify(sceneCatalog, null, 2));
