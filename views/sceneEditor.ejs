@@ -324,7 +324,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>    
     
 
     <div class="modal fade" id="loadModal" tabindex="-1" aria-labelledby="loadModalLabel" aria-hidden="true">
@@ -1282,16 +1282,14 @@
         var loadedScene = {};
 
         document.getElementById('loadSaveBtn').addEventListener('click', () => {
-            
             var selectedScene = document.getElementById("sceneMenuList").value;
             console.log(selectedScene);
-            
+
             fetch(`/scenes/${selectedScene}`)
                 .then(response => response.json())
                 .then(data => {
                     loadedScene = JSON.stringify(data);
                     console.log(loadedScene);
-                    window.location.href = "/sceneEditor/" + selectedScene;
                 });
         });
 
@@ -1307,6 +1305,7 @@ document.getElementById("saveBtn").addEventListener('click', () => {
     if (!validateName()) {
         alert("Please enter a name and description");
     } else {
+
         console.log("Saved changes");
         var sceneName = sceneNameInput.value;
         var sceneDescription = sceneDescriptionInput.value;
@@ -1374,6 +1373,12 @@ document.getElementById("saveBtn").addEventListener('click', () => {
         .catch(err => {
             console.error(err)
         });
+        // Close the modal
+        var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
+        saveModal.hide();
+
+        // Redirect the user to the scenes page
+        window.location.href = "/scenes";
     }
 });
 
