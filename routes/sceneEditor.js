@@ -70,28 +70,32 @@ router.get('/:id', function(req , res){
   }
 });
 
-router.post('/upload/images/', function(req , res){
-  let image = req.body["image-contents"].replace(/^data:image\/png;base64,/, "");
+router.post('/upload/images/', function(req, res) {
+  // Extract image data from the request body
+  let imageData = req.body["image-contents"].replace(/^data:image\/png;base64,/, "");
 
-  console.log(req.body["image-contents"]);
+  // Generate a unique filename for the image
+  const imageName = Date.now() + '.png'; // You can use any unique identifier
 
-  const newImage = './public/images/' + req.body["image-name"];
+  // Construct the path where the image will be saved
+  const imagePath = './public/images/' + imageName;
 
-  fs.writeFile(newImage, image, 'base64', function(err) {
-    console.log(err);
+  // Write the image data to the file system
+  fs.writeFile(imagePath, imageData, 'base64', function(err) {
+      if (err) {
+          console.error('Error saving image:', err);
+          return res.status(500).json({ success: false, error: 'Error saving image' });
+      }
+      
+      // Return the success response with the file path
+      res.status(200).json({
+          success: true,
+          message: "File uploaded successfully.",
+          fileSrc: '/images/' + imageName // Assuming '/images/' is the URL path to access uploaded images
+      });
   });
-  
-  res.status(200).json(
-    {
-      "status": "success",
-      "message": "File uploaded successfully.",
-      "file-src": newImage.replace('./public', '')
-    }
-  );
-
-  res.send("hello");
-  
 });
+
 
 router.post('/save/:scene', (req, res) => {
   
