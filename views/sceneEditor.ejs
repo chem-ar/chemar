@@ -1416,39 +1416,38 @@ function updateScenesList() {
 
 
 
-        const sceneFileInput = document.getElementById('sceneFileInput');
+const sceneFileInput = document.getElementById('sceneFileInput');
         
         sceneFileInput.addEventListener('change', function(e) {
             const file = sceneFileInput.files[0];
-
+        
             const reader = new FileReader();
             reader.addEventListener("load", () => {
                 // convert image file to base64 string
                 console.log(reader.result);
                 var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'sceneEditor/upload/images', true);
-                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.open('POST', '/sceneEditor/upload/images', true); // Corrected URL
                 xhr.onload = function() {
                     if (xhr.status === 200) {
                         let response = JSON.parse(xhr.response);
                         paperMaterial.map = loader.load(response["file-src"]);
-                        paperMaterial.needsUpdate = true
-
+                        paperMaterial.needsUpdate = true;
                     } else {
-                    alert('Error: ' + xhr.status);
+                        alert('Error: ' + xhr.status);
                     }
                 };
-                xhr.send(JSON.stringify(
-                    {"image-name": file.name, "image-contents": reader.result}
-                ));
-                },
-                false
-            );
-
+                var formData = new FormData();
+                formData.append('image-name', file.name);
+                formData.append('image-contents', reader.result);
+                xhr.send(formData);
+            });
+        
             if (file) {
                 reader.readAsDataURL(file);
             }
         });
+        
+
 
         
         const loadMoleculeFile = {
