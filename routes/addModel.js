@@ -1,3 +1,4 @@
+const { deepStrictEqual } = require('assert');
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
@@ -9,8 +10,12 @@ router.get('/', function(req, res, next) {
 
 router.post('/saveModel', async (req, res) => {
     // Assign values from form to variables
-    var fileName = req.body.modelName;
+    var fileName = req.body.name;
     console.log(fileName);
+    var files = req.body.fileName;
+    console.log(files);
+    var modelDescription = req.body.modelDescription;
+    console.log(modelDescription);
     
     var models = fs.readdirSync('./public/modelfiles/');
     var fileIsPresent = models.includes(fileName);
@@ -25,13 +30,8 @@ router.post('/saveModel', async (req, res) => {
         // Redirect back to the catalog page
         return res.redirect('/models');
     }
-
-        const filePath = `public/modelfiles/${fileName}`;
-        try {
-            fs.writeFileSync(filePath, modelFileData, 'utf8');
-            console.log('Model file saved:', filePath);
-        } catch (error) {
-            console.error('Error saving model file:', error);
+        for (let i = 0; i < files.length; i++){
+            console.log(i);
         }
 
         // Read modelFileCatalog json file and add info to it
@@ -43,7 +43,9 @@ router.post('/saveModel', async (req, res) => {
         var modelName = req.body.name;
         
         parsedData[fileName] = {
-            name: modelName
+            name: modelName,
+            description: modelDescription,
+            files: files
         };
 
         var newModel = JSON.stringify(parsedData);
