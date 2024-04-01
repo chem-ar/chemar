@@ -396,7 +396,6 @@
                 scene = data;
                 console.log(scene);
                 
-
                 fileName.innerHTML = "File name: " + requestedFile;
                 sceneName.innerHTML = "Scene name: " + scene.name;
                 sceneDescription.innerHTML = "Scene desc: " + scene.desc;
@@ -1204,7 +1203,7 @@
 
             // Load an image file into a custom material
             paperMaterial = new THREE.MeshLambertMaterial({
-                map: loader.load('/images/scene1.png')
+                map: loader.load('/images/test.png')
             });
             paperMaterial.side = THREE.DoubleSide;
 
@@ -1461,8 +1460,6 @@ function updateScenesList() {
                 document.getElementById('fileInput').click();
             },
         };
-
-
 
         function animate() {
             requestAnimationFrame( animate );
