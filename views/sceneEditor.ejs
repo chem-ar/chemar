@@ -1414,9 +1414,7 @@ function updateScenesList() {
     });
 }
 
-
-
-        const sceneFileInput = document.getElementById('sceneFileInput');
+const sceneFileInput = document.getElementById('sceneFileInput');
         
         sceneFileInput.addEventListener('change', function(e) {
             const file = sceneFileInput.files[0];
@@ -1427,6 +1425,7 @@ function updateScenesList() {
                 console.log(reader.result);
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST', './upload/images', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.onload = function() {
                     if (xhr.status === 200) {
                         let response = JSON.parse(xhr.response);
@@ -1448,9 +1447,6 @@ function updateScenesList() {
                 reader.readAsDataURL(file);
             }
         });
-        
-
-
         
         const loadMoleculeFile = {
             loadFile : function() { 
