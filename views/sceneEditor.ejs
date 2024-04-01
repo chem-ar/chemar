@@ -1334,6 +1334,7 @@ document.getElementById("saveBtn").addEventListener('click', () => {
         scene = {
             "name": sceneName,
             "desc": sceneDescription,
+            "png": pngFileName,
             "trackingMarker": {
                 "position": {
                     "x": markerPlane.position.x,
@@ -1415,9 +1416,13 @@ function updateScenesList() {
 }
 
         const sceneFileInput = document.getElementById('sceneFileInput');
+        let pngFileName;
 
         sceneFileInput.addEventListener('change', function(e) {
             const file = sceneFileInput.files[0];
+
+            // Extract the PNG file name
+            pngFileName = file.name;
 
             const reader = new FileReader();
             reader.addEventListener("load", () => {
@@ -1441,7 +1446,7 @@ function updateScenesList() {
                     }
                 };
                 xhr.send(JSON.stringify({
-                    "image-name": file.name,
+                    "image-name": pngFileName,
                     "image-contents": reader.result
                 }));
             }, false);
