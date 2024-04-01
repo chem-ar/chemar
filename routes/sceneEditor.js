@@ -71,11 +71,14 @@ router.get('/:id', function(req , res){
 });
 
 router.post('/upload/images/', function(req, res) {
-  // Extract image data from the request body
+  // Extract image data and image name from the request body
+  let imageName = req.body["image-name"]; // Retrieve the image name from the request
   let imageData = req.body["image-contents"].replace(/^data:image\/png;base64,/, "");
 
-  // Generate a unique filename for the image
-  const imageName = Date.now() + '.png'; // You can use any unique identifier
+  // Generate a unique filename for the image if image name is not provided
+  if (!imageName) {
+    imageName = Date.now() + '.png'; // You can use any unique identifier
+  }
 
   // Construct the path where the image will be saved
   const imagePath = './public/images/' + imageName;
@@ -95,7 +98,6 @@ router.post('/upload/images/', function(req, res) {
       });
   });
 });
-
 
 router.post('/save/:scene', (req, res) => {
   
