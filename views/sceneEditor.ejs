@@ -1414,8 +1414,8 @@ function updateScenesList() {
     });
 }
 
-const sceneFileInput = document.getElementById('sceneFileInput');
-        
+        const sceneFileInput = document.getElementById('sceneFileInput');
+
         sceneFileInput.addEventListener('change', function(e) {
             const file = sceneFileInput.files[0];
 
@@ -1428,31 +1428,35 @@ const sceneFileInput = document.getElementById('sceneFileInput');
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.onload = function() {
                     if (xhr.status === 200) {
-                        let response = JSON.parse(xhr.response);
-                        paperMaterial.map = loader.load(response["file-src"]);
-                        paperMaterial.needsUpdate = true
-
+                        let response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            // Assuming paperMaterial and loader are defined elsewhere
+                            paperMaterial.map = loader.load(response.fileSrc);
+                            paperMaterial.needsUpdate = true;
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
                     } else {
-                    alert('Error: ' + xhr.status);
+                        alert('Error: ' + xhr.status);
                     }
                 };
-                xhr.send(JSON.stringify(
-                    {"image-name": file.name, "image-contents": reader.result}
-                ));
-                },
-                false
-            );
+                xhr.send(JSON.stringify({
+                    "image-name": file.name,
+                    "image-contents": reader.result
+                }));
+            }, false);
 
             if (file) {
                 reader.readAsDataURL(file);
             }
         });
-        
+
         const loadMoleculeFile = {
-            loadFile : function() { 
+            loadFile: function() {
                 document.getElementById('fileInput').click();
             },
         };
+
 
 
         function animate() {
