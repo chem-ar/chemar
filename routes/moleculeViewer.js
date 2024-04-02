@@ -3,8 +3,11 @@ var router = express.Router();
 var fs = require('fs'); 
 var path = require('path');
 
+
 router.get('/', function(req, res, next) {
   res.render('moleculeViewer', { title: 'Molecule Viewer', item: 2519 });
+  //Admin check
+  let isAdmin = (req.signedCookies.admin == 'true');
 });
 
 router.get('/:id', function(req , res){
