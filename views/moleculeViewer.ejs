@@ -177,11 +177,15 @@
     </script>
 
     <!-- Additional Control Panel -->
-    
+    <% if (isAdmin) {%>
         <div id="control-panel2">
             <input type="button" value="Get obj file" id="get-obj" onclick='jmolScript("write " + cid + ".obj;")'>
-         </div>
+        </div>
+    <% } %>
+    
+    
     
     
 </body>
 </html>
+<%- include('partials/footer') %>
