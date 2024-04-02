@@ -1332,10 +1332,15 @@ document.getElementById("saveBtn").addEventListener('click', () => {
             scaleArray.push(item.molecule.scale);
         }
 
+        let pngFileToUpdate = scene.png;
+        if (pngFileName) {
+            pngFileToUpdate = pngFileName;
+        }
+
         scene = {
             "name": sceneName,
             "desc": sceneDescription,
-            "png": pngFileName,
+            "png": pngFileToUpdate,
             "trackingMarker": {
                 "position": {
                     "x": markerPlane.position.x,
