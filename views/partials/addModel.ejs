@@ -10,7 +10,7 @@
     </div>
 
     <div class="row">
-        <form class=" collapse multi-collapse" action="/addmodel/saveModel" method="POST" id="uploadFile">
+        <form class=" collapse multi-collapse" action="/addmodel/saveModel" method="POST" id="uploadFile" enctype="multipart/form-data">
             <div class="row d-flex flex-wrap">
                 <div class="col-12 col-sm-6 d-flex  flex-wrap">
                     <h4>Model name:</h4>
@@ -18,8 +18,10 @@
                     <h4>Description:</h4>
                     <input type="text" class="form-control" id="modelDescription" name="modelDescription" placeholder="Model description" required>
                     <h4>File:</h4>
-                    <input type="file" class="form-control" id="fileName" name="fileName" placeholder="File name" onchange="" 
-                    required accept=".obj, .mtl" multiple>
+                    <input type="file" class="form-control" id="objFileName" name="objFileName" placeholder="File name" onchange="" 
+                    required accept=".obj">
+                    <input type="file" class="form-control" id="mtlFileName" name="mtlFileName" placeholder="File name" onchange="" 
+                    required accept=".mtl">
                     <button class="btn btn-success form-control my-2" id="uploadBtn">Upload</button>
                 </div>
                 <div class="col-12 col-sm-6 d-flex align-content-stretch flex-wrap">
