@@ -5,7 +5,7 @@ var path = require('path');
 
 
 router.get('/', function(req, res, next) {
-  res.render('moleculeViewer', { title: 'Molecule Viewer', item: 2519 });
+  res.render('moleculeViewer', { title: 'Molecule Viewer', item: 2519});
   //Admin check
   let isAdmin = (req.signedCookies.admin == 'true');
 });
