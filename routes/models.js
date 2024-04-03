@@ -3,6 +3,8 @@ var router = express.Router();
 
 /* GET models page. */
 router.get('/', function(req, res, next) {
+    const modelfiles = './public/modelfiles/';
+
     //Admin check
     let isAdmin = (req.signedCookies.admin == 'true');
 
