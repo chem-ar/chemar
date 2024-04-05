@@ -95,7 +95,6 @@ function setScrollCaption(name){
 	var S=Scrollers[name]
 	if(S.caption.indexOf("_")>=0){
 		caption=strScrollValues(S,S.caption)
-		//document.title=name+" "+caption
 		document.getElementById("scr_"+name+"_caption").innerHTML=caption
 	}
 }
@@ -120,7 +119,6 @@ function setScrollValue(name,value,dotrigger){
 	S.pos=pos
 	S.value=scrollValue(name)
 	setScrollPosition(name,pos)
-	//	if(dotrigger)checkScroll(name)
 }
 
 function strScrollValues(S,what){

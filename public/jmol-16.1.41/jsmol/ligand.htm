@@ -135,19 +135,7 @@ dTree.prototype.node = function(node, nodeId) {
 		}
 		str += '<img id="i' + this.obj + nodeId + '" src="' + ((node._io) ? node.iconOpen : node.icon) + '" alt="" />';
 	}
-// 	if (node.url) {
-// 		str += '<a id="s' + this.obj + nodeId + '" class="' + ((this.config.useSelection) ? ((node._is ? 'nodeSel' : 'node')) : 'node') + '" href="' + node.url + '"';
-// 		if (node.title) str += ' title="' + node.title + '"';
-// 		if (node.target) str += ' target="' + node.target + '"';
-// 		if (this.config.useStatusText) str += ' onmouseover="window.status=\'' + node.name + '\';return true;" onmouseout="window.status=\'\';return true;" ';
-// 		if (this.config.useSelection && ((node._hc && this.config.folderLinks) || !node._hc))
-// 			str += ' onclick="javascript: ' + this.obj + '.s(' + nodeId + ');"';
-// 		str += '>';
-// 	}
-	//else if ((!this.config.folderLinks || !node.url) && node._hc && node.pid != this.root.id)
-//		str += '<a href="javascript: ' + this.obj + '.o(' + nodeId + ');" class="node">';
 	str += node.name;
-//	if (node.url || ((!this.config.folderLinks || !node.url) && node._hc)) str += '</a>';
 	str += '</div>';
 	if (node._hc) {
 		str += '<div id="d' + this.obj + nodeId + '" class="clip" style="display:' + ((this.root.id == node.pid || node._io) ? 'block' : 'none') + ';">';
@@ -663,7 +651,6 @@ var lastContact = "Planar"
           }
         }
         jmolScript(s)
-        //doSelection();
       }
 
       function focusdocking() {
@@ -684,7 +671,6 @@ var lastContact = "Planar"
           zshadeon();
           var s="display *; set1={"+set1+"};select !set1; backbone -.1; select set1; spacefill only; spacefill 23%; wireframe 0.15; set zslab {set1}; zoomto 1 {set1} 0";
           jmolScript(s);
-          //doSelection();
         }
       }
 
@@ -755,8 +741,6 @@ var lastContact = "Planar"
             <br><br>Click and drag the selected ligand to move it. Alt+drag rotates it.
             <br> <br>
             
-            <!-- input type="button" value="Update Contacts" onClick="updateContacts()"/ -->
-
             <br><br><br>PDB ID 
             <script type="text/javascript">
               document.write("<a href=" + document.location.href.split("?")[0] + "?" + practicePdb + ">" + practicePdb + "</a> is good for practicing docking. ")

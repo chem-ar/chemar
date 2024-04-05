@@ -1,49 +1,273 @@
 <!-- Add Molecule -->
 <div class="row content">
     <div class="col-12 text-start text-white bg-dark">
-        <button class="btn btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample"
-            aria-expanded="false" aria-controls="collapseExample">
+        <!-- Button to trigger molecule search -->
+        <button class="btn btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#searchMenu"
+            aria-expanded="false" aria-controls="searchMenu">
+            <!-- Search icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+            </svg>
             Add New Molecule
         </button>
-        <div class="collapse" id="collapseExample">
-            <div class="col-12 text-start text-white bg-dark">
-                <form class="" action="/addMolecule" method="POST" id="addMolForm">
-                    <div class="row ">
-                        <div class="col-12 col-sm-9 col-md-6">
-                            <h4 class="mb-1 mt-2">Molecule Name:</h4>
-                            <input type="text" class="form-control" id="moleculeName" name="name" placeholder="Molecule Name" required>
-                            <h4 class="mb-1 mt-2">Formula:</h4>
-                            <input type="text" class="form-control" id="formula" name="formula" placeholder="Formula" required>
-                            <h4 class="mb-1 mt-2">Description:</h4>
-                            <input type="text" class="form-control" id="moleculeDescription" name="description" placeholder="Description" required>
-                            <h4 class="mb-1 mt-2">File:</h4>
-                            <input type="file" class="form-control" id="fileName" name="fileName" placeholder="File name" onchange="onReceiptsSelected()" required>
-                            <button class="btn btn-success form-control my-2">Submit</button>
-                        </div>
-                        <div class="col-12 col-sm-3">
-                            <textarea class="form-control d-none" name="preview" id="preview"></textarea>
+        <div class="row">
+            <div class="col-12 mt-2">
+                <!-- Search menu collapse -->
+                <div class="collapse multi-collapse" id="searchMenu">
+                    <!-- Input field for molecule name -->
+                    <div class="input-group flex-nowrap">
+                        <input type="text" id="search-field" class="form-control" placeholder="Molecule Name" aria-label="Username" aria-describedby="addon-wrapping">
+                        <!-- Button to initiate molecule search -->
+                        <button class="btn btn-info" type="button" id="search-button">Search</button>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 mb-2">
+                            <!-- Container for displaying search results -->
+                            <div id="search-results">
+                            </div>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
-    </div>
+
+
+        <div>
+            <button class="btn btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#uploadFile"
+                    aria-expanded="false" aria-controls="uploadFile">
+                    Upload File 
+                </button>
+            
+            <form class="" action="/addMolecule" method="POST" id="addMolForm">
+                <div class="row ">
+                    <div class="col-12 col-sm-9 col-md-6">
+                        <div class="collapse multi-collapse" id="uploadFile">
+                        <h4 class="mb-1 mt-2">Name:</h4>
+                        <input type="text" class="form-control" id="moleculeName" name="name" placeholder="Name" required>
+                        <h4 class="mb-1 mt-2">Formula:</h4>
+                        <input type="text" class="form-control" id="formula" name="formula" placeholder="Formula" required>
+                        <h4 class="mb-1 mt-2">Description:</h4>
+                        <input type="text" class="form-control" id="moleculeDescription" name="description" placeholder="Description" required>
+                        <h4 class="mb-1 mt-2">File:</h4>
+                        <input type="file" class="form-control" id="fileName" name="fileName" placeholder="File name" onchange="onReceiptsSelected()" required>
+                        <button class="btn btn-success form-control my-2">Submit</button>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-3">
+                        <textarea class="form-control d-none" name="preview" id="preview"></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
 </div>
 
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchField = document.getElementById("search-field");
+        const searchButton = document.getElementById("search-button");
+        const searchResults = document.getElementById("search-results");
 
+        /**
+         * Event listener for the search button to trigger molecule search.
+         */
+         searchButton.addEventListener("click", function (event) {
+    event.preventDefault();
+    searchPubChem(searchField.value);
+});
 
-    <script>
-        // Preview the .mol file content when selected
-        function onReceiptsSelected() {
-            const files = fileName.files;
-            if (files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById("preview").value += e.target.result;
-                    //console.log(e.target.result);
-                };
-                reader.readAsText(files[0]);
+/**
+ * Function to search PubChem for a given compound name.
+ * @param {string} compoundName - The name of the compound to search for.
+ */
+ function searchPubChem(compoundName) {
+    if (compoundName === "") {
+        searchResults.innerHTML = `<div class="text-warning pt-2 px-2">Please enter a search term</div>`;
+    } else {
+        const pubChemUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${compoundName}/cids/JSON`;
+
+        searchResults.innerHTML = `<div class="pt-2 px-2">Searching</div>`;
+
+        fetch(pubChemUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`PubChem API request failed with status ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('PubChem API data:', data);
+                
+                // Check if the 'IdentifierList' property is present
+                if (!data.IdentifierList) {
+                    throw new Error('Invalid response format');
+                }
+
+                // Extract CID array from the 'IdentifierList'
+                const cids = data.IdentifierList.CID || [];
+
+                if (cids.length === 0) {
+                    throw new Error('No results found');
+                }
+                displaySearchResults(cids, searchResults);
+            })
+            .catch(error => {
+                console.error("Error:", error.message);
+                searchResults.innerHTML = `<p class="text-danger p-2">${error.message}</p>`;
+            });
+    }
+}
+
+/**
+ * Function to display search results in a table.
+ * @param {Array} cids - List of PubChem Compound IDs.
+ * @param {HTMLElement} container - Container to display the search results.
+ */
+ function displaySearchResults(cids, container) {
+    if (cids.length === 0) {
+        container.innerHTML = `<p class="text-danger p-2">No results found</p>`;
+    } else {
+        container.innerHTML = ``;
+
+        const searchResultTable = document.createElement('table');
+        searchResultTable.classList = 'table text-white mb-0';
+        container.appendChild(searchResultTable);
+
+        const tableBody = document.createElement('tbody');
+        searchResultTable.appendChild(tableBody);
+
+        // Use Promise.all to wait for all details to be fetched before updating the table
+        Promise.all(cids.map(cid => getPubChemCompoundDetails(cid)))
+            .then(detailsList => {
+                detailsList.forEach(compoundDetails => {
+                    const row = tableBody.insertRow();
+                    const cell1 = row.insertCell(0);
+                    const cell2 = row.insertCell(1);
+
+                    cell1.classList.add('text-break');
+                    cell1.innerHTML = `${compoundDetails.name}<br>${compoundDetails.formula}<br>PubChem ID: ${compoundDetails.pubChemId}`;
+
+                    let addButton = document.createElement('button');
+                    addButton.classList = 'btn btn-outline-light btn-block';
+                    addButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 0 1 0 2H9v6a1 1 0 0 1 1-1zm0 0a1 1 0 0 1 1 1v6h6a1 1 0 0 1 0 2H9v6a1 1 0 0 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/></svg> Add Molecule`;
+
+                    addButton.addEventListener("click", function (event) {
+                        event.preventDefault();
+                        const cid = compoundDetails.pubChemId;
+
+                        fetch(`/addmolecule/saveMolFile`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                pubchemId: cid,
+                                name: compoundDetails.name,
+                                formula: compoundDetails.formula
+                            })
+                        }).then(response => {
+                            if (!response.ok){
+                                throw new Error('Failed to add molecule')
+                            };
+                        })
+                        addToFirebase(compoundDetails.name, compoundDetails.formula, compoundDetails.pubChemId);
+                    });
+
+                    cell2.appendChild(addButton);
+                    cell2.classList = 'w-25';
+                });
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+    }
+}
+
+/**
+ * Function to get details of a PubChem compound using its CID.
+ * @param {number} cid - PubChem Compound ID.
+ * @returns {Promise<Object>} - Promise resolving to an object with compound details.
+ */
+function getPubChemCompoundDetails(cid) {
+    const pubChemCompoundUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/JSON`;
+
+    return fetch(pubChemCompoundUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`PubChem API request failed with status ${response.status}`);
             }
+            return response.json();
+        })
+        .then(data => {
+            // Check if the 'PC_Compounds' property is present
+            if (!data.PC_Compounds) {
+                throw new Error('Invalid response format');
+            }
+
+            const compound = data.PC_Compounds[0] || {};
+
+            // Extract compound details
+            const name = compound.props.find(prop => prop.urn.label === 'IUPAC Name').value.sval;
+            const formula = compound.props.find(prop => prop.urn.label === 'Molecular Formula').value.sval;
+            console.log(``)
+            return { name, formula, pubChemId: cid };
+        });
+}
+
+/**
+ * Function to add a molecule to a local collection or log the details.
+ * @param {string} name - The name of the molecule.
+ * @param {string} formula - The chemical formula of the molecule.
+ * @param {string} pubChemId - The PubChem Compound ID of the molecule.
+ */
+ function addToFirebase(name, formula, pubChemId) {
+    // Modify this function to log the details or add to a local collection as needed
+    const moleculeData = {
+        name: name,
+        formula: formula,
+        description: "blablabla" // Add your fake description here
+    };
+
+    const fileName = `${pubChemId}.mol`;
+    const moleculeObject = {};
+    moleculeObject[fileName] = moleculeData;
+
+    console.log(moleculeObject);
+    // You can use the logged object as needed (e.g., store it locally, send it to a server, etc.)
+}
+
+/**
+ * Function to fetch data from a URL.
+ * @param {string} url - The URL to fetch.
+ * @returns {Promise<string>} - Promise resolving to the fetched data.
+ */
+function fetchData(url) {
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Request failed with status ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(data => {
+            return data.trim();
+        });
+}
+});
+</script>
+
+<script>
+    // Preview the .mol file content when selected
+    function onReceiptsSelected() {
+        const files = fileName.files;
+        if (files.length > 0) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById("preview").value += e.target.result;
+                //console.log(e.target.result);
+            };
+            reader.readAsText(files[0]);
         }
-    </script>
+    }
+</script>

@@ -163,8 +163,6 @@ $(document).ready(function(){
 		+ Jmol.jmolButton(jmol,"select *;if ($s1) {isosurface s1 delete} else {calculate partialcharge;isosurface s1 vdw map MEP translucent}","show/hide MEP")
 		+ "<br><br>"
 		+ (isApplet ?
-// no longer works		Jmol.jmolButton(jmol,"show NMR","Predict NMR")
-//		+ "<br><br>"
 		Jmol.jmolButton(jmol,"write FILE ?","Save FILE")
 		+ "<br>"
 		+ Jmol.jmolButton(jmol,"write PNGJ jsmol.png","Save PNG")
