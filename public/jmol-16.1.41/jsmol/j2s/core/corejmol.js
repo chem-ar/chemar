@@ -146,9 +146,6 @@ Jmol.___JmolVersion="16.1.39" // (legacy) also 16.1.40 (swingJS)
 		"java.io.FileInputStream",
 		"java.io.FileWriter",
 		"java.io.OutputStreamWriter",
-//		sJU + ".Calendar", // bypassed in ModelCollection
-//		"java.text.SimpleDateFormat", // not used
-//		"java.text.DateFormat", // not used
 		sJU + ".concurrent.Executors"
 	])
 
@@ -224,15 +221,6 @@ return"class java.lang.Integer";
 return""+this.valueOf();
 };
 
-/*
-
-Clazz_makeConstructor(Integer,
-function(){
-this.valueOf=function(){
-return 0;
-};
-});
-*/
 
 
 Clazz_overrideConstructor(Integer, function(v){
@@ -241,15 +229,7 @@ Clazz_overrideConstructor(Integer, function(v){
 	v = Integer.parseIntRadix(v, 10);
  this.valueOf=function(){return v;};
 }); //BH
-/*
-Clazz_makeConstructor(Integer,
-function(s){
-var value=Integer.parseInt(s,10);
-this.valueOf=function(){
-return value;
-};
-},"String");
-*/
+
 Integer.MIN_VALUE=Integer.prototype.MIN_VALUE=-0x80000000;
 Integer.MAX_VALUE=Integer.prototype.MAX_VALUE=0x7fffffff;
 Integer.TYPE=Integer.prototype.TYPE=Integer;
@@ -328,24 +308,11 @@ return Integer.parseIntRadix(s,10);
 },"String");
 Integer.parseInt=Integer.prototype.parseInt;
 
-/*
-Clazz_defineMethod(Integer,"$valueOf",
-function(s){
-return new Integer(Integer.parseIntRadix(s,10));
-},"String");
-*/
-
 Clazz_overrideMethod(Integer,"$valueOf",
 function(s){
 return new Integer(s);
 });
 
-/*
-Clazz_defineMethod(Integer,"$valueOf",
-function(s,r){
-return new Integer(Integer.parseIntRadix(s,r));
-},"String, Number");
-*/
 
 Integer.$valueOf=Integer.prototype.$valueOf;
 
@@ -414,8 +381,6 @@ Clazz_overrideConstructor(Long, function(v){
 this.valueOf=function(){return v;};
 });
 
-//Long.MIN_VALUE=Long.prototype.MIN_VALUE=-0x8000000000000000;
-//Long.MAX_VALUE=Long.prototype.MAX_VALUE=0x7fffffffffffffff;
 Long.TYPE=Long.prototype.TYPE=Long;
 
 Clazz_defineMethod(Long,"parseLong",
@@ -429,17 +394,6 @@ Clazz_overrideMethod(Long,"$valueOf",
 function(s){
 return new Long(s);
 });
-/*
-Clazz_defineMethod(Long,"$valueOf",
-function(s){
-return new Long(s);
-},"Number");
-
-Clazz_defineMethod(Long,"$valueOf",
-function(s,r){
-return new Long(Long.parseLong(s,r));
-},"String, Number");
-*/
 Long.$valueOf=Long.prototype.$valueOf;
 Clazz_overrideMethod(Long,"equals",
 function(s){
@@ -508,24 +462,10 @@ return Short.parseShortRadix (s, 10);
 
 Short.parseShort = Short.prototype.parseShort;
 
-/*
-Clazz_defineMethod(Short, "$valueOf",
-function (s) {
-return new Short(Short.parseShort (s, 10));
-}, "String");
-	*/
-
 Clazz_overrideMethod(Short, "$valueOf",
 function (s) {
 return new Short(s);
 });
-
-/*
-Clazz_defineMethod(Short, "$valueOf",
-function (s, r) {
-return new Short(Short.parseShort (s, r));
-}, "String, Number");
-	*/
 
 Short.$valueOf = Short.prototype.$valueOf;
 Clazz_overrideMethod(Short, "equals",
@@ -762,12 +702,6 @@ return doubleVal;
 },"String");
 Double.parseDouble=Double.prototype.parseDouble;
 
-/*
-Clazz_defineMethod(Double,"$valueOf",
-function(s){
-return new Double(this.parseDouble(s));
-},"String");
-*/
 
 Clazz_defineMethod(Double,"$valueOf",
 function(v){
@@ -799,12 +733,6 @@ Boolean.equals=Clazz._innerFunctions.equals;
 Boolean.getName=Clazz._innerFunctions.getName;
 Boolean.serialVersionUID=Boolean.prototype.serialVersionUID=-3665804199014368530;
 
-//Clazz_makeConstructor(Boolean,
-//function(value){
-//this.valueOf=function(){
-//return value;
-//};
-//},"~B");
 
 Clazz_overrideConstructor(Boolean,
 function(s){
@@ -825,12 +753,7 @@ function(b){
 return((typeof b == "string"? "true".equalsIgnoreCase(b) : b)?Boolean.TRUE:Boolean.FALSE);
 });
 
-/*
-Boolean.toString=Clazz_defineMethod(Boolean,"toString",
-function(b){
-return b?"true":"false";
-},"~B");
-*/
+
 
 Clazz_overrideMethod(Boolean,"toString",
 function(){
@@ -1221,23 +1144,6 @@ var regExp=new RegExp(regex,"gm");
 return this.split(regExp);
 }
 };
-/*
-sp.trim=function(){
-var len=this.length;
-var st=0;
-
-while((st<len)&&(this.charAt(st)<=' ')){
-st++;
-}
-while((st<len)&&(this.charAt(len-1)<=' ')){
-len--;
-}
-return((st>0)||(len<len))?this.substring(st,len):this;
-};
-
-
-*/
-
 if (!sp.trim)
 sp.trim=function(){
 return this.replace(/^\s+/g,'').replace(/\s+$/g,'');

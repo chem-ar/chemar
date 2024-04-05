@@ -1,4 +1,4 @@
-//hello world
+//these are the required modules for the server (I think)
 var fs = require("fs");
 var http = require("http");
 var https = require("https");
@@ -17,19 +17,20 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
+var adminRouter = require('./routes/admin');
+var modelsRouter = require('./routes/models');
+var aboutRouter = require('./routes/about');
+
 var usersRouter = require('./routes/session');
 var moleculeRouter = require('./routes/molecules');
 var catalogRouter = require('./routes/catalog');
 var itemRouter = require('./routes/item');
 var scenesRouter = require('./routes/scenes');
-var lessonsRouter = require('./routes/lessons');
-var lessonEditor = require('./routes/lessonEditor');
+var sceneEditor = require('./routes/sceneEditor');
 var moleculeViewer = require('./routes/moleculeViewer');
-var deleteScene = require('./routes/deleteScene');
 var sceneViewer = require('./routes/sceneViewer');
-var lessonViewer = require('./routes/lessonViewer');
 var addMolecule = require('./routes/addMolecule');
-var addScene = require('./routes/addScene');
+var addModel = require('./routes/addModel');
 var loginRouter = require('./routes/login');
 var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
@@ -70,14 +71,16 @@ app.use('/molecules', moleculeRouter);
 app.use('/catalog', catalogRouter);
 app.use('/item', itemRouter);
 app.use('/scenes', scenesRouter);
-app.use('/lessons', lessonsRouter);
-app.use('/lessonviewer', lessonViewer);
-app.use('/lessoneditor', lessonEditor);
-app.use('/moleculeviewer', moleculeViewer);
-app.use('/deleteScene', deleteScene);
+app.use('/models', modelsRouter);
+
+app.use('/about', aboutRouter);
+app.use('/admin', adminRouter);
+
 app.use('/sceneviewer', sceneViewer);
+app.use('/sceneeditor', sceneEditor);
+app.use('/moleculeviewer', moleculeViewer);
 app.use('/addmolecule', addMolecule);
-app.use('/addScene', addScene);
+app.use('/addmodel', addModel);
 app.use('/login', loginRouter);
 app.use('/session', sessionRouter);
 app.use('/logout', logoutRouter);
@@ -96,7 +99,7 @@ app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
-  // render the error page
+//   // render the error page
   res.status(err.status || 500);
   res.render("error", { title: "MoleculAR - Error" });
 });

@@ -58,7 +58,6 @@ Info = {
 	addSelectionOptions: true,
 	serverURL: "https://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
 	use: "HTML5",
-  //language: "fr", // NOTE: LOCALIZATION REQUIRES <meta charset="utf-8"> (see JSmolCore Jmol.featureDetection.supportsLocalization)
 	jarPath: "java",
 	j2sPath: "j2s",
 	jarFile: "JmolApplet.jar",
@@ -68,11 +67,6 @@ Info = {
 	readyFunction: jmol_isReady,
   allowjavascript: true,
 	script: "set antialiasDisplay;load data/caffeine.mol;"
-	//,defaultModel: ":dopamine"
-  //,noscript: true
-	//console: "none", // default will be jmolApplet0_infodiv
-	//script: "set antialiasDisplay;background white;load data/caffeine.mol;"
-  //delay 3;background yellow;delay 0.1;background white;for (var i = 0; i < 10; i+=1){rotate y 3;delay 0.01}"
 }
 
 
@@ -106,7 +100,6 @@ jmolApplet0 = Jmol.getApplet("jmolApplet0", Info)
 
 // note that now scripts can be sent immediately after the _Applet object is created
 
-//Jmol.script(jmolApplet0,"background gray;delay 0.5;background black")
 var lastPrompt=0;
 </script>
 

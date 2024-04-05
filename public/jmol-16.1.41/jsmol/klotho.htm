@@ -333,7 +333,6 @@ function showMinimization(app,status,istep,energy, dE) {
 Measures = []
 
 function loadCallback0(app,a1,a2,a3,a4){
- //alert([a1,a2,a3,a4])
  loadCallback()
 }
 
@@ -360,7 +359,6 @@ function setScripts() {
  scriptToFischer = ""
  scriptFromFischer = ""
  scriptOrientFischer = resetScript
- //document.getElementById("fischer").style.display='none'
  if (Measures.length == 0)return
  for (var i = 0; i < Measures.length; i++) {
 	var m = Measures[i]
@@ -387,7 +385,7 @@ function setScripts() {
  if (theSearch == "L-arabitol")scriptOrientFischer += ";rotate y 180"
 
  scriptOrientFischer += ";center *;rotate x -360 -100"
- //document.getElementById("fischer").style.display='block'
+
 }
 
 function doNotes() {
