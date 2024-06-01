@@ -77,7 +77,7 @@ router.post('/saveModel',uploadMiddleware, (req, res) => {
         parsedData[modelName] = {
             name: modelName,
             description: modelDescription,
-            modelFiles: modelFiles.map(file => file.filename)
+            modelFiles: [objFile.filename, mtlFile.filename]
         };
 
         var newModel = JSON.stringify(parsedData);
