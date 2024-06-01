@@ -41,9 +41,9 @@ const uploadMiddleware = upload.fields([
 //This endpoint needs to be completed to handle the uploading for the files to public/modelfiles
 router.post('/saveModel',uploadMiddleware, (req, res) => {
     const name = req.body.name;
-    //console.log(name);
+    console.log(name);
     const modelDescription = req.body.modelDescription;
-    //console.log(modelDescription);
+    console.log(modelDescription);
     const objFile = req.files['objFileName'][0];
     const mtlFile = req.files['mtlFileName'][0];
     
