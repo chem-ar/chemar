@@ -483,9 +483,16 @@
 
             searchButton.addEventListener("click", function (event) {
                 event.preventDefault();
-                searchPubChem(searchField.value);
+                searchModel(searchField.value);
             });    
         });
+
+        async function searchModel(userQuery){
+            const encodedUserQuery = encodeURIComponent(userQuery);
+            const searchResponse = await fetch(`/models/searchModels?search=${encodedUserQuery}`);
+            const searchResults = await searchResponse.json();
+            console.log(searchResults);
+        }
 
         let xValue, yValue;
         let moleculeList = document.getElementById('molecule-list');
