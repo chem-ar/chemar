@@ -525,9 +525,18 @@
                 addModelBtn.innerText = "Add to scene";
                 addModelBtn.type = 'button';
                 addModelBtn.addEventListener('click', () => {
-                    // TODO add model to scene
-                    console.log('This btn adds the model');
-                    console.log(model);
+                    const createdModel = createModel(model, model.name);
+                    
+                    scene1.add(createdModel);
+                    sceneMolecules.push({
+                        Title: model.name,
+                        molecule: createdModel,
+                        position: createdModel.position,
+                        rotation: createdModel.rotation,
+                        scale: createdModel.scale
+                    });
+
+                    sceneMoleculeMenu();
                 });
 
                 btnDiv.appendChild(addModelBtn);
@@ -1235,6 +1244,16 @@
             sceneMoleculeMenu();
         }
 
+        function createModel(modelData, Title, position, rotation, scale) {
+            const { name, description, files: { obj, mtl } } = modelData;
+            // position, rotation, and scale might be undefined! set a default value if so
+            
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            const fakeModel = new THREE.Mesh(geometry, material);
+
+            return fakeModel;
+        }
 
         function init(pngFile){
 
