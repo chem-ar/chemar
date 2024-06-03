@@ -379,6 +379,7 @@
     <script src="/js/molFileToJSON.js"></script>
 
     <script type= "module">
+        import { createModel } from '/js/scenes/model-rendering.js';
 
         var fileName = document.getElementById("fileName");
         var sceneName = document.getElementById("sceneName");
@@ -430,6 +431,7 @@
                     drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale);
                 }
 
+                sceneMoleculeMenu();
             })
             .catch(error => console.error(error));
 
@@ -1240,19 +1242,6 @@
 
             sceneMolecules.push({Title: Title, molecule: moleculeGroup, cjson: molObject, position: moleculeGroup.position, rotation: moleculeGroup.rotation, scale: moleculeGroup.scale})
             scene1.add( moleculeGroup );
-
-            sceneMoleculeMenu();
-        }
-
-        function createModel(modelData, Title, position, rotation, scale) {
-            const { name, description, files: { obj, mtl } } = modelData;
-            // position, rotation, and scale might be undefined! set a default value if so
-            
-            const geometry = new THREE.BoxGeometry(1, 1, 1);
-            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-            const fakeModel = new THREE.Mesh(geometry, material);
-
-            return fakeModel;
         }
 
         function init(pngFile){
