@@ -379,6 +379,7 @@
     <script src="/js/molFileToJSON.js"></script>
 
     <script type= "module">
+        import { createModel } from '/js/scenes/model-rendering.js';
 
         var fileName = document.getElementById("fileName");
         var sceneName = document.getElementById("sceneName");
@@ -430,6 +431,7 @@
                     drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale);
                 }
 
+                sceneMoleculeMenu();
             })
             .catch(error => console.error(error));
 
@@ -479,13 +481,73 @@
         document.addEventListener("DOMContentLoaded", function () {
             const searchField = document.getElementById("search-field");
             const searchButton = document.getElementById("search-button");
-            const searchResults = document.getElementById("search-results");
 
             searchButton.addEventListener("click", function (event) {
                 event.preventDefault();
-                searchPubChem(searchField.value);
+                searchModel(searchField.value);
             });    
+
+            searchField.addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    searchButton.click();
+                    }
+                });
         });
+
+        async function searchModel(userQuery){
+            const encodedUserQuery = encodeURIComponent(userQuery);
+            const searchResponse = await fetch(`/models/searchModels?search=${encodedUserQuery}`);
+            const searchResults = await searchResponse.json();
+            displaySearchResults(searchResults);
+        }
+
+        function displaySearchResults(models) {
+            const searchResults = document.getElementById("search-results");
+            searchResults.innerHTML = '';
+
+            if (models.length === 0) {
+                searchResults.innerHTML = '<p class="text-danger p-2">No results found</p>';
+                return;
+            }
+            
+            models.forEach(model => {
+                const rowDiv = document.createElement('div');
+                rowDiv.classList = "row g-3 mt-1";
+
+                const nameDiv = document.createElement('div');
+                nameDiv.classList = "col-8";
+                nameDiv.innerText = model.name;
+
+                const btnDiv = document.createElement('div');
+                btnDiv.classList = "col-4";
+
+                const addModelBtn = document.createElement('button');
+                addModelBtn.classList = "btn btn-outline-light";
+                addModelBtn.innerText = "Add to scene";
+                addModelBtn.type = 'button';
+                addModelBtn.addEventListener('click', () => {
+                    const createdModel = createModel(model, model.name);
+                    
+                    scene1.add(createdModel);
+                    sceneMolecules.push({
+                        Title: model.name,
+                        molecule: createdModel,
+                        position: createdModel.position,
+                        rotation: createdModel.rotation,
+                        scale: createdModel.scale
+                    });
+
+                    sceneMoleculeMenu();
+                });
+
+                btnDiv.appendChild(addModelBtn);
+                rowDiv.appendChild(nameDiv);
+                rowDiv.appendChild(btnDiv);
+
+                searchResults.appendChild(rowDiv);
+            })
+        }
 
         let xValue, yValue;
         let moleculeList = document.getElementById('molecule-list');
@@ -1180,10 +1242,7 @@
 
             sceneMolecules.push({Title: Title, molecule: moleculeGroup, cjson: molObject, position: moleculeGroup.position, rotation: moleculeGroup.rotation, scale: moleculeGroup.scale})
             scene1.add( moleculeGroup );
-
-            sceneMoleculeMenu();
         }
-
 
         function init(pngFile){
 
@@ -1245,17 +1304,6 @@
 
         let offcanvas = document.getElementById('mainMenu')
         offcanvas.classList.add('show')
-
-        const searchField = document.getElementById('search-field');
-        const searchButton = document.getElementById('search-button');
-        const searchResults = document.getElementById('search-results');
-
-        searchField.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                searchButton.click();
-                }
-            });
 
         document.getElementById('markerXSlider').addEventListener('input', function(e){
             markerLocationHelper.position.x = e.target.value;
