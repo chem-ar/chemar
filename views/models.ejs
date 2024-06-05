@@ -63,8 +63,8 @@
                                                     row.innerHTML = `
                                                                 <td>${modelData.name}</td>
                                                                 <td>${modelData.description}</td>
-                                                                <td><a class="text-white" id="Name" href=""> ${modelData.files.obj}</a></td>
-                                                                <td><a class="text-white" id="Name" href=""> ${modelData.files.mtl}</a></td>
+                                                                <td><a class="text-white" id="Name" href="/modelfiles/${modelData.files.obj}"> ${modelData.files.obj}</a></td>
+                                                                <td><a class="text-white" id="Name" href="/modelfiles/${modelData.files.mtl}"> ${modelData.files.mtl}</a></td>
                                                             `;
                                             tableBody.appendChild(row);
                                             
