@@ -19,8 +19,8 @@ const upload = multer({
     storage: storage
 });
 
-router.get('/', function(req, res, next) {
-    res.render('addModel', {title: 'Add New Model'});
+router.get('/', function (req, res, next) {
+    res.render('addModel', { title: 'Add New Model' });
 });
 
 const uploadMiddleware = upload.fields([
@@ -29,18 +29,20 @@ const uploadMiddleware = upload.fields([
 ]);
 
 //This endpoint needs to be completed to handle the uploading for the files to public/modelfiles
-router.post('/saveModel',uploadMiddleware, (req, res) => {
+router.post('/saveModel', uploadMiddleware, (req, res) => {
     const name = req.body.name;
     const modelDescription = req.body.modelDescription;
     const objFile = req.files['objFileName'][0];
     const mtlFile = req.files['mtlFileName'][0];
-    
+    console.log(objFile);
+    console.log(mtlFile);
+
     const models = fs.readdirSync('./public/modelfiles/admin/');
     const fileIsPresent1 = models.includes(objFile.originalname);
     const fileIsPresent2 = models.includes(mtlFile.originalname);
 
     // Check if the model already exists
-    if (!fileIsPresent1 && !fileIsPresent2) {
+    if (fileIsPresent1 && fileIsPresent2) {
         console.log('This model already exists.');
         notifier.notify({
             title: 'Save Unsuccessful.',
@@ -51,28 +53,31 @@ router.post('/saveModel',uploadMiddleware, (req, res) => {
     }
 
     fs.renameSync(objFile.path, path.join(objFile.destination, name + path.extname(objFile.originalname)));
-    fs.renameSync(mtlFile.path, path.join(mtlFile.destination, name + '_description' + path.extname(mtlFile.originalname)));
+    fs.renameSync(mtlFile.path, path.join(mtlFile.destination, name + path.extname(mtlFile.originalname)));
 
-        // Read modelFileCatalog json file and add info to it
-        var rawdata = fs.readFileSync('./public/catalog/modelFileCatalog.json');
-        var parsedData = JSON.parse(rawdata);
+    // Read modelFileCatalog json file and add info to it
+    var rawdata = fs.readFileSync('./public/catalog/modelFileCatalog.json');
+    var parsedData = JSON.parse(rawdata);
 
-        // Variables to be added to modelFileCatalog
-        var modelName = req.body.name;
-        
-        parsedData[modelName] = {
-            name: modelName,
-            description: modelDescription,
-            modelFiles: [objFile.filename, mtlFile.file]
-        };
+    // Variables to be added to modelFileCatalog
+    var modelName = req.body.name;
 
-        var newModel = JSON.stringify(parsedData);
-        fs.writeFileSync('./public/catalog/modelFileCatalog.json', newModel);
-        console.log('Model created');
+    parsedData[modelName] = {
+        name: modelName,
+        description: modelDescription,
+        files: {
+            obj: objFile.originalname,
+            mtl: mtlFile.originalname
+        }
+    };
 
-        // Redirect back to the catalog page
-        return res.redirect('/models');
-    }
+    var newModel = JSON.stringify(parsedData);
+    fs.writeFileSync('./public/catalog/modelFileCatalog.json', newModel);
+    console.log('Model created');
+
+    // Redirect back to the catalog page
+    return res.redirect('/models');
+}
 );
 
 module.exports = router;
