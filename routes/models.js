@@ -23,5 +23,29 @@ router.get('/searchModels', function(req, res, next) {
     res.send(searchResults);
 });
 
-module.exports = router;
+router.post("/edit", function (req, res, next) {
+    const data = req.body;
+  //   console.log(req.query);
+  //   console.log(data);
+  
+    const catalogPath = './public/catalog/modelFileCatalog.json';
+    const rawdata = fs.readFileSync(catalogPath);
+    const parsedData = JSON.parse(rawdata);
+  
+    console.log(parsedData[0]);
+  
+    console.log("hello world");
+  
+    parsedData[req.query.name].name = data.name;
+    parsedData[req.query.name].description = data.description;
+    console.log(parsedData);
+  
+    fs.writeFileSync(catalogPath, JSON.stringify(parsedData));
+  
+    notifier.notify({
+      title: 'Edit Successful',
+      message: `Model updated successfully.`,
+  });
+  });
 
+module.exports = router;
