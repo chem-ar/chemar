@@ -9,7 +9,7 @@ const notifier = require('node-notifier'); // Node Notifiers: https://www.npmjs.
 // Set up multer to handle file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/modelfiles/admin')
+        cb(null, 'public/modelfiles/')
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + '-' + file.originalname);
@@ -37,7 +37,7 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     console.log(objFile);
     console.log(mtlFile);
 
-    const models = fs.readdirSync('./public/modelfiles/admin/');
+    const models = fs.readdirSync('./public/modelfiles/');
     const fileIsPresent1 = models.includes(objFile.originalname);
     const fileIsPresent2 = models.includes(mtlFile.originalname);
 
