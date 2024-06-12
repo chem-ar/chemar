@@ -38,37 +38,5 @@
             "obj": "962-2.mol.obj",
             "mtl": "962-2.mol.mtl"
         }
-    },
-    "Ferin Miyani": {
-        "name": "Ferin Miyani",
-        "description": "heeheheheheee",
-        "files": {
-            "obj": "cube.obj",
-            "mtl": "cube.mtl"
-        }
-    },
-    "Dhruvil Pechiwala": {
-        "name": "Dhruvil Pechiwala",
-        "description": "idhsjjhcujdjkfk",
-        "files": {
-            "obj": "5793.mol.obj",
-            "mtl": "5793.mol.mtl"
-        }
-    },
-    "HelloTest": {
-        "name": "HelloTest",
-        "description": "This is the last one ",
-        "files": {
-            "obj": "5793.mol.obj",
-            "mtl": "5793.mol.mtl"
-        }
-    },
-    "testingPR": {
-        "name": "testingPR",
-        "description": "This is for sure the last one",
-        "files": {
-            "obj": "5793.mol.obj",
-            "mtl": "5793.mol.mtl"
-        }
     }
 }
