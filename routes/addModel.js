@@ -49,9 +49,11 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
         // Redirect back to the catalog page
         return res.redirect('/models');
     }
+    const newObjFileName = name + path.extname(objFile.originalname);
+    const newMtlFileName = name + path.extname(mtlFile.originalname);
 
-    fs.renameSync(objFile.path, path.join(objFile.destination, name + path.extname(objFile.originalname)));
-    fs.renameSync(mtlFile.path, path.join(mtlFile.destination, name + path.extname(mtlFile.originalname)));
+    fs.renameSync(objFile.path, path.join(objFile.destination, newObjFileName));
+    fs.renameSync(mtlFile.path, path.join(mtlFile.destination, newMtlFileName));
 
     // Read modelFileCatalog json file and add info to it
     var rawdata = fs.readFileSync('./public/catalog/modelFileCatalog.json');
@@ -64,8 +66,8 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
         name: modelName,
         description: modelDescription,
         files: {
-            obj: objFile.originalname,
-            mtl: mtlFile.originalname
+            obj: newObjFileName,
+            mtl: newMtlFileName
         }
     };
 
