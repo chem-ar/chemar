@@ -26,6 +26,14 @@
     <!-- include Mol file to CJSON conversion extras -->
     <script src="/cjson/converter.js"></script>
 
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "../js/three.module.js"
+            }
+        }
+    </script>
+
     <style>
       #gui_container{
         position: absolute;
@@ -63,7 +71,9 @@
     Example created by Lee Stemkoski: https://github.com/stemkoski
     Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/
   -->
-  <script>
+  <script type="module">
+  import * as THREE from '/js/three.module.js';
+  import { createModel } from '/js/scenes/rendering.js';
 
   let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1) + '.json';
   
@@ -459,11 +469,19 @@ const moleculeMaterials = {
     console.log(moleculeData.trackingMarker);
 
     for(let item of moleculeData.molecules){
-
-      let molecule = drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale, moleculeData.trackingMarker.position);
       
+      // leaving this commented out here so we can implement backwards-compatability support later
+      // let molecule = drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale, moleculeData.trackingMarker.position);
 
-      markerRoot1.add( molecule ); 
+      const marker = moleculeData.trackingMarker;
+      createModel(item.modelInfo, item.position, item.rotation, item.scale)
+        .then(molecule => {
+          molecule.position.x -= marker.position.x;
+          molecule.position.y -= marker.position.y;
+          molecule.position.z -= marker.position.z;
+
+          markerRoot1.add( molecule );
+        });
 
     }
 
