@@ -34,8 +34,6 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     const modelDescription = req.body.modelDescription;
     const objFile = req.files['objFileName'][0];
     const mtlFile = req.files['mtlFileName'][0];
-    console.log(objFile);
-    console.log(mtlFile);
 
     const models = fs.readdirSync('./public/modelfiles/');
     const fileIsPresent1 = models.includes(objFile.originalname);
@@ -73,7 +71,6 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
 
     var newModel = JSON.stringify(parsedData);
     fs.writeFileSync('./public/catalog/modelFileCatalog.json', newModel);
-    console.log('Model created');
 
     // Redirect back to the catalog page
     return res.redirect('/models');
