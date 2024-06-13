@@ -5,21 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.3/css/dataTables.bootstrap5.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
-
-    <script src = "https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
-    <script src = "https://cdn.datatables.net/1.13.3/js/dataTables.bootstrap5.min.js"></script>
-
-
 
     <script type="importmap">
         {
             "imports": {
-                "three": "../js/three.module.js",
-                "OrbitControls": "../js/OrbitControls.js",
-                "VRMLLoader": "../js/VRMLLoader.js"
+                "three": "../js/three.module.js"
             }
         }
     </script>
@@ -29,16 +19,6 @@
             background-color : #202020;
             margin: 0; 
         }
-
-        td{
-            border-top-width: 0px !important;
-            border-bottom-width: 0px !important;
-        }
-        th{
-            border-top-width: 0px !important;
-            border-bottom-width: 0px !important;
-        }
-
 
         #three-area{
             height: 100vh;
@@ -373,65 +353,63 @@
         color: white;
     }
 </style>
-      
-
-
-    <script src="/js/molFileToJSON.js"></script>
 
     <script type= "module">
-        import { createModel } from '/js/scenes/model-rendering.js';
+        import { createModel, drawMolecule } from '/js/scenes/rendering.js';
+        import {
+            initScene,
+            addModelToScene,
+            onMarkerXChange,
+            onMarkerYChange,
+            updateSceneImg,
+            exportSceneData
+        } from '/js/scenes/scene-mgmt.js';
+        import { addMolToMenu } from '/js/scenes/add-mol-to-menu.js';
 
         var fileName = document.getElementById("fileName");
         var sceneName = document.getElementById("sceneName");
         var sceneDescription = document.getElementById("sceneDescription");
+        const moleculeList = document.getElementById('molecule-list');
+        const threeArea = document.getElementById('three-area');
+
+        const markerXSlider = document.getElementById('markerXSlider');
+        const markerXInput = document.getElementById('markerXInput');
+        const markerYSlider = document.getElementById('markerYSlider');
+        const markerYInput = document.getElementById('markerYInput');
 
         let scene;
         let markerData;
 
         let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
-        console.log(requestedFile);
 
         fetch('/scenes' + '/' + requestedFile)
             .then(response => response.json())
-            .then(data => {
+            .then(async data => {
                 scene = data;
-                console.log(scene);
                 
                 fileName.innerHTML = "File name: " + requestedFile;
                 sceneName.innerHTML = "Scene name: " + scene.name;
                 sceneDescription.innerHTML = "Scene desc: " + scene.desc;
                 markerData = scene.trackingMarker
-                console.log(markerData);
                
-                init(scene.png)
-                animate();
-                markerLocationHelper.position.x = markerData.position.x;
-                markerPlane.position.x = markerData.position.x;
-
-                markerLocationHelper.position.y = markerData.position.y;
-                markerPlane.position.y = markerData.position.y;
-
-                const markerXSliderChange = document.getElementById('markerXSlider');
-                const markerXInputrChange = document.getElementById('markerXInput');
+                initScene(scene.png, markerData, threeArea, window);
                 
-                markerXSliderChange.value = markerData.position.x;
-                markerXInputrChange.value = markerData.position.x;
-
-                const markerYSliderChange = document.getElementById('markerYSlider');
-                const markerYInputrChange = document.getElementById('markerYInput');
-                
-                markerYSliderChange.value = markerData.position.y;
-                markerYInputrChange.value = markerData.position.y;
-
-
-
+                markerXSlider.value = markerData.position.x;
+                markerXInput.value = markerData.position.x;
+                markerYSlider.value = markerData.position.y;
+                markerYInput.value = markerData.position.y;
 
                 // Draw each molecule in three when sceneEditor is loaded.
                 for(let item of scene.molecules) {
-                    drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale);
+                    // leaving this here so we can implement backwards-compatability support later
+                    // drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale);
+                    
+                    const modelInfo = item.modelInfo;
+                    const model = await createModel(modelInfo, item.position, item.rotation, item.scale);
+                    
+                    addModelToScene(modelInfo, model, item.cjson);
+                    addMolToMenu(model, modelInfo.name, moleculeList);
                 }
-
-                sceneMoleculeMenu();
             })
             .catch(error => console.error(error));
 
@@ -461,22 +439,6 @@
                 });
             })
             .catch(error => console.error(error));
-
-        function getMolecule(URL, Title){
-            const requestOptions = {
-                method: "GET",
-                headers: headers,
-            };
-            fetch(URL, requestOptions)
-            .then(response => response.json())
-            .then(data => {
-                drawMoleculeFromMolFile(data["sdf"], Title);
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                reject(error);
-            });
-        }
         
         document.addEventListener("DOMContentLoaded", function () {
             const searchField = document.getElementById("search-field");
@@ -496,7 +458,13 @@
         });
 
         async function searchModel(userQuery){
-            const encodedUserQuery = encodeURIComponent(userQuery);
+            const trimmedQuery = userQuery.trim();
+
+            if(trimmedQuery === "") {
+                displaySearchResults([]);
+                return;
+            }
+            const encodedUserQuery = encodeURIComponent(trimmedQuery);
             const searchResponse = await fetch(`/models/searchModels?search=${encodedUserQuery}`);
             const searchResults = await searchResponse.json();
             displaySearchResults(searchResults);
@@ -511,13 +479,13 @@
                 return;
             }
             
-            models.forEach(model => {
+            models.forEach(modelInfo => {
                 const rowDiv = document.createElement('div');
                 rowDiv.classList = "row g-3 mt-1";
 
                 const nameDiv = document.createElement('div');
                 nameDiv.classList = "col-8";
-                nameDiv.innerText = model.name;
+                nameDiv.innerText = modelInfo.name;
 
                 const btnDiv = document.createElement('div');
                 btnDiv.classList = "col-4";
@@ -526,19 +494,25 @@
                 addModelBtn.classList = "btn btn-outline-light";
                 addModelBtn.innerText = "Add to scene";
                 addModelBtn.type = 'button';
-                addModelBtn.addEventListener('click', () => {
-                    const createdModel = createModel(model, model.name);
-                    
-                    scene1.add(createdModel);
-                    sceneMolecules.push({
-                        Title: model.name,
-                        molecule: createdModel,
-                        position: createdModel.position,
-                        rotation: createdModel.rotation,
-                        scale: createdModel.scale
-                    });
+                addModelBtn.addEventListener('click', async e => {
+                    const spinner = document.createElement('span');
+                    spinner.classList = "spinner-border";
+                    spinner.role = "status";
+                    spinner.ariaLabel = "Loading";
+                    const lineBreak = document.createElement('br');
 
-                    sceneMoleculeMenu();
+                    e.target.prepend(spinner, lineBreak);
+                    e.target.disabled = true;
+
+                    const createdModel = await createModel(modelInfo)
+                        .finally(() => { 
+                            e.target.removeChild(spinner);
+                            e.target.removeChild(lineBreak);
+                            e.target.disabled = false;
+                        });
+
+                    addModelToScene(modelInfo, createdModel);
+                    addMolToMenu(createdModel, modelInfo.name, moleculeList);
                 });
 
                 btnDiv.appendChild(addModelBtn);
@@ -549,790 +523,18 @@
             })
         }
 
-        let xValue, yValue;
-        let moleculeList = document.getElementById('molecule-list');
-        function sceneMoleculeMenu() {
-            moleculeList.innerHTML = "";
-
-            for(let molecule of sceneMolecules){
-                console.log(molecule)
-                let moleculeItem = document.createElement('div');
-                moleculeItem.classList = 'list-group-item list-group-item-action mb-2';
-
-                let moleculeItemButton = document.createElement('button');
-                moleculeItemButton.classList = 'btn btn-outline-light btn-block';
-                moleculeItemButton.innerText = molecule.Title;
-                
-                let moleculeCollapse = document.createElement('div');
-                moleculeCollapse.classList = 'collapse';
-                moleculeCollapse.id = 'molecule' + molecule.molecule.uuid;
-                
-                let moleculeCollapseContent = document.createElement('div');
-                moleculeCollapseContent.classList = 'card card-body bg-dark border-light text-white  my-2';
-                moleculeCollapse.appendChild(moleculeCollapseContent);
-
-                let moleculePositionRow = document.createElement('div');
-                moleculeCollapseContent.appendChild(moleculePositionRow);
-
-                let moleculePositionRowText = document.createElement('h5');
-                moleculePositionRow.appendChild(moleculePositionRowText);
-               
-                moleculePositionRowText.innerText = "Position";
-                
-                let moleculePositionXRow = document.createElement('div');
-                moleculePositionXRow.classList = 'row';
-                moleculePositionRow.appendChild(moleculePositionXRow);
-
-                let moleculePositionXLabel = document.createElement('div');
-                moleculePositionXLabel.classList = 'col-1';
-                moleculePositionXLabel.innerText = "X";
-                moleculePositionXRow.appendChild(moleculePositionXLabel);
-
-                let moleculePositionXText = document.createElement('input');
-                moleculePositionXText.classList = 'form-control form-control-sm mb-2';
-                moleculePositionXText.type = 'number';
-                moleculePositionXText.value = molecule.molecule.position.x;
-
-                // molecule pos x
-                moleculePositionXText.addEventListener("input", function(event) {
-                    molecule.molecule.position.x = moleculePositionXText.value;
-                    moleculePositionXSlider.value = moleculePositionXText.value;
-
-                });
-
-                let moleculePositionXTextCol = document.createElement('div');
-                moleculePositionXTextCol.classList = 'col-3';
-                moleculePositionXTextCol.appendChild(moleculePositionXText);
-                moleculePositionXRow.appendChild(moleculePositionXTextCol);
-
-                let moleculePositionXSlider = document.createElement('input');
-                moleculePositionXSlider.classList = 'form-range mb-2';
-                moleculePositionXSlider.type = 'range';
-                moleculePositionXSlider.min = '0';
-                moleculePositionXSlider.max = '11';
-                moleculePositionXSlider.step = '0.01';
-                moleculePositionXSlider.value = molecule.molecule.position.x;
-
-                moleculePositionXSlider.addEventListener("input", function(event) {
-                    molecule.molecule.position.x = moleculePositionXSlider.value;
-                    moleculePositionXText.value = moleculePositionXSlider.value;
-                    xValue = moleculePositionXSlider.value
-                });
-
-                let moleculePositionXSliderCol = document.createElement('div');
-                moleculePositionXSliderCol.classList = 'col-8';
-                moleculePositionXSliderCol.appendChild(moleculePositionXSlider);
-                moleculePositionXRow.appendChild(moleculePositionXSliderCol);
-                
-                let moleculePositionYRow = document.createElement('div');
-                moleculePositionYRow.classList = 'row';
-                moleculeCollapseContent.appendChild(moleculePositionYRow);
-
-                let moleculePositionYLabel = document.createElement('div');
-                moleculePositionYLabel.classList = 'col-1';
-                moleculePositionYLabel.innerText = "Y";
-                moleculePositionYRow.appendChild(moleculePositionYLabel);
-
-                let moleculePositionYText = document.createElement('input');
-                moleculePositionYText.classList = 'form-control form-control-sm mb-2';
-                moleculePositionYText.type = 'number';
-                moleculePositionYText.value = molecule.molecule.position.y;
-
-                // molecule pos y
-                moleculePositionYText.addEventListener("input", function(event) {
-                    molecule.molecule.position.y = moleculePositionYText.value;
-                    moleculePositionYSlider.value = moleculePositionYText.value;
-                });
-
-                let moleculePositionYTextCol = document.createElement('div');
-                moleculePositionYTextCol.classList = 'col-3';
-                moleculePositionYTextCol.appendChild(moleculePositionYText);
-                moleculePositionYRow.appendChild(moleculePositionYTextCol);
-
-                let moleculePositionYSlider = document.createElement('input');
-                moleculePositionYSlider.classList = 'form-range mb-2';
-                moleculePositionYSlider.type = 'range';
-                moleculePositionYSlider.min = '0';
-                moleculePositionYSlider.max = '11';
-                moleculePositionYSlider.step = '0.01';
-                moleculePositionYSlider.value = molecule.molecule.position.y;
-
-                moleculePositionYSlider.addEventListener("input", function(event) {
-                    molecule.molecule.position.y = moleculePositionYSlider.value;
-                    moleculePositionYText.value = moleculePositionYSlider.value;
-                    yValue = moleculePositionYSlider.value
-                });
-
-                let moleculePositionYSliderCol = document.createElement('div');
-                moleculePositionYSliderCol.classList = 'col-8';
-                moleculePositionYSliderCol.appendChild(moleculePositionYSlider);
-                moleculePositionYRow.appendChild(moleculePositionYSliderCol);
-
-                let moleculePositionZRow = document.createElement('div');
-                moleculePositionZRow.classList = 'row';
-                moleculeCollapseContent.appendChild(moleculePositionZRow);
-
-                let moleculePositionZLabel = document.createElement('div');
-                moleculePositionZLabel.classList = 'col-1';
-                moleculePositionZLabel.innerText = "Z";
-                moleculePositionZRow.appendChild(moleculePositionZLabel);
-
-                let moleculePositionZText = document.createElement('input');
-                moleculePositionZText.classList = 'form-control form-control-sm mb-2';
-                moleculePositionZText.type = 'number';
-                moleculePositionZText.value = molecule.molecule.position.z;
-                
-                // molecule pos z
-                moleculePositionZText.addEventListener("input", function(event) {
-                    molecule.molecule.position.z = moleculePositionZText.value;
-                    // Add to the array.
-                    moleculePositionZSlider.value = moleculePositionZText.value;
-                });
-
-                let moleculePositionZTextCol = document.createElement('div');
-                moleculePositionZTextCol.classList = 'col-3';
-                moleculePositionZTextCol.appendChild(moleculePositionZText);
-                moleculePositionZRow.appendChild(moleculePositionZTextCol);
-
-                let moleculePositionZSlider = document.createElement('input');
-                moleculePositionZSlider.classList = 'form-range mb-2';
-                moleculePositionZSlider.type = 'range';
-                moleculePositionZSlider.min = '0';
-                moleculePositionZSlider.max = '11';
-                moleculePositionZSlider.step = '0.01';
-                moleculePositionZSlider.value = molecule.molecule.position.z;
-                
-                
-                // molecule Z event listener
-                moleculePositionZSlider.addEventListener("input", function(event) {
-                    molecule.molecule.position.z = moleculePositionZSlider.value;
-                    moleculePositionZText.value = moleculePositionZSlider.value;
-                });
-                
-                let moleculePositionZSliderCol = document.createElement('div');
-                moleculePositionZSliderCol.classList = 'col-8';
-                moleculePositionZSliderCol.appendChild(moleculePositionZSlider);
-                moleculePositionZRow.appendChild(moleculePositionZSliderCol);
-
-                //ROTATION
-                let moleculeRotationRow = document.createElement('div');
-               
-                moleculeRotationRow.innerHTML = "<h5>Rotation</h5>";
-                moleculeCollapseContent.appendChild(moleculeRotationRow);
-
-
-                let moleculeRotationXRow = document.createElement('div');
-                moleculeRotationXRow.classList = 'row';
-                moleculeCollapseContent.appendChild(moleculeRotationXRow);
-
-
-                let moleculeRotationXLabel = document.createElement('div');
-                moleculeRotationXLabel.classList = 'col-1';
-                moleculeRotationXLabel.innerText = "X";
-                moleculeRotationXRow.appendChild(moleculeRotationXLabel);
-
-                let moleculeRotationXText = document.createElement('input');
-                moleculeRotationXText.classList = 'form-control form-control-sm mb-2';
-                moleculeRotationXText.type = 'number';
-                moleculeRotationXText.value = molecule.molecule.rotation.y;
-                
-                moleculeRotationXText.addEventListener("input", function (event) {
-                    molecule.molecule.rotation.x = moleculeRotationXText.value;
-                    moleculeRotationXSlider.value = moleculeRotationXText.value;
-                });
-                
-                let moleculeRotationXTextCol = document.createElement('div');
-                moleculeRotationXTextCol.classList = 'col-3';
-                moleculeRotationXTextCol.appendChild(moleculeRotationXText);
-                moleculeRotationXRow.appendChild(moleculeRotationXTextCol);
-
-                let moleculeRotationXSlider = document.createElement('input');
-                moleculeRotationXSlider.classList = 'form-range mb-2';
-                moleculeRotationXSlider.type = 'range';
-                moleculeRotationXSlider.min = -Math.PI;
-                moleculeRotationXSlider.max = Math.PI;
-                moleculeRotationXSlider.step = '0.01';
-                moleculeRotationXSlider.value = molecule.molecule.rotation.y;
-                
-                moleculeRotationXSlider.addEventListener("input", function (event) {
-                    molecule.molecule.rotation.x = moleculeRotationXSlider.value;
-                    moleculeRotationXText.value = moleculeRotationXSlider.value;
-                });
-                
-                let moleculeRotationXSliderCol = document.createElement('div');
-                moleculeRotationXSliderCol.classList = 'col-8';
-                moleculeRotationXSliderCol.appendChild(moleculeRotationXSlider);
-                moleculeRotationXRow.appendChild(moleculeRotationXSliderCol);
- 
-                //Rotation Y
-                let moleculeRotationYRow = document.createElement('div');
-                moleculeRotationYRow.classList = 'row';
-                moleculeCollapseContent.appendChild(moleculeRotationYRow);
-
-                let moleculeRotationYLabel = document.createElement('div');
-                moleculeRotationYLabel.classList = 'col-1';
-                moleculeRotationYLabel.innerText = "Y";
-                moleculeRotationYRow.appendChild(moleculeRotationYLabel);
-
-                let moleculeRotationYText = document.createElement('input');
-                moleculeRotationYText.classList = 'form-control form-control-sm mb-2';
-                moleculeRotationYText.type = 'number';
-                moleculeRotationYText.value = molecule.molecule.rotation.y;
-               
-                moleculeRotationYText.addEventListener("input", function (event) {
-                    molecule.molecule.rotation.y = moleculeRotationYText.value;
-                    moleculeRotationYSlider.value = moleculeRotationYText.value;
-                });
-                
-                let moleculeRotationYTextCol = document.createElement('div');
-                moleculeRotationYTextCol.classList = 'col-3';
-                moleculeRotationYTextCol.appendChild(moleculeRotationYText);
-                moleculeRotationYRow.appendChild(moleculeRotationYTextCol);
-
-                let moleculeRotationYSlider = document.createElement('input');
-                moleculeRotationYSlider.classList = 'form-range mb-2';
-                moleculeRotationYSlider.type = 'range';
-                moleculeRotationYSlider.min = -Math.PI;
-                moleculeRotationYSlider.max = Math.PI;
-                moleculeRotationYSlider.step = '0.01';
-                moleculeRotationYSlider.value = molecule.molecule.rotation.y;
-                
-                moleculeRotationYSlider.addEventListener("input", function (event) {
-                    molecule.molecule.rotation.y = moleculeRotationYSlider.value;
-                    moleculeRotationYText.value = moleculeRotationYSlider.value;
-                });
-
-                let moleculeRotationYSliderCol = document.createElement('div');
-                moleculeRotationYSliderCol.classList = 'col-8';
-                moleculeRotationYSliderCol.appendChild(moleculeRotationYSlider);
-                moleculeRotationYRow.appendChild(moleculeRotationYSliderCol);
-
-                //Rotation Z
-                let moleculeRotationZRow = document.createElement('div');
-                moleculeRotationZRow.classList = 'row';
-                moleculeCollapseContent.appendChild(moleculeRotationZRow);
-
-                let moleculeRotationZLabel = document.createElement('div');
-                moleculeRotationZLabel.classList = 'col-1';
-                moleculeRotationZLabel.innerText = "Z";
-                moleculeRotationZRow.appendChild(moleculeRotationZLabel);
-
-                let moleculeRotationZText = document.createElement('input');
-                moleculeRotationZText.classList = 'form-control form-control-sm mb-2';
-                moleculeRotationZText.type = 'number';
-                moleculeRotationZText.value = molecule.molecule.rotation.y;
-               
-                moleculeRotationZText.addEventListener("input", function (event) {
-                    molecule.molecule.rotation.z = moleculeRotationZText.value;
-                    moleculeRotationZSlider.value = moleculeRotationZText.value;
-                });
-
-                let moleculeRotationZTextCol = document.createElement('div');
-                moleculeRotationZTextCol.classList = 'col-3';
-                moleculeRotationZTextCol.appendChild(moleculeRotationZText);
-                moleculeRotationZRow.appendChild(moleculeRotationZTextCol);
-
-                let moleculeRotationZSlider = document.createElement('input');
-                moleculeRotationZSlider.classList = 'form-range mb-2';
-                moleculeRotationZSlider.type = 'range';
-                moleculeRotationZSlider.min = -Math.PI;
-                moleculeRotationZSlider.max = Math.PI;
-                moleculeRotationZSlider.step = '0.01';
-                moleculeRotationZSlider.value = molecule.molecule.rotation.y;
-                
-                moleculeRotationZSlider.addEventListener("input", function (event) {
-                    molecule.molecule.rotation.z = moleculeRotationZSlider.value;
-                    moleculeRotationZText.value = moleculeRotationZSlider.value;
-                });
-
-                let moleculeRotationZSliderCol = document.createElement('div');
-                moleculeRotationZSliderCol.classList = 'col-8';
-                moleculeRotationZSliderCol.appendChild(moleculeRotationZSlider);
-                moleculeRotationZRow.appendChild(moleculeRotationZSliderCol);
-
-                //Scale
-                let moleculeScaleRow = document.createElement('div');
-                moleculeScaleRow.classList = 'row';
-                moleculeCollapseContent.appendChild(moleculeScaleRow);
-               
-                moleculeScaleRow.innerHTML = "<h5>Scale</h5>";
-                moleculeCollapseContent.appendChild(moleculeScaleRow);
-
-                let moleculeScaleText = document.createElement('input');
-                moleculeScaleText.classList = 'form-control form-control-sm mb-2';
-                moleculeScaleText.type = 'number';
-                moleculeScaleText.value = 1;
-                
-                moleculeScaleText.addEventListener("input", function (event) {
-                    molecule.molecule.scale.z = moleculeScaleText.value;
-                    molecule.molecule.scale.x = moleculeScaleText.value;
-                    molecule.molecule.scale.y = moleculeScaleText.value;
-                    moleculeScaleSlider.value = moleculeScaleText.value;
-                });
-
-                let moleculeScaleTextCol = document.createElement('div');
-                moleculeScaleTextCol.classList = 'col-3';
-                moleculeScaleTextCol.appendChild(moleculeScaleText);
-                moleculeScaleRow.appendChild(moleculeScaleTextCol);
-
-                let moleculeScaleSlider = document.createElement('input');
-                moleculeScaleSlider.classList = 'form-range mb-2';
-                moleculeScaleSlider.type = 'range';
-                moleculeScaleSlider.min = 0.01;
-                moleculeScaleSlider.max = 2;
-                moleculeScaleSlider.step = '0.01';
-                moleculeScaleSlider.value = 1;
-
-                moleculeScaleSlider.addEventListener("input", function (event) {
-                    molecule.molecule.scale.z = moleculeScaleText.value;
-                    molecule.molecule.scale.x = moleculeScaleText.value;
-                    molecule.molecule.scale.y = moleculeScaleText.value;
-
-                    moleculeScaleText.value = moleculeScaleSlider.value;
-                });
-
-                let moleculeScaleSliderCol = document.createElement('div');
-                moleculeScaleSliderCol.classList = 'col-9';
-                moleculeScaleSliderCol.appendChild(moleculeScaleSlider);
-                moleculeScaleRow.appendChild(moleculeScaleSliderCol);
-
-
-                moleculeItemButton.addEventListener("click", function(event) {
-                    event.preventDefault();
-                    let moleculeCollapse = document.getElementById('molecule' +  molecule.molecule.uuid);
-                    if(moleculeCollapse.classList.contains('show')){
-                        moleculeCollapse.classList.remove('show');
-                    }else{
-                        moleculeCollapse.classList.add('show');
-                    }
-                });
-
-                moleculeList.appendChild(moleculeItemButton);
-                moleculeList.appendChild(moleculeCollapse);
-                moleculeList.appendChild(moleculeItem);
-                console.log(molecule)
-            }
-            console.log("updateMoleculeMenu called");
-        }
-
-
-        import { OrbitControls } from '/js/OrbitControls.js';
-        import { VRMLLoader } from '/js/VRMLLoader.js';
-        import { GLTFLoader } from '/js/GLTFLoader.js';
-
-        import * as THREE from '/js/three.module.js';
-        import { ARButton } from '/js/ARButton.js';
-
-        const loader = new THREE.TextureLoader();
-        
-
-        const threeArea = document.getElementById('three-area');
-
-        let scene1, camera, renderer, controls, clock;
-
-        let axesHelper, markerLocationHelper;
-        let spotLightTop, spotLightBottom, ambientLight;
-
-        clock = new THREE.Clock();
-        let deltaTime = 0;
-        let totalTime = 0;
-        let actions = [];
-
-        let paperGeometry, paperMaterial, paperPlane;
-
-        let markerGeometry, markerMaterial, markerPlane;
-        let markerPosition = new THREE.Vector3(0,0,0);
-
-
-        const moleculeGeometries = {
-            "C" : new THREE.SphereGeometry( .67, 32, 32 ),
-            "H" : new THREE.SphereGeometry( .53, 32, 32 ),
-            "O" : new THREE.SphereGeometry( .48, 32, 32 ),
-            "N" : new THREE.SphereGeometry( .56, 32, 32 ),
-            "S" : new THREE.SphereGeometry( .88, 32, 32 ),
-            "P" : new THREE.SphereGeometry( .98, 32, 32 ),
-            "F" : new THREE.SphereGeometry( .42, 32, 32 ),
-            "Cl": new THREE.SphereGeometry( .79, 32, 32 ),
-            "Br": new THREE.SphereGeometry( .94, 32, 32 ),
-            "I" : new THREE.SphereGeometry( 1.15, 32, 32 ),
-            "Be": new THREE.SphereGeometry( 1.12, 32, 32 ),
-            "B" : new THREE.SphereGeometry( .87, 32, 32 ),
-            "Ne" : new THREE.SphereGeometry(.38,32,32),
-            "Na" : new THREE.SphereGeometry( 1.9,32,32),
-            "Mg" : new THREE.SphereGeometry(1.45,32,32),
-            "Al" : new THREE.SphereGeometry(1.18,32,32),
-            "Si" : new THREE.SphereGeometry(1.11,32,32),
-            "Ar" : new THREE.SphereGeometry(.71,32,32),
-            "K" : new THREE.SphereGeometry(2.43,32,32),
-            "Ca" : new THREE.SphereGeometry(1.94,32,32),
-            "Sc" : new THREE.SphereGeometry(1.84,32,32),
-            "Ti" : new THREE.SphereGeometry(1.76,32,32),
-            "V" : new THREE.SphereGeometry(1.71,32,32),
-            "Cr" : new THREE.SphereGeometry(1.66,32,32),
-            "Mn" : new THREE.SphereGeometry(1.61,32,32),
-            "Fe" : new THREE.SphereGeometry(1.56,32,32),
-            "Co" : new THREE.SphereGeometry(1.52,32,32),
-            "Ni" : new THREE.SphereGeometry(1.49,32,32),
-            "Cu" : new THREE.SphereGeometry(1.45,32,32),
-            "Zn" : new THREE.SphereGeometry(1.42,32,32),
-            "Ga" : new THREE.SphereGeometry(1.36,32,32),
-            "Ge" : new THREE.SphereGeometry(1.25,32,32),
-            "As" : new THREE.SphereGeometry(1.14,32,32),
-            "Se" : new THREE.SphereGeometry(1.03,32,32),
-            "Kr" : new THREE.SphereGeometry(0.88,32,32),
-            "Rb" : new THREE.SphereGeometry(2.65,32,32),
-            "Sr" : new THREE.SphereGeometry(2.19,32,32),
-            "Y" : new THREE.SphereGeometry(2.12,32,32),
-            "Zr" : new THREE.SphereGeometry(2.06,32,32),
-            "Nb" : new THREE.SphereGeometry(1.98,32,32),
-            "Mo" : new THREE.SphereGeometry(1.9,32,32),
-            "Tc" : new THREE.SphereGeometry(1.83,32,32),
-            "Ru" : new THREE.SphereGeometry(1.78,32,32),
-            "Rh" : new THREE.SphereGeometry(1.73,32,32),
-            "Pd" : new THREE.SphereGeometry(1.69,32,32),
-            "Ag" : new THREE.SphereGeometry(1.65,32,32),
-            "Cd" : new THREE.SphereGeometry(1.61,32,32),
-            "In" : new THREE.SphereGeometry(1.56,32,32),
-            "Sn" : new THREE.SphereGeometry(1.45,32,32),
-            "Sb" : new THREE.SphereGeometry(1.33,32,32),
-            "Te" : new THREE.SphereGeometry(1.23,32,32),
-            "Xe" : new THREE.SphereGeometry(1.08,32,32),
-            "Cs" : new THREE.SphereGeometry(2.98,32,32),
-            "Ba" : new THREE.SphereGeometry(2.53,32,32),
-            "La" : new THREE.SphereGeometry(2.46,32,32),
-            "Ce" : new THREE.SphereGeometry(2.35,32,32),
-            "Pr" : new THREE.SphereGeometry(2.44,32,32),
-            "Nd" : new THREE.SphereGeometry(2.4,32,32),
-            "Pm" : new THREE.SphereGeometry(2.38,32,32),
-            "Sm" : new THREE.SphereGeometry(2.29,32,32),
-            "Eu" : new THREE.SphereGeometry(2.33,32,32),
-            "Gd" : new THREE.SphereGeometry(2.37,32,32),
-            "Tb" : new THREE.SphereGeometry(2.21,32,32),
-            "Cr" : new THREE.SphereGeometry(1.73,32,32),
-            "Cs" : new THREE.SphereGeometry(2.98,32,32),
-            "Cu" : new THREE.SphereGeometry(1.45,32,32),
-            "Eu" : new THREE.SphereGeometry(2.33,32,32),
-            "Ga" : new THREE.SphereGeometry(1.36,32,32),
-            "Hf" : new THREE.SphereGeometry(2.08,32,32),
-            "In" : new THREE.SphereGeometry(1.56,32,32),
-            "Ir" : new THREE.SphereGeometry(1.86,32,32),
-            "Kr" : new THREE.SphereGeometry(0.88,32,32),
-            "La" : new THREE.SphereGeometry(2.46,32,32),
-            "Li" : new THREE.SphereGeometry(1.52,32,32),
-            "Lu" : new THREE.SphereGeometry(2.1,32,32),
-            "Mg" : new THREE.SphereGeometry(1.45,32,32),
-            "Mn" : new THREE.SphereGeometry(1.61,32,32),
-            "Mo" : new THREE.SphereGeometry(1.9,32,32),
-            "Na" : new THREE.SphereGeometry(1.9,32,32),
-            "Nb" : new THREE.SphereGeometry(1.98,32,32),
-            "Ne" : new THREE.SphereGeometry(0.38,32,32),
-            "Ni" : new THREE.SphereGeometry(1.49,32,32),
-            "Os" : new THREE.SphereGeometry(1.85,32,32),
-            "P"  : new THREE.SphereGeometry(0.98,32,32),
-            "Pa" : new THREE.SphereGeometry(2.0,32,32),
-            "Pb" : new THREE.SphereGeometry(1.8,32,32),
-            "Pd" : new THREE.SphereGeometry(1.69,32,32),
-            "Pm" : new THREE.SphereGeometry(2.38,32,32),
-            "Po" : new THREE.SphereGeometry(1.4,32,32),
-            "Pr" : new THREE.SphereGeometry(2.44,32,32),
-            "Pt" : new THREE.SphereGeometry(1.75,32,32),
-            "Ra" : new THREE.SphereGeometry(2.31,32,32),
-            "Rb" : new THREE.SphereGeometry(2.65,32,32),
-            "Re" : new THREE.SphereGeometry(1.88,32,32),
-            "Rh" : new THREE.SphereGeometry(1.73,32,32),
-            "Rn" : new THREE.SphereGeometry(1.5,32,32),
-            "Ru" : new THREE.SphereGeometry(1.78,32,32),
-            "Sb" : new THREE.SphereGeometry(1.33,32,32),
-            "Sc" : new THREE.SphereGeometry(1.84,32,32),
-            "Se" : new THREE.SphereGeometry(1.03,32,32),
-            "Si" : new THREE.SphereGeometry(1.11,32,32),
-            "Sm" : new THREE.SphereGeometry(2.29,32,32),
-            "Sn" : new THREE.SphereGeometry(1.45,32,32),
-            "Sr" : new THREE.SphereGeometry(2.19,32,32),
-            "Ta" : new THREE.SphereGeometry(2.0, 32,32)
-        }
-        const moleculeMaterials = {
-            "C" : new THREE.MeshPhongMaterial( { color: 0x333333, opacity: 0.9, transparent: true} ),
-            "H" : new THREE.MeshPhongMaterial( { color: 0xffffff, opacity: 0.9, transparent: true} ),
-            "O" : new THREE.MeshPhongMaterial( { color: 0xff0000, opacity: 0.9, transparent: true} ),
-            "N" : new THREE.MeshPhongMaterial( { color: 0x0000ff, opacity: 0.9, transparent: true} ),
-            "S" : new THREE.MeshPhongMaterial( { color: 0xffff00, opacity: 0.9, transparent: true} ),
-            "P" : new THREE.MeshPhongMaterial( { color: 0xff00ff, opacity: 0.9, transparent: true} ),
-            "F" : new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
-            "Cl": new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
-            "Br": new THREE.MeshPhongMaterial( { color: 0x964b00, opacity: 0.9, transparent: true} ),
-            "I" : new THREE.MeshPhongMaterial( { color: 0x8b008b, opacity: 0.9, transparent: true} ),
-            "Be": new THREE.MeshPhongMaterial( { color: 0xc2c2c2, opacity: 0.9, transparent: true} ),
-            "B" : new THREE.MeshPhongMaterial( { color: 0xffa500, opacity: 0.9, transparent: true} ),
-            "Ne" : new THREE.MeshPhongMaterial( { color: 0xb3e6ff, opacity: 0.9, transparent: true} ),
-            "Na" : new THREE.MeshPhongMaterial( { color: 0x0000ff, opacity: 0.9, transparent: true} ),
-            "Mg" : new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.9, transparent: true} ),
-            "Al" : new THREE.MeshPhongMaterial( { color: 0xc2c2c2, opacity: 0.9, transparent: true} ),
-            "Si" : new THREE.MeshPhongMaterial( { color: 0xd9d9d9, opacity: 0.9, transparent: true} ),
-            "Ar" : new THREE.MeshPhongMaterial( { color: 0xb3e6ff, opacity: 0.9, transparent: true} ),
-            "K" : new THREE.MeshPhongMaterial( { color: 0x8f40a6, opacity: 0.9, transparent: true} ),
-            "Ca" : new THREE.MeshPhongMaterial( { color: 0x808080, opacity: 0.9, transparent: true} ),
-            "Sc" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Ti" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "V" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Cr" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Mn" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Fe" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Co" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Ni" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Cu" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Zn" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Ga" : new THREE.MeshPhongMaterial( { color: 0xc2c2c2, opacity: 0.9, transparent: true} ),
-            "Ge" : new THREE.MeshPhongMaterial( { color: 0xd9d9d9, opacity: 0.9, transparent: true} ),
-            "As" : new THREE.MeshPhongMaterial( { color: 0xffa500, opacity: 0.9, transparent: true} ),
-            "Se" : new THREE.MeshPhongMaterial( { color: 0xffff00, opacity: 0.9, transparent: true} ),
-            "Kr" : new THREE.MeshPhongMaterial( { color: 0xb3e6ff, opacity: 0.9, transparent: true} ),
-            "Rb" : new THREE.MeshPhongMaterial( { color: 0x8f40a6, opacity: 0.9, transparent: true} ),
-            "Sr" : new THREE.MeshPhongMaterial( { color: 0x808080, opacity: 0.9, transparent: true} ),
-            "Y" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Zr" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Nb" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Mo" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Tc" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Ru" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Rh" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Pd" : new THREE.MeshPhongMaterial( { color: 0xffc2ff, opacity: 0.9, transparent: true} ),
-            "Li": new THREE.MeshPhongMaterial( { color: 0xff6666, opacity: 0.9, transparent: true} ),
-            "Be": new THREE.MeshPhongMaterial( { color: 0xccff99, opacity: 0.9, transparent: true} ),
-            "F": new THREE.MeshPhongMaterial( { color: 0x66ff66, opacity: 0.9, transparent: true} ),
-            "Na": new THREE.MeshPhongMaterial( { color: 0x3366ff, opacity: 0.9, transparent: true} ),
-            "Mg": new THREE.MeshPhongMaterial( { color: 0x33cc33, opacity: 0.9, transparent: true} ),
-            "Al": new THREE.MeshPhongMaterial( { color: 0xcccccc, opacity: 0.9, transparent: true} ),
-            "Si": new THREE.MeshPhongMaterial( { color: 0x999999, opacity: 0.9, transparent: true} ),
-            "Cl": new THREE.MeshPhongMaterial( { color: 0x00ff66, opacity: 0.9, transparent: true} ),
-            "K": new THREE.MeshPhongMaterial( { color: 0xff3399, opacity: 0.9, transparent: true} ),
-            "Ca": new THREE.MeshPhongMaterial( { color: 0x66ffff, opacity: 0.9, transparent: true} ),
-            "Ti": new THREE.MeshPhongMaterial( { color: 0xff99ff, opacity: 0.9, transparent: true} ),
-            "Fe": new THREE.MeshPhongMaterial( { color: 0xff9933, opacity: 0.9, transparent: true} ),
-            "Cu": new THREE.MeshPhongMaterial( { color: 0x996633, opacity: 0.9, transparent: true} ),
-            "Zn": new THREE.MeshPhongMaterial( { color: 0x9999cc, opacity: 0.9, transparent: true} ),
-            "Ag": new THREE.MeshPhongMaterial( { color: 0xcccccc, opacity: 0.9, transparent: true} ),
-            "Au": new THREE.MeshPhongMaterial( { color: 0xffcc00, opacity: 0.9, transparent: true} )
-        }
-        
-        let sceneMolecules = [];
-        
-        function drawMoleculeFromMolFile(molFile, Title){
-            let molObject = molFileToJSON(molFile);
-            drawMolecule(molObject, Title);
-        }
-
-        function drawMolecule(molObject, Title, drawPosition, drawRotation, drawScale){
-            console.log(drawPosition);
-            console.log(drawRotation);
-
-            let moleculeGroup = new THREE.Group();
-
-            if(drawPosition === undefined){
-                drawPosition = new THREE.Vector3(0,0,0.5);
-            }
-            
-            if(drawRotation === undefined){
-                drawRotation = {
-                    _x: 0,
-                    _y: 0,
-                    _z: 0}
-            }
-
-            if(drawScale === undefined){
-                drawScale = {
-                    x: 1,
-                    y: 1,
-                    z: 1}
-            }
-
-            let firstPoint = new THREE.Vector3(
-                molObject.x, 
-                molObject.y, 
-                molObject.z);
-
-            let limits = {
-                x: {
-                    min: firstPoint.x,
-                    max: firstPoint.x
-                },
-                y: {
-                    min: firstPoint.y,
-                    max: firstPoint.y
-                },
-                z: {
-                    min: firstPoint.z,
-                    max: firstPoint.z
-                }
-            }
-
-            for(let item of molObject.atoms){
-                let point = new THREE.Vector3(item.position.x, item.position.y, item.position.z);
-                if(Number(point.x) < Number(limits.x.min)){
-                    limits.x.min = point.x;
-                }
-                if(Number(point.x) > Number(limits.x.max)){
-                    limits.x.max = point.x;
-                }
-                if(Number(point.y) < Number(limits.y.min)){
-                    limits.y.min = point.y;
-                }
-                if(Number(point.y) > Number(limits.y.max)){
-                    limits.y.max = point.y;
-                }
-                if(Number(point.z) < Number(limits.z.min)){
-                    limits.z.min = point.z;
-                }
-                if(Number(point.z) > Number(limits.z.max))  {
-                    limits.z.max = point.z;
-                }
-            }
-
-            let moleculeCenter = new THREE.Vector3(
-                (Number((limits.x.min)) + Number(limits.x.max))/2,
-                (Number((limits.y.min)) + Number(limits.y.max))/2,
-                (Number((limits.z.min)) + Number(limits.z.max))/2);
-                        
-            for(let item of molObject.atoms){
-                const sphere = new THREE.Mesh( moleculeGeometries[item.type], moleculeMaterials[item.type] );
-                sphere.position.x = item.position.x - moleculeCenter.x;
-                sphere.position.y = item.position.y - moleculeCenter.y;
-                sphere.position.z = item.position.z - moleculeCenter.z;
-                moleculeGroup.add( sphere );
-            }
-
-
-
-            document.getElementById('markerYInput').addEventListener('input', function(e){
-                moleculeGroup.position.y =  drawPosition.y + e.target.value;
-                console.log(e.target.value)
-                console.log(drawPosition.y)
-        });
-
-            document.getElementById('markerXSlider').addEventListener('input', function(e){
-                moleculeGroup.position.x =  drawPosition.x + e.target.value;
-
-            });
-
-            document.getElementById('markerYSlider').addEventListener('input', function(e){
-                moleculeGroup.position.y =  drawPosition.y + e.target.value;
-            });
-
-            document.getElementById('markerXInput').addEventListener('input', function(e){
-                    moleculeGroup.position.x =  drawPosition.x + e.target.value;
-            });
-
-            moleculeGroup.position.x = drawPosition.x;
-            moleculeGroup.position.y = drawPosition.y;
-            moleculeGroup.position.z = drawPosition.z;
-
-            moleculeGroup.rotation.x = drawRotation._x;
-            moleculeGroup.rotation.y = drawRotation._y;
-            moleculeGroup.rotation.z = drawRotation._z;
-
-            
-            moleculeGroup.scale.x = drawScale.x;
-            moleculeGroup.scale.y = drawScale.y;
-            moleculeGroup.scale.z = drawScale.z;
-
-            console.log(moleculeGroup.rotation);
-            console.log(drawRotation);
-
-            
-
-            sceneMolecules.push({Title: Title, molecule: moleculeGroup, cjson: molObject, position: moleculeGroup.position, rotation: moleculeGroup.rotation, scale: moleculeGroup.scale})
-            scene1.add( moleculeGroup );
-        }
-
-        function init(pngFile){
-
-            scene1 = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 4000 );
-
-            
-            scene1.add( camera );
-
-            renderer = new THREE.WebGLRenderer({ alpha: true });
-            renderer.setClearColor( 0x000000, 0 );
-            renderer.setSize( window.innerWidth, window.innerHeight );
-            threeArea.appendChild( renderer.domElement );
-
-          
-
-            ambientLight = new THREE.AmbientLight( 0xffffff );
-            scene1.add( ambientLight );
-
-            // Load an image file into a custom material
-            paperMaterial = new THREE.MeshLambertMaterial({
-                map: loader.load(`/images/${pngFile}`)
-            });
-            paperMaterial.side = THREE.DoubleSide;
-
-            let paperDimensions = new THREE.Vector2( 8.5, 11 );
-            paperGeometry = new THREE.PlaneGeometry( paperDimensions.y, paperDimensions.x );
-            paperPlane = new THREE.Mesh( paperGeometry, paperMaterial );
-            scene1.add( paperPlane );
-            paperPlane.position.z = 0;
-            paperPlane.position.x = paperDimensions.y/2;
-            paperPlane.position.y = paperDimensions.x/2;
-
-
-            markerMaterial = new THREE.MeshLambertMaterial({
-                map: loader.load('/test_marker.png')
-            });
-
-            let markerDimensions = new THREE.Vector2( 1, 1 );
-            markerGeometry = new THREE.PlaneGeometry( markerDimensions.x, markerDimensions.y );
-            markerPlane = new THREE.Mesh( markerGeometry, markerMaterial );
-            markerPlane.position.z = 0.1;
-            scene1.add( markerPlane );
-
-            markerLocationHelper = new THREE.AxesHelper( 10 );
-            scene1.add( markerLocationHelper );
-
-            axesHelper = new THREE.AxesHelper( 50 );
-            scene1.add( axesHelper );
-
-            controls = new OrbitControls( camera, renderer.domElement );
-            controls.dampingFactor = 10;
-            controls.minDistance = 1;
-
-            camera.position.x = 0;
-            camera.position.y = 0;
-            camera.position.z = 2;
-        }
-
         let offcanvas = document.getElementById('mainMenu')
         offcanvas.classList.add('show')
 
-        document.getElementById('markerXSlider').addEventListener('input', function(e){
-            markerLocationHelper.position.x = e.target.value;
-            markerPlane.position.x = e.target.value;
-        });
-
-        document.getElementById('markerXInput').addEventListener('input', function(e){
-            markerLocationHelper.position.x = e.target.value;
-            markerPlane.position.x = e.target.value;
-
-        });
-
-        document.getElementById('markerYSlider').addEventListener('input', function(e){
-            markerLocationHelper.position.y = e.target.value;
-            markerPlane.position.y = e.target.value;
-
-        });
-
-        document.getElementById('markerYInput').addEventListener('input', function(e){
-            markerLocationHelper.position.y = e.target.value;
-            markerPlane.position.y = e.target.value;
-
-        });
+        markerXSlider.addEventListener('input', onMarkerXChange);
+        markerXInput.addEventListener('input', onMarkerXChange);
+        markerYSlider.addEventListener('input', onMarkerYChange);
+        markerYInput.addEventListener('input', onMarkerYChange);
 
         var loadedScene = {};
 
         document.getElementById('loadSaveBtn').addEventListener('click', () => {
             var selectedScene = document.getElementById("sceneMenuList").value;
-            console.log(selectedScene);
 
             fetch(`/scenes/${selectedScene}`)
                 .then(response => response.json())
@@ -1355,61 +557,23 @@ document.getElementById("saveBtn").addEventListener('click', () => {
         alert("Please enter a name and description");
     } else {
 
-        console.log("Saved changes");
         var sceneName = sceneNameInput.value;
         var sceneDescription = sceneDescriptionInput.value;
-
-        // Check if name changed.
-        var newSceneName = sceneNameInput.value;
-        var newSceneDescription = sceneDescriptionInput.value;
-        console.log(newSceneName);
-        console.log(newSceneDescription);
-
-        let offsetArray = [];
-        for (let item of sceneMolecules) {
-            offsetArray.push(item.molecule.position);
-        }
-
-        let rotationArray = [];
-        for (let item of sceneMolecules) {
-            rotationArray.push(item.molecule.rotation);
-        }
-
-        let scaleArray = [];
-        for (let item of sceneMolecules) {
-            scaleArray.push(item.molecule.scale);
-        }
 
         let pngFileToUpdate = scene.png;
         if (pngFileName) {
             pngFileToUpdate = pngFileName;
         }
 
+        const { markerData, sceneMolecules } = exportSceneData();
+
         scene = {
             "name": sceneName,
             "desc": sceneDescription,
             "png": pngFileToUpdate,
-            "trackingMarker": {
-                "position": {
-                    "x": markerPlane.position.x,
-                    "y": markerPlane.position.y,
-                    "z": markerPlane.position.z,
-                },
-                "rotation": {
-                    "x": markerPlane.rotation.x,
-                    "y": markerPlane.rotation.y,
-                    "z": markerPlane.rotation.z,
-                },
-                "scale": {
-                    "x": markerPlane.scale.x,
-                    "y": markerPlane.scale.y,
-                    "z": markerPlane.scale.z,
-                }
-            },
+            "trackingMarker": markerData,
             "molecules": sceneMolecules,
         }
-
-        console.log(scene);
 
         // Update scene catalog file
         fetch(`/sceneEditor/save/${scene.name}`, {
@@ -1422,7 +586,7 @@ document.getElementById("saveBtn").addEventListener('click', () => {
         .then(response => response.json())
         .then(data => {
             console.log(data); // log the response data to the console
-            updateSceneCatalog(scene.name, newSceneName, newSceneDescription);
+            updateSceneCatalog(scene.name, sceneName, sceneDescription);
             updateScenesList(); // Call the function to update the scenes list
         })
         .catch(err => {
@@ -1481,7 +645,6 @@ function updateScenesList() {
             const reader = new FileReader();
             reader.addEventListener("load", () => {
                 // convert image file to base64 string
-                console.log(reader.result);
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST', './upload/images', true);
                 xhr.setRequestHeader('Content-Type', 'application/json');
@@ -1489,9 +652,7 @@ function updateScenesList() {
                     if (xhr.status === 200) {
                         let response = JSON.parse(xhr.responseText);
                         if (response.success) {
-                            // Assuming paperMaterial and loader are defined elsewhere
-                            paperMaterial.map = loader.load(response.fileSrc);
-                            paperMaterial.needsUpdate = true;
+                            updateSceneImg(response.fileSrc);
                         } else {
                             alert('Error: ' + response.message);
                         }
@@ -1509,27 +670,6 @@ function updateScenesList() {
                 reader.readAsDataURL(file);
             }
         });
-
-        const loadMoleculeFile = {
-            loadFile: function() {
-                document.getElementById('fileInput').click();
-            },
-        };
-
-        function animate() {
-            requestAnimationFrame( animate );
-            var delta = clock.getDelta();
-
-            renderer.render( scene1, camera );
-            controls.update();
-        }
-
-        window.addEventListener('resize', onResize, false);
-        function onResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
