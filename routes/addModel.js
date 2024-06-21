@@ -41,13 +41,9 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
 
     // Check if the model already exists
     if (fileIsPresent1 && fileIsPresent2) {
-        console.log('This model already exists.');
-        notifier.notify({
-            title: 'Save Unsuccessful.',
-            message: 'Cannot save file This model already exists.',
+        return res.status(400).send({
+            error: 'This model already exists'
         });
-        // Redirect back to the catalog page
-        return res.redirect('/models');
     }
     const newObjFileName = name + path.extname(objFile.originalname);
     const newMtlFileName = name + path.extname(mtlFile.originalname);
@@ -74,8 +70,7 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     var newModel = JSON.stringify(parsedData);
     fs.writeFileSync('./public/catalog/modelFileCatalog.json', newModel);
 
-    // Redirect back to the catalog page
-    return res.redirect('/models');
+    return res.send({ message: 'Save successful!' });
 }
 );
 
