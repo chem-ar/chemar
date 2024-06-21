@@ -73,7 +73,7 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     var newModel = JSON.stringify(parsedData);
     fs.writeFileSync('./public/catalog/modelFileCatalog.json', newModel);
 
-    return res.send({ message: 'Save successful!' });
+    return res.send({ message: 'Model saved!' });
 }
 );
 

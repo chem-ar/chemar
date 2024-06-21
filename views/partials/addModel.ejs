@@ -45,11 +45,16 @@
                 const body = await res.json();
                 if (res.status === 400 && body.error) {
                     throw new Error(body.error);
+                } else if (!res.ok) {
+                    throw new Error(`Server returned status code ${res.status}`);
                 }
 
+                toastr.success(body.message);
                 uploadModelForm.reset();
                 fetchModels();   // fetchModels is defined at views/models.ejs
             })
-            .catch(console.log);
+            .catch(err => {
+                toastr.error(err.message, "Failed to save model");
+            });
     });
 </script>
