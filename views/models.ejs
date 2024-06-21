@@ -96,32 +96,35 @@
     $(document).ready(function () {
         $('#editModal').appendTo("body");
         $('#deleteModal').appendTo("body");
+
+        // Initialize the DataTable
+        dataTable = new DataTable('#modelTable', {
+            ordering: true
+        });
+        
+        fetchModels();
     });
 
     let dataTable;
 
-    // Fetch the model data from the server
-    fetch("/catalog/modelFileCatalog.json")
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error(`HTTP error Status: ${res.status}`);
-            }
-            return res.json();
-        })
-        .then((modelData) => {
-            dataTable = modelData;
-                // Initialize the DataTable
-                $(document).ready(function () {
-                    var dataTable = new DataTable('#modelTable',{
-                       ordering: true
-                    });
+    // this function is also used at views/partials/addModel.ejs
+    function fetchModels() {
+        // Fetch the model data from the server
+        fetch("/catalog/modelFileCatalog.json")
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error Status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then((modelData) => {
+                dataTable.clear();
 
-                    // Populate the table with the fetched model data
-                    for (const key in modelData) {
+                // Populate the table with the fetched model data
+                for (const key in modelData) {
                     populateTable(modelData[key], dataTable); 
-                    }
-                
-                });                                  
+                }
+
                 // event listeners for the edit and delete buttons
                 document.querySelectorAll('.editModelBtn').forEach(btn => {
                     btn.addEventListener('click', handleEditClick);
@@ -130,8 +133,9 @@
                 document.querySelectorAll('.deleteModelBtn').forEach(btn => {
                     btn.addEventListener('click', handleDeleteClick);
                 });   
-        })
-        .catch((error) => console.error("Unable to fetch data:", error));
+            })
+            .catch((error) => console.error("Unable to fetch data:", error));
+    }
     
     function handleEditClick(event) {
         const btn = event.currentTarget;
