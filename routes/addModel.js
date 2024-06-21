@@ -35,18 +35,23 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     const objFile = req.files['objFileName'][0];
     const mtlFile = req.files['mtlFileName'][0];
 
-    const models = fs.readdirSync('./public/modelfiles/');
-    const fileIsPresent1 = models.includes(objFile.originalname);
-    const fileIsPresent2 = models.includes(mtlFile.originalname);
+    const newObjFileName = name + path.extname(objFile.originalname);
+    const newMtlFileName = name + path.extname(mtlFile.originalname);
 
+    const models = fs.readdirSync('./public/modelfiles/');
+    const fileIsPresent1 = models.includes(newObjFileName);
+    const fileIsPresent2 = models.includes(newMtlFileName);
+    
     // Check if the model already exists
     if (fileIsPresent1 && fileIsPresent2) {
+        // delete files saved by multer
+        fs.unlinkSync(objFile.path);
+        fs.unlinkSync(mtlFile.path);
+
         return res.status(400).send({
             error: 'This model already exists'
         });
     }
-    const newObjFileName = name + path.extname(objFile.originalname);
-    const newMtlFileName = name + path.extname(mtlFile.originalname);
 
     fs.renameSync(objFile.path, path.join(objFile.destination, newObjFileName));
     fs.renameSync(mtlFile.path, path.join(mtlFile.destination, newMtlFileName));
