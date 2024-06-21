@@ -41,7 +41,15 @@
             method: 'POST',
             body: formData
         })
-            .then(() => fetchModels())  // fetchModels is defined at views/models.ejs
+            .then(async res => {
+                const body = await res.json();
+                if (res.status === 400 && body.error) {
+                    throw new Error(body.error);
+                }
+
+                uploadModelForm.reset();
+                fetchModels();   // fetchModels is defined at views/models.ejs
+            })
             .catch(console.log);
-    })
+    });
 </script>
