@@ -1,10 +1,8 @@
-const { deepStrictEqual } = require('assert');
 var express = require('express');
 var multer = require('multer');
 var router = express.Router();
 var fs = require('fs');
 const path = require('path');
-const notifier = require('node-notifier'); // Node Notifiers: https://www.npmjs.com/package/node-notifier
 
 // Set up multer to handle file uploads
 const storage = multer.diskStorage({
