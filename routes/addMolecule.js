@@ -92,62 +92,57 @@ router.post('/saveMolFile', async (req, res) => {
     // Assign values from form to variables
     const cid = req.body.pubchemId;
     console.log(cid);
-    fileName = `${cid}`
+    fileName = `${cid}.mol`;
 
     var molfiles = fs.readdirSync('./public/molfiles/');
     var fileIsPresent = molfiles.includes(fileName);
 
     // Check if the molecule already exists
     if (fileIsPresent) {
-        console.log('This molecule already exists.');
-        notifier.notify({
-            title: 'Save Unsuccessful.',
-            message: 'Cannot save file This molecule already exists.',
-        });
-        // Redirect back to the catalog page
-        return res.redirect('/molecules');
-    } else {
-        // Create new mol file in ./public/molefiles/
-        const url = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF/?record_type=3d&response_type=display`;
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error(`Failed to fetch molecule data from PubChem API. Status: ${response.status}`);
-        }
-
-        const molFileData = await response.text();
-
-        const filePath = `public/molfiles/${cid}.mol`;
-        try {
-            fs.writeFileSync(filePath, molFileData, 'utf8');
-            console.log('Molecule file saved:', filePath);
-        } catch (error) {
-            console.error('Error saving molecule file:', error);
-        }
-
-        // Read molfileCatalog json file and add info to it
-        var rawdata = fs.readFileSync('./public/catalog/molfileCatalog.json');
-        var parsedData = JSON.parse(rawdata);
-
-        // Variables to be added to molfileCatalog
-        var fileName = `${cid}.mol`
-        var molName = req.body.name;
-        var molFormula = req.body.formula
-        var molDescription = "blabalbla"
-
-        parsedData[fileName] = {
-            name: molName,
-            formula: molFormula,
-            description: molDescription
-        };
-
-        var newMol = JSON.stringify(parsedData);
-        fs.writeFileSync('./public/catalog/molfileCatalog.json', newMol);
-        console.log('Molecule created');
-
-        // Redirect back to the catalog page
-        return res.redirect('/molecules');
+        return res.status(400).send({ error: 'This molecule already exists' });
     }
+
+    // Create new mol file in ./public/molefiles/
+    const url = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF/?record_type=3d&response_type=display`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        const errMsg = `Failed to fetch molecule data from PubChem API. Status: ${response.status}`;
+        return res.status(500).send({ error: errMsg });
+    }
+
+    const molFileData = await response.text();
+
+    const filePath = `public/molfiles/${cid}.mol`;
+    try {
+        fs.writeFileSync(filePath, molFileData, 'utf8');
+        console.log('Molecule file saved:', filePath);
+    } catch (error) {
+        const errMsg = 'Error saving molecule file: ' + error;
+        console.error(errMsg);
+        return res.status(500).send({ error: errMsg });
+    }
+
+    // Read molfileCatalog json file and add info to it
+    var rawdata = fs.readFileSync('./public/catalog/molfileCatalog.json');
+    var parsedData = JSON.parse(rawdata);
+
+    // Variables to be added to molfileCatalog
+    var fileName = `${cid}.mol`
+    var molName = req.body.name;
+    var molFormula = req.body.formula
+    var molDescription = "blabalbla"
+
+    parsedData[fileName] = {
+        name: molName,
+        formula: molFormula,
+        description: molDescription
+    };
+
+    var newMol = JSON.stringify(parsedData);
+    fs.writeFileSync('./public/catalog/molfileCatalog.json', newMol);
+
+    return res.send({ message: 'Molecule created' });
 });
 
 module.exports = router;
