@@ -184,7 +184,6 @@
                             toastr.success(toastBody, undefined, { escapeHtml: false });
 
                         }).catch(error => toastr.error(error.message, 'Failed to add molecule'));
-                        addToFirebase(compoundDetails.name, compoundDetails.formula, compoundDetails.pubChemId);
                     });
 
                     cell2.appendChild(addButton);
@@ -228,49 +227,8 @@ function getPubChemCompoundDetails(cid) {
         });
 }
 
-/**
- * Function to add a molecule to a local collection or log the details.
- * @param {string} name - The name of the molecule.
- * @param {string} formula - The chemical formula of the molecule.
- * @param {string} pubChemId - The PubChem Compound ID of the molecule.
- */
- function addToFirebase(name, formula, pubChemId) {
-    // Modify this function to log the details or add to a local collection as needed
-    const moleculeData = {
-        name: name,
-        formula: formula,
-        description: "blablabla" // Add your fake description here
-    };
-
-    const fileName = `${pubChemId}.mol`;
-    const moleculeObject = {};
-    moleculeObject[fileName] = moleculeData;
-
-    console.log(moleculeObject);
-    // You can use the logged object as needed (e.g., store it locally, send it to a server, etc.)
-}
-
-/**
- * Function to fetch data from a URL.
- * @param {string} url - The URL to fetch.
- * @returns {Promise<string>} - Promise resolving to the fetched data.
- */
-function fetchData(url) {
-    return fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Request failed with status ${response.status}`);
-            }
-            return response.text();
-        })
-        .then(data => {
-            return data.trim();
-        });
-}
 });
-</script>
 
-<script>
     // Preview the .mol file content when selected
     function onReceiptsSelected() {
         const files = fileName.files;
