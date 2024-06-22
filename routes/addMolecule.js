@@ -10,14 +10,10 @@ router.get('/', function(req, res, next) {
 router.post('/', (req, res) => {
     // Assign values from form to variables
     var molName = req.body.name;
-    console.log(molName);
     var molFormula = req.body.formula;
-    console.log(molFormula);
     var molDescription = req.body.description;
-    console.log(molDescription);
     var fileName = req.body.fileName;
     var molFileContent = req.body.preview;
-    //const csid = fileName.substring(0, fileName.indexOf("."));
 
     var molfiles = fs.readdirSync('./public/molfiles/');
     var fileIsPresent = molfiles.includes(fileName);
@@ -53,7 +49,6 @@ router.post('/', (req, res) => {
 router.post('/saveMolFile', async (req, res) => {
     // Assign values from form to variables
     const cid = req.body.pubchemId;
-    console.log(cid);
     fileName = `${cid}.mol`;
 
     var molfiles = fs.readdirSync('./public/molfiles/');
@@ -78,7 +73,6 @@ router.post('/saveMolFile', async (req, res) => {
     const filePath = `public/molfiles/${cid}.mol`;
     try {
         fs.writeFileSync(filePath, molFileData, 'utf8');
-        console.log('Molecule file saved:', filePath);
     } catch (error) {
         const errMsg = 'Error saving molecule file: ' + error;
         console.error(errMsg);

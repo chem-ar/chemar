@@ -224,7 +224,6 @@ function getPubChemCompoundDetails(cid) {
             // Extract compound details
             const name = compound.props.find(prop => prop.urn.label === 'IUPAC Name').value.sval;
             const formula = compound.props.find(prop => prop.urn.label === 'Molecular Formula').value.sval;
-            console.log(``)
             return { name, formula, pubChemId: cid };
         });
 }
@@ -278,7 +277,6 @@ function uploadMol(formElement) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 document.getElementById("preview").value += e.target.result;
-                //console.log(e.target.result);
             };
             reader.readAsText(files[0]);
         }
