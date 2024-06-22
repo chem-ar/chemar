@@ -176,10 +176,13 @@
                                 throw new Error(`Server returned status code ${response.status}`);
                             };
 
-                            // manually creating toaster body because newline "\n" doesnt work otherwise
+                            // manually creating toast body because newline "\n" doesnt work otherwise
                             const toastBody = document.createElement('span');
+                            // currently no easy way to add just the new molecule to the table
+                            // below, so ask the user to refresh the entire page
                             toastBody.innerText = body.message + "\nRefresh the page to see changes";
                             toastr.success(toastBody, undefined, { escapeHtml: false });
+
                         }).catch(error => toastr.error(error.message, 'Failed to add molecule'));
                         addToFirebase(compoundDetails.name, compoundDetails.formula, compoundDetails.pubChemId);
                     });
