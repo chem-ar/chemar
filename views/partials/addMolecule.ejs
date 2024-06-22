@@ -91,7 +91,9 @@
 
         fetch(pubChemUrl)
             .then(response => {
-                if (!response.ok) {
+                if (response.status === 404) {
+                    throw new Error('No results found');
+                } else if (!response.ok) {
                     throw new Error(`PubChem API request failed with status ${response.status}`);
                 }
                 return response.json();
@@ -166,11 +168,17 @@
                                 name: compoundDetails.name,
                                 formula: compoundDetails.formula
                             })
-                        }).then(response => {
-                            if (!response.ok){
-                                throw new Error('Failed to add molecule')
+                        }).then(async response => {
+                            const body = await response.json();
+                            if (response.status === 400 && body.error) {
+                                throw new Error(body.error);
+                            } else if (!response.ok){
+                                throw new Error(`Server returned status code ${response.status}`);
                             };
-                        })
+
+                            // no easy to add just the molecule to the table below, so refresh the entire page
+                            window.location.reload();
+                        }).catch(error => toastr.error(error.message, 'Failed to add molecule'));
                         addToFirebase(compoundDetails.name, compoundDetails.formula, compoundDetails.pubChemId);
                     });
 
