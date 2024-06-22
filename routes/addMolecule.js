@@ -7,27 +7,6 @@ router.get('/', function(req, res, next) {
     res.render('addMolecule', {title: 'Add New Molecule'});
 });
 
-/**
- * Function to fetch data from a URL and store it as a .mol file on the server.
- * @param {string} molData - The URL to fetch.
- * @param {number} cid - PubChem Compound ID.
- * @returns {Promise<void>} - Promise resolving when the .mol file is stored.
- */
-async function storeAsMolFileOnServer(molData, cid) {
-    const filePath = `public/molfiles/${cid}.mol`;
-
-    return new Promise((resolve, reject) => {
-        fs.writeFile(filePath, molData, 'utf8', (err) => {
-            if (err) {
-                reject(err);
-            } else {
-                console.log('Molecule file saved:', filePath);
-                resolve();
-            }
-        });
-    });
-}
-
 // Post request when clicking submit button
 router.post('/', (req, res) => {
     // Assign values from form to variables
