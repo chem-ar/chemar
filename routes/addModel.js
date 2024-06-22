@@ -88,7 +88,7 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
         name: modelName,
         description: modelDescription,
         files: {
-            obj: newMtlFileName,
+            obj: newObjFileName,
             mtl: newMtlFileName
         }
     }

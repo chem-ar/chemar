@@ -7,5 +7,14 @@
             "obj": "Ferin Miyani.mtl",
             "mtl": "Ferin Miyani.mtl"
         }
+    },
+    {
+        "id": 2,
+        "name": "dhul",
+        "description": "jxnncbndjjs",
+        "files": {
+            "obj": "dhul.obj",
+            "mtl": "dhul.mtl"
+        }
     }
 ]
