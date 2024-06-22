@@ -219,7 +219,6 @@ editSubmitBtn.addEventListener('click', e => {
     })
     .then(async response => {
         if (response.ok) {
-            console.log("Molecule updated successfully.");
             location.reload(); // Reload the page to reflect changes
         } else {
             throw new Error(
@@ -251,11 +250,6 @@ Array.from(editBtnArray).forEach(btn => {
         }
     });
 });
-
-
-    function selectActiveMolecule() {
-
-    };
 
     // Preview the .mol file content when selected
     function onReceiptsSelected() {
@@ -306,7 +300,6 @@ confirmDeleteBtn.addEventListener("click", function() {
     .then(response => {
         if (response.ok) {
             // if successful, reload the page
-            console.log("Molecule deleted successfully.");
             location.reload(); // Reload the page to reflect changes
         } else {
             throw new Error(
@@ -318,8 +311,6 @@ confirmDeleteBtn.addEventListener("click", function() {
         toastr.error(error.message);
     });
 });
-
-</script>
 
 </script>
 
