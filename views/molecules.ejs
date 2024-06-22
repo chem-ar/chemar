@@ -280,6 +280,8 @@ Array.from(editBtnArray).forEach(btn => {
     });
 
 // delete molecule
+var deleteModalBody = document.querySelector("#deleteModal .modal-body"); // Get delete modal body element
+
 // Add event listener to delete buttons
 var deleteButtons = document.getElementsByClassName("deleteMoleculeBtn");
 
@@ -288,33 +290,35 @@ Array.from(deleteButtons).forEach(function(button) {
     button.addEventListener("click", function() {
         var file = this.getAttribute("data-file");
         var moleculeName = this.closest("tr").querySelector("td:first-child").textContent; // Get molecule name from the closest table row
-        var deleteModalBody = document.querySelector("#deleteModal .modal-body"); // Get delete modal body element
-        var confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 
         // Set the text content of the modal body to include the molecule's name
         deleteModalBody.textContent = `Are you sure you want to delete ${moleculeName}?`;
-
-        confirmDeleteBtn.addEventListener("click", function() {
-            fetch(`/molecules/deleteMolecule/${file}`, { // Change the route to match your server-side route
-                method: "POST" // Change method to POST
-            })
-            .then(response => {
-                if (response.ok) {
-                    // if successful, reload the page
-                    console.log("Molecule deleted successfully.");
-                    location.reload(); // Reload the page to reflect changes
-                } else {
-                    throw new Error(
-                        `Failed to delete molecule. Server returned status ${response.status}`
-                    );
-                }
-            })
-            .catch(error => {
-                toastr.error(error.message);
-            });
-        });
+        deleteModalBody.setAttribute("data-file-to-delete", file);
     });
-}); 
+});
+
+var confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+confirmDeleteBtn.addEventListener("click", function() {
+    const file = deleteModalBody.getAttribute("data-file-to-delete");
+    fetch(`/molecules/deleteMolecule/${file}`, { // Change the route to match your server-side route
+        method: "POST" // Change method to POST
+    })
+    .then(response => {
+        if (response.ok) {
+            // if successful, reload the page
+            console.log("Molecule deleted successfully.");
+            location.reload(); // Reload the page to reflect changes
+        } else {
+            throw new Error(
+                `Failed to delete molecule. Server returned status ${response.status}`
+            );
+        }
+    })
+    .catch(error => {
+        toastr.error(error.message);
+    });
+});
+
 </script>
 
 </script>
