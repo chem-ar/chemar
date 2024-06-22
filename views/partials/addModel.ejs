@@ -22,7 +22,16 @@
                     required accept=".obj">
                     <input type="file" class="form-control" id="mtlFileName" name="mtlFileName" placeholder="File name" onchange="" 
                     required accept=".mtl">
-                    <button class="btn btn-success form-control my-2" id="uploadBtn">Upload</button>
+                    <button class="btn btn-success form-control my-2" id="uploadBtn">
+                        <span
+                            id="uploadBtnSpinner"
+                            class="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-label="Loading"
+                            style="display: none;"
+                        ></span>
+                        Upload
+                    </button>
                 </div>
                 <div class="col-12 col-sm-6 d-flex align-content-stretch flex-wrap">
                     <textarea class="form-control" name="preview" id="preview" style="display: none"></textarea>
@@ -36,6 +45,8 @@
     const uploadModelForm = document.getElementById('uploadFile');
     uploadModelForm.addEventListener('submit', e => {
         e.preventDefault();
+        setUploading(true);
+
         const formData = new FormData(uploadModelForm);
         fetch('/addmodel/saveModel', {
             method: 'POST',
@@ -55,6 +66,20 @@
             })
             .catch(err => {
                 toastr.error(err.message, "Failed to save model");
-            });
+            })
+            .finally(() => setUploading(false));
     });
+
+    function setUploading(isUploading) {
+        const spinner = document.getElementById('uploadBtnSpinner');
+        const uploadBtn = document.getElementById('uploadBtn');
+
+        if (isUploading) {
+            spinner.style.display = '';
+            uploadBtn.disabled = true;
+        } else {
+            spinner.style.display = 'none';
+            uploadBtn.disabled = false;
+        }
+    }
 </script>
