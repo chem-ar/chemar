@@ -38,7 +38,7 @@
                     Upload File 
                 </button>
             
-            <form class="" action="/addMolecule" method="POST" id="addMolForm">
+            <form class="" id="addMolForm">
                 <div class="row ">
                     <div class="col-12 col-sm-9 col-md-6">
                         <div class="collapse multi-collapse" id="uploadFile">
@@ -68,14 +68,21 @@
         const searchField = document.getElementById("search-field");
         const searchButton = document.getElementById("search-button");
         const searchResults = document.getElementById("search-results");
+        const addMolForm = document.getElementById("addMolForm");
 
         /**
          * Event listener for the search button to trigger molecule search.
          */
-         searchButton.addEventListener("click", function (event) {
-    event.preventDefault();
-    searchPubChem(searchField.value);
-});
+        searchButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            searchPubChem(searchField.value);
+        });
+
+        addMolForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            uploadMol(addMolForm);
+        });
+
 
 /**
  * Function to search PubChem for a given compound name.
@@ -174,14 +181,9 @@
                                 throw new Error(body.error);
                             } else if (!response.ok){
                                 throw new Error(`Server returned status code ${response.status}`);
-                            };
+                            }
 
-                            // manually creating toast body because newline "\n" doesnt work otherwise
-                            const toastBody = document.createElement('span');
-                            // currently no easy way to add just the new molecule to the table
-                            // below, so ask the user to refresh the entire page
-                            toastBody.innerText = body.message + "\nRefresh the page to see changes";
-                            toastr.success(toastBody, undefined, { escapeHtml: false });
+                            toastOnMolSave(body.message);
 
                         }).catch(error => toastr.error(error.message, 'Failed to add molecule'));
                     });
@@ -224,6 +226,46 @@ function getPubChemCompoundDetails(cid) {
             const formula = compound.props.find(prop => prop.urn.label === 'Molecular Formula').value.sval;
             console.log(``)
             return { name, formula, pubChemId: cid };
+        });
+}
+
+function toastOnMolSave(toastMsg) {
+    // manually creating toast body because newline "\n" doesnt work otherwise
+    const toastBody = document.createElement('span');
+    // currently no easy way to add just the newly saved molecule to the table
+    // below, so ask the user to refresh the entire page
+    toastBody.innerText = toastMsg + "\nRefresh the page to see changes";
+    toastr.success(toastBody, undefined, { escapeHtml: false });
+}
+
+function uploadMol(formElement) {
+
+    // want to send content as type "application/x-www-form-urlencoded"
+    // using this workaround on 22-Jun-2024 by @cuixiping from SO
+    // URL: https://stackoverflow.com/a/38931547
+    const rawFormData = new FormData(formElement);
+    const formData = new URLSearchParams(rawFormData);
+
+    // correct the filename
+    formData.set('fileName', rawFormData.get('fileName').name);
+
+    fetch('/addMolecule', {
+        method: 'POST',
+        body: formData
+    })
+        .then(async res => {
+            const body = await res.json();
+            if (res.status === 400 && body.error) {
+                throw new Error(body.error);
+            } else if (!res.ok) {
+                throw new Error(`Server returned status code ${res.status}`);
+            }
+
+            toastOnMolSave(body.message);
+            formElement.reset();
+        })
+        .catch(err => {
+            toastr.error(err.message, "Failed to save molecule");
         });
 }
 
