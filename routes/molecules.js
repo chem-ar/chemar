@@ -38,7 +38,6 @@ router.get('/', function(req, res, next) {
 // Edit molecule
 router.put('/editMolecule/:file', function(req, res) {
     const file = req.params.file;
-    const filePath = `./public/molfiles/${file}`;
 
     try {
         // Read the updated molecule data from the request body
@@ -71,7 +70,6 @@ router.post('/deleteMolecule/:file', function(req, res) {
 
     try {
         fs.unlinkSync(filePath);
-        console.log(`Molecule file '${file}' deleted successfully.`);
 
         // Update molecule catalog JSON file
         var catalogPath = './public/catalog/molfileCatalog.json';
