@@ -187,7 +187,8 @@
                 // Initialize DataTable
                 $('#molTable').DataTable();
             }
-        });
+        })
+        .catch(err => toastr.error(err.message));
 
     // Adding edit button functionality.
 var editBtnArray = document.getElementsByClassName("editMoleculeBtn");
@@ -198,7 +199,8 @@ var moleculeDescriptionEditInput = document.getElementById("moleculeDescriptionE
 
 // Event listener for edit submit button
 var editSubmitBtn = document.getElementById("editSubmitBtn");
-editSubmitBtn.addEventListener('click', () => {
+editSubmitBtn.addEventListener('click', e => {
+    e.preventDefault();
     // Get the molecule ID from the submit button's data-id attribute
     var id = editSubmitBtn.getAttribute("data-id"); // Get the molecule ID from data-id attribute
 
@@ -215,16 +217,18 @@ editSubmitBtn.addEventListener('click', () => {
         },
         body: JSON.stringify(updatedMolecule)
     })
-    .then(response => {
+    .then(async response => {
         if (response.ok) {
             console.log("Molecule updated successfully.");
             location.reload(); // Reload the page to reflect changes
         } else {
-            console.error("Failed to update molecule.");
+            throw new Error(
+                `Failed to update molecule. Server returned status ${response.status}`
+            );
         }
     })
     .catch(error => {
-        console.error("Error:", error);
+        toastr.error(error.message);
     });
 });
 
@@ -300,11 +304,13 @@ Array.from(deleteButtons).forEach(function(button) {
                     console.log("Molecule deleted successfully.");
                     location.reload(); // Reload the page to reflect changes
                 } else {
-                    console.error("Failed to delete molecule.");
+                    throw new Error(
+                        `Failed to delete molecule. Server returned status ${response.status}`
+                    );
                 }
             })
             .catch(error => {
-                console.error("Error:", error);
+                toastr.error(error.message);
             });
         });
     });
