@@ -1,1 +1,11 @@
-[{"id":1,"name":"Ferin Miyani","description":"heeheheheheee","files":{"obj":"Ferin Miyani.mtl","mtl":"Ferin Miyani.mtl"}},{"id":"[object Object]1","name":"Resume_miyani","description":"heeheheheheee","files":{"obj":"Resume_miyani.mtl","mtl":"Resume_miyani.mtl"}}]
+[
+    {
+        "id": 1,
+        "name": "Ferin Miyani",
+        "description": "heeheheheheee",
+        "files": {
+            "obj": "Ferin Miyani.mtl",
+            "mtl": "Ferin Miyani.mtl"
+        }
+    }
+]

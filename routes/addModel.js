@@ -29,10 +29,12 @@ const uploadMiddleware = upload.fields([
 ]);
 
 const uniqueId = (parsedData) => {
-    if(parsedData.length == 0){
+    if (parsedData.length == 0) {
         return 1;
     }
-    return (parsedData[parsedData.length-1]) + 1;
+    let length = parsedData.length
+    let lastObj = parsedData[length - 1];
+    return (lastObj.id) + 1;
 }
 
 //This endpoint needs to be completed to handle the uploading for the files to public/modelfiles
@@ -71,8 +73,12 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     var rawdata = fs.readFileSync('./public/catalog/modelFileCatalog.json');
     var parsedData = JSON.parse(rawdata);
 
+    console.log(parsedData);
+
 
     console.log("data pushed");
+
+    console.log(newMtlFileName);
 
     // Variables to be added to modelFileCatalog
     var modelName = req.body.name;
