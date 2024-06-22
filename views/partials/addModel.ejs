@@ -45,7 +45,7 @@
     const uploadModelForm = document.getElementById('uploadFile');
     uploadModelForm.addEventListener('submit', e => {
         e.preventDefault();
-        setUploading(true);
+        setModelUploading(true);
 
         const formData = new FormData(uploadModelForm);
         fetch('/addmodel/saveModel', {
@@ -67,10 +67,10 @@
             .catch(err => {
                 toastr.error(err.message, "Failed to save model");
             })
-            .finally(() => setUploading(false));
+            .finally(() => setModelUploading(false));
     });
 
-    function setUploading(isUploading) {
+    function setModelUploading(isUploading) {
         const spinner = document.getElementById('uploadBtnSpinner');
         const uploadBtn = document.getElementById('uploadBtn');
 
