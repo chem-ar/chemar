@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+    <script>
+        toastr.options = { escapeHtml: true, closeButton: true, progressBar: true };
+    </script>
 
     <script type="importmap">
         {
@@ -369,6 +376,8 @@
         var fileName = document.getElementById("fileName");
         var sceneName = document.getElementById("sceneName");
         var sceneDescription = document.getElementById("sceneDescription");
+        let sceneNameInput = document.getElementById('newNameInput');
+        let sceneDescriptionInput = document.getElementById('newDescriptionInput');
         const moleculeList = document.getElementById('molecule-list');
         const threeArea = document.getElementById('three-area');
 
@@ -383,13 +392,20 @@
         let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
 
         fetch('/scenes' + '/' + requestedFile)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Server returned status code ${response.status}`);
+                }
+                return response.json();
+            })
             .then(async data => {
                 scene = data;
                 
                 fileName.innerHTML = "File name: " + requestedFile;
                 sceneName.innerHTML = "Scene name: " + scene.name;
                 sceneDescription.innerHTML = "Scene desc: " + scene.desc;
+                sceneNameInput.value = scene.name;
+                sceneDescriptionInput.value = scene.desc;
                 markerData = scene.trackingMarker
                
                 initScene(scene.png, markerData, threeArea, window);
@@ -411,7 +427,10 @@
                     addMolToMenu(model, modelInfo.name, moleculeList);
                 }
             })
-            .catch(error => console.error(error));
+            .catch(error => {
+                console.error(error);
+                toastr.error(error.message, "Failed to load scene");
+            });
 
 
             function validateName() {
@@ -465,8 +484,14 @@
                 return;
             }
             const encodedUserQuery = encodeURIComponent(trimmedQuery);
-            const searchResponse = await fetch(`/models/searchModels?search=${encodedUserQuery}`);
-            const searchResults = await searchResponse.json();
+            const searchResults = await fetch(`/models/searchModels?search=${encodedUserQuery}`)
+                .then(searchResponse => {
+                    if (!searchResponse.ok) {
+                        throw new Error(`Server returned status code ${searchResponse.status}`);
+                    }
+                    return searchResponse.json();
+                })
+                .catch(error => toastr.error(error.message, "Search failed"));
             displaySearchResults(searchResults);
         }
 
@@ -548,13 +573,10 @@
             console.log("No save and loaded.");
         });
 
-        let sceneNameInput = document.getElementById('newNameInput');
-        let sceneDescriptionInput = document.getElementById('newDescriptionInput');
-
 // When the admin saves changes to the scene editor.
 document.getElementById("saveBtn").addEventListener('click', () => {
     if (!validateName()) {
-        alert("Please enter a name and description");
+        toastr.error("Please enter a name and description");
     } else {
 
         var sceneName = sceneNameInput.value;
@@ -583,21 +605,28 @@ document.getElementById("saveBtn").addEventListener('click', () => {
             },
             body: JSON.stringify(scene)
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Server returned error code ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             console.log(data); // log the response data to the console
             updateSceneCatalog(scene.name, sceneName, sceneDescription);
             updateScenesList(); // Call the function to update the scenes list
+            
+            // Close the modal
+            var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
+            saveModal.hide();
+
+            // Redirect the user to the scenes page
+            window.location.href = "/scenes";
         })
         .catch(err => {
-            console.error(err)
+            console.error(err);
+            toastr.error(err.message, "Failed to save scene");
         });
-        // Close the modal
-        var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
-        saveModal.hide();
-
-        // Redirect the user to the scenes page
-        window.location.href = "/scenes";
     }
 });
 
@@ -649,15 +678,21 @@ function updateScenesList() {
                 xhr.open('POST', './upload/images', true);
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        let response = JSON.parse(xhr.responseText);
-                        if (response.success) {
-                            updateSceneImg(response.fileSrc);
+                    try {    
+                        if (xhr.status === 200) {
+                            let response = JSON.parse(xhr.responseText);
+                            if (response.success) {
+                                updateSceneImg(response.fileSrc);
+                            } else {
+                                console.error('Error: ' + response.message);
+                                throw new Error(response.message ?? "An unexpected error occurred");
+                            }
                         } else {
-                            alert('Error: ' + response.message);
+                            console.error('Error: ' + xhr.status);
+                            throw new Error(`Server returned status code ${xhr.status}`);
                         }
-                    } else {
-                        alert('Error: ' + xhr.status);
+                    } catch (error) {
+                        toastr.error(error.message, "Image upload failed");
                     }
                 };
                 xhr.send(JSON.stringify({
