@@ -134,7 +134,7 @@
                     btn.addEventListener('click', handleDeleteClick);
                 });   
             })
-            .catch((error) => console.error("Unable to fetch data:", error));
+            .catch((error) => toastr.error(error.message, "Unable to fetch data"));
     }
     
     function handleEditClick(event) {
