@@ -8,8 +8,7 @@
     if (password != "TestPassword123") {
       // Red error message appears
       document.getElementById('passerrormsg').hidden = false;
-      // Pop-up alert appears
-      alert('Incorrect Password. Please try again.');
+      toastr.error('Incorrect Password. Please try again.');
       form.reset();
       event.preventDefault();
     }
