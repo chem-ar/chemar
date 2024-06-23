@@ -217,7 +217,7 @@ editSubmitBtn.addEventListener('click', e => {
         },
         body: JSON.stringify(updatedMolecule)
     })
-    .then(async response => {
+    .then(response => {
         if (response.ok) {
             location.reload(); // Reload the page to reflect changes
         } else {
