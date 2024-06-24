@@ -47,7 +47,9 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     console.log(objFile);
     console.log(mtlFile);
 
-    const models = fs.readdirSync('./public/modelfiles/');
+    
+
+    // const models = fs.readdirSync('./public/modelfiles/');
     // const fileIsPresent1 = models.includes(objFile.originalname);
     // const fileIsPresent2 = models.includes(mtlFile.originalname);
 
@@ -73,15 +75,19 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     var rawdata = fs.readFileSync('./public/catalog/modelFileCatalog.json');
     var parsedData = JSON.parse(rawdata);
 
-    console.log(parsedData);
-
-
-    console.log("data pushed");
-
-    console.log(newMtlFileName);
+    for(const key in parsedData) {
+        if(parsedData[key].name == req.body.name){
+            if(parsedData[key].description == modelDescription){
+                return res.redirect('/models');
+            }
+        }
+    }
 
     // Variables to be added to modelFileCatalog
     var modelName = req.body.name;
+
+
+
 
     obj = {
         id: uniqueId(parsedData),
