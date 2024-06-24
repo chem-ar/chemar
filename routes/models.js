@@ -51,4 +51,30 @@ router.post('/edit', function (req, res, next) {
 
 })
 
+
+router.get('/delete', function (req, res, next) {
+    const id = req.query.id
+
+    const modelFileCatalog = './public/catalog/modelFileCatalog.json';
+
+    const modelFileData = fs.readFileSync(modelFileCatalog);
+    const modelData = JSON.parse(modelFileData);
+
+    let n = -1;
+
+    for (const key in modelData) {
+        if (modelData[key].id == parseInt(id)) {
+            n = key
+        }
+    }
+
+    modelData.splice(n, 1)
+
+    var newModel = JSON.stringify(modelData);
+    fs.writeFileSync('./public/catalog/modelFileCatalog.json', newModel);
+
+    return res.redirect('/models');
+
+})
+
 module.exports = router;
