@@ -36,12 +36,23 @@ router.post('/edit', function (req, res, next) {
     const modelFileData = fs.readFileSync(modelFileCatalog);
     const modelData = JSON.parse(modelFileData);
 
+    let n;
+    let exists = false;
+
     for (const key in modelData) {
         if (modelData[key].id == parseInt(id)) {
-            modelData[key].name = data.name,
-                modelData[key].description = data.description
-            break;
+            n = key
         }
+        if(modelData[key].name == data.name){
+            if(modelData[key].description == data.description){
+                exists = true;
+            }
+        }
+    }
+
+    if(!exists){
+        modelData[n].description = data.description
+        modelData[n].name = data.name;
     }
 
     var newModel = JSON.stringify(modelData);
