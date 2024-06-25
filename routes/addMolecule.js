@@ -2,10 +2,6 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 
-router.get('/', function(req, res, next) {
-    res.render('addMolecule', {title: 'Add New Molecule'});
-});
-
 // Post request when clicking submit button
 router.post('/', (req, res) => {
     // Assign values from form to variables
