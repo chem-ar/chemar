@@ -26,7 +26,7 @@ router.get('/searchModels', function (req, res, next) {
 
     res.send(searchResults);
 });
-
+//To handle the edit functionality
 router.post('/edit', function (req, res, next) {
     const data = { ...req.body }
     let id = req.query.id;
@@ -38,7 +38,7 @@ router.post('/edit', function (req, res, next) {
 
     let n;
     let exists = false;
-
+    //Finding which model to be deleted using for loop
     for (const key in modelData) {
         if (modelData[key].id == parseInt(id)) {
             n = key
@@ -49,20 +49,17 @@ router.post('/edit', function (req, res, next) {
             }
         }
     }
-
     if(!exists){
         modelData[n].description = data.description
         modelData[n].name = data.name;
     }
-
     var newModel = JSON.stringify(modelData);
     fs.writeFileSync('./public/catalog/modelFileCatalog.json', newModel);
-
     return res.redirect('/models');
 
 })
 
-
+//Handling the delete functionality
 router.get('/delete', function (req, res, next) {
     const id = req.query.id
 
@@ -72,18 +69,18 @@ router.get('/delete', function (req, res, next) {
     const modelData = JSON.parse(modelFileData);
 
     let n = -1;
-
+    //Checking the model to be deleted by using key
     for (const key in modelData) {
         if (modelData[key].id == parseInt(id)) {
             n = key
         }
     }
-
+    //To remove the model when deleted from array
     modelData.splice(n, 1)
 
     var newModel = JSON.stringify(modelData);
     fs.writeFileSync('./public/catalog/modelFileCatalog.json', newModel);
-
+    //Redirecting to models page
     return res.redirect('/models');
 
 })
