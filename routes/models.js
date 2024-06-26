@@ -21,8 +21,7 @@ router.get('/searchModels', function(req, res, next) {
 
     const modelFileData = fs.readFileSync(modelFileCatalog);
     const modelData = JSON.parse(modelFileData);
-    const allModels = Object.keys(modelData).map(key => modelData[key]);
-    const searchResults = allModels.filter(model => model.name.toLowerCase().includes(userSearch));
+    const searchResults = modelData.filter(model => model.name.toLowerCase().includes(userSearch));
     
     res.send(searchResults);
 });
