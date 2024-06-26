@@ -1,6 +1,6 @@
 {
-  "New_Scene.json": {
-    "name": "New Scence Test",
-    "desc": "We are testing if the new scene works"
+  "testingSceneViewer.json": {
+    "name": "testingSceneViewer",
+    "desc": "testingSceneViewer"
   }
 }
