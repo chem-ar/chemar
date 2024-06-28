@@ -75,6 +75,17 @@ router.get('/delete', function (req, res, next) {
             n = key
         }
     }
+
+    const modelDelete = modelData[n];
+
+    // Deleting the .mtl and .obj files from modelfiles folder once the deletion functionality is used
+    try {
+        fs.unlinkSync(`./public/modelfiles/${modelDelete.name}.mtl`);
+        fs.unlinkSync(`./public/modelfiles/${modelDelete.name}.obj`);
+    } catch (err) {
+        console.error(err);
+    }
+
     //To remove the model when deleted from array
     modelData.splice(n, 1)
 
