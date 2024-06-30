@@ -1,11 +1,11 @@
 [
     {
-        "id": 4,
-        "name": "Water",
-        "description": "Essential for human need",
+        "id": 1,
+        "name": "Alcohol",
+        "description": "Dangerous for health if taken in large amounts",
         "files": {
-            "obj": "Water.obj",
-            "mtl": "Water.mtl"
+            "obj": "Alcohol-1.obj",
+            "mtl": "Alcohol-1.mtl"
         }
     }
 ]
