@@ -32,7 +32,7 @@
     {
         "id": 4,
         "name": "Water",
-        "description": "H2O - default",
+        "description": "Essential for human need",
         "files": {
             "obj": "962.mol.obj",
             "mtl": "962.mol.mtl"
