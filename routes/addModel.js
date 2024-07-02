@@ -42,11 +42,6 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     const modelDescription = req.body.modelDescription;
     const objFile = req.files['objFileName'][0];
     const mtlFile = req.files['mtlFileName'][0];
-    const newObjFileName = name + path.extname(objFile.originalname);
-    const newMtlFileName = name + path.extname(mtlFile.originalname);
-
-    fs.renameSync(objFile.path, path.join(objFile.destination, newObjFileName));
-    fs.renameSync(mtlFile.path, path.join(mtlFile.destination, newMtlFileName));
 
     // Read modelFileCatalog json file and add info to it
     var rawdata = fs.readFileSync('./public/catalog/modelFileCatalog.json');
@@ -55,12 +50,21 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     for(const key in parsedData) {
         if(parsedData[key].name == req.body.name){
             if(parsedData[key].description == modelDescription){
+                // delete files saved by multer
+                fs.unlinkSync(objFile.path);
+                fs.unlinkSync(mtlFile.path);
+
                 return res.status(400).send({
                     error: 'This model already exists'
                 });
             }
         }
     }
+
+    const newObjFileName = name + path.extname(objFile.originalname);
+    const newMtlFileName = name + path.extname(mtlFile.originalname);
+    fs.renameSync(objFile.path, path.join(objFile.destination, newObjFileName));
+    fs.renameSync(mtlFile.path, path.join(mtlFile.destination, newMtlFileName));
 
     // Variables to be added to modelFileCatalog
     var modelName = req.body.name;
