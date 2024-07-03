@@ -14,7 +14,7 @@ router.post('/', function(req, res, next) {
     startSession(res)
     res.status(200).redirect("/");
   }
-  res.status(401).redirect('/')
+  res.status(401).send({error: "Password Incorrect"});
 });
 
 router.post('/forgot', function(req, res, next) {
