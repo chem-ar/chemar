@@ -1,6 +1,5 @@
 import { MTLLoader } from '/js/MTLLoader.js';
 import { OBJLoader } from '/js/OBJLoader.js';
-import * as THREE from '/js/three.module.js';
 
 export async function createModel(modelData, position, rotation, scale) {
     const { files: { obj, mtl } } = modelData;
