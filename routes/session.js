@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
+const { startSession } = require('./auth/session-mgmt')
+const adminPass = "TestPassword123"
 
 //Create cookie here then redirect
 router.get('/', function(req, res, next) {
@@ -10,9 +12,9 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
   let adminPass = JSON.parse(fs.readFileSync("./admin.json")).admin.password;
   if(adminPass == req.body.password){
-    const oneDay = 86400000
-    res.cookie('admin', true, {maxAge: oneDay, signed: true});
-    res.redirect("/");
+    startSession(res)
+    res.status(200).redirect("/");
   }
+  res.status(401).redirect('/')
 });
 module.exports = router;

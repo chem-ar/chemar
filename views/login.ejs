@@ -2,17 +2,41 @@
 <%- include('partials/navbar') %>
 <script>
   // Function once Login button has been pressed
-  function validate() {
+  // function validate() {
+  //   var form = document.getElementById("passwordForm");
+  //   var password = document.getElementById("passwordInput").value;
+  //   if (password != "TestPassword123") {
+  //     // Red error message appears
+  //     document.getElementById('passerrormsg').hidden = false;
+  //     // Pop-up alert appears
+  //     alert('Incorrect Password. Please try again.');
+  //     form.reset();
+  //     event.preventDefault();
+  //   }
+  // }
+
+  function login(e) {
+    e.preventDefault();
     var form = document.getElementById("passwordForm");
     var password = document.getElementById("passwordInput").value;
-    if (password != "TestPassword123") {
-      // Red error message appears
-      document.getElementById('passerrormsg').hidden = false;
-      // Pop-up alert appears
-      alert('Incorrect Password. Please try again.');
-      form.reset();
-      event.preventDefault();
-    }
+    fetch(`/session/`, {
+        method: "Post",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({password: password})
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log("Login Success.");
+          location.reload(); // Reload the page to reflect changes
+        } else {
+          console.error("Login Failed.");
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+      });
   }
 </script>
 
@@ -32,23 +56,17 @@
               <!--Form-->
               <form id="passwordForm" action="/session" method="post">
                 <div class="form-outline form-white mb-4">
-                  <input
-                    type="password"
-                    id="passwordInput"
-                    class="form-control form-control-lg"
-                    name="password"
-                    placeholder="Password:">
+                  <input type="password" id="passwordInput" class="form-control form-control-lg" name="password" placeholder="Password:">
                   <br>
 
                   <!--Red Incorrect Password Message-->
-                  <label class="form-label" id="passerrormsg" style="color: rgb(176, 44, 44); font-weight: bold;" hidden><h5>Incorrect password. Please try again.</h5></label>
+                  <label class="form-label" id="passerrormsg" style="color: rgb(176, 44, 44); font-weight: bold;" hidden>
+                    <h5>Incorrect password. Please try again.</h5>
+                  </label>
                 </div>
 
                 <!--Login Button-->
-                <button
-                  class="btn btn-outline-light btn-lg px-5"
-                  type="submit"
-                  onclick="validate()">
+                <button class="btn btn-outline-light btn-lg px-5" type="submit" onclick="(e) => login(e)">
                   Login
                 </button>
               </form>

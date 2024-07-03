@@ -1,12 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
+var { checkSession } = require('./auth/session-mgmt') 
 
 /* GET models page. */
 router.get('/', function(req, res, next) {
     
     //Admin check
-    let isAdmin = (req.signedCookies.admin == 'true');
+    let isAdmin = checkSession(req);
 
     res.render('models', { title: 'Model Catalog', isAdmin: isAdmin});
 });
