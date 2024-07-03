@@ -1,5 +1,1 @@
-{
-    "admin" :{
-        "password": "TestPassword123"
-    }
-}
+{"admin":{"password":"123"}}
