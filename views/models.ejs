@@ -184,10 +184,10 @@
     }
     
     function populateTable(modelData, dataTable) {
-        dataTable.row.add([ modelData.name,
-                            modelData.description,
-                            '<a class="text-white" id="Name" href="modelfiles/' +  modelData.files.obj + '">' + modelData.files.obj + '</a>',
-                            '<a class="text-white" id="Name" href="modelfiles/' +  modelData.files.mtl +'">' + modelData.files.mtl + '</a>', 
+        dataTable.row.add([ '<a class="modelname-in-table">' + modelData.name + '</a>',
+                            '<a class="modeldesc-in-table">' + modelData.description + '</a>',
+                            '<a class="text-white modelfiles-in-table" id="Name" href="modelfiles/' +  modelData.files.obj + '">' + modelData.files.obj + '</a>',
+                            '<a class="text-white modelfiles-in-table" id="Name" href="modelfiles/' +  modelData.files.mtl +'">' + modelData.files.mtl + '</a>', 
                             <% if (isAdmin){%>
                                 `<td class>
                                 <div class="d-grid gap-2">
