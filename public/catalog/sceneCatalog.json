@@ -1,46 +1,6 @@
 {
-  "Connor.json": {
-    "name": "Connor",
-    "desc": "blablabla"
-  },
-  "geoffTest.json": {
-    "name": "geoffTest",
-    "desc": "qwqe"
-  },
-  "geoffTest2.json": {
-    "name": "geoffTest2",
-    "desc": "qwqe"
-  },
-  "geoffTest3.json": {
-    "name": "geoffTest3",
-    "desc": "test"
-  },
-  "SidVicious.json": {
-    "name": "SidVicious",
-    "desc": "testing1"
-  },
-  "test.json": {
-    "name": "test",
-    "desc": "test"
-  },
-  "Test24-03-01-no2.json": {
-    "name": "Test24-03-01-no2",
-    "desc": "Description"
-  },
-  "Test24-03-01.json": {
-    "name": "Test24-03-01",
-    "desc": "Description"
-  },
-  "test43.json": {
-    "name": "test43",
-    "desc": "test"
-  },
-  "test123.json": {
-    "name": "test123",
-    "desc": "test"
-  },
-  "Connor MacIntyre.json": {
-    "name": "Connor MacIntyre",
-    "desc": "testing features"
+  "testingSceneViewer.json": {
+    "name": "testingSceneViewer",
+    "desc": "testingSceneViewer"
   }
 }
