@@ -426,7 +426,7 @@
             }
 
         var scenesListMenu = document.getElementById("sceneMenuList");
-        fetch('/scenes')
+        fetch('/scenes/list')
             .then(response => response.json())
             .then(data => {
                 const scenesList = data;
