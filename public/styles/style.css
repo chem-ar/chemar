@@ -90,3 +90,7 @@
 .modelfiles-in-table:hover {
   text-decoration: underline rgb(0, 208, 255);
 }
+
+.nav-link{
+  font-size: larger;
+}

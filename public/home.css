@@ -1,14 +1,16 @@
 * {
   margin: 0;
   padding: 0;
-  
+
 }
+
 .webgl {
   background-image: linear-gradient(black, grey);
   position: fixed;
   top: 0;
   left: 0;
 }
+
 .section {
   display: flex;
   align-items: center;
@@ -24,55 +26,72 @@
 section:nth-child(odd) {
   justify-content: flex-end;
 }
+
 html {
   background: #1e1a20;
 }
+
 body {
   margin: 0;
 }
+
 .footerbuttons {
   z-index: 1100 !important;
   position: relative;
 }
+
 .navbar {
   z-index: 1100 !important;
   position: sticky;
   top: 0;
 }
+
+.nav-link {
+  font-size: larger;
+}
+
 .dataTables_filter input {
   color: white;
   background-color: white;
 }
+
 .dataTables_length select {
   color: white;
 }
+
 table,
 thead,
 tbody {
   color: white;
 }
+
 .instructions {
   color: white;
   background-color: transparent;
 }
 
 @media screen and (min-width: 601px) {
-  a.btn.btn-outline-light.btn-lg{
+  a.btn.btn-outline-light.btn-lg {
     font-size: 1.8vw;
   }
-  p{
+
+  p {
     font-size: 1.4vw;
   }
-  h1.display-5.fw-bold{
+
+  h1.display-5.fw-bold {
     font-size: 3.6vw;
   }
-  h2.display-5.fw-bold{
+
+  h2.display-5.fw-bold {
     font-size: 2.8vw;
   }
-  h4{
+
+  h4 {
     font-size: 2vw;
   }
-  a.btn.btn-primary{
+
+  a.btn.btn-primary {
     background-color: grey;
     outline-color: grey;
     text-decoration: none;
@@ -82,25 +101,35 @@ tbody {
     text-align: center;
     font-size: 18px;
   }
+
+  .nav-link{
+    font-size: larger;
+  }
 }
 
 @media screen and (max-width: 600px) {
-  a.btn.btn-outline-light.btn-lg{
+  a.btn.btn-outline-light.btn-lg {
     font-size: 2.8vw;
   }
-  p{
+
+  p {
     font-size: 3.4vw;
   }
-  h1.display-5.fw-bold, h2.display-5.fw-bold{
+
+  h1.display-5.fw-bold,
+  h2.display-5.fw-bold {
     font-size: 6.6vw;
   }
-  h4{
+
+  h4 {
     font-size: 4.6vw;
   }
-  ul{
+
+  ul {
     padding-left: 0rem;
   }
-  a.btn.btn-primary{
+
+  a.btn.btn-primary {
     background-color: grey;
     outline-color: grey;
     text-decoration: none;
@@ -111,17 +140,20 @@ tbody {
     font-size: 15px;
   }
 }
-.btn.btn-primary{
+
+.btn.btn-primary {
   height: 50px;
-  font-size:20px;
+  font-size: 22px;
   background-color: black;
-  border-color: black;
-}
-.btn.btn-primary:hover{
-  background-color:white;
-  color:black;
+  border-color: rgb(255, 255, 255);
+  border-width: 2px;
 }
 
-::placeholder{
-  color:black;
+.btn.btn-primary:hover {
+  background-color: white;
+  color: black;
+}
+
+::placeholder {
+  color: black;
 }
