@@ -32,9 +32,9 @@
                         <% let scene = sceneCatalog[filename]; %>
                             <tr>
                                 <td>
-                                    <a class="text-white" id="Name<%= filename %>" href="/sceneViewer/<%= filename.slice(0, -5) %>"><%= filename.slice(0, -5) %></a>
+                                    <a class="text-white names-in-scenes" id="Name<%= filename %>" href="/sceneViewer/<%= filename.slice(0, -5) %>"><%= filename.slice(0, -5) %></a>
                                 </td>
-                                <td id="Description<%=filename %>" class="text-white"><%= scene.desc %></td>
+                                <td id="Description<%=filename %>" class="text-white desc-in-scenes"><%= scene.desc %></td>
                                 <td >
                                     <div class = "d-grid gap-2">
                                         <button id="<%= "shareBtn" + filename.slice(0, -5) %>" type="button" class="share btn btn-light" data-bs-toggle="modal" data-bs-target="#shareModal">
