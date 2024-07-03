@@ -1,13 +1,14 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
+var { checkSession } = require('./auth/session-mgmt')
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
     const scenesDirectory = './public/scenes/';
 
     //Admin check
-    let isAdmin = (req.signedCookies.admin == 'true');
+    let isAdmin = checkSession(req);;
 
     // Load the scene catalog data
     let sceneCatalog;
@@ -146,7 +147,7 @@ router.get('/list', function(req, res) {
     const scenes = './public/scenes/';
 
     //Admin check
-    let isAdmin = (req.signedCookies.admin == 'true');
+    let isAdmin = checkSession(req);;
 
     res.status(200).send(fs.readdirSync(scenes));
 });

@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var { checkSession } = require('./auth/session-mgmt')
 var fs = require('fs');
 const notifier = require('node-notifier'); // Node Notifiers: https://www.npmjs.com/package/node-notifier
 
@@ -7,7 +8,7 @@ router.get('/', function(req, res, next) {
     const molfiles = './public/molfiles/';
 
     //Admin check
-    let isAdmin = (req.signedCookies.admin == 'true');
+    let isAdmin = checkSession(req);;
 
     try {
         let listItems = fs.readdirSync(molfiles);
