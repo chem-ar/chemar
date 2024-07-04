@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="klotho">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/public/jmol-16.1.41/jsmol/klotho/klotho.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

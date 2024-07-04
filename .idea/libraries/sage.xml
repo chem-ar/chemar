@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="sage">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/public/jmol-16.1.41/jsmol/data/sage.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
