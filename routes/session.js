@@ -12,7 +12,7 @@ router.post('/', function(req, res, next) {
   let adminPass = JSON.parse(fs.readFileSync("./admin.json")).admin.password;
   if(adminPass == req.body.password){
     startSession(res)
-    res.status(200).redirect("/");
+    res.status(200).send({});
   }
   res.status(401).send({error: "Password Incorrect"});
 });

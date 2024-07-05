@@ -150,8 +150,12 @@ document.addEventListener("DOMContentLoaded", function() {
             },
             body: JSON.stringify(scene)
         })
-        .then(response => {
-            if (response.ok) {
+        .then(async response => {
+            const body = await response.json().catch(_error => ({}));
+
+            if (response.status === 401 && body.error) {
+                throw new Error(body.error);
+            } else if (response.ok) {
                 location.reload();
                 // Reload the page or handle success as needed
             } else {
@@ -211,8 +215,12 @@ document.addEventListener("DOMContentLoaded", function() {
             fetch(`/scenes/deleteScene/${sceneName}`, {
                 method: "POST"
             })
-            .then(response => {
-                if (response.ok) {
+            .then(async response => {
+                const body = await response.json().catch(_error => ({}));
+
+                if (response.status === 401 && body.error) {
+                    throw new Error(body.error);
+                } else if (response.ok) {
                     // if successful, reload the page
                     console.log("Scene deleted successfully.");
                     location.reload(); // Reload the page to reflect changes
