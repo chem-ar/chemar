@@ -13,10 +13,13 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/searchModels', function (req, res, next) {
+    const isAdmin = checkSession(req);
+    if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
+
     const userSearch = decodeURIComponent(req.query.search || '').toLowerCase();
 
     if (!userSearch) {
-        return res.send([]);
+        return res.send({ searchResults: [] });
     }
     const modelFileCatalog = './public/catalog/modelFileCatalog.json';
 
@@ -24,10 +27,13 @@ router.get('/searchModels', function (req, res, next) {
     const modelData = JSON.parse(modelFileData);
     const searchResults = modelData.filter(model => model.name.toLowerCase().includes(userSearch));
     
-    res.send(searchResults);
+    res.send({ searchResults });
 });
 //To handle the edit functionality
 router.post('/edit', function (req, res, next) {
+    const isAdmin = checkSession(req);
+    if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
+
     const data = { ...req.body }
     let id = req.query.id;
 
@@ -61,6 +67,9 @@ router.post('/edit', function (req, res, next) {
 
 //Handling the delete functionality
 router.get('/delete', function (req, res, next) {
+    const isAdmin = checkSession(req);
+    if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
+
     const id = req.query.id
 
     const modelFileCatalog = './public/catalog/modelFileCatalog.json';
