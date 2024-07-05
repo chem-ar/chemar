@@ -38,7 +38,7 @@
                     Upload File 
                 </button>
             
-            <form class="" action="/addMolecule" method="POST" id="addMolForm">
+            <form class="" id="addMolForm">
                 <div class="row ">
                     <div class="col-12 col-sm-9 col-md-6">
                         <div class="collapse multi-collapse" id="uploadFile">
@@ -50,7 +50,16 @@
                         <input type="text" class="form-control" id="moleculeDescription" name="description" placeholder="Description" required>
                         <h4 class="mb-1 mt-2">File:</h4>
                         <input type="file" class="form-control" id="fileName" name="fileName" placeholder="File name" onchange="onReceiptsSelected()" required>
-                        <button class="btn btn-success form-control my-2">Submit</button>
+                        <button class="btn btn-success form-control my-2" id="submitBtn">
+                            <span
+                                id="submitBtnSpinner"
+                                class="spinner-border spinner-border-sm"
+                                role="status"
+                                aria-label="Loading"
+                                style="display: none;"
+                            ></span>
+                            Submit
+                        </button>
                         </div>
                     </div>
                     <div class="col-12 col-sm-3">
@@ -68,14 +77,21 @@
         const searchField = document.getElementById("search-field");
         const searchButton = document.getElementById("search-button");
         const searchResults = document.getElementById("search-results");
+        const addMolForm = document.getElementById("addMolForm");
 
         /**
          * Event listener for the search button to trigger molecule search.
          */
-         searchButton.addEventListener("click", function (event) {
-    event.preventDefault();
-    searchPubChem(searchField.value);
-});
+        searchButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            searchPubChem(searchField.value);
+        });
+
+        addMolForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            uploadMol(addMolForm);
+        });
+
 
 /**
  * Function to search PubChem for a given compound name.
@@ -91,7 +107,9 @@
 
         fetch(pubChemUrl)
             .then(response => {
-                if (!response.ok) {
+                if (response.status === 404) {
+                    throw new Error('No results found');
+                } else if (!response.ok) {
                     throw new Error(`PubChem API request failed with status ${response.status}`);
                 }
                 return response.json();
@@ -166,12 +184,17 @@
                                 name: compoundDetails.name,
                                 formula: compoundDetails.formula
                             })
-                        }).then(response => {
-                            if (!response.ok){
-                                throw new Error('Failed to add molecule')
-                            };
-                        })
-                        addToFirebase(compoundDetails.name, compoundDetails.formula, compoundDetails.pubChemId);
+                        }).then(async response => {
+                            const body = await response.json();
+                            if (response.status === 400 && body.error) {
+                                throw new Error(body.error);
+                            } else if (!response.ok){
+                                throw new Error(`Server returned status code ${response.status}`);
+                            }
+
+                            toastOnMolSave(body.message);
+
+                        }).catch(error => toastr.error(error.message, 'Failed to add molecule'));
                     });
 
                     cell2.appendChild(addButton);
@@ -210,54 +233,67 @@ function getPubChemCompoundDetails(cid) {
             // Extract compound details
             const name = compound.props.find(prop => prop.urn.label === 'IUPAC Name').value.sval;
             const formula = compound.props.find(prop => prop.urn.label === 'Molecular Formula').value.sval;
-            console.log(``)
             return { name, formula, pubChemId: cid };
         });
 }
 
-/**
- * Function to add a molecule to a local collection or log the details.
- * @param {string} name - The name of the molecule.
- * @param {string} formula - The chemical formula of the molecule.
- * @param {string} pubChemId - The PubChem Compound ID of the molecule.
- */
- function addToFirebase(name, formula, pubChemId) {
-    // Modify this function to log the details or add to a local collection as needed
-    const moleculeData = {
-        name: name,
-        formula: formula,
-        description: "blablabla" // Add your fake description here
-    };
-
-    const fileName = `${pubChemId}.mol`;
-    const moleculeObject = {};
-    moleculeObject[fileName] = moleculeData;
-
-    console.log(moleculeObject);
-    // You can use the logged object as needed (e.g., store it locally, send it to a server, etc.)
+function toastOnMolSave(toastMsg) {
+    // manually creating toast body because newline "\n" doesnt work otherwise
+    const toastBody = document.createElement('span');
+    // currently no easy way to add just the newly saved molecule to the table
+    // below, so ask the user to refresh the entire page
+    toastBody.innerText = toastMsg + "\nRefresh the page to see changes";
+    toastr.success(toastBody, undefined, { escapeHtml: false });
 }
 
-/**
- * Function to fetch data from a URL.
- * @param {string} url - The URL to fetch.
- * @returns {Promise<string>} - Promise resolving to the fetched data.
- */
-function fetchData(url) {
-    return fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Request failed with status ${response.status}`);
+function uploadMol(formElement) {
+    setMolUploading(true);
+
+    // want to send content as type "application/x-www-form-urlencoded"
+    // using this workaround on 22-Jun-2024 by @cuixiping from SO
+    // URL: https://stackoverflow.com/a/38931547
+    const rawFormData = new FormData(formElement);
+    const formData = new URLSearchParams(rawFormData);
+
+    // correct the filename
+    formData.set('fileName', rawFormData.get('fileName').name);
+
+    fetch('/addMolecule', {
+        method: 'POST',
+        body: formData
+    })
+        .then(async res => {
+            const body = await res.json();
+            if (res.status === 400 && body.error) {
+                throw new Error(body.error);
+            } else if (!res.ok) {
+                throw new Error(`Server returned status code ${res.status}`);
             }
-            return response.text();
-        })
-        .then(data => {
-            return data.trim();
-        });
-}
-});
-</script>
 
-<script>
+            toastOnMolSave(body.message);
+            formElement.reset();
+        })
+        .catch(err => {
+            toastr.error(err.message, "Failed to save molecule");
+        })
+        .finally(() => setMolUploading(false));
+}
+
+function setMolUploading(isUploading) {
+    const spinner = document.getElementById('submitBtnSpinner');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (isUploading) {
+        spinner.style.display = '';
+        submitBtn.disabled = true;
+    } else {
+        spinner.style.display = 'none';
+        submitBtn.disabled = false;
+    }
+}
+
+});
+
     // Preview the .mol file content when selected
     function onReceiptsSelected() {
         const files = fileName.files;
@@ -265,7 +301,6 @@ function fetchData(url) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 document.getElementById("preview").value += e.target.result;
-                //console.log(e.target.result);
             };
             reader.readAsText(files[0]);
         }
