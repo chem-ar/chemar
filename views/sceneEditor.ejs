@@ -362,7 +362,7 @@
 </style>
 
     <script type= "module">
-        import { createModel, drawMolecule } from '/js/scenes/rendering.js';
+        import { createModel } from '/js/scenes/rendering.js';
         import {
             initScene,
             addModelToScene,
@@ -417,8 +417,6 @@
 
                 // Draw each molecule in three when sceneEditor is loaded.
                 for(let item of scene.molecules) {
-                    // leaving this here so we can implement backwards-compatability support later
-                    // drawMolecule(item.cjson, item.Title, item.position, item.rotation, item.scale);
                     
                     const modelInfo = item.modelInfo;
                     const model = await createModel(modelInfo, item.position, item.rotation, item.scale);
