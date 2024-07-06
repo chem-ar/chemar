@@ -234,14 +234,10 @@
               markerRoot1.add(molecule);
 
               clone = molecule.clone();
-              console.log("sdf", clone);
               scene.add(clone);
             });
           }
-
-          console.log("sdf", clone);
           scene.add(clone);
-
           markerRoot1.add(mesh1);
 
           ////////////////////////////////////////////////////////////
@@ -261,29 +257,12 @@
           console.log(markerVisible);
         }
 
-        function populate_static_molecules(molecules) {
-          for (let item of molecules) {
-            const marker = moleculeData.trackingMarker;
-            createModel(
-              item.modelInfo,
-              item.position,
-              item.rotation,
-              item.scale
-            ).then((molecule) => {
-              molecule.position.x -= marker.position.x;
-              molecule.position.y -= marker.position.y;
-              molecule.position.z -= marker.position.z;
-            });
-          }
-        }
-
         function render() {
           renderer.render(scene, camera);
         }
 
         function animate() {
           renderer.setAnimationLoop(render);
-
           requestAnimationFrame(animate);
           deltaTime = clock.getDelta();
           totalTime += deltaTime;
