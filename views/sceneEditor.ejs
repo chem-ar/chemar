@@ -585,17 +585,18 @@ document.getElementById("saveBtn").addEventListener('click', () => {
         .then(data => {
             console.log(data); // log the response data to the console
             updateSceneCatalog(scene.name, sceneName, sceneDescription);
-            updateScenesList(); // Call the function to update the scenes list
-        })
-        .catch(err => {
-            console.error(err)
-        });
-        // Close the modal
+            updateScenesList(); 
+             // Close the modal
         var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
         saveModal.hide();
 
         // Redirect the user to the scenes page
-        window.location.href = "/scenes";
+        window.location.href = "/scenes";// Call the function to update the scenes list
+        })
+        .catch(err => {
+            console.error(err)
+        });
+       
     }
 });
 
