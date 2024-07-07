@@ -1,22 +1,25 @@
 var fs = require('fs')
 let key = "";
 
-function startSession(res) {
+function startSession(req, res) {
     // TODO store a randomly generated session token to the user's cookies 
-    let token = globalThis.crypto.randomUUID()
-    // key = 
-    let sess = {
-        token: token,
-        time: Date.now()
+    if (!checkSession(req)) {
+        let token = globalThis.crypto.randomUUID()
+        // key = 
+        let sess = {
+            token: token,
+            time: Date.now()
+        }
+
+        let ad = fs.readFileSync('./admin.json');
+        let adminData = JSON.parse(ad)
+        adminData.admin.session.push(sess)
+
+        fs.writeFileSync('./admin.json', JSON.stringify(adminData))
+
+
+        res.cookie('session', token)
     }
-
-    let ad = fs.readFileSync('./admin.json');
-    let adminData = JSON.parse(ad)
-    adminData.admin.session.push(sess)
-
-    fs.writeFileSync('./admin.json', JSON.stringify(adminData))
-    
-    res.cookie('session', token)
     // using res. Save this session token somewhere on the server too
 }
 
@@ -30,7 +33,7 @@ function checkSession(req) {
     let adminData = JSON.parse(ad)
 
     adminData.admin.session.map((e) => {
-        if(e.token === token){
+        if (e.token === token) {
             e.time = Date.now()
             return exists = true
         }
@@ -47,13 +50,13 @@ function endSession(req, res) {
     let adminData = JSON.parse(ad)
     const token = req.cookies.session;
     adminData.admin.session.map((e, ind) => {
-        if(e.token === token){
+        if (e.token === token) {
             i = ind
             return;
         }
     })
 
-    if(i != -1){
+    if (i != -1) {
         adminData.admin.session.splice(i, 1)
     }
 
