@@ -5,7 +5,7 @@ const { startSession, checkSession } = require('./auth/session-mgmt')
 const bcrypt = require('bcrypt')
 
 async function handler(req, res, next) {
-  let adminPass = JSON.parse(fs.readFileSync("./admin.json")).admin.password;
+  let adminPass = JSON.parse(fs.readFileSync("./routes/auth/admin.json")).admin.password;
   const hash = await bcrypt.compare(req.body.password, adminPass)
   console.log(hash);
   if(hash){
@@ -16,7 +16,7 @@ async function handler(req, res, next) {
 }
 
 async function forgotHandler(req, res, next) {
-  let adminPass = JSON.parse(fs.readFileSync("./admin.json"));
+  let adminPass = JSON.parse(fs.readFileSync("./routes/auth/admin.json"));
   let isAdmin = checkSession(req)
   console.log("about to check");
   const hash = await bcrypt.compare(req.body.password, adminPass.admin.password)
@@ -27,7 +27,7 @@ async function forgotHandler(req, res, next) {
     console.log("new password after hash");
     adminPass.admin.password = newPassword
     let arr = JSON.stringify(adminPass)
-    fs.writeFileSync("./admin.json", arr)
+    fs.writeFileSync("./routes/auth/admin.json", arr)
     return res.send({});
   }
   else{

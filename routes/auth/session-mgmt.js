@@ -11,11 +11,11 @@ function startSession(req, res) {
             time: Date.now()
         }
 
-        let ad = fs.readFileSync('./admin.json');
+        let ad = fs.readFileSync('./routes/auth/admin.json');
         let adminData = JSON.parse(ad)
         adminData.admin.session.push(sess)
 
-        fs.writeFileSync('./admin.json', JSON.stringify(adminData))
+        fs.writeFileSync('./routes/auth/admin.json', JSON.stringify(adminData))
 
 
         res.cookie('session', token)
@@ -29,7 +29,7 @@ function checkSession(req) {
     const token = req.cookies.session;
     let exists = false
 
-    let ad = fs.readFileSync('./admin.json')
+    let ad = fs.readFileSync('./routes/auth/admin.json')
     let adminData = JSON.parse(ad)
 
     adminData.admin.session.map((e) => {
@@ -46,7 +46,7 @@ function endSession(req, res) {
     // TODO delete the session token stored in the user's cookies and on the 
     // server
     let i = -1
-    let ad = fs.readFileSync('./admin.json')
+    let ad = fs.readFileSync('./routes/auth/admin.json')
     let adminData = JSON.parse(ad)
     const token = req.cookies.session;
     adminData.admin.session.map((e, ind) => {
@@ -60,7 +60,7 @@ function endSession(req, res) {
         adminData.admin.session.splice(i, 1)
     }
 
-    fs.writeFileSync('./admin.json', JSON.stringify(adminData))
+    fs.writeFileSync('./routes/auth/admin.json', JSON.stringify(adminData))
     res.clearCookie('session');
 }
 
