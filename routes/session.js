@@ -2,34 +2,45 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 const { startSession, checkSession } = require('./auth/session-mgmt')
+const bcrypt = require('bcrypt')
+
+async function handler(req, res, next) {
+  let adminPass = JSON.parse(fs.readFileSync("./admin.json")).admin.password;
+  const hash = await bcrypt.compare(req.body.password, adminPass)
+  console.log(hash);
+  if(hash){
+    startSession(req, res)
+    return res.status(200).redirect("/");
+  }
+  return res.status(401).send({error: "Password Incorrect"});
+}
+
+async function forgotHandler(req, res, next) {
+  let adminPass = JSON.parse(fs.readFileSync("./admin.json"));
+  let isAdmin = checkSession(req)
+  console.log("about to check");
+  const hash = await bcrypt.compare(req.body.password, adminPass.admin.password)
+  console.log(hash);
+  if(isAdmin && hash){
+    console.log("about to hash");
+    let newPassword = await bcrypt.hash(req.body.newPassword, 5)
+    console.log("new password after hash");
+    adminPass.admin.password = newPassword
+    let arr = JSON.stringify(adminPass)
+    fs.writeFileSync("./admin.json", arr)
+    return res.redirect("/")
+  }
+  else{
+    return res.status(401).json({error: "Invalid Credentials."})
+  }
+}
 
 //Create cookie here then redirect
 router.get('/', function(req, res, next) {
   res.redirect("/");
 });
 
-router.post('/', function(req, res, next) {
-  let adminPass = JSON.parse(fs.readFileSync("./admin.json")).admin.password;
-  if(adminPass == req.body.password){
-    startSession(res)
-    res.status(200).redirect("/");
-  }
-  res.status(401).send({error: "Password Incorrect"});
-});
+router.post('/', handler);
 
-router.post('/forgot', function(req, res, next) {
-  console.log("Hello");
-  let adminPass = JSON.parse(fs.readFileSync("./admin.json"));
-  let isAdmin = checkSession(req)
-  if(isAdmin && adminPass.admin.password == req.body.password){
-    adminPass.admin.password = req.body.newPassword
-    let arr = JSON.stringify(adminPass)
-    fs.writeFileSync("./admin.json", arr)
-    res.redirect("/")
-  }
-  else{
-    res.status(401).json({error: "Invalid Credentials."})
-  }
-  res.status(401).redirect('/')
-});
+router.post('/forgot', forgotHandler);
 module.exports = router;
