@@ -1,11 +1,6 @@
 {
     "admin": {
-        "session": [
-            {
-                "time": 1720331235851,
-                "token": "058363e1-12a5-4ad8-9787-a04f7a997c13"
-            }
-        ],
+        "session": [],
         "password": "TestPassword123"
     }
 }

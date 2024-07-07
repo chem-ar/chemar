@@ -16,14 +16,14 @@ function startSession(res) {
 
     fs.writeFileSync('./admin.json', JSON.stringify(adminData))
     
-    res.cookie('boss', token)
+    res.cookie('session', token)
     // using res. Save this session token somewhere on the server too
 }
 
 function checkSession(req) {
     // TODO check cookie in req. It should match a session token stored 
     // somewhere on the server. Return true if the user is logged in
-    const token = req.cookies.boss;
+    const token = req.cookies.session;
     let exists = false
 
     let ad = fs.readFileSync('./admin.json')
@@ -39,10 +39,26 @@ function checkSession(req) {
     return exists;
 }
 
-function endSession(res) {
+function endSession(req, res) {
     // TODO delete the session token stored in the user's cookies and on the 
     // server
-    res.clearCookie('boss');
+    let i = -1
+    let ad = fs.readFileSync('./admin.json')
+    let adminData = JSON.parse(ad)
+    const token = req.cookies.session;
+    adminData.admin.session.map((e, ind) => {
+        if(e.token === token){
+            i = ind
+            return;
+        }
+    })
+
+    if(i != -1){
+        adminData.admin.session.splice(i, 1)
+    }
+
+    fs.writeFileSync('./admin.json', JSON.stringify(adminData))
+    res.clearCookie('session');
 }
 
 
