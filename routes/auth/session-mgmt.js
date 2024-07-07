@@ -1,6 +1,17 @@
 var fs = require('fs')
 let key = "";
 
+initalizeSessions();
+
+function initalizeSessions() {
+    if (!fs.existsSync("./routes/auth/admin.json")) {
+        fs.copyFileSync(
+            "./routes/auth/admin.json.default",
+            "./routes/auth/admin.json"
+        );
+    }
+}
+
 function startSession(req, res) {
     // TODO store a randomly generated session token to the user's cookies 
     if (!checkSession(req)) {
