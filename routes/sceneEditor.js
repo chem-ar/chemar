@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs'); 
+const { checkSession } = require('./auth/session-mgmt');
 
 router.get('/', function(req, res, next) {
   const scenes = './public/scenes/'
@@ -10,6 +11,9 @@ router.get('/', function(req, res, next) {
 
 // Endpoint to update the scene catalog file
 router.post('/updateCatalog/:oldSceneName', (req, res) => {
+  const isAdmin = checkSession(req);
+  if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
+
   const oldSceneName = req.params.oldSceneName;
   const newSceneName = req.body.name;
   const newSceneDescription = req.body.description;
@@ -56,6 +60,9 @@ router.post('/updateCatalog/:oldSceneName', (req, res) => {
 });
 
 router.get('/:id', function(req , res){
+  const isAdmin = checkSession(req);
+  if (!isAdmin) return res.redirect("/");
+
   var scenefiles = fs.readdirSync('./public/scenes/');
 
   if(scenefiles.includes(req.params.id)){
@@ -71,6 +78,9 @@ router.get('/:id', function(req , res){
 });
 
 router.post('/upload/images/', function(req, res) {
+  const isAdmin = checkSession(req);
+  if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
+
   // Extract image data and image name from the request body
   let imageName = req.body["image-name"]; // Retrieve the image name from the request
   let imageData = req.body["image-contents"].replace(/^data:image\/png;base64,/, "");
@@ -100,11 +110,12 @@ router.post('/upload/images/', function(req, res) {
 });
 
 router.post('/save/:scene', (req, res) => {
+  const isAdmin = checkSession(req);
+  if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
   
   // Get the scene name from the params.
   const sceneName = req.params.scene;
   const scenePath = `./public/scenes/${sceneName}.json`; // Save the file path.
-  var success = false;
   var overwritten = false;
 
   // Check if scene doesn't exist.
@@ -115,20 +126,16 @@ router.post('/save/:scene', (req, res) => {
   fs.writeFile(scenePath, JSON.stringify(req.body), (err) => {
 
     if (err) {
-        success = false;
-        console.log(err);
+      console.error('Error saving scene:', err);
+      return res.status(500).send({ successful: false, error: 'Error saving scene' });
     }
 
+    res.status(200).send({
+      successful: true,
+      overwritten: overwritten,
+      path: scenePath
+    })
   });
-
-  success = true;
-
-  res.status(200).send({
-    successful: success,
-    overwritten: overwritten,
-    path: scenePath
-  })
-
 });
 
 module.exports = router;

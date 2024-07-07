@@ -5,21 +5,8 @@
 <% if (!isAdmin) { %>
 <%- include('partials/navbar') %>
 <% } %>
-
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="home.css">
-  <title> <%=title%> </title>
-</head>
 
-<body>
   <div class="p-3 mb-2 bg-dark text-white">
     <h2 class="display-5 fw-bold" style="text-align: center">
       Admin Tools
@@ -31,15 +18,40 @@
       <form id="changePasswordForm" onsubmit="changePassword(event)" action="" method="post">
         <div align="center">
           <div class="form-outline form-white mb-4">
-            <input type="password" id="oldPassword" class="form-control-lg" size="50" name="oldPassword" placeholder="Old Password:">
+            <input
+              required
+              type="password"
+              id="oldPassword"
+              class="form-control-lg"
+              size="50"
+              name="oldPassword"
+              placeholder="Old Password:"
+            >
           </div>
 
           <div class="form-outline form-white mb-4">
-            <input type="password" id="newPassword" class="form-control-lg" size="50" name="newPassword" placeholder="New Password:">
+            <input
+              required
+              type="password"
+              id="newPassword"
+              class="form-control-lg"
+              size="50"
+              name="newPassword"
+              placeholder="New Password:"
+            >
           </div>
 
           <div class="form-outline form-white mb-4">
-            <input type="password" id="confirmNewPassword" class="form-control-lg" size="50" name="confirmNewPassword" placeholder="Confirm New Password:" onkeyup="checkPassword()">
+            <input
+              required
+              type="password"
+              id="confirmNewPassword"
+              class="form-control-lg"
+              size="50"
+              name="confirmNewPassword"
+              placeholder="Confirm New Password:"
+              onkeyup="checkPassword()"
+            >
           </div>
 
           <input type="submit" class="btn btn-primary" value="Change Password">
@@ -49,11 +61,15 @@
     </div>
 
     <script>
+      const confirmedNewPasswordInput = document.getElementById('confirmNewPassword');
+      const newPasswordInput = document.getElementById('newPassword');
+
       function changePassword(e) {
         e.preventDefault();
+        const form = document.getElementById('changePasswordForm');
         var oldPassword = document.getElementById('oldPassword').value;
-        var confirmedNewPassword = document.getElementById('confirmNewPassword').value;
-        var newPassword = document.getElementById('newPassword').value;
+        var confirmedNewPassword = confirmedNewPasswordInput.value;
+        var newPassword = newPasswordInput.value;
 
         let body = {
           password: oldPassword,
@@ -67,27 +83,32 @@
               },
               body: JSON.stringify(body)
             })
-            .then(response => {
-              if (response.ok) {
-                console.log("Password Changed");
-                location.reload(); // Reload the page to reflect changes
-              } else {
-                console.error("Failed to change Password");
+            .then(async response => {
+              const body = await response.json().catch(_error => ({}));
+
+              if (response.status === 401 && body.error) {
+                throw new Error(body.error);
+              } else if (!response.ok) {
+                throw new Error(`Server returned status code ${response.status}`);
               }
+
+              toastr.success("Password changed successfully");
+              form.reset();
+              confirmedNewPasswordInput.style.backgroundColor = '';
+              newPasswordInput.style.backgroundColor = '';
             })
             .catch(error => {
               console.error("Error:", error);
+              toastr.error(error.message, "Failed to change Password");
             });
         }
       }
 
       // Check if passwords match
       function checkPassword(e) {
-        var newPassword = document.getElementById('newPassword').value;
+        var newPassword = newPasswordInput.value;
         var oldPassword = document.getElementById('oldPassword').value;
-        var confirmedNewPassword = document.getElementById('confirmNewPassword').value;
-        var newPasswordInput = document.getElementById('newPassword');
-        var confirmedNewPasswordInput = document.getElementById('confirmNewPassword');
+        var confirmedNewPassword = confirmedNewPasswordInput.value;
 
         if (newPassword == confirmedNewPassword) {
 

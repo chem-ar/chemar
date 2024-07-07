@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var { checkSession } = require('./auth/session-mgmt')
 var fs = require('fs');
-const notifier = require('node-notifier'); // Node Notifiers: https://www.npmjs.com/package/node-notifier
 
 router.get('/', function(req, res, next) {
     const molfiles = './public/molfiles/';
@@ -40,7 +39,6 @@ router.get('/', function(req, res, next) {
 // Edit molecule
 router.put('/editMolecule/:file', function(req, res) {
     const file = req.params.file;
-    const filePath = `./public/molfiles/${file}`;
 
     try {
         // Read the updated molecule data from the request body
@@ -57,16 +55,11 @@ router.put('/editMolecule/:file', function(req, res) {
         // Write back to the JSON file
         fs.writeFileSync(catalogPath, JSON.stringify(parsedData));
 
-        // Notify success
-        notifier.notify({
-            title: 'Edit Successful',
-            message: `Molecule '${file}' updated successfully.`,
-        });
-
-        res.sendStatus(200); // Send success response
+        return res.send({ message: `Molecule '${file}' updated successfully.` });
     } catch(err) {
-        console.error(`Failed to update molecule file '${file}':`, err);
-        res.sendStatus(500); // Send error response
+        const errMsg = `Failed to update molecule file '${file}': ${err}`;
+        console.error(errMsg);
+        return res.status(500).send({ error: errMsg });
     }
 });
 
@@ -78,7 +71,6 @@ router.post('/deleteMolecule/:file', function(req, res) {
 
     try {
         fs.unlinkSync(filePath);
-        console.log(`Molecule file '${file}' deleted successfully.`);
 
         // Update molecule catalog JSON file
         var catalogPath = './public/catalog/molfileCatalog.json';
@@ -91,16 +83,11 @@ router.post('/deleteMolecule/:file', function(req, res) {
         // Write back to the JSON file
         fs.writeFileSync(catalogPath, JSON.stringify(parsedData));
 
-        // Notify success
-        notifier.notify({
-            title: 'Delete Successful',
-            message: `Molecule '${file}' deleted successfully.`,
-        });
-
-        res.sendStatus(200); // Send success response
+        return res.send({ message: `Molecule '${file}' deleted successfully.` });
     } catch(err) {
-        console.error(`Failed to delete molecule file '${file}':`, err);
-        res.sendStatus(500); // Send error response
+        const errMsg = `Failed to delete molecule file '${file}': ${err}`;
+        console.error(errMsg);
+        return res.status(500).send({ error: errMsg });
     }
 });
 
