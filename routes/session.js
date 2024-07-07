@@ -10,7 +10,7 @@ async function handler(req, res, next) {
   console.log(hash);
   if(hash){
     startSession(req, res)
-    return res.status(200).redirect("/");
+    return res.status(200).send({});
   }
   return res.status(401).send({error: "Password Incorrect"});
 }
@@ -28,7 +28,7 @@ async function forgotHandler(req, res, next) {
     adminPass.admin.password = newPassword
     let arr = JSON.stringify(adminPass)
     fs.writeFileSync("./admin.json", arr)
-    return res.redirect("/")
+    return res.send({});
   }
   else{
     return res.status(401).json({error: "Invalid Credentials."})

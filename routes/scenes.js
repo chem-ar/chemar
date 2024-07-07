@@ -52,6 +52,9 @@ router.get('/', function(req, res, next) {
 
 // Endpoint to delete a scene
 router.post('/deleteScene/:scene', function(req, res) {
+    const isAdmin = checkSession(req);
+    if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
+
     const sceneName = req.params.scene;
     const scenePath = `./public/scenes/${sceneName}.json`;
     console.log(scenePath);
@@ -85,6 +88,9 @@ router.post('/deleteScene/:scene', function(req, res) {
 
 // Handle adding a new scene
 router.post('/addScene', function(req, res) {
+    const isAdmin = checkSession(req);
+    if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
+
     // Get new scene info from request body
     var newSceneName = req.body.name;
     var newSceneDesc = req.body.desc; // Check if 'description' is correctly accessed

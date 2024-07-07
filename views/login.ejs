@@ -1,23 +1,11 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar') %>
-<script>
-  // Function once Login button has been pressed
-  // function validate() {
-  //   var form = document.getElementById("passwordForm");
-  //   var password = document.getElementById("passwordInput").value;
-  //   if (password != "TestPassword123") {
-  //     // Red error message appears
-  //     document.getElementById('passerrormsg').hidden = false;
-  //     // Pop-up alert appears
-  //     alert('Incorrect Password. Please try again.');
-  //     form.reset();
-  //     event.preventDefault();
-  //   }
-  // }
+<script type="module">
+  var form = document.getElementById("passwordForm");
+  form.addEventListener('submit', login);
 
   function login(e) {
     e.preventDefault();
-    var form = document.getElementById("passwordForm");
     var password = document.getElementById("passwordInput").value;
     fetch(`/session/`, {
         method: "Post",
@@ -26,16 +14,19 @@
         },
         body: JSON.stringify({password: password})
       })
-      .then(response => {
-        if (response.ok) {
-          console.log("Login Success.");
-          location.reload(); // Reload the page to reflect changes
-        } else {
-          console.error("Login Failed.");
+      .then(async response => {
+        const body = await response.json().catch(_error => ({}));
+
+        if (response.status === 401 && body.error) {
+          throw new Error(body.error);
+        } else if (!response.ok) {
+          throw new Error(`Server returned status code ${response.status}`);
         }
+        
+        window.location = "/";
       })
       .catch(error => {
-        console.error("Error:", error);
+        toastr.error(error.message, "Login failed");
       });
   }
 </script>
@@ -54,7 +45,7 @@
               <h4 class="mb-5">Please enter admin password:</h4>
 
               <!--Form-->
-              <form id="passwordForm" action="/session" method="post">
+              <form id="passwordForm">
                 <div class="form-outline form-white mb-4">
                   <input type="password" id="passwordInput" class="form-control form-control-lg" name="password" placeholder="Password:">
                   <br>
@@ -66,7 +57,7 @@
                 </div>
 
                 <!--Login Button-->
-                <button class="btn btn-outline-light btn-lg px-5" type="submit" onclick="(e) => login(e)">
+                <button class="btn btn-outline-light btn-lg px-5" type="submit">
                   Login
                 </button>
               </form>
