@@ -1,5 +1,4 @@
 var fs = require('fs')
-let key = "";
 
 initalizeSessions();
 
@@ -13,10 +12,8 @@ function initalizeSessions() {
 }
 
 function startSession(req, res) {
-    // TODO store a randomly generated session token to the user's cookies 
     if (!checkSession(req)) {
         let token = globalThis.crypto.randomUUID()
-        // key = 
         let sess = {
             token: token,
             time: Date.now()
@@ -31,12 +28,9 @@ function startSession(req, res) {
 
         res.cookie('session', token)
     }
-    // using res. Save this session token somewhere on the server too
 }
 
 function checkSession(req) {
-    // TODO check cookie in req. It should match a session token stored 
-    // somewhere on the server. Return true if the user is logged in
     const token = req.cookies.session;
     let exists = false
 
@@ -54,8 +48,6 @@ function checkSession(req) {
 }
 
 function endSession(req, res) {
-    // TODO delete the session token stored in the user's cookies and on the 
-    // server
     let i = -1
     let ad = fs.readFileSync('./routes/auth/admin.json')
     let adminData = JSON.parse(ad)
