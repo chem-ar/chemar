@@ -4,7 +4,7 @@ const {endSession} = require('./auth/session-mgmt')
 
 //Create cookie here then redirect
 router.get('/', function(req, res, next) {
-  endSession(res)
+  endSession(req, res)
   res.redirect("/");
 });
 
