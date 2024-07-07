@@ -257,3 +257,6 @@ dist
 .yarn/install-state.gz
 
 .pnp.*
+
+# session-mgmt
+admin.json
