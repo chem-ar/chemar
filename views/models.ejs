@@ -25,7 +25,9 @@
                         <th>Mtl File</th>
                         <th>Obj File</th>
                         <!-- If the user is an admin, include the Options column -->
-                        <% if (isAdmin){%><th>Options</th><%}%>
+                        <% if (isAdmin){%>
+                            <th class="options-column">Options</th>
+                        <%}%>
                     </tr>
                 </thead>            
                 <tbody id="table-body"> 
@@ -189,7 +191,7 @@
                             '<a class="text-white modelfiles-in-table" id="Name" href="modelfiles/' +  modelData.files.obj + '">' + modelData.files.obj + '</a>',
                             '<a class="text-white modelfiles-in-table" id="Name" href="modelfiles/' +  modelData.files.mtl +'">' + modelData.files.mtl + '</a>', 
                             <% if (isAdmin){%>
-                                `<td class>
+                                `<td class class="options-column">
                                 <div class="d-grid gap-2">
                                     <button type="button" id="edit" onclick="" class="btn btn-outline-warning editModelBtn" data-bs-toggle="modal" data-bs-target="#editModal">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">

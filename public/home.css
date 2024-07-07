@@ -102,8 +102,21 @@ tbody {
     font-size: 18px;
   }
 
-  .nav-link{
+  .nav-link {
     font-size: larger;
+  }
+
+  /* About Page */
+  .about-page p {
+    font-size: 18px;
+  }
+
+  .about-page h2 {
+    font-size: 34px;
+  }
+
+  .about-page h4 {
+    font-size: 26px;
   }
 }
 
@@ -138,6 +151,33 @@ tbody {
     padding-bottom: 0.5vw;
     text-align: center;
     font-size: 15px;
+  }
+
+  /* About Page */
+  .about-page p {
+    font-size: 14px;
+  }
+
+  .about-page h2, .admin-page h2 {
+    font-size: 26px;
+  }
+
+  .about-page h4, .admin-page h4 {
+    font-size: 22px;
+  }
+
+  .footer-text {
+    font-size: 12px;
+  }
+
+  .changePassword {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  #changePasswordBtn {
+    font-size: 18px;
+    width: 170px;
   }
 }
 
