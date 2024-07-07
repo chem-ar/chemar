@@ -24,7 +24,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Formula</th>
-                        <th>Options</th>
+                        <th class="options-column">Options</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,7 +46,7 @@
                             <a class="text-white molnames-in-table" id="Name<%=item.file %>" href="/moleculeViewer/<%=item.file%>"><%=item.name%></a>
                         </td>
                         <td id="Formula<%=item.file %>" class="text-white molformulas-in-table"><%=item.formula%></td>
-                        <td class>
+                        <td class="options-column">
                             <div class = "d-grid gap-2">
                                 <button id="<%= "shareBtn" + item.file %>" type="button" class="share btn btn-light" data-bs-toggle="modal" data-bs-target="#shareModal">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">

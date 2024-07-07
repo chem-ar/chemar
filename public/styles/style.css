@@ -22,6 +22,7 @@
 .table-striped>thead>tr>th {
   background-color: white;
   color: #202020;
+  font-size: 19px;
 }
 
 .transparent-dark {
@@ -93,4 +94,58 @@
 
 .nav-link{
   font-size: larger;
+}
+
+.options-column {
+  width: 170px;
+}
+
+.options-column-scenes {
+  width: 208px;
+}
+
+@media screen and (max-width:600px) {
+  .btn {
+    font-size: 13px;
+    font-weight: 350;
+    border-width: 1.5px;
+  }
+  
+  .molnames-in-table,
+  .molformulas-in-table,
+  .names-in-scenes,
+  .desc-in-scenes {
+    text-decoration: none;
+    font-size: 15px;
+  }
+  
+  .modelname-in-table,
+  .modelname-in-table:hover,
+  .modeldesc-in-table,
+  .modeldesc-in-table:hover {
+    text-decoration: none;
+    color: white;
+    font-size: 15px;
+  }
+  
+  .modelfiles-in-table {
+    font-size: 15px;
+    text-decoration: none
+  }
+  
+  .nav-link{
+    font-size: larger;
+  }
+  
+  .options-column {
+    max-width: 109px;
+  }
+  
+  .options-column-scenes {
+    width: 109px;
+  }
+
+  .footer-text {
+    font-size: 12px;
+  }
 }
