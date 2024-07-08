@@ -120,7 +120,7 @@
 
 document.addEventListener("DOMContentLoaded", function() {
     // Add event listener to form submission
-    document.getElementById("newSceneAddBtn").addEventListener("click", function(event) {
+    document.getElementById("newSceneAddBtn")?.addEventListener("click", function(event) {
         // Prevent default form submission behavior
         event.preventDefault();
 
@@ -152,17 +152,16 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(response => {
             if (response.ok) {
-                console.log('Scene added successfully.');
                 location.reload();
                 // Reload the page or handle success as needed
             } else {
                 console.error('Failed to add scene.');
-                // Handle failure as needed
+                throw new Error(`Server returned status code ${response.status}`);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            // Handle error as needed
+            toastr.error(error.message, "Failed to create scene");
         });
     });
 });
@@ -188,40 +187,42 @@ document.addEventListener("DOMContentLoaded", function() {
             qrcode.makeCode(window.location.host + "/sceneViewer/" + itemNumber); 
         })
     });
-</script>
 
-<script>
     document.addEventListener("DOMContentLoaded", function() {
         // Add event listener to delete buttons
         var deleteButtons = document.querySelectorAll(".deleteSceneBtn");
+        var deleteModalBody = document.querySelector("#deleteModal .modal-body");
 
         // Loop through each delete button and add click event listener
         deleteButtons.forEach(function(button) {
             button.addEventListener("click", function() {
                 var sceneName = this.getAttribute("data-scene");
-                var deleteModalBody = document.querySelector("#deleteModal .modal-body");
-                var confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 
                 // Set the text content of the modal body to include the scene's name
                 deleteModalBody.textContent = `Are you sure you want to delete "${sceneName}"?`;
 
-                confirmDeleteBtn.addEventListener("click", function() {
-                    fetch(`/scenes/deleteScene/${sceneName}`, {
-                        method: "POST"
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            // if successful, reload the page
-                            console.log("Scene deleted successfully.");
-                            location.reload(); // Reload the page to reflect changes
-                        } else {
-                            console.error("Failed to delete scene.");
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                    });
-                });
+                deleteModalBody.setAttribute('data-scene-to-delete', sceneName);
+            });
+        });
+
+        var confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+        confirmDeleteBtn.addEventListener("click", function() {
+            const sceneName = deleteModalBody.getAttribute('data-scene-to-delete');
+            fetch(`/scenes/deleteScene/${sceneName}`, {
+                method: "POST"
+            })
+            .then(response => {
+                if (response.ok) {
+                    // if successful, reload the page
+                    console.log("Scene deleted successfully.");
+                    location.reload(); // Reload the page to reflect changes
+                } else {
+                    throw new Error(`Server returned error code ${response.status}`);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                toastr.error(error.message, "Failed to delete scene");
             });
         });
     });
