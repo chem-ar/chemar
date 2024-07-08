@@ -21,7 +21,7 @@ router.post('/', async function (req, res) {
 
 router.post('/forgot', async function(req, res) {
   let adminPass = JSON.parse(fs.readFileSync("./routes/auth/admin.json"));
-  let isAdmin = checkSession(req)
+  let isAdmin = checkSession(req, res);
   const hash = await bcrypt.compare(req.body.password, adminPass.admin.password)
   if(isAdmin && hash){
     let newPassword = await bcrypt.hash(req.body.newPassword, 5)

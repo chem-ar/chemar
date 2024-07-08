@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
 
 // Endpoint to update the scene catalog file
 router.post('/updateCatalog/:oldSceneName', (req, res) => {
-  const isAdmin = checkSession(req);
+  const isAdmin = checkSession(req, res);
   if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
   const oldSceneName = req.params.oldSceneName;
@@ -60,7 +60,7 @@ router.post('/updateCatalog/:oldSceneName', (req, res) => {
 });
 
 router.get('/:id', function(req , res){
-  const isAdmin = checkSession(req);
+  const isAdmin = checkSession(req, res);
   if (!isAdmin) return res.redirect("/");
 
   var scenefiles = fs.readdirSync('./public/scenes/');
@@ -78,7 +78,7 @@ router.get('/:id', function(req , res){
 });
 
 router.post('/upload/images/', function(req, res) {
-  const isAdmin = checkSession(req);
+  const isAdmin = checkSession(req, res);
   if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
   // Extract image data and image name from the request body
@@ -110,7 +110,7 @@ router.post('/upload/images/', function(req, res) {
 });
 
 router.post('/save/:scene', (req, res) => {
-  const isAdmin = checkSession(req);
+  const isAdmin = checkSession(req, res);
   if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
   
   // Get the scene name from the params.

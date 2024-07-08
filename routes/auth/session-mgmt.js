@@ -1,4 +1,5 @@
 var fs = require('fs')
+const SESSION_DURATION = 21600000; // 21600000 ms == 6 hrs
 
 initalizeSessions();
 
@@ -12,7 +13,7 @@ function initalizeSessions() {
 }
 
 function startSession(req, res) {
-    if (!checkSession(req)) {
+    if (!checkSession(req, res)) {
         let token = globalThis.crypto.randomUUID()
         let sess = {
             token: token,
@@ -25,26 +26,29 @@ function startSession(req, res) {
 
         fs.writeFileSync('./routes/auth/admin.json', JSON.stringify(adminData))
 
-
-        res.cookie('session', token)
+        res.cookie('session', token, { maxAge: SESSION_DURATION });
     }
 }
 
-function checkSession(req) {
+function checkSession(req, res) {
     const token = req.cookies.session;
-    let exists = false
 
     let ad = fs.readFileSync('./routes/auth/admin.json')
     let adminData = JSON.parse(ad)
 
-    adminData.admin.session.map((e) => {
-        if (e.token === token) {
-            e.time = Date.now()
-            return exists = true
-        }
-    })
+    const activeSessions = adminData.admin.session
+        .filter(session => ((Date.now() - session.time) <= SESSION_DURATION));
+    
+    const session = activeSessions.find(session => session.token === token);
+    if (session) {
+        res.cookie('session', token, { maxAge: SESSION_DURATION });
+        session.time = Date.now();
+    }
 
-    return exists;
+    adminData.admin.session = activeSessions;
+    fs.writeFileSync('./routes/auth/admin.json', JSON.stringify(adminData));
+
+    return session !== undefined;
 }
 
 function endSession(req, res) {

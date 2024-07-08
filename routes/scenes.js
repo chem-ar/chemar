@@ -8,7 +8,7 @@ router.get('/', function(req, res, next) {
     const scenesDirectory = './public/scenes/';
 
     //Admin check
-    let isAdmin = checkSession(req);;
+    let isAdmin = checkSession(req, res);
 
     // Load the scene catalog data
     let sceneCatalog;
@@ -52,7 +52,7 @@ router.get('/', function(req, res, next) {
 
 // Endpoint to delete a scene
 router.post('/deleteScene/:scene', function(req, res) {
-    const isAdmin = checkSession(req);
+    const isAdmin = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     const sceneName = req.params.scene;
@@ -88,7 +88,7 @@ router.post('/deleteScene/:scene', function(req, res) {
 
 // Handle adding a new scene
 router.post('/addScene', function(req, res) {
-    const isAdmin = checkSession(req);
+    const isAdmin = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     // Get new scene info from request body
@@ -153,7 +153,7 @@ router.get('/list', function(req, res) {
     const scenes = './public/scenes/';
 
     //Admin check
-    let isAdmin = checkSession(req);;
+    let isAdmin = checkSession(req, res);
 
     res.status(200).send(fs.readdirSync(scenes));
 });
