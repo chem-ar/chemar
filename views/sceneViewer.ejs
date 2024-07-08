@@ -103,14 +103,7 @@
             animate();
           });
 
-        var scene,
-          camera,
-          renderer,
-          clock,
-          deltaTime,
-          totalTime,
-          clone,
-          controls;
+        var scene, camera, renderer, clock, deltaTime, totalTime, clone, controller, moleculeGroup,controls;
 
         var arToolkitSource, arToolkitContext;
 
@@ -202,6 +195,20 @@
           });
 
           ////////////////////////////////////////////////////////////
+          // setup ARButton
+          ////////////////////////////////////////////////////////////
+          const button = ARButton.createButton(renderer);
+          console.log(button);
+          document.body.appendChild(button);
+
+           ////////////////////////////////////////////////////////////
+          // setup OrbitControls
+          ////////////////////////////////////////////////////////////
+          controls = new OrbitControls(camera, renderer.domElement);
+          controls.update();
+
+
+          ////////////////////////////////////////////////////////////
           // setup markerRoots
           ////////////////////////////////////////////////////////////
 
@@ -218,7 +225,7 @@
           );
 
           console.log(moleculeData.trackingMarker);
-
+          moleculeGroup = new THREE.Group();
           for (let item of moleculeData.molecules) {
             const marker = moleculeData.trackingMarker;
             createModel(
@@ -234,19 +241,30 @@
               markerRoot1.add(molecule);
 
               clone = molecule.clone();
-              scene.add(clone);
+              moleculeGroup.add(clone);
             });
           }
-          scene.add(clone);
+          scene.add(moleculeGroup);
           markerRoot1.add(mesh1);
 
           ////////////////////////////////////////////////////////////
-          // setup ARButton
+          // setup ARController
           ////////////////////////////////////////////////////////////
-          const button = ARButton.createButton(renderer);
-          console.log(button);
-          document.body.appendChild(button);
-          button.addEventListener("click", loadOrbitControls);
+
+          controller = renderer.xr.getController(0);
+          console.log(controller);
+          controller.addEventListener('select', controllerOnSelect);
+          scene.add(controller);
+
+
+        }
+
+        function controllerOnSelect( event ){
+          
+          const ARcontroller = event.target;
+          ARcontroller.attach(moleculeGroup);
+          console.log(ARcontroller.attach(moleculeGroup));
+       
         }
 
         function update() {
@@ -270,12 +288,6 @@
           render();
         }
 
-        function loadOrbitControls() {
-          controls = new OrbitControls(camera, renderer.domElement);
-          controls.enableDamping = true;
-          controls.enableZoom = true;
-          controls.update();
-        }
       </script>
     </body>
   </html>
