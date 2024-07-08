@@ -159,7 +159,7 @@
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
 
-<script>
+<script type="module">
     $(document).ready(function() {
     $('#deleteModal').appendTo("body");
     $('#shareModal').appendTo("body");
@@ -187,7 +187,8 @@
                 // Initialize DataTable
                 $('#molTable').DataTable();
             }
-        });
+        })
+        .catch(err => toastr.error(err.message));
 
     // Adding edit button functionality.
 var editBtnArray = document.getElementsByClassName("editMoleculeBtn");
@@ -198,7 +199,8 @@ var moleculeDescriptionEditInput = document.getElementById("moleculeDescriptionE
 
 // Event listener for edit submit button
 var editSubmitBtn = document.getElementById("editSubmitBtn");
-editSubmitBtn.addEventListener('click', () => {
+editSubmitBtn.addEventListener('click', e => {
+    e.preventDefault();
     // Get the molecule ID from the submit button's data-id attribute
     var id = editSubmitBtn.getAttribute("data-id"); // Get the molecule ID from data-id attribute
 
@@ -217,14 +219,15 @@ editSubmitBtn.addEventListener('click', () => {
     })
     .then(response => {
         if (response.ok) {
-            console.log("Molecule updated successfully.");
             location.reload(); // Reload the page to reflect changes
         } else {
-            console.error("Failed to update molecule.");
+            throw new Error(
+                `Failed to update molecule. Server returned status ${response.status}`
+            );
         }
     })
     .catch(error => {
-        console.error("Error:", error);
+        toastr.error(error.message);
     });
 });
 
@@ -247,11 +250,6 @@ Array.from(editBtnArray).forEach(btn => {
         }
     });
 });
-
-
-    function selectActiveMolecule() {
-
-    };
 
     // Preview the .mol file content when selected
     function onReceiptsSelected() {
@@ -276,6 +274,8 @@ Array.from(editBtnArray).forEach(btn => {
     });
 
 // delete molecule
+var deleteModalBody = document.querySelector("#deleteModal .modal-body"); // Get delete modal body element
+
 // Add event listener to delete buttons
 var deleteButtons = document.getElementsByClassName("deleteMoleculeBtn");
 
@@ -284,32 +284,33 @@ Array.from(deleteButtons).forEach(function(button) {
     button.addEventListener("click", function() {
         var file = this.getAttribute("data-file");
         var moleculeName = this.closest("tr").querySelector("td:first-child").textContent; // Get molecule name from the closest table row
-        var deleteModalBody = document.querySelector("#deleteModal .modal-body"); // Get delete modal body element
-        var confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 
         // Set the text content of the modal body to include the molecule's name
         deleteModalBody.textContent = `Are you sure you want to delete ${moleculeName}?`;
-
-        confirmDeleteBtn.addEventListener("click", function() {
-            fetch(`/molecules/deleteMolecule/${file}`, { // Change the route to match your server-side route
-                method: "POST" // Change method to POST
-            })
-            .then(response => {
-                if (response.ok) {
-                    // if successful, reload the page
-                    console.log("Molecule deleted successfully.");
-                    location.reload(); // Reload the page to reflect changes
-                } else {
-                    console.error("Failed to delete molecule.");
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-            });
-        });
+        deleteModalBody.setAttribute("data-file-to-delete", file);
     });
-}); 
-</script>
+});
+
+var confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+confirmDeleteBtn.addEventListener("click", function() {
+    const file = deleteModalBody.getAttribute("data-file-to-delete");
+    fetch(`/molecules/deleteMolecule/${file}`, { // Change the route to match your server-side route
+        method: "POST" // Change method to POST
+    })
+    .then(response => {
+        if (response.ok) {
+            // if successful, reload the page
+            location.reload(); // Reload the page to reflect changes
+        } else {
+            throw new Error(
+                `Failed to delete molecule. Server returned status ${response.status}`
+            );
+        }
+    })
+    .catch(error => {
+        toastr.error(error.message);
+    });
+});
 
 </script>
 
