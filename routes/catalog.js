@@ -10,7 +10,7 @@ router.get('/', function(req, res, next) {
     let name,formula = "not found in catalog";
     
     //Admin check
-    let isAdmin = checkSession(req);;
+    let isAdmin = checkSession(req, res);
 
     res.render('catalog', { title: 'Catalog', list: fs.readdirSync(molfiles), mol: molecule,name: name, formula: formula, isAdmin: isAdmin});
 });

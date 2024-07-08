@@ -7,7 +7,7 @@ router.get('/', function(req, res, next) {
     const molfiles = './public/molfiles/';
 
     //Admin check
-    let isAdmin = checkSession(req);;
+    let isAdmin = checkSession(req, res);
 
     try {
         let listItems = fs.readdirSync(molfiles);

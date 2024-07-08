@@ -7,13 +7,13 @@ var { checkSession } = require('./auth/session-mgmt')
 router.get('/', function (req, res, next) {
 
     //Admin check
-    let isAdmin = checkSession(req);
+    let isAdmin = checkSession(req, res);
 
     res.render('models', { title: 'Model Catalog', isAdmin: isAdmin });
 });
 
 router.get('/searchModels', function (req, res, next) {
-    const isAdmin = checkSession(req);
+    const isAdmin = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     const userSearch = decodeURIComponent(req.query.search || '').toLowerCase();
@@ -31,7 +31,7 @@ router.get('/searchModels', function (req, res, next) {
 });
 //To handle the edit functionality
 router.post('/edit', function (req, res, next) {
-    const isAdmin = checkSession(req);
+    const isAdmin = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     const data = { ...req.body }
@@ -67,7 +67,7 @@ router.post('/edit', function (req, res, next) {
 
 //Handling the delete functionality
 router.get('/delete', function (req, res, next) {
-    const isAdmin = checkSession(req);
+    const isAdmin = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     const id = req.query.id

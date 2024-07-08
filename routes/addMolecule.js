@@ -5,7 +5,7 @@ const { checkSession } = require('./auth/session-mgmt');
 
 // Post request when clicking submit button
 router.post('/', (req, res) => {
-    const isAdmin = checkSession(req);
+    const isAdmin = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     // Assign values from form to variables
@@ -47,7 +47,7 @@ router.post('/', (req, res) => {
 });
 
 router.post('/saveMolFile', async (req, res) => {
-    const isAdmin = checkSession(req);
+    const isAdmin = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
     
     // Assign values from form to variables
