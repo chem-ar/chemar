@@ -258,5 +258,5 @@ dist
 
 .pnp.*
 
-# session-mgmt
-admin.json
+# session-mgmt and user login credential data
+/routes/auth/admin.json
