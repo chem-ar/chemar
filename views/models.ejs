@@ -41,7 +41,7 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
 
 <!-- Edit Modal -->
-<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content bg-dark">
             <div class="modal-header">
@@ -165,10 +165,12 @@
                 },
                 body: JSON.stringify(updatedModel)
             }).then(response => {
+                console.log(response);
                 if (response.ok) {
-                    location.reload();
+                    $('#editModal').modal('hide')
+                    toastr.success('Edited Successfuly')
+                    fetchModels();
                 } else {
-                    console.error("Failed to update model.");
                 }
                 //catch used to catch any errors
             }).catch(error => console.error("Error:", error));
@@ -187,7 +189,9 @@
                 method: "GET"
             }).then(response => {
                 if (response.ok) {
-                    location.reload();
+                    $('#deleteModal').modal('hide')
+                    toastr.success('Deleted Successfuly')
+                    fetchModels();
                 } else {
                     console.error("Failed to delete model.");
                 }
