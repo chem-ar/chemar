@@ -70,25 +70,25 @@ tbody {
   background-color: transparent;
 }
 
-@media screen and (min-width: 601px) {
+@media screen and (min-width: 37.56rem) { /* 601px */
   a.btn.btn-outline-light.btn-lg {
-    font-size: 1.8vw;
+    font-size: 1.8rem;
   }
 
   p {
-    font-size: 1.4vw;
+    font-size: 1.4rem;
   }
 
   h1.display-5.fw-bold {
-    font-size: 3.6vw;
+    font-size: 3.6rem;
   }
 
   h2.display-5.fw-bold {
-    font-size: 2.8vw;
+    font-size: 2.8rem;
   }
 
   h4 {
-    font-size: 2vw;
+    font-size: 2rem;
   }
 
   a.btn.btn-primary {
@@ -96,10 +96,10 @@ tbody {
     outline-color: grey;
     text-decoration: none;
     border-color: grey;
-    padding: 0.5vw 1vw;
-    padding-bottom: 0.5vw;
+    padding: 0.5rem 1rem;
+    padding-bottom: 0.5rem;
     text-align: center;
-    font-size: 18px;
+    font-size: 1.125rem; /* 18px */
   }
 
   .nav-link {
@@ -108,34 +108,34 @@ tbody {
 
   /* About Page */
   .about-page p {
-    font-size: 18px;
+    font-size: 1.13rem; /* 18px */
   }
 
   .about-page h2 {
-    font-size: 34px;
+    font-size: 2.13rem; /* 34px */
   }
 
   .about-page h4 {
-    font-size: 26px;
+    font-size: 1.63rem; /* 26px */
   }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 37.50rem) { /* 600px */
   a.btn.btn-outline-light.btn-lg {
-    font-size: 2.8vw;
+    font-size: 2.8rem;
   }
 
   p {
-    font-size: 3.4vw;
+    font-size: 3.4rem;
   }
 
   h1.display-5.fw-bold,
   h2.display-5.fw-bold {
-    font-size: 6.6vw;
+    font-size: 6.6rem;
   }
 
   h4 {
-    font-size: 4.6vw;
+    font-size: 4.6rem;
   }
 
   ul {
@@ -147,46 +147,46 @@ tbody {
     outline-color: grey;
     text-decoration: none;
     border-color: grey;
-    padding: 0.5vw 1vw;
-    padding-bottom: 0.5vw;
+    padding: 0.5rem 1rem;
+    padding-bottom: 0.5rem;
     text-align: center;
-    font-size: 15px;
+    font-size: 0.94rem; /* 15px */
   }
 
   /* About Page */
   .about-page p {
-    font-size: 14px;
+    font-size: 0.88rem; /* 14px */
   }
 
   .about-page h2, .admin-page h2 {
-    font-size: 26px;
+    font-size: 1.63rem; /* 26px */
   }
 
   .about-page h4, .admin-page h4 {
-    font-size: 22px;
+    font-size: 1.38rem; /* 22px */
   }
 
   .footer-text {
-    font-size: 12px;
+    font-size: 0.75rem; /* 12px */
   }
 
   .changePassword {
     width: 100%;
-    font-size: 16px;
+    font-size: 1rem; /* 16px */
   }
 
   #changePasswordBtn {
-    font-size: 18px;
-    width: 170px;
+    font-size: 1.13rem; /* 18px */
+    width: 10.63rem; /* 170px */
   }
 }
 
 .btn.btn-primary {
-  height: 50px;
-  font-size: 22px;
+  height: 3.13rem; /* 50px */
+  font-size: 1.38rem; /* 22px */
   background-color: black;
   border-color: rgb(255, 255, 255);
-  border-width: 2px;
+  border-width: 0.13rem; /* 2px */
 }
 
 .btn.btn-primary:hover {
