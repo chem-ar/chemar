@@ -48,7 +48,7 @@ router.post('/edit', function (req, res, next) {
             }
         }
         
-    }console.log("model data test")
+    }
     if(!exists){
         const previousName = modelData[n].name;
         modelData[n].description = data.description
@@ -60,6 +60,9 @@ router.post('/edit', function (req, res, next) {
         fs.renameSync(`./public/modelfiles/${previousName + "-"+ id}.mtl`, `./public/modelfiles/${data.name + "-"+ id}.mtl`);
         fs.renameSync(`./public/modelfiles/${previousName + "-"+ id}.obj`, `./public/modelfiles/${data.name + "-"+ id}.obj`);
     }
+    else{
+        return res.status(409).send('')
+    }
     var newModel = JSON.stringify(modelData);
     fs.writeFileSync('./public/catalog/modelFileCatalog.json', newModel);
     return res.redirect('/models');
@@ -68,7 +71,6 @@ router.post('/edit', function (req, res, next) {
 //Handling the delete functionality
 router.get('/delete', function (req, res, next) {
     const id = req.query.id
-
     const modelFileCatalog = './public/catalog/modelFileCatalog.json';
 
     const modelFileData = fs.readFileSync(modelFileCatalog);
