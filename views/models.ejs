@@ -165,12 +165,14 @@
                 },
                 body: JSON.stringify(updatedModel)
             }).then(response => {
-                console.log(response);
                 if (response.ok) {
                     $('#editModal').modal('hide')
                     toastr.success('Edited Successfuly')
                     fetchModels();
                 } else {
+                    $('#editModal').modal('hide')
+                    toastr.warning('please try again')
+                    fetchModels();
                 }
                 //catch used to catch any errors
             }).catch(error => console.error("Error:", error));
@@ -182,7 +184,6 @@
         const row = btn.closest('tr');
         const id = btn.id;
         const modelFile = btn.getAttribute('data-file');
-
         document.getElementById('confirmDeleteBtn').onclick = function () {
             //Fetch request made to delete the model
             fetch(`/models/delete?id=${id}`, {
