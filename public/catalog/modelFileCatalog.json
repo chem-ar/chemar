@@ -1,14 +1,13 @@
 [
     {
         "id": 1,
-        "name": "Benzene",
+        "name": "Benze",
         "description": "C6H6. This model was retrieved from NIST at https://webbook.nist.gov/cgi/cbook.cgi?Name=benzene",
         "files": {
             "obj": "Benzene.obj",
             "mtl": "Benzene.mtl"
         }
     },
-
     {
         "id": 2,
         "name": "Cube",
@@ -18,7 +17,6 @@
             "mtl": "Cube.mtl"
         }
     },
-
     {
         "id": 3,
         "name": "Water 2",
@@ -27,6 +25,23 @@
             "obj": "Water2.obj",
             "mtl": "Water2.mtl"
         }
+    },
+    {
+        "id": 8,
+        "name": "dhulalala",
+        "description": "nkkdkfjndjkkckdf",
+        "files": {
+            "obj": "dhulalala-8.obj",
+            "mtl": "dhulalala-8.mtl"
+        }
+    },
+    {
+        "id": 9,
+        "name": "justTest",
+        "description": "njkfkdjnehrbfbdjredjndck",
+        "files": {
+            "obj": "justTest-9.obj",
+            "mtl": "justTest-9.mtl"
+        }
     }
-
 ]
