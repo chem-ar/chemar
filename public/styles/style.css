@@ -22,7 +22,7 @@
 .table-striped>thead>tr>th {
   background-color: white;
   color: #202020;
-  font-size: 19px;
+  font-size: 1.19rem; /* 19px */
 }
 
 .transparent-dark {
@@ -30,7 +30,7 @@
 }
 
 .blur-10 {
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(0.63rem); /* 10px */
 }
 
 .table-striped>tbody>tr:nth-of-type(odd)>td {
@@ -43,12 +43,6 @@
   color: white;
 }
 
-/* @media screen and (max-width=600px) {
-  .table.table-striped.text-white{
-    max-width: 500px;
-  }
-} */
-
 .card-body {
   background-color: #202020;
   border-radius: 1rem;
@@ -56,9 +50,9 @@
 }
 
 .btn {
-  font-size: 18px;
+  font-size: 1.13rem; /* 18px */
   font-weight: 450;
-  border-width: 2px;
+  border-width: 0.13rem; /* 2px */
 }
 
 .molnames-in-table,
@@ -66,7 +60,7 @@
 .names-in-scenes,
 .desc-in-scenes {
   text-decoration: none;
-  font-size: 19px;
+  font-size: 1.19rem; /* 19px */
 }
 
 .molnames-in-table:hover,
@@ -80,11 +74,11 @@
 .modeldesc-in-table:hover {
   text-decoration: none;
   color: white;
-  font-size: 19px;
+  font-size: 1.19; /* 19px */
 }
 
 .modelfiles-in-table {
-  font-size: 19px;
+  font-size: 1.19; /* 19px */
   text-decoration: none
 }
 
@@ -97,22 +91,22 @@
 }
 
 .options-column {
-  width: 170px;
+  width: 10.63rem; /* 170px */
 }
 
 .options-column-scenes {
-  width: 208px;
+  width: 13.00rem; /* 208px */
 }
 
 .about-links {
   color: #21BEF2
 }
 
-@media screen and (max-width:600px) {
+@media screen and (max-width:37.50rem ) { /* 600px */
   .btn {
-    font-size: 13px;
+    font-size: 0.81rem; /* 13px */
     font-weight: 350;
-    border-width: 1.5px;
+    border-width: 0.09rem; /* 1.5px */
   }
   
   .molnames-in-table,
@@ -120,7 +114,7 @@
   .names-in-scenes,
   .desc-in-scenes {
     text-decoration: none;
-    font-size: 15px;
+    font-size: 0.94rem; /* 15px */
   }
   
   .modelname-in-table,
@@ -129,11 +123,11 @@
   .modeldesc-in-table:hover {
     text-decoration: none;
     color: white;
-    font-size: 15px;
+    font-size: 0.94rem; /* 15px */
   }
   
   .modelfiles-in-table {
-    font-size: 15px;
+    font-size: 0.94rem; /* 15px */
     text-decoration: none
   }
   
@@ -142,18 +136,18 @@
   }
   
   .options-column {
-    max-width: 109px;
+    max-width: 6.81rem; /* 109px */
   }
   
   .options-column-scenes {
-    width: 109px;
+    width: 6.81rem; /* 109px */
   }
 
   .footer-text {
-    font-size: 12px;
+    font-size: 0.75rem; /* 12px */
   }
 
   .table-striped>thead>tr>th {
-    font-size: 16px;
+    font-size: 1rem; /* 16px */
   }
 }
