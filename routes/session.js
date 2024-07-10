@@ -10,7 +10,20 @@ router.get('/', function(req, res) {
 });
 
 router.post('/', async function (req, res) {
-  let adminPass = JSON.parse(fs.readFileSync("./routes/auth/admin.json")).admin.password;
+  let adminEmail = req.body.email;
+  let adminPass;
+  let admins = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
+  for(let i = 0; i < admins.length; i++){
+    if(adminEmail == admins[i].email){
+      adminPass = admins[i].password;
+      break;
+    }
+  }
+
+  if(!adminPass){
+    return res.status(401).send({message: 'Admin Not Found'})
+  }
+
   const hash = await bcrypt.compare(req.body.password, adminPass)
   if(hash){
     startSession(req, res)
