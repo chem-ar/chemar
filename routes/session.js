@@ -34,13 +34,27 @@ router.post('/', async function (req, res) {
 });
 
 router.post('/forgot', async function(req, res) {
-  let adminPass = JSON.parse(fs.readFileSync("./routes/auth/admin.json"));
+  let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"));
   let isAdmin = checkSession(req, res);
-  const hash = await bcrypt.compare(req.body.password, adminPass.admin.password)
+  let token = req.cookies.session;
+  let admin;
+  let adminIndex;
+  adminData.map((ele, ind) => {
+    ele.session.map((e, i) => {
+      if(e.token == token){
+        admin = ele;
+        adminIndex = ind
+      }
+    })
+  })
+  if(!admin){
+    return res.status(401).json({error: "Invalid Credentials."})
+  }
+  const hash = await bcrypt.compare(req.body.password, admin.password)
   if(isAdmin && hash){
     let newPassword = await bcrypt.hash(req.body.newPassword, 5)
-    adminPass.admin.password = newPassword
-    let arr = JSON.stringify(adminPass)
+    adminData[adminIndex].password = newPassword
+    let arr = JSON.stringify(adminData)
     fs.writeFileSync("./routes/auth/admin.json", arr)
     return res.send({});
   }
