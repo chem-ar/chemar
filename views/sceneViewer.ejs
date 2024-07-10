@@ -199,8 +199,9 @@
           // setup ARButton
           ////////////////////////////////////////////////////////////
           const button = ARButton.createButton(renderer);
-          console.log(button);
           document.body.appendChild(button);
+
+          button.addEventListener("click", startAR);
 
            ////////////////////////////////////////////////////////////
           // setup OrbitControls
@@ -236,43 +237,43 @@
               item.scale
             ).then((molecule) => {
               adjustMolToMarker(molecule, marker);
-
-
               markerRoot1.add(molecule);
 
               clone = molecule.clone();
               moleculeGroup.add(clone);
             });
-          }
+          }          
+          moleculeGroup.visible = false;
           scene.add(moleculeGroup);
           markerRoot1.add(mesh1);
+
 
           ////////////////////////////////////////////////////////////
           // setup ARController
           ////////////////////////////////////////////////////////////
 
           controller = renderer.xr.getController(0);
-          console.log(controller);
           controller.addEventListener('select', controllerOnSelect);
           scene.add(controller);
-
-
         }
 
         function controllerOnSelect( event ){
-          
           const ARcontroller = event.target;
-          ARcontroller.attach(moleculeGroup);
-          console.log(ARcontroller.attach(moleculeGroup));
-       
+          ARcontroller.attach(moleculeGroup);       
         }
 
         function update() {
           // update artoolkit on every frame
           if (arToolkitSource.ready !== false)
             arToolkitContext.update(arToolkitSource.domElement);
-          markerVisible = markerRoot1.visible;
-          console.log(markerVisible);
+
+          moleculeGroup.position.x = markerRoot1.position.x;
+          moleculeGroup.position.y = markerRoot1.position.y;
+          moleculeGroup.position.z = markerRoot1.position.z;
+        }
+
+        function startAR()  {
+          moleculeGroup.visible = true;
         }
 
         function render() {
