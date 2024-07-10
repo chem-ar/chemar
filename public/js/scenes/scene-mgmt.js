@@ -139,3 +139,25 @@ export function exportSceneData() {
     const markerData = { position, rotation: { x, y, z }, scale };
     return { markerData, sceneMolecules };
 }
+
+/**
+ * In the scene viewer, molecules are rendered relative to the marker, unlike 
+ * the scene editor where everything is relative some origin (0, 0, 0). As a 
+ * result, molecules need to be adjusted using this function.
+ * 
+ * The consequences of this are:
+ * - The Y and Z axes need to be swapped (Y = Z, Z = -Y)
+ * - Molecules need to be rotated (they are facing the floor instead of 
+ *   facing us)
+ * - Molecules' positions need to be relative to the marker, not the origin
+ * 
+ * @returns void. The passed molecule is changed in place
+ */
+export function adjustMolToMarker(mol, marker) {
+    [mol.position.y, mol.position.z] = [mol.position.z, -mol.position.y];
+    mol.rotateX(Math.PI / 2);
+
+    mol.position.x -= Number(marker.position.x);
+    mol.position.y -= Number(marker.position.z);
+    mol.position.z += Number(marker.position.y);
+}
