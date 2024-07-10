@@ -1,5 +1,7 @@
 <%- include('partials/header') %>
 <% if (isAdmin) { %>
+  <%- include('partials/navbarMainAdmin') %>
+<% } else if (isAdmin) { %>
   <%- include('partials/navbarAdmin') %>
 <% } %>
 <% if (!isAdmin) { %>
