@@ -87,6 +87,7 @@
         import { createModel } from "/js/scenes/rendering.js";
         import { ARButton } from "/js/ARButton.js";
         import { OrbitControls } from "/js/OrbitControls.js";
+        import { adjustMolToMarker } from '/js/scenes/scene-mgmt.js';
 
         let requestedFile =
           window.location.pathname.substring(
@@ -234,9 +235,8 @@
               item.rotation,
               item.scale
             ).then((molecule) => {
-              molecule.position.x -= marker.position.x;
-              molecule.position.y -= marker.position.y;
-              molecule.position.z -= marker.position.z;
+              adjustMolToMarker(molecule, marker);
+
 
               markerRoot1.add(molecule);
 
