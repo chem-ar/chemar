@@ -47,17 +47,22 @@ router.post('/edit', function (req, res, next) {
                 exists = true;
             }
         }
-    }
+        
+    }console.log("model data test")
     if(!exists){
         const previousName = modelData[n].name;
         modelData[n].description = data.description
         modelData[n].name = data.name;
-        fs.renameSync(`./public/modelfiles/${previousName}.mtl`, `./public/modelfiles/${data.name}.mtl`);
-        fs.renameSync(`./public/modelfiles/${previousName}.obj`, `./public/modelfiles/${data.name}.obj`);
+        modelData[n].files = {
+            obj: data.name + "-"+ id + ".obj",
+            mtl: data.name + "-"+ id + ".mtl"
+        }
+        fs.renameSync(`./public/modelfiles/${previousName + "-"+ id}.mtl`, `./public/modelfiles/${data.name + "-"+ id}.mtl`);
+        fs.renameSync(`./public/modelfiles/${previousName + "-"+ id}.obj`, `./public/modelfiles/${data.name + "-"+ id}.obj`);
     }
     var newModel = JSON.stringify(modelData);
     fs.writeFileSync('./public/catalog/modelFileCatalog.json', newModel);
-    //return res.redirect('/models');
+    return res.redirect('/models');
 })
 
 //Handling the delete functionality
@@ -80,8 +85,8 @@ router.get('/delete', function (req, res, next) {
     const modelDelete = modelData[n];
 
     // Deleting the .mtl and .obj files from modelfiles folder once the deletion functionality is used
-    fs.unlinkSync(`./public/modelfiles/${modelDelete.name}.mtl`);
-    fs.unlinkSync(`./public/modelfiles/${modelDelete.name}.obj`);
+    fs.unlinkSync(`./public/modelfiles/${modelDelete.name + "-" + id}.mtl`);
+    fs.unlinkSync(`./public/modelfiles/${modelDelete.name + "-" + id}.obj`);
     
     //To remove the model when deleted from array
     modelData.splice(n, 1)
