@@ -21,6 +21,20 @@ export function initScene(pngFile, markerData, threeArea, window){
     
     scene1.add( camera );
 
+    let spotLight = new THREE.SpotLight(0xffffff);
+    spotLight.position.set(100, 1000, 100);
+
+    spotLight.castShadow = true;
+
+    spotLight.shadow.mapSize.width = 1024;
+    spotLight.shadow.mapSize.height = 1024;
+
+    spotLight.shadow.camera.near = 500;
+    spotLight.shadow.camera.far = 4000;
+    spotLight.shadow.camera.fov = 30;
+
+    scene1.add(spotLight);
+
     renderer = new THREE.WebGLRenderer({ alpha: true });
     renderer.setClearColor( 0x000000, 0 );
     renderer.setSize( window.innerWidth, window.innerHeight );
