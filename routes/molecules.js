@@ -3,6 +3,25 @@ var router = express.Router();
 var { checkSession } = require('./auth/session-mgmt')
 var fs = require('fs');
 
+function isMainAdminBySession(session) {
+    let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
+    let isMainAdmin = false
+
+    for (let i = 0; i < adminData.length; i++) {
+        for (let j = 0; j < adminData[i].session.length; j++) {
+            if (session == adminData[i].session[j].token) {
+                isMainAdmin = adminData[i].mainAdmin
+                break;
+            }
+        }
+        if (isMainAdmin) {
+            break;
+        }
+    }
+    console.log(isMainAdmin);
+    return isMainAdmin;
+}
+
 router.get('/', function(req, res, next) {
     const molfiles = './public/molfiles/';
 
@@ -27,8 +46,9 @@ router.get('/', function(req, res, next) {
         }
 
         console.log(finalList);
+        let isMainAdmin = isMainAdminBySession(req.cookies.session)
 
-        res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin });
+        res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin, isMainAdmin });
     } catch (error) {
         console.error('Error:', error);
         res.sendStatus(500); // Send error response
