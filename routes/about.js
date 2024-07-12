@@ -26,7 +26,8 @@ function isMainAdminBySession(session) {
 router.get('/', function (req, res, next) {
     let isAdmin = checkSession(req, res);
     let isMainAdmin = isMainAdminBySession(req.cookies.session)
-    res.render('about', { title: 'About Us', isAdmin: isAdmin, isMainAdmin });
+    console.log(isMainAdmin);
+    res.render('about', { title: 'About Us', isAdmin: isAdmin, isMainAdmin: isMainAdmin });
 
 });
 

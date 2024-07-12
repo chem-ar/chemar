@@ -65,8 +65,8 @@ router.get('/', function(req, res, next) {
             console.error(`Scene '${filename}' not found in catalog.`);
         }
     }
-    let isMainId = isMainAdminBySession(req.cookies.session)
-    res.render('scenes', { title: 'Catalog', list: finalList, isAdmin: isAdmin, sceneCatalog: sceneCatalog });
+    let isMainAdmin = isMainAdminBySession(req.cookies.session)
+    res.render('scenes', { title: 'Catalog', list: finalList, isAdmin: isAdmin, sceneCatalog: sceneCatalog, isMainAdmin });
 });
 
 
