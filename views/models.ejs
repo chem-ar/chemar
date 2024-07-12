@@ -139,7 +139,7 @@
     }
     
     //To handle edit button functionality    
-    function handleEditClick(event) {
+    function handleEditClick(event){
         const btn = event.currentTarget;
         const row = btn.closest('tr');
         const modelName = row.children[0].textContent;
@@ -169,14 +169,19 @@
                     $('#editModal').modal('hide')
                     toastr.success('Edited Successfuly')
                     fetchModels();
-                } else {
+                }else if(response.status == 409){
                     $('#editModal').modal('hide')
-                    toastr.warning('please try again')
+                    toastr.error('Model with same name & description exist')
                     fetchModels();
+                }else {
+                    throw new Error("Server returned status code: " + response.status)
                 }
                 //catch used to catch any errors
-            }).catch(error => console.error("Error:", error));
-        };
+            }).catch(error =>{
+                console.error("Error:", error)
+                toastr.error('Error in Editing, please try again!');
+            });  
+        }
     }
     //Delete button functionality
     function handleDeleteClick(event) {
@@ -191,13 +196,18 @@
             }).then(response => {
                 if (response.ok) {
                     $('#deleteModal').modal('hide')
-                    toastr.success('Deleted Successfuly')
+                    toastr.success('Deleted Successfully')
                     fetchModels();
                 } else {
                     console.error("Failed to delete model.");
+                    toastr.error('Delete Unsuccessfull')
+                    fetchModels();
                 }
-            }).catch(error => console.error("Error:", error));
-        };
+            }).catch(error =>{
+                console.error("Error:", error)
+                toastr.error('Error in deleting, please try again!');
+            });  
+        }
     }
     //To populate data to the table
     function populateTable(modelData) {
