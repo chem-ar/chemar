@@ -70,6 +70,7 @@ router.post('/edit', function (req, res, next) {
 
 //Handling the delete functionality
 router.get('/delete', function (req, res, next) {
+    //return res.status(500).send({});
     const id = req.query.id
     const modelFileCatalog = './public/catalog/modelFileCatalog.json';
 
@@ -83,13 +84,12 @@ router.get('/delete', function (req, res, next) {
             n = key
         }
     }
-
     const modelDelete = modelData[n];
 
     // Deleting the .mtl and .obj files from modelfiles folder once the deletion functionality is used
-    fs.unlinkSync(`./public/modelfiles/${modelDelete.name + "-" + id}.mtl`);
-    fs.unlinkSync(`./public/modelfiles/${modelDelete.name + "-" + id}.obj`);
-    
+    fs.unlinkSync(`./public/modelfiles/${modelDelete.files.mtl}`);
+    fs.unlinkSync(`./public/modelfiles/${modelDelete.files.obj}`);
+
     //To remove the model when deleted from array
     modelData.splice(n, 1)
 
