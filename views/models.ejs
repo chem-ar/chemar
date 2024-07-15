@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 <!--ADMIN NAVBAR CHECK-->
-<% if (isMainAdmin) { %>
-    <%- include('partials/navbarMainAdmin') %>
+<% if (isowner) { %>
+    <%- include('partials/navbarowner') %>
   <% } else if (isAdmin) { %>
     <%- include('partials/navbarAdmin') %>
   <% } %>

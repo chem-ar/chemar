@@ -3,23 +3,23 @@ var router = express.Router();
 var { checkSession } = require('./auth/session-mgmt')
 var fs = require('fs');
 
-function isMainAdminBySession(session) {
+function isownerBySession(session) {
     let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
-    let isMainAdmin = false
+    let isowner = false
 
     for (let i = 0; i < adminData.length; i++) {
         for (let j = 0; j < adminData[i].session.length; j++) {
             if (session == adminData[i].session[j].token) {
-                isMainAdmin = adminData[i].mainAdmin
+                isowner = adminData[i].owner
                 break;
             }
         }
-        if (isMainAdmin) {
+        if (isowner) {
             break;
         }
     }
-    console.log(isMainAdmin);
-    return isMainAdmin;
+    console.log(isowner);
+    return isowner;
 }
 
 router.get('/', function(req, res, next) {
@@ -46,9 +46,9 @@ router.get('/', function(req, res, next) {
         }
 
         console.log(finalList);
-        let isMainAdmin = isMainAdminBySession(req.cookies.session)
+        let isowner = isownerBySession(req.cookies.session)
 
-        res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin, isMainAdmin });
+        res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin, isowner });
     } catch (error) {
         console.error('Error:', error);
         res.sendStatus(500); // Send error response

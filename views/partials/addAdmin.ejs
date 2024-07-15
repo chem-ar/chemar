@@ -19,7 +19,7 @@
           <h4>Admin Role</h4>
           <select id="adminRole" class="form-control">
             <option value="admin">Admin ^</option>
-            <option value="mainAdmin">Main Admin</option>
+            <option value="owner">Owner</option>
           </select>
           <button class="btn btn-success form-control my-2" id="uploadBtn">
             <span id="uploadBtnSpinner" class="spinner-border spinner-border-sm" role="status" aria-label="Loading" style="display: none;"></span>
@@ -40,7 +40,7 @@
     let email = document.getElementById('email').value;
     let password = document.getElementById('password').value;
     let adminType = false
-    if (document.getElementById('adminRole').value == 'mainAdmin') {
+    if (document.getElementById('adminRole').value == 'owner') {
       adminType = true
     }
     console.log(document.getElementById('adminRole').value);
