@@ -43,7 +43,7 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
 
 <!-- Edit Modal -->
-<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content bg-dark">
             <div class="modal-header">
@@ -141,7 +141,7 @@
     }
     
     //To handle edit button functionality    
-    function handleEditClick(event) {
+    function handleEditClick(event){
         const btn = event.currentTarget;
         const row = btn.closest('tr');
         const modelName = row.children[0].textContent;
@@ -168,13 +168,22 @@
                 body: JSON.stringify(updatedModel)
             }).then(response => {
                 if (response.ok) {
-                    location.reload();
-                } else {
-                    console.error("Failed to update model.");
+                    $('#editModal').modal('hide')
+                    toastr.success('Edited Successfuly')
+                    fetchModels();
+                }else if(response.status == 409){
+                    $('#editModal').modal('hide')
+                    toastr.error('Model with same name & description exist')
+                    fetchModels();
+                }else {
+                    throw new Error("Server returned status code: " + response.status)
                 }
                 //catch used to catch any errors
-            }).catch(error => console.error("Error:", error));
-        };
+            }).catch(error =>{
+                console.error("Error:", error)
+                toastr.error('Error in Editing, please try again!');
+            });  
+        }
     }
     //Delete button functionality
     function handleDeleteClick(event) {
@@ -182,19 +191,25 @@
         const row = btn.closest('tr');
         const id = btn.id;
         const modelFile = btn.getAttribute('data-file');
-
         document.getElementById('confirmDeleteBtn').onclick = function () {
             //Fetch request made to delete the model
             fetch(`/models/delete?id=${id}`, {
                 method: "GET"
             }).then(response => {
                 if (response.ok) {
-                    location.reload();
+                    $('#deleteModal').modal('hide')
+                    toastr.success('Deleted Successfully')
+                    fetchModels();
                 } else {
                     console.error("Failed to delete model.");
+                    toastr.error('Delete Unsuccessfull')
+                    fetchModels();
                 }
-            }).catch(error => console.error("Error:", error));
-        };
+            }).catch(error =>{
+                console.error("Error:", error)
+                toastr.error('Error in deleting, please try again!');
+            });  
+        }
     }
     //To populate data to the table
     function populateTable(modelData) {
