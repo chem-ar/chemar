@@ -3,31 +3,31 @@ var router = express.Router();
 var { checkSession } = require('./auth/session-mgmt')
 var fs = require('fs')
 
-function isMainAdminBySession(session) {
+function isownerBySession(session) {
     let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
-    let isMainAdmin = false
+    let isowner = false
 
     for (let i = 0; i < adminData.length; i++) {
         for (let j = 0; j < adminData[i].session.length; j++) {
             if (session == adminData[i].session[j].token) {
-                isMainAdmin = adminData[i].mainAdmin
+                isowner = adminData[i].owner
                 break;
             }
         }
-        if (isMainAdmin) {
+        if (isowner) {
             break;
         }
     }
-    console.log(isMainAdmin);
-    return isMainAdmin;
+    console.log(isowner);
+    return isowner;
 }
 
 /* GET about page. */
 router.get('/', function (req, res, next) {
     let isAdmin = checkSession(req, res);
-    let isMainAdmin = isMainAdminBySession(req.cookies.session)
-    console.log(isMainAdmin);
-    res.render('about', { title: 'About Us', isAdmin: isAdmin, isMainAdmin: isMainAdmin });
+    let isowner = isownerBySession(req.cookies.session)
+    console.log(isowner);
+    res.render('about', { title: 'About Us', isAdmin: isAdmin, isowner: isowner });
 
 });
 

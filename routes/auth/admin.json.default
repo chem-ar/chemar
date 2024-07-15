@@ -3,6 +3,6 @@
         "session": [],
         "email": "fr933412@dal.ca",
         "password": "$2b$05$PQJeU1NjZrBiRcmTHDlHmujr6QkSHf6KMcL2SzxO0XBIwQ70xFrDW"
-        "mainAdmin": true
+        "owner": true
     }
 ]

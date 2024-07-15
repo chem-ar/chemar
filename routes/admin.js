@@ -4,43 +4,43 @@ var { checkSession } = require('./auth/session-mgmt')
 const bcrypt = require('bcrypt');
 var fs = require('fs')
 
-function isMainAdminBySession(session) {
+function isownerBySession(session) {
     let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
-    let isMainAdmin = false
+    let isowner = false
 
     for (let i = 0; i < adminData.length; i++) {
         for (let j = 0; j < adminData[i].session.length; j++) {
             if (session == adminData[i].session[j].token) {
-                isMainAdmin = adminData[i].mainAdmin
+                isowner = adminData[i].owner
                 break;
             }
         }
-        if (isMainAdmin) {
+        if (isowner) {
             break;
         }
     }
-    console.log(isMainAdmin);
-    return isMainAdmin;
+    console.log(isowner);
+    return isowner;
 }
 
 /* GET admin page. */
 router.get('/', function (req, res, next) {
     let isAdmin = checkSession(req, res);
-    let isMainAdmin = isMainAdminBySession(req.cookies.session)
+    let isowner = isownerBySession(req.cookies.session)
     if (!isAdmin) return res.redirect("/");
-    res.render('admin', { title: 'Admin', isAdmin: isAdmin, isMainAdmin });
+    res.render('admin', { title: 'Admin', isAdmin: isAdmin, isowner });
 
 });
 
 router.get('/alladmin', async function (req, res, next) {
-    let isMainAdmin = isMainAdminBySession(req.cookies.session)
-    if (!isMainAdmin) return res.redirect("/");
-    res.render('allAdmins', { title: 'allAdmin', isMainAdmin })
+    let isowner = isownerBySession(req.cookies.session)
+    if (!isowner) return res.redirect("/");
+    res.render('allAdmins', { title: 'allAdmin', isowner })
 })
 
 router.get('/alladminsearch', async function (req, res, next) {
-    let isMainAdmin = isMainAdminBySession(req.cookies.session)
-    if (!isMainAdmin) return res.redirect('/')
+    let isowner = isownerBySession(req.cookies.session)
+    if (!isowner) return res.redirect('/')
 
     let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
 
@@ -48,15 +48,15 @@ router.get('/alladminsearch', async function (req, res, next) {
 })
 
 router.get('/addadmin', async function (req, res, next) {
-    let isMainAdmin = isMainAdminBySession(req.cookies.session)
-    if (!isMainAdmin) return res.redirect('/')
+    let isowner = isownerBySession(req.cookies.session)
+    if (!isowner) return res.redirect('/')
 
-    return res.render('addadmin', { title: 'addAdmin', isMainAdmin })
+    return res.render('addadmin', { title: 'addAdmin', isowner })
 })
 
 router.get('/delete', async function (req, res, next) {
-    let isMainAdmin = isMainAdminBySession(req.cookies.session)
-    if (!isMainAdmin) return res.redirect('/')
+    let isowner = isownerBySession(req.cookies.session)
+    if (!isowner) return res.redirect('/')
     let email = req.query.email;
 
     let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
@@ -76,7 +76,7 @@ router.get('/delete', async function (req, res, next) {
 // adding admins
 router.post('/addadmin', async function (req, res, next) {
     let isAdmin = checkSession(req, res)
-    if (!isAdmin && isMainAdminBySession(req.cookies.session)) return res.redirect("/")
+    if (!isAdmin && isownerBySession(req.cookies.session)) return res.redirect("/")
 
     let data = { ...req.body }
 
@@ -86,7 +86,7 @@ router.post('/addadmin', async function (req, res, next) {
         session: [],
         email: data.email,
         password: hashPassword,
-        mainAdmin: data.adminType
+        owner: data.adminType
     }
 
     let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
