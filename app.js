@@ -36,7 +36,6 @@ var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
 var jmolRouter = require('./routes/jmol');
 
-var getCache = require('./routes/cache/setup');
 const initializeCache = require("./routes/cache/setup");
 
 var app = express();
@@ -67,6 +66,7 @@ app.use(cookieParser("iauuhdfsoivfdsoviufh"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 
+initializeCache();
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -78,8 +78,6 @@ app.use('/models', modelsRouter);
 
 app.use('/about', aboutRouter);
 app.use('/admin', adminRouter);
-
-initializeCache();
 
 app.use('/sceneviewer', sceneViewer);
 app.use('/sceneeditor', sceneEditor);
