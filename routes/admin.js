@@ -1,27 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var { checkSession } = require('./auth/session-mgmt')
+var { checkSession, isownerBySession } = require('./auth/session-mgmt')
 const bcrypt = require('bcrypt');
 var fs = require('fs')
-
-function isownerBySession(session) {
-    let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
-    let isowner = false
-
-    for (let i = 0; i < adminData.length; i++) {
-        for (let j = 0; j < adminData[i].session.length; j++) {
-            if (session == adminData[i].session[j].token) {
-                isowner = adminData[i].owner
-                break;
-            }
-        }
-        if (isowner) {
-            break;
-        }
-    }
-    console.log(isowner);
-    return isowner;
-}
 
 /* GET admin page. */
 router.get('/', function (req, res, next) {
