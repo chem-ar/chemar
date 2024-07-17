@@ -78,7 +78,7 @@
           newPassword: newPassword
         }
         if (newPassword == confirmedNewPassword) {
-          fetch(`/session/changepassword`, {
+          fetch(`/session/changepassword`, { 
               method: "POST",
               headers: {
                 "Content-Type": "application/json"

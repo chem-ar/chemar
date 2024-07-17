@@ -108,5 +108,24 @@ function endSession(req, res) {
     res.clearCookie('session');
 }
 
+function isownerBySession(session) {
+    let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
+    let isowner = false
 
-module.exports = { startSession, checkSession, endSession }
+    for (let i = 0; i < adminData.length; i++) {
+        for (let j = 0; j < adminData[i].session.length; j++) {
+            if (session == adminData[i].session[j].token) {
+                isowner = adminData[i].owner
+                break;
+            }
+        }
+        if (isowner) {
+            break;
+        }
+    }
+    console.log(isowner);
+    return isowner;
+}
+
+
+module.exports = { startSession, checkSession, endSession, isownerBySession }
