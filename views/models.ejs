@@ -173,6 +173,9 @@
                     $('#editModal').modal('hide')
                     toastr.error('Model with same name & description exist')
                     fetchModels();
+                }else if(response.status == 401){
+                    $('#editModal').modal('hide')
+                    toastr.error('Please Login to edit')
                 }else {
                     throw new Error("Server returned status code: " + response.status)
                 }
@@ -198,7 +201,7 @@
                     $('#deleteModal').modal('hide')
                     toastr.success('Deleted Successfully')
                     fetchModels();
-                } else {
+                }else {
                     console.error("Failed to delete model.");
                     toastr.error('Delete Unsuccessfull')
                     fetchModels();
