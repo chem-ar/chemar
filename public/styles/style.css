@@ -34,12 +34,12 @@
 }
 
 .table-striped>tbody>tr:nth-of-type(odd)>td {
-  background-color: #202020;
+  background-color: #191F24;
   color: white;
 }
 
 .table-striped>tbody>tr:nth-of-type(even)>td {
-  background-color: transparent;
+  background-color: #191F24;
   color: white;
 }
 
@@ -102,6 +102,10 @@
   color: #21BEF2
 }
 
+.main-background-color {
+  background-color: #171A1F !important;
+}
+
 @media screen and (max-width:600px ) {
   .btn {
     font-size: 0.81rem;
@@ -115,6 +119,13 @@
   .desc-in-scenes {
     text-decoration: none;
     font-size: 0.94rem;
+    word-break: break-all;
+  }
+
+  .molnames-in-table,
+  .modelfiles-in-table,
+  .names-in-scenes {
+    text-decoration: underline rgb(0, 208, 255);
   }
   
   .modelname-in-table,
@@ -124,11 +135,16 @@
     text-decoration: none;
     color: white;
     font-size: 0.94rem;
+    word-break: break-all;
+  }
+
+  .molnames-in-table-head {
+    max-width: 120px;
   }
   
   .modelfiles-in-table {
     font-size: 0.94rem;
-    text-decoration: none
+    word-break: break-all;
   }
   
   .nav-link{
@@ -136,11 +152,11 @@
   }
   
   .options-column {
-    max-width: 109px;
+    max-width: 50px !important;
   }
   
   .options-column-scenes {
-    width: 109px;
+    max-width: 109px;
   }
 
   .footer-text {
