@@ -5,130 +5,131 @@
 <% if (!isAdmin) { %>
 <%- include('partials/navbar') %>
 <% } %>
-  <link rel="stylesheet" href="home.css">
 
+<link rel="stylesheet" href="home.css">
 
-    <div class="p-3 mb-2 bg-dark text-white">
-      <h2 class="admin-page fw-bold" style="text-align: center">
-        Admin Tools
-      </h2>
-      <h4 class="admin-page mt-3" style="text-align: center">
-        Change Password
-      </h4>
-      <div class="px-5">
-        <form id="changePasswordForm" class="changePassword" onsubmit="changePassword(event)" method="post">
-          <div align="center">
-            <div class="form-outline form-white mb-4">
-              <input
-                required
-                type="password"
-                id="oldPassword"
-                class="form-control-lg changePassword"
-                size="50"
-                name="oldPassword"
-                placeholder="Old Password:"
-              >
-            </div>
-
-            <div class="form-outline form-white mb-4">
-              <input
-                required
-                type="password"
-                id="newPassword"
-                class="form-control-lg changePassword"
-                size="50"
-                name="newPassword"
-                placeholder="New Password:"
-              >
-            </div>
-
-            <div class="form-outline form-white mb-4">
-              <input
-                required
-                type="password"
-                id="confirmNewPassword"
-                class="form-control-lg changePassword"
-                size="50"
-                name="confirmNewPassword"
-                placeholder="Confirm New Password:"
-                onkeyup="checkPassword()">
-            </div>
-            
-            <input type="submit" id="changePasswordBtn" class="btn btn-primary" value="Change Password">
-
+<div class="p-3 mb-2 bg-dark text-white">
+  <h2 class="admin-page fw-bold" style="text-align: center">
+    Admin Tools
+  </h2>
+  <h4 class="admin-page mt-3" style="text-align: center">
+    Change Password
+  </h4>
+  <div class="px-5">
+    <form id="changePasswordForm" class="changePassword" onsubmit="changePassword(event)" method="post">
+      <div align="center">
+        <div class="form-outline form-white mb-4">
+          <input
+            required
+            type="password"
+            id="oldPassword"
+            class="form-control-lg changePassword"
+            size="50"
+            name="oldPassword"
+            placeholder="Old Password:"
+          >
         </div>
-      </form>
-    </div>
 
-    <script>
-      const confirmedNewPasswordInput = document.getElementById('confirmNewPassword');
-      const newPasswordInput = document.getElementById('newPassword');
+        <div class="form-outline form-white mb-4">
+          <input
+            required
+            type="password"
+            id="newPassword"
+            class="form-control-lg changePassword"
+            size="50"
+            name="newPassword"
+            placeholder="New Password:"
+          >
+        </div>
 
-      function changePassword(e) {
-        e.preventDefault();
-        const form = document.getElementById('changePasswordForm');
-        var oldPassword = document.getElementById('oldPassword').value;
-        var confirmedNewPassword = confirmedNewPasswordInput.value;
-        var newPassword = newPasswordInput.value;
+        <div class="form-outline form-white mb-4">
+          <input
+            required
+            type="password"
+            id="confirmNewPassword"
+            class="form-control-lg changePassword"
+            size="50"
+            name="confirmNewPassword"
+            placeholder="Confirm New Password:"
+            onkeyup="checkPassword()"
+          >
+        </div>
+        
+        <input type="submit" id="changePasswordBtn" class="btn btn-primary" value="Change Password">
 
-        let body = {
-          password: oldPassword,
-          newPassword: newPassword
-        }
-        if (newPassword == confirmedNewPassword) {
-          fetch(`/session/forgot`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify(body)
-            })
-            .then(async response => {
-              const body = await response.json().catch(_error => ({}));
-
-              if (response.status === 401 && body.error) {
-                throw new Error(body.error);
-              } else if (!response.ok) {
-                throw new Error(`Server returned status code ${response.status}`);
-              }
-
-              toastr.success("Password changed successfully");
-              form.reset();
-              confirmedNewPasswordInput.style.backgroundColor = '';
-              newPasswordInput.style.backgroundColor = '';
-            })
-            .catch(error => {
-              console.error("Error:", error);
-              toastr.error(error.message, "Failed to change Password");
-            });
-        }
-      }
-
-      // Check if passwords match
-      function checkPassword(e) {
-        var newPassword = newPasswordInput.value;
-        var oldPassword = document.getElementById('oldPassword').value;
-        var confirmedNewPassword = confirmedNewPasswordInput.value;
-
-        if (newPassword == confirmedNewPassword) {
-
-          confirmedNewPasswordInput.style.backgroundColor = '#b3ffb3';
-          newPasswordInput.style.backgroundColor = '#b3ffb3';
-        } else {
-          confirmedNewPasswordInput.style.backgroundColor = '#ff9980';
-          newPasswordInput.style.backgroundColor = '#ff9980';
-        }
-      }
-    </script>
-
-    <h4 class="display-7 mt-5" style="text-align: center">
-      Site Analytics
-    </h4>
-    <p style="text-align:center">Spot for site visitor information.</p>
+      </div>
+    </form>
   </div>
-  <footer>
-    <%- include('partials/footer') %>
-  </footer>
+
+  <script>
+    const confirmedNewPasswordInput = document.getElementById('confirmNewPassword');
+    const newPasswordInput = document.getElementById('newPassword');
+
+    function changePassword(e) {
+      e.preventDefault();
+      const form = document.getElementById('changePasswordForm');
+      var oldPassword = document.getElementById('oldPassword').value;
+      var confirmedNewPassword = confirmedNewPasswordInput.value;
+      var newPassword = newPasswordInput.value;
+
+      let body = {
+        password: oldPassword,
+        newPassword: newPassword
+      }
+      if (newPassword == confirmedNewPassword) {
+        fetch(`/session/forgot`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+          })
+          .then(async response => {
+            const body = await response.json().catch(_error => ({}));
+
+            if (response.status === 401 && body.error) {
+              throw new Error(body.error);
+            } else if (!response.ok) {
+              throw new Error(`Server returned status code ${response.status}`);
+            }
+
+            toastr.success("Password changed successfully");
+            form.reset();
+            confirmedNewPasswordInput.style.backgroundColor = '';
+            newPasswordInput.style.backgroundColor = '';
+          })
+          .catch(error => {
+            console.error("Error:", error);
+            toastr.error(error.message, "Failed to change Password");
+          });
+      }
+    }
+
+    // Check if passwords match
+    function checkPassword() {
+      var newPassword = newPasswordInput.value;
+      var oldPassword = document.getElementById('oldPassword').value;
+      var confirmedNewPassword = confirmedNewPasswordInput.value;
+
+      if (newPassword == confirmedNewPassword) {
+        confirmedNewPasswordInput.style.backgroundColor = '#b3ffb3';
+        newPasswordInput.style.backgroundColor = '#b3ffb3';
+      } else {
+        confirmedNewPasswordInput.style.backgroundColor = '#ff9980';
+        newPasswordInput.style.backgroundColor = '#ff9980';
+      }
+    }
+  </script>
+
+  <h4 class="display-7 mt-5" style="text-align: center">
+    Site Analytics
+  </h4>
+  <p style="text-align:center">Spot for site visitor information.</p>
+</div>
+
+<footer>
+  <%- include('partials/footer') %>
+</footer>
 
 </body>
 
