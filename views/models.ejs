@@ -19,15 +19,17 @@
             <p></p>
             <table id="modelTable" class="table table-striped text-white" style="width:100%">
                 <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Obj File</th>
-                    <th>Mtl File</th>
-                    <!-- If the user is an admin, include the Options column -->
-                    <% if (isAdmin){%><th>Options</th><%}%>
-                </tr>
-                </thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Obj File</th>
+                        <th>Mtl File</th>
+                        <!-- If the user is an admin, include the Options column -->
+                        <% if (isAdmin){%>
+                            <th class="options-column">Options</th>
+                        <%}%>
+                    </tr>
+                </thead>            
                 <tbody id="table-body">
                 </tbody>
             </table>
@@ -41,7 +43,7 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
 
 <!-- Edit Modal -->
-<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content bg-dark">
             <div class="modal-header">
@@ -139,7 +141,7 @@
     }
     
     //To handle edit button functionality    
-    function handleEditClick(event){
+    function handleEditClick(event) {
         const btn = event.currentTarget;
         const row = btn.closest('tr');
         const modelName = row.children[0].textContent;
@@ -166,22 +168,13 @@
                 body: JSON.stringify(updatedModel)
             }).then(response => {
                 if (response.ok) {
-                    $('#editModal').modal('hide')
-                    toastr.success('Edited Successfuly')
-                    fetchModels();
-                }else if(response.status == 409){
-                    $('#editModal').modal('hide')
-                    toastr.error('Model with same name & description exist')
-                    fetchModels();
-                }else {
-                    throw new Error("Server returned status code: " + response.status)
+                    location.reload();
+                } else {
+                    console.error("Failed to update model.");
                 }
                 //catch used to catch any errors
-            }).catch(error =>{
-                console.error("Error:", error)
-                toastr.error('Error in Editing, please try again!');
-            });  
-        }
+            }).catch(error => console.error("Error:", error));
+        };
     }
     //Delete button functionality
     function handleDeleteClick(event) {
@@ -189,43 +182,37 @@
         const row = btn.closest('tr');
         const id = btn.id;
         const modelFile = btn.getAttribute('data-file');
+
         document.getElementById('confirmDeleteBtn').onclick = function () {
             //Fetch request made to delete the model
             fetch(`/models/delete?id=${id}`, {
                 method: "GET"
             }).then(response => {
                 if (response.ok) {
-                    $('#deleteModal').modal('hide')
-                    toastr.success('Deleted Successfully')
-                    fetchModels();
+                    location.reload();
                 } else {
                     console.error("Failed to delete model.");
-                    toastr.error('Delete Unsuccessfull')
-                    fetchModels();
                 }
-            }).catch(error =>{
-                console.error("Error:", error)
-                toastr.error('Error in deleting, please try again!');
-            });  
-        }
+            }).catch(error => console.error("Error:", error));
+        };
     }
+    v
     //To populate data to the table
     function populateTable(modelData) {
         const newRow = dataTable.row.add([ modelData.name,
             modelData.description,
-            '<a class="text-white" id="Name" href="modelfiles/' +  modelData.files.obj + '">' + modelData.files.obj + '</a>',
-            '<a class="text-white" id="Name" href="modelfiles/' +  modelData.files.mtl +'">' + modelData.files.mtl + '</a>',
+            '<a class="text-white modelfiles-in-table" id="Name" href="modelfiles/' +  modelData.files.obj + '">' + modelData.files.obj + '</a>',
+            '<a class="text-white modelfiles-in-table" id="Name" href="modelfiles/' +  modelData.files.mtl +'">' + modelData.files.mtl + '</a>',
             <% if (isAdmin){%>
-            `<td class>
+            `<td class class="options-column">
                                 <div class="d-grid gap-2">
                                     <button type="button" id=${modelData.id} onclick="${(e) => handleEditClick(e, modelData.id)}" class="btn btn-outline-warning editModelBtn" data-bs-toggle="modal" data-bs-target="#editModal">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16" aria-label="Edit icon">
                                             <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                                         </svg> Edit
                                     </button>
-
                                     <button type="button" class="btn btn-outline-danger deleteModelBtn" id=${modelData.id} data-bs-toggle="modal" data-bs-target="#deleteModal" data-file="">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16" aria-label="Delete icon">
                                             <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                                         </svg> Delete

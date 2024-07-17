@@ -1,32 +1,24 @@
 <!-- Include the header and navbar partials -->
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link
-      rel="stylesheet"
-      href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
-      crossorigin="anonymous"
-    />
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
-      crossorigin="anonymous"
-    ></script>
-    <link rel="stylesheet" href="home.css" />
-    <title>ChemAR Home</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
-    <script src="js/molFileToJson.js"></script>
-    <script src="js/gsap.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
-    <script type="importmap">
-      {
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous">
+  </script>
+  <link rel="stylesheet" href="home.css" />
+  <title>ChemAR Home</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <script src="js/molFileToJson.js"></script>
+  <script src="js/gsap.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
+  <script type="importmap">
+    {
         "imports": {
           "three": "./js/three.module.js",
           "OrbitControls": "./js/OrbitControls.js"
@@ -35,12 +27,12 @@
     </script>
 
 
-  </head>
-  <% if (isAdmin){%>
-    <%- include('partials/navbarAdmin') %>
+</head>
+<% if (isAdmin){%>
+<%- include('partials/navbarAdmin') %>
 <%}%>
 <% if (!isAdmin){%>
-    <%- include('partials/navbar') %>
+<%- include('partials/navbar') %>
 <%}%>
 
   <body class="bg-dark">
@@ -82,7 +74,7 @@
           text-align: center;
         "
       >
-        <div class="card-header" style="font-size: 3.2vw">Instructions</div>
+        <div class="card-header" style="font-size: 3.6vw">Instructions</div>
         <div class="accordion instructions" id="instructions">
           <div class="accordion-item instructions">
             <h2 class="accordion-header instructions" id="stepOne">
@@ -474,12 +466,7 @@
 <div class="container footerbuttons">
   <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
       <div class="col-md-4 d-flex align-items-center">
-          <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
-              <svg class="bi" width="30" height="24">
-                  <use xlink:href="#bootstrap"></use>
-              </svg>
-          </a>
-          <span class="mb-3 mb-md-0 text-muted">© 2024 ChemAR</span>
+          <span class="mb-3 mb-md-0 text-muted footer-text">© 2024 ChemAR</span>
       </div>
   </footer>
 </div>
