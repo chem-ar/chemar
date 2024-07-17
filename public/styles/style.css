@@ -1,5 +1,3 @@
-
-
 .container {
   animation: fadeInAnimation ease 2s;
   animation-iteration-count: 1;
@@ -8,49 +6,148 @@
 
 @keyframes fadeInAnimation {
   0% {
-      opacity: 0;
+    opacity: 0;
   }
+
   100% {
-      opacity: 1;
-   }
+    opacity: 1;
+  }
 }
 
-.bg-darker{
+.bg-darker {
   background-color: #202020;
 }
 
 
 .table-striped>thead>tr>th {
   background-color: white;
-  color: #202020 ;
+  color: #202020;
+  font-size: 1.19rem;
 }
 
-.transparent-dark{
+.transparent-dark {
   background-color: rgba(31, 35, 38, 0.7);
 }
-.blur-10{
+
+.blur-10 {
   backdrop-filter: blur(10px);
 }
 
 .table-striped>tbody>tr:nth-of-type(odd)>td {
   background-color: #202020;
-  color: white ;
+  color: white;
 }
 
 .table-striped>tbody>tr:nth-of-type(even)>td {
   background-color: transparent;
-  color: white ;
+  color: white;
 }
 
-/* @media screen and (max-width=600px) {
-  .table.table-striped.text-white{
-    max-width: 500px;
-  }
-} */
-
-.card-body{
+.card-body {
   background-color: #202020;
   border-radius: 1rem;
   border-color: white;
 }
 
+.btn {
+  font-size: 1.13rem;
+  font-weight: 450;
+  border-width: 2px;
+}
+
+.molnames-in-table,
+.molformulas-in-table,
+.names-in-scenes,
+.desc-in-scenes {
+  text-decoration: none;
+  font-size: 1.19rem;
+}
+
+.molnames-in-table:hover,
+.names-in-scenes:hover {
+  text-decoration: underline rgb(0, 208, 255);
+}
+
+.modelname-in-table,
+.modelname-in-table:hover,
+.modeldesc-in-table,
+.modeldesc-in-table:hover {
+  text-decoration: none;
+  color: white;
+  font-size: 1.19rem; 
+}
+
+.modelfiles-in-table {
+  font-size: 1.19rem;
+  text-decoration: none
+}
+
+.modelfiles-in-table:hover {
+  text-decoration: underline rgb(0, 208, 255);
+}
+
+.nav-link{
+  font-size: larger;
+}
+
+.options-column {
+  width: 170px;
+}
+
+.options-column-scenes {
+  width: 208px;
+}
+
+.about-links {
+  color: #21BEF2
+}
+
+@media screen and (max-width:600px ) {
+  .btn {
+    font-size: 0.81rem;
+    font-weight: 350;
+    border-width: 1.5px;
+  }
+  
+  .molnames-in-table,
+  .molformulas-in-table,
+  .names-in-scenes,
+  .desc-in-scenes {
+    text-decoration: none;
+    font-size: 0.94rem;
+  }
+  
+  .modelname-in-table,
+  .modelname-in-table:hover,
+  .modeldesc-in-table,
+  .modeldesc-in-table:hover {
+    text-decoration: none;
+    color: white;
+    font-size: 0.94rem;
+  }
+  
+  .modelfiles-in-table {
+    font-size: 0.94rem;
+    text-decoration: none
+  }
+  
+  .nav-link{
+    font-size: larger;
+  }
+  
+  .options-column {
+    max-width: 109px;
+  }
+  
+  .options-column-scenes {
+    width: 109px;
+  }
+
+  .footer-text {
+    font-size: 0.75rem;
+  }
+
+  .table-striped>thead>tr>th {
+    font-size: 1rem;
+  }
+}
