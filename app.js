@@ -66,7 +66,6 @@ app.use(cookieParser("iauuhdfsoivfdsoviufh"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/cache/setup', cacheRouter);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -78,6 +77,9 @@ app.use('/models', modelsRouter);
 
 app.use('/about', aboutRouter);
 app.use('/admin', adminRouter);
+
+app.use('cache/setup', cacheRouter);
+
 
 app.use('/sceneviewer', sceneViewer);
 app.use('/sceneeditor', sceneEditor);

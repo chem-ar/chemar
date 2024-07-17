@@ -20,3 +20,5 @@ router.get('/', function initializeCache(req, res, next){
         fs.writeFileSync("./public/catalog/sceneCatalog.json", "{}");
     }  
 });
+
+module.exports = router;
