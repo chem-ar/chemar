@@ -1,14 +1,21 @@
 var fs = require('fs'); 
 
 function initializeCache(){
+   
+    let catalogExists = fs.existsSync('./public/catalog');
+
     let molFilesExists = fs.existsSync('./public/molFiles');
-    let scenesExists = fs.existsSync('./public/ scenes');
+    let scenesExists = fs.existsSync('./public/scenes');
     let modelFilesExists = fs.existsSync('./public/modelFiles');
  
     let molfiles= fs.existsSync('./public/catalog/molfileCatalog.json');
     let modelFiles= fs.existsSync('./public/catalog/modelFileCatalog.json ')
     let scenes = fs.existsSync('./public/catalog/sceneCatalog.json ');
 
+
+    if(!catalogExists){
+        fs.mkdirSync('./public/catalog', {recursive: true});
+    }
 
     if(!molFilesExists){
         fs.mkdirSync('./public/molFiles', {recursive: true});
