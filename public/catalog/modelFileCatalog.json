@@ -1,1 +1,20 @@
-[{"id":1,"name":"Cube","description":"A 1x1x1 cube","files":{"obj":"Cube-1.obj","mtl":"Cube-1.mtl"}},{"id":2,"name":"Water","description":"H2O - 0.9 Van der Waals radius","files":{"obj":"Water-2.obj","mtl":"Water-2.mtl"}},{"id":3,"name":"Water","description":"Essential for Human living","files":{"obj":"Water-3.obj","mtl":"Water-3.mtl"}}]
+[
+  {
+    "id": 1,
+    "name": "Cube",
+    "description": "A 1x1x1 cube",
+    "files": { "obj": "Cube-1.obj", "mtl": "Cube-1.mtl" }
+  },
+  {
+    "id": 2,
+    "name": "Water",
+    "description": "H2O - 0.9 Van der Waals radius",
+    "files": { "obj": "Water-2.obj", "mtl": "Water-2.mtl" }
+  },
+  {
+    "id": 3,
+    "name": "Water",
+    "description": "Essential for Human living",
+    "files": { "obj": "Water-3.obj", "mtl": "Water-3.mtl" }
+  }
+]
