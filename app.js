@@ -36,7 +36,8 @@ var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
 var jmolRouter = require('./routes/jmol');
 
-var cacheRouter = require('./routes/cache/setup');
+var getCache = require('./routes/cache/setup');
+const initializeCache = require("./routes/cache/setup");
 
 var app = express();
 app.use(express.json({ limit: '1000gb' }));
@@ -78,8 +79,7 @@ app.use('/models', modelsRouter);
 app.use('/about', aboutRouter);
 app.use('/admin', adminRouter);
 
-app.use('cache/setup', cacheRouter);
-
+initializeCache();
 
 app.use('/sceneviewer', sceneViewer);
 app.use('/sceneeditor', sceneEditor);
