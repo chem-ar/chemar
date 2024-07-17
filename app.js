@@ -36,6 +36,8 @@ var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
 var jmolRouter = require('./routes/jmol');
 
+var cacheRouter = require('./routes/cache/setup');
+
 var app = express();
 app.use(express.json({ limit: '1000gb' }));
 app.use(bodyParser.urlencoded({ limit: '1000gb', extended: true }));
@@ -64,6 +66,7 @@ app.use(cookieParser("iauuhdfsoivfdsoviufh"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 
+app.use('/cache/setup', cacheRouter);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
