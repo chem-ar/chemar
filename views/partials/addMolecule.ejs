@@ -1,8 +1,30 @@
+<style>
+    .btn-green {
+        background-color: #097242;
+        color: white;
+    }
+
+    .btn-green:hover {
+        background-color: #075c33;
+        color: white;
+    }
+
+    .btn-customsubmit {
+        background-color: #0071EB;
+        color: white;
+    }
+
+    .btn-customsubmit:hover {
+        background-color: #005bb5;
+        color: white;
+    }
+</style>
+
 <!-- Add Molecule -->
 <div class="row content">
-    <div class="col-12 text-start text-white bg-dark">
+    <div class="col-12 text-start text-white main-background-color">
         <!-- Button to trigger molecule search -->
-        <button class="btn btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#searchMenu"
+        <button class="btn btn-green" type="button" data-bs-toggle="collapse" data-bs-target="#searchMenu"
             aria-expanded="false" aria-controls="searchMenu">
             <!-- Search icon -->
             <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -33,7 +55,7 @@
 
 
         <div>
-            <button class="btn btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#uploadFile"
+            <button class="btn btn-green" type="button" data-bs-toggle="collapse" data-bs-target="#uploadFile"
                     aria-expanded="false" aria-controls="uploadFile">
                     Upload File 
                 </button>
@@ -50,7 +72,7 @@
                         <input type="text" class="form-control" id="moleculeDescription" name="description" placeholder="Description" required>
                         <h4 class="mb-1 mt-2">File:</h4>
                         <input type="file" class="form-control" id="fileName" name="fileName" placeholder="File name" onchange="onReceiptsSelected()" required>
-                        <button class="btn btn-success form-control my-2" id="submitBtn">
+                            <button class="btn btn-customsubmit form-control my-2" id="submitBtn">
                             <span
                                 id="submitBtnSpinner"
                                 class="spinner-border spinner-border-sm"

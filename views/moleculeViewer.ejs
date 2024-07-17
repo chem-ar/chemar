@@ -53,6 +53,29 @@
             border-radius: 4px;
             border: 2px solid #333;
         }
+
+        #backButton input[type=button] {
+            background-color: #555555;
+            color: white;
+            font-size: 1.13rem;
+            padding: 10px 20px;
+        }
+
+        #control-panel2 input[type=button] {
+            background-color: #0071EB;
+            color: white;
+            font-size: 1.13rem;
+            padding: 10px 20px;
+        }
+
+        .toggle-button {
+            background-color: #097242;
+            color: white;
+            font-size: 1.13rem;
+            padding: 10px 20px;
+            border-radius: 4px;
+            border: none;
+        }
     </style>
 </head>
 
@@ -111,7 +134,7 @@
             });
 
         // Toggle Spin button
-        jmolButton("spin @ {!_spinning}", "Toggle Spin");
+        jmolButton("spin @ {!_spinning}", "Toggle Spin", "toggle-button");
 
         // Slider for Van der Waals Radius
         var slider = document.createElement("input");
