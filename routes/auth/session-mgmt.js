@@ -123,7 +123,6 @@ function isownerBySession(session) {
             break;
         }
     }
-    console.log(isowner);
     return isowner;
 }
 
