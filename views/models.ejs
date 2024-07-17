@@ -201,6 +201,9 @@
                     $('#deleteModal').modal('hide')
                     toastr.success('Deleted Successfully')
                     fetchModels();
+                }else if(response.status == 401){
+                    $('#deleteModal').modal('hide')
+                    toastr.error('Please Login to delete')
                 }else {
                     console.error("Failed to delete model.");
                     toastr.error('Delete Unsuccessfull')
