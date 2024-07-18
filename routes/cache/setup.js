@@ -4,9 +4,9 @@ function initializeCache(){
    
     let catalogExists = fs.existsSync('./public/catalog');
 
-    let molFilesExists = fs.existsSync('./public/molFiles');
+    let molFilesExists = fs.existsSync('./public/molfiles');
     let scenesExists = fs.existsSync('./public/scenes');
-    let modelFilesExists = fs.existsSync('./public/modelFiles');
+    let modelFilesExists = fs.existsSync('./public/modelfiles');
  
     let molfiles= fs.existsSync('./public/catalog/molfileCatalog.json');
     let modelFiles= fs.existsSync('./public/catalog/modelFileCatalog.json ')
@@ -18,7 +18,7 @@ function initializeCache(){
     }
 
     if(!molFilesExists){
-        fs.mkdirSync('./public/molFiles', {recursive: true});
+        fs.mkdirSync('./public/molfiles', {recursive: true});
     }
    
     if(!scenesExists){
@@ -26,7 +26,7 @@ function initializeCache(){
     }
 
     if(!modelFilesExists){
-        fs.mkdirSync('./public/modelFiles', {recursive: true});
+        fs.mkdirSync('./public/modelfiles', {recursive: true});
     }
 
 
