@@ -1,13 +1,13 @@
 var express = require('express');
 var router = express.Router();
-var { checkSession, isownerBySession } = require('./auth/session-mgmt')
+var { checkSession } = require('./auth/session-mgmt')
 var fs = require('fs');
 
 router.get('/', function(req, res, next) {
     const molfiles = './public/molfiles/';
 
     //Admin check
-    let isAdmin = checkSession(req, res);
+    let {isAdmin, isowner} = checkSession(req, res);
 
     try {
         let listItems = fs.readdirSync(molfiles);
@@ -27,7 +27,6 @@ router.get('/', function(req, res, next) {
         }
 
         console.log(finalList);
-        let isowner = isownerBySession(req.cookies.session)
 
         res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin, isowner });
     } catch (error) {

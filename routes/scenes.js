@@ -1,15 +1,15 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
-var { checkSession, isownerBySession } = require('./auth/session-mgmt')
+var { checkSession } = require('./auth/session-mgmt')
 
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
     const scenesDirectory = './public/scenes/';
 
     //Admin check
-    let isAdmin = checkSession(req, res);
+    let { isAdmin, isowner } = checkSession(req, res);
 
     // Load the scene catalog data
     let sceneCatalog;
@@ -46,14 +46,13 @@ router.get('/', function(req, res, next) {
             console.error(`Scene '${filename}' not found in catalog.`);
         }
     }
-    let isowner = isownerBySession(req.cookies.session)
     res.render('scenes', { title: 'Catalog', list: finalList, isAdmin: isAdmin, sceneCatalog: sceneCatalog, isowner });
 });
 
 
 // Endpoint to delete a scene
-router.post('/deleteScene/:scene', function(req, res) {
-    const isAdmin = checkSession(req, res);
+router.post('/deleteScene/:scene', function (req, res) {
+    let { isAdmin, isowner } = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     const sceneName = req.params.scene;
@@ -64,7 +63,7 @@ router.post('/deleteScene/:scene', function(req, res) {
         // Delete scene file
         fs.unlinkSync(scenePath);
         console.log(`Scene file '${sceneName}.json' deleted successfully.`);
-        
+
         // Update scene catalog
         const sceneCatalogPath = './public/catalog/sceneCatalog.json';
 
@@ -79,7 +78,7 @@ router.post('/deleteScene/:scene', function(req, res) {
             console.error('Scene catalog file not found.');
             res.sendStatus(500); // Send error response
         }
-    } catch(err) {
+    } catch (err) {
         console.error(`Failed to delete scene file '${sceneName}.json':`, err);
         res.sendStatus(500); // Send error response
     }
@@ -88,8 +87,8 @@ router.post('/deleteScene/:scene', function(req, res) {
 
 
 // Handle adding a new scene
-router.post('/addScene', function(req, res) {
-    const isAdmin = checkSession(req, res);
+router.post('/addScene', function (req, res) {
+    let { isAdmin, isowner } = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     // Get new scene info from request body
@@ -150,11 +149,9 @@ router.post('/addScene', function(req, res) {
     });
 });
 
-router.get('/list', function(req, res) {
+router.get('/list', function (req, res) {
     const scenes = './public/scenes/';
 
-    //Admin check
-    let isAdmin = checkSession(req, res);
 
     res.status(200).send(fs.readdirSync(scenes));
 });
