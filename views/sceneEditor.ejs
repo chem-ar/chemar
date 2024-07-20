@@ -135,15 +135,6 @@
                                 <p id = "fileName"></p>
                                 <p id = "sceneName"></p>
                                 <p id = "sceneDescription"></p>
-
-                                <div class = "col-12">
-                                    <div  class="input-group mb-2">
-                                        <select id="sceneMenuList" class="form-select" id="inputGroupSelect02">
-                                            <option selected>Choose...</option>
-                                        </select>
-                                        <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loadModal">Load Scene</button>
-                                    </div>  
-                                </div>
                             </div>
                             <div class = "row">
                                 <div class = "col-12">
@@ -425,7 +416,7 @@
                 return true;
             }
 
-        var scenesListMenu = document.getElementById("sceneMenuList");
+        /* var scenesListMenu = document.getElementById("sceneMenuList");
         fetch('/scenes/list')
             .then(response => response.json())
             .then(data => {
@@ -439,6 +430,7 @@
                 });
             })
             .catch(error => console.error(error));
+            */
         
         document.addEventListener("DOMContentLoaded", function () {
             const searchField = document.getElementById("search-field");
@@ -533,7 +525,7 @@
 
         var loadedScene = {};
 
-        document.getElementById('loadSaveBtn').addEventListener('click', () => {
+        /* document.getElementById('loadSaveBtn').addEventListener('click', () => {
             var selectedScene = document.getElementById("sceneMenuList").value;
 
             fetch(`/scenes/${selectedScene}`)
@@ -543,10 +535,12 @@
                     console.log(loadedScene);
                 });
         });
+        */
 
-        document.getElementById('loadNoSaveBtn').addEventListener('click', () => {
+        /* document.getElementById('loadNoSaveBtn').addEventListener('click', () => {
             console.log("No save and loaded.");
         });
+        */
 
         let sceneNameInput = document.getElementById('newNameInput');
         let sceneDescriptionInput = document.getElementById('newDescriptionInput');
