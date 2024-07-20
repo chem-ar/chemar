@@ -257,3 +257,13 @@ dist
 .yarn/install-state.gz
 
 .pnp.*
+
+# cache for molecules, models, and scenes 
+
+public/catalog 
+
+public/molfiles 
+
+public/modelfiles 
+
+public/scenes 
