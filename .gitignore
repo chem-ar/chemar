@@ -260,3 +260,14 @@ dist
 
 # session-mgmt and user login credential data
 /routes/auth/admin.json
+
+# cache for molecules, models, and scenes 
+
+public/catalog 
+
+public/molfiles 
+
+public/modelfiles 
+
+public/scenes 
+
