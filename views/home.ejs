@@ -393,7 +393,7 @@
       }
 
       export function getMolecule(CSID) {
-        fetch("molfiles/" + CSID + ".mol")
+        fetch("frontPageMolecule/" + CSID + ".mol")
           .then((response) => response.text())
           .then((molFile) => {
             drawMolecule(molFile);
