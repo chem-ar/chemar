@@ -5,7 +5,7 @@ const { startSession, checkSession } = require('./auth/session-mgmt')
 const bcrypt = require('bcrypt')
 
 //Create cookie here then redirect
-router.get('/', function(req, res) {
+router.get('/', function (req, res) {
   res.redirect("/");
 });
 
@@ -13,53 +13,53 @@ router.post('/', async function (req, res) {
   let adminEmail = req.body.email;
   let adminPass;
   let admins = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
-  for(let i = 0; i < admins.length; i++){
-    if(adminEmail == admins[i].email){
+  for (let i = 0; i < admins.length; i++) {
+    if (adminEmail == admins[i].email) {
       adminPass = admins[i].password;
       break;
     }
   }
 
-  if(!adminPass){
+  if (!adminPass) {
     console.log("admin not found");
-    return res.status(401).send({message: 'Admin Not Found'})
+    return res.status(401).send({ message: 'Admin Not Found' })
   }
 
   const hash = await bcrypt.compare(req.body.password, adminPass)
-  if(hash){
+  if (hash) {
     startSession(req, res)
     return res.status(200).send({});
   }
-  return res.status(401).send({error: "Password Incorrect"});
+  return res.status(401).send({ error: "Password Incorrect" });
 });
 
-router.post('/changepassword', async function(req, res) {
+router.post('/changepassword', async function (req, res) {
   let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"));
-  let isAdmin = checkSession(req, res);
+  let { isAdmin, isowner } = checkSession(req, res);
   let token = req.cookies.session;
   let admin;
   let adminIndex;
   adminData.map((ele, ind) => {
     ele.session.map((e, i) => {
-      if(e.token == token){
+      if (e.token == token) {
         admin = ele;
         adminIndex = ind
       }
     })
   })
-  if(!admin){
-    return res.status(401).json({error: "Invalid Credentials."})
+  if (!admin) {
+    return res.status(401).json({ error: "Invalid Credentials." })
   }
   const hash = await bcrypt.compare(req.body.password, admin.password)
-  if(isAdmin && hash){
+  if (isAdmin && hash) {
     let newPassword = await bcrypt.hash(req.body.newPassword, 5)
     adminData[adminIndex].password = newPassword
     let arr = JSON.stringify(adminData)
     fs.writeFileSync("./routes/auth/admin.json", arr)
     return res.send({});
   }
-  else{
-    return res.status(401).json({error: "Invalid Credentials."})
+  else {
+    return res.status(401).json({ error: "Invalid Credentials." })
   }
 });
 
