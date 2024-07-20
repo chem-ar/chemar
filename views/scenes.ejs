@@ -24,7 +24,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Description</th>
-                        <th>Options</th>
+                        <th class="options-column-scenes">Options</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,20 +32,20 @@
                         <% let scene = sceneCatalog[filename]; %>
                             <tr>
                                 <td>
-                                    <a class="text-white" id="Name<%= filename %>" href="/sceneViewer/<%= filename.slice(0, -5) %>"><%= filename.slice(0, -5) %></a>
+                                    <a class="text-white names-in-scenes" id="Name<%= filename %>" href="/sceneViewer/<%= filename.slice(0, -5) %>"><%= filename.slice(0, -5) %></a>
                                 </td>
-                                <td id="Description<%=filename %>" class="text-white"><%= scene.desc %></td>
-                                <td >
+                                <td id="Description<%=filename %>" class="text-white desc-in-scenes"><%= scene.desc %></td>
+                                <td class="options-column-scenes">
                                     <div class = "d-grid gap-2">
                                         <button id="<%= "shareBtn" + filename.slice(0, -5) %>" type="button" class="share btn btn-light" data-bs-toggle="modal" data-bs-target="#shareModal">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16" aria-label="Share icon">
                                                 <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
                                             </svg> Share
                                         </button>
                                          <!--ADMIN CHECK-->
                                          <% if (isAdmin) { %>
                                             <button onclick="goToPage('../sceneEditor/<%=filename %>')" type="button" class="btn btn-outline-warning">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16" aria-label="Edit icon">
                                                     <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                                                 </svg> Edit
                                             </button>
@@ -57,7 +57,7 @@
                                             </script>
                                         
                                             <button type="button" class="btn btn-outline-danger deleteSceneBtn" data-bs-toggle="modal" data-bs-target="#deleteModal" data-scene="<%= filename.slice(0, -5) %>">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16" aria-label="Delete icon">
                                                     <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                                                     <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                                                 </svg> Delete
@@ -120,7 +120,7 @@
 
 document.addEventListener("DOMContentLoaded", function() {
     // Add event listener to form submission
-    document.getElementById("newSceneAddBtn").addEventListener("click", function(event) {
+    document.getElementById("newSceneAddBtn")?.addEventListener("click", function(event) {
         // Prevent default form submission behavior
         event.preventDefault();
 
@@ -152,17 +152,16 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(response => {
             if (response.ok) {
-                console.log('Scene added successfully.');
                 location.reload();
                 // Reload the page or handle success as needed
             } else {
                 console.error('Failed to add scene.');
-                // Handle failure as needed
+                throw new Error(`Server returned status code ${response.status}`);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            // Handle error as needed
+            toastr.error(error.message, "Failed to create scene");
         });
     });
 });
@@ -188,40 +187,42 @@ document.addEventListener("DOMContentLoaded", function() {
             qrcode.makeCode(window.location.host + "/sceneViewer/" + itemNumber); 
         })
     });
-</script>
 
-<script>
     document.addEventListener("DOMContentLoaded", function() {
         // Add event listener to delete buttons
         var deleteButtons = document.querySelectorAll(".deleteSceneBtn");
+        var deleteModalBody = document.querySelector("#deleteModal .modal-body");
 
         // Loop through each delete button and add click event listener
         deleteButtons.forEach(function(button) {
             button.addEventListener("click", function() {
                 var sceneName = this.getAttribute("data-scene");
-                var deleteModalBody = document.querySelector("#deleteModal .modal-body");
-                var confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 
                 // Set the text content of the modal body to include the scene's name
                 deleteModalBody.textContent = `Are you sure you want to delete "${sceneName}"?`;
 
-                confirmDeleteBtn.addEventListener("click", function() {
-                    fetch(`/scenes/deleteScene/${sceneName}`, {
-                        method: "POST"
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            // if successful, reload the page
-                            console.log("Scene deleted successfully.");
-                            location.reload(); // Reload the page to reflect changes
-                        } else {
-                            console.error("Failed to delete scene.");
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                    });
-                });
+                deleteModalBody.setAttribute('data-scene-to-delete', sceneName);
+            });
+        });
+
+        var confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+        confirmDeleteBtn.addEventListener("click", function() {
+            const sceneName = deleteModalBody.getAttribute('data-scene-to-delete');
+            fetch(`/scenes/deleteScene/${sceneName}`, {
+                method: "POST"
+            })
+            .then(response => {
+                if (response.ok) {
+                    // if successful, reload the page
+                    console.log("Scene deleted successfully.");
+                    location.reload(); // Reload the page to reflect changes
+                } else {
+                    throw new Error(`Server returned error code ${response.status}`);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                toastr.error(error.message, "Failed to delete scene");
             });
         });
     });
