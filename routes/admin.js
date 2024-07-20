@@ -27,13 +27,6 @@ router.get('/alladminsearch', async function (req, res, next) {
     return res.send(adminData)
 })
 
-router.get('/addadmin', async function (req, res, next) {
-    let {isAdmin, isowner} = checkSession(req, res);
-    if (!isowner) return res.redirect('/')
-
-    return res.render('addadmin', { title: 'addAdmin', isowner })
-})
-
 router.get('/delete', async function (req, res, next) {
     let {isAdmin, isowner} = checkSession(req, res);
     if (!isowner) return res.redirect('/')
