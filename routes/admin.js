@@ -39,6 +39,10 @@ router.get('/delete', async function (req, res, next) {
             adminDeleteIndex = i
         }
     })
+
+    if(!adminDeleteIndex){
+        return res.status(401).json({error: 'Email does not exists'})
+    }
     adminData.splice(adminDeleteIndex, 1)
 
     fs.writeFileSync("./routes/auth/admin.json", JSON.stringify(adminData))
