@@ -70,7 +70,7 @@
 
     // Fetch the admin data from the server
     function fetchAdmins() {
-        fetch("/admin/alladminsearch")
+        fetch("/alladmin/alladminsearch")
             .then((res) => {
                 if (!res.ok) {
                     throw new Error(`HTTP error Status: ${res.status}`);
@@ -78,7 +78,6 @@
                 return res.json();
             })
             .then((adminData) => {
-                console.log(adminData);
                 dataTable.clear();
 
                 // Populate the table with the fetched admin data
@@ -97,7 +96,7 @@
         const email = btn.id;
 
         document.getElementById('confirmDeleteBtn').onclick = function () {
-            fetch(`/admin/delete?email=${email}`, {
+            fetch(`/alladmin/delete?email=${email}`, {
                 method: "GET"
             }).then(response => {
                 if (response.ok) {
@@ -111,7 +110,6 @@
 
     // Populate the table with data
     function populateTable(adminData) {
-        console.log(adminData.email);
 
         // Add new row to the DataTable
         const newRow = dataTable.row.add([
@@ -127,7 +125,6 @@
         // Ensure the new row is now part of the DOM before querying
         $(newRow).find('.deleteModelBtn').on('click', handleDeleteClick);
 
-        console.log(adminData);
     }
 </script>
 

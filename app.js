@@ -18,6 +18,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var adminRouter = require('./routes/admin');
+var allAdminRouter = require('./routes/allAdmin')
 var modelsRouter = require('./routes/models');
 var aboutRouter = require('./routes/about');
 
@@ -75,6 +76,7 @@ app.use('/models', modelsRouter);
 
 app.use('/about', aboutRouter);
 app.use('/admin', adminRouter);
+app.use('/alladmin', allAdminRouter);
 
 app.use('/sceneviewer', sceneViewer);
 app.use('/sceneeditor', sceneEditor);
