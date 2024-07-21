@@ -22,8 +22,8 @@
             <option value="owner">Owner</option>
           </select>
 
-          <button class="btn btn-success form-control my-2" id="uploadBtn">
-            <span id="uploadBtnSpinner" class="spinner-border spinner-border-sm" role="status" aria-label="Loading" style="display: none;"></span>
+          <button class="btn btn-success form-control my-2" id="addBtn">
+            <span id="addBtnSpinner" class="spinner-border spinner-border-sm" role="status" aria-label="Loading" style="display: none;"></span>
             Add
           </button>
         </div>
@@ -78,16 +78,16 @@
       .finally(() => setAdminAdding(false));
   });
 
-  function setAdminAdding(isUploading) {
-    const spinner = document.getElementById('uploadBtnSpinner');
-    const uploadBtn = document.getElementById('uploadBtn');
+  function setAdminAdding(isadding) {
+    const spinner = document.getElementById('addBtnSpinner');
+    const addBtn = document.getElementById('addBtn');
 
-    if (isUploading) {
+    if (isadding) {
       spinner.style.display = '';
-      uploadBtn.disabled = true;
+      addBtn.disabled = true;
     } else {
       spinner.style.display = 'none';
-      uploadBtn.disabled = false;
+      addBtn.disabled = false;
     }
   }
 </script>
