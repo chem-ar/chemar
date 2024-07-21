@@ -16,11 +16,12 @@
           <input type="text" class="form-control" id="email" name="email" placeholder="Admin Dal Email" required>
           <h4>Password</h4>
           <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
-          <h4>Admin Role</h4>
-          <select id="adminRole" class="form-control">
-            <option value="admin">Admin ^</option>
+          <h4>Admin Role<i class="ms-2 fa-solid fa-caret-down"></i></h4>
+          <select id="adminRole" class="form-control custom-select">
+            <option value="admin">Admin<i class="fa-solid fa-caret-down"></i></option>
             <option value="owner">Owner</option>
           </select>
+
           <button class="btn btn-success form-control my-2" id="uploadBtn">
             <span id="uploadBtnSpinner" class="spinner-border spinner-border-sm" role="status" aria-label="Loading" style="display: none;"></span>
             Add
@@ -34,6 +35,7 @@
   </div>
 </div>
 
+<script src="https://kit.fontawesome.com/62461c2b58.js" crossorigin="anonymous"></script>
 <script type="module">
   const addAdminForm = document.getElementById('addAdmin');
   addAdminForm.addEventListener('submit', e => {
@@ -62,13 +64,13 @@
       })
       .then(async res => {
         if (res.ok) {
-                    fetchAdmins()
-                    addAdminForm.reset()
-                    document.getElementById('addAdminButton').setAttribute('class', 'btn btn-outline-success collapse')
-                    document.getElementById('addAdminButton').setAttribute('aria-expanded', 'false')
-                } else {
-                    console.error("Failed to delete admin.");
-                }
+          fetchAdmins()
+          addAdminForm.reset()
+          document.getElementById('addAdminButton').setAttribute('class', 'btn btn-outline-success collapse')
+          document.getElementById('addAdminButton').setAttribute('aria-expanded', 'false')
+        } else {
+          console.error("Failed to delete admin.");
+        }
       })
       .catch(err => {
         toastr.error(err.message, "Failed to save model");
