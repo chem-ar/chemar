@@ -40,6 +40,12 @@ router.get('/delete', async function (req, res, next) {
         }
     })
 
+    adminData[adminDeleteIndex].session.map((ele) => {
+        if(ele == req.cookies.session){
+            return res.status(401).json({error: 'You cannot delete your own account'})
+        }
+    })
+
     if(!adminDeleteIndex){
         return res.status(401).json({error: 'Email does not exists'})
     }
