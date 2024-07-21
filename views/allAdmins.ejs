@@ -70,7 +70,7 @@
 
     // Fetch the admin data from the server
     function fetchAdmins() {
-        fetch("/admin/alladminsearch")
+        fetch("/alladmin/alladminsearch")
             .then((res) => {
                 if (!res.ok) {
                     throw new Error(`HTTP error Status: ${res.status}`);
@@ -96,7 +96,7 @@
         const email = btn.id;
 
         document.getElementById('confirmDeleteBtn').onclick = function () {
-            fetch(`/admin/delete?email=${email}`, {
+            fetch(`/alladmin/delete?email=${email}`, {
                 method: "GET"
             }).then(response => {
                 if (response.ok) {
