@@ -3,6 +3,7 @@ var router = express.Router();
 var { checkSession } = require('./auth/session-mgmt')
 const bcrypt = require('bcrypt');
 var fs = require('fs')
+var {checkPassword} = require('./checkPassword')
 
 router.get('/alladmin', async function (req, res, next) {
     let {isAdmin, isowner} = checkSession(req, res);
@@ -54,6 +55,11 @@ router.post('/addadmin', async function (req, res, next) {
     if (!isAdmin && isowner) return res.status(401).json({error: 'Please log in as owner of the page'})
 
     let data = { ...req.body }
+
+    if(!checkPassword(data.password)){
+        console.log("Incorrect Password");
+        return res.status(401).json({error: "Not a strong password"})
+    }
 
     let hashPassword = await bcrypt.hash(data.password, 5)
 
