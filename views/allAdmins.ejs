@@ -78,7 +78,6 @@
                 return res.json();
             })
             .then((adminData) => {
-                console.log(adminData);
                 dataTable.clear();
 
                 // Populate the table with the fetched admin data
@@ -111,7 +110,6 @@
 
     // Populate the table with data
     function populateTable(adminData) {
-        console.log(adminData.email);
 
         // Add new row to the DataTable
         const newRow = dataTable.row.add([
@@ -127,7 +125,6 @@
         // Ensure the new row is now part of the DOM before querying
         $(newRow).find('.deleteModelBtn').on('click', handleDeleteClick);
 
-        console.log(adminData);
     }
 </script>
 

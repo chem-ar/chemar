@@ -21,7 +21,6 @@ router.post('/', async function (req, res) {
   }
 
   if (!adminPass) {
-    console.log("admin not found");
     return res.status(401).send({ message: 'Admin Not Found' })
   }
 
