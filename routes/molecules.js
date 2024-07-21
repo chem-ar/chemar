@@ -26,7 +26,6 @@ router.get('/', function(req, res, next) {
             }
         }
 
-        console.log(finalList);
 
         res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin, isowner });
     } catch (error) {

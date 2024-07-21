@@ -11,7 +11,6 @@ router.get('/', function(req, res, next) {
 router.get('/:id', function(req , res){
   
   var molfiles = fs.readdirSync('./public/molfiles/')
-  console.log(JSON.stringify(req.headers['user-agent']))
   
   if(molfiles.includes(req.params.id + '.mol')){    
     res.render('moleculeViewer', {
