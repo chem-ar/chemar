@@ -105,17 +105,19 @@
             animate();
           });
 
-        var scene, camera, renderer, clock, deltaTime, totalTime, clone, controller, moleculeGroup,controls;
+        var scene, camera, renderer, clock, deltaTime, totalTime, clone, controller, moleculeGroup,controls, mesh, ARstarted;
 
         var arToolkitSource, arToolkitContext;
 
         var markerRoot1, markerRoot2, markerVisible;
 
-        scene = new THREE.Scene();
 
         var mesh1;
 
         function initialize() {
+
+          scene = new THREE.Scene();
+
           let ambientLight = new THREE.AmbientLight(0xffffff, 1);
           scene.add(ambientLight);
 
@@ -133,7 +135,7 @@
 
           scene.add(spotLight);
 
-          camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 4000);
+          camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 20);
           camera.position.set(0, 0, 1);
           scene.add(camera);
 
@@ -162,7 +164,12 @@
             sourceType: "webcam",
           });
 
+          
+
           function onResize() {
+            if(ARstarted == true){
+              camera.updateProjectionMatrix();
+            }
             arToolkitSource.onResize();
             arToolkitSource.copySizeTo(renderer.domElement);
             if (arToolkitContext.arController !== null) {
@@ -244,17 +251,19 @@
               moleculeGroup.add(clone);
             });
           }          
+    
           moleculeGroup.visible = false;
-          scene.add(moleculeGroup);
           markerRoot1.add(mesh1);
 
-
-          ////////////////////////////////////////////////////////////
+      
+        ////////////////////////////////////////////////////////////
           // setup ARController
           ////////////////////////////////////////////////////////////
 
           controller = renderer.xr.getController(0);
-          controller.addEventListener('select', controllerOnSelect);
+          controller.addEventListener('selectstart', controllerOnSelect);
+          controller.addEventListener('selectend', controllerOnSelectEnd);
+       
           scene.add(controller);
         }
 
@@ -263,18 +272,27 @@
           ARcontroller.attach(moleculeGroup);       
         }
 
+        function controllerOnSelectEnd(event) {
+          const ARcontroller = event.target;
+          ARcontroller.detach(moleculeGroup);
+        } 
+
+
         function update() {
           // update artoolkit on every frame
           if (arToolkitSource.ready !== false)
             arToolkitContext.update(arToolkitSource.domElement);
+         
 
-          moleculeGroup.position.x = markerRoot1.position.x;
-          moleculeGroup.position.y = markerRoot1.position.y;
-          moleculeGroup.position.z = markerRoot1.position.z;
         }
 
         function startAR()  {
+          ARstarted = true;
           moleculeGroup.visible = true;
+          moleculeGroup.position.set(markerRoot1.position.x/32, markerRoot1.position.y/32, markerRoot1.position.z/32).applyMatrix4(controller.matrixWorld);
+          moleculeGroup.scale.set(moleculeGroup.scale.x/16, moleculeGroup.scale.y/16, moleculeGroup.scale.z/16);
+          moleculeGroup.quaternion.setFromRotationMatrix(controller.matrixWorld);  
+          scene.add(moleculeGroup);
         }
 
         function render() {
