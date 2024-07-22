@@ -1,20 +1,18 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
-var { checkSession, isownerBySession } = require('./auth/session-mgmt')
+var { checkSession } = require('./auth/session-mgmt')
 
 /* GET models page. */
 router.get('/', function (req, res, next) {
 
     //Admin check
-    let isAdmin = checkSession(req, res);
-
-    let isowner = isownerBySession(req.cookies.session)
+    let { isAdmin, isowner } = checkSession(req, res);
     res.render('models', { title: 'Model Catalog', isAdmin: isAdmin, isowner });
 });
 
 router.get('/searchModels', function (req, res, next) {
-    const isAdmin = checkSession(req, res);
+    let { isAdmin, isowner } = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     const userSearch = decodeURIComponent(req.query.search || '').toLowerCase();
@@ -27,12 +25,12 @@ router.get('/searchModels', function (req, res, next) {
     const modelFileData = fs.readFileSync(modelFileCatalog);
     const modelData = JSON.parse(modelFileData);
     const searchResults = modelData.filter(model => model.name.toLowerCase().includes(userSearch));
-    
+
     res.send({ searchResults });
 });
 //To handle the edit functionality
 router.post('/edit', function (req, res, next) {
-    const isAdmin = checkSession(req, res);
+    let { isAdmin, isowner } = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     const data = { ...req.body }
@@ -50,25 +48,25 @@ router.post('/edit', function (req, res, next) {
         if (modelData[key].id == parseInt(id)) {
             n = key
         }
-        if(modelData[key].name == data.name){
-            if(modelData[key].description == data.description){
+        if (modelData[key].name == data.name) {
+            if (modelData[key].description == data.description) {
                 exists = true;
             }
         }
-        
+
     }
-    if(!exists){
+    if (!exists) {
         const previousName = modelData[n].name;
         modelData[n].description = data.description
         modelData[n].name = data.name;
         modelData[n].files = {
-            obj: data.name + "-"+ id + ".obj",
-            mtl: data.name + "-"+ id + ".mtl"
+            obj: data.name + "-" + id + ".obj",
+            mtl: data.name + "-" + id + ".mtl"
         }
-        fs.renameSync(`./public/modelfiles/${previousName + "-"+ id}.mtl`, `./public/modelfiles/${data.name + "-"+ id}.mtl`);
-        fs.renameSync(`./public/modelfiles/${previousName + "-"+ id}.obj`, `./public/modelfiles/${data.name + "-"+ id}.obj`);
+        fs.renameSync(`./public/modelfiles/${previousName + "-" + id}.mtl`, `./public/modelfiles/${data.name + "-" + id}.mtl`);
+        fs.renameSync(`./public/modelfiles/${previousName + "-" + id}.obj`, `./public/modelfiles/${data.name + "-" + id}.obj`);
     }
-    else{
+    else {
         return res.status(409).send('')
     }
     var newModel = JSON.stringify(modelData);
@@ -78,7 +76,7 @@ router.post('/edit', function (req, res, next) {
 
 //Handling the delete functionality
 router.get('/delete', function (req, res, next) {
-    const isAdmin = checkSession(req, res);
+    let { isAdmin, isowner } = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     const id = req.query.id
