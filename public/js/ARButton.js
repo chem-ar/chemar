@@ -129,7 +129,7 @@ class ARButton {
 
 			disableButton();
 
-			button.textContent = 'AR NOT SUPPORTED';
+			button.textContent = 'ADVANCED AR NOT SUPPORTED';
 
 		}
 
@@ -139,7 +139,7 @@ class ARButton {
 
 			console.warn( 'Exception when trying to call xr.isSessionSupported', exception );
 
-			button.textContent = 'AR NOT ALLOWED';
+			button.textContent = 'ADVANCED AR NOT ALLOWED';
 
 		}
 
