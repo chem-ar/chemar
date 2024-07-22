@@ -152,11 +152,11 @@
   }
   
   .options-column {
-    max-width: 50px !important;
+    max-width: 65px;
   }
   
   .options-column-scenes {
-    max-width: 109px;
+    max-width: 103px;
   }
 
   .footer-text {
@@ -165,5 +165,15 @@
 
   .table-striped>thead>tr>th {
     font-size: 1rem;
+  }
+
+  .moltable-header,
+  .modeltable-header {
+    word-break: break-all;
+  }
+
+  .table-striped>tbody>tr:nth-of-type(odd)>td,
+  .table-striped>tbody>tr:nth-of-type(even)>td {
+    word-break: break-all;
   }
 }
