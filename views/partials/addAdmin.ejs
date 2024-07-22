@@ -1,8 +1,30 @@
-<!-- Add Model -->
+<style>
+  .btn-green {
+      background-color: #097242;
+      color: white;
+  }
+
+  .btn-green:hover {
+      background-color: #075c33;
+      color: white;
+  }
+
+  .btn-customsubmit {
+      background-color: #0071EB;
+      color: white;
+  }
+
+  .btn-customsubmit:hover {
+      background-color: #005bb5;
+      color: white;
+  }
+</style>
+
+<!-- Add Admin -->
 <div class="row content">
   <div class="col-12 text-start text-white bg-dark">
     <div>
-      <button class="btn btn-outline-success" type="button" id="addAdminButton" data-bs-toggle="collapse" data-bs-target="#addAdmin" aria-expanded="false" aria-controls="addAdmin">
+      <button class="btn btn-green" type="button" id="addAdminButton" data-bs-toggle="collapse" data-bs-target="#addAdmin" aria-expanded="false" aria-controls="addAdmin">
         Add Admin
       </button>
     </div>
@@ -22,7 +44,7 @@
             <option value="owner">Owner</option>
           </select>
 
-          <button class="btn btn-success form-control my-2" id="addBtn">
+          <button class="btn btn-customsubmit form-control my-2" id="addBtn">
             <span id="addBtnSpinner" class="spinner-border spinner-border-sm" role="status" aria-label="Loading" style="display: none;"></span>
             Add
           </button>
