@@ -105,7 +105,7 @@
             animate();
           });
 
-        var scene, camera, renderer, clock, deltaTime, totalTime, clone, controller, moleculeGroup,controls, mesh, ARstarted;
+        var scene, camera, renderer, clock, deltaTime, totalTime, clone, controller, moleculeGroup,controls, ARstarted;
 
         var arToolkitSource, arToolkitContext;
 
@@ -116,7 +116,15 @@
 
         function initialize() {
 
+           ////////////////////////////////////////////////////////////
+          // setup Scene
+          ////////////////////////////////////////////////////////////
+
           scene = new THREE.Scene();
+
+           ////////////////////////////////////////////////////////////
+          // setup Light Sources
+          ////////////////////////////////////////////////////////////
 
           let ambientLight = new THREE.AmbientLight(0xffffff, 1);
           scene.add(ambientLight);
@@ -135,9 +143,17 @@
 
           scene.add(spotLight);
 
+           ////////////////////////////////////////////////////////////
+          // setup Camera
+          ////////////////////////////////////////////////////////////
+
           camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 20);
           camera.position.set(0, 0, 1);
           scene.add(camera);
+
+           ////////////////////////////////////////////////////////////
+          // setup Renderer
+          ////////////////////////////////////////////////////////////
 
           renderer = new THREE.WebGLRenderer({
             antialias: true,
@@ -152,6 +168,10 @@
 
           document.body.appendChild(renderer.domElement);
 
+           ////////////////////////////////////////////////////////////
+          // setup Clock
+          ////////////////////////////////////////////////////////////
+
           clock = new THREE.Clock();
           deltaTime = 0;
           totalTime = 0;
@@ -163,8 +183,6 @@
           arToolkitSource = new THREEx.ArToolkitSource({
             sourceType: "webcam",
           });
-
-          
 
           function onResize() {
           
@@ -232,6 +250,9 @@
             }
           );
 
+           ////////////////////////////////////////////////////////////
+          // setup Populate Molcules to Marker
+          ////////////////////////////////////////////////////////////
           console.log(moleculeData.trackingMarker);
           moleculeGroup = new THREE.Group();
           for (let item of moleculeData.molecules) {
@@ -254,7 +275,7 @@
           markerRoot1.add(mesh1);
 
       
-        ////////////////////////////////////////////////////////////
+          ////////////////////////////////////////////////////////////
           // setup ARController
           ////////////////////////////////////////////////////////////
 
@@ -266,8 +287,6 @@
           // update artoolkit on every frame
           if (arToolkitSource.ready !== false)
             arToolkitContext.update(arToolkitSource.domElement);
-         
-
         }
 
         function startAR()  {
