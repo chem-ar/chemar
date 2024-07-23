@@ -75,11 +75,11 @@ router.post('/edit', function (req, res, next) {
 })
 
 //Handling the delete functionality
-router.get('/delete', function (req, res, next) {
+router.delete('/delete', function (req, res, next) {
     let { isAdmin, isowner } = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
-    const id = req.query.id
+    const id = req.body.id;
     const modelFileCatalog = './public/catalog/modelFileCatalog.json';
 
     const modelFileData = fs.readFileSync(modelFileCatalog);
@@ -103,8 +103,8 @@ router.get('/delete', function (req, res, next) {
 
     var newModel = JSON.stringify(modelData);
     fs.writeFileSync('./public/catalog/modelFileCatalog.json', newModel);
-    //Redirecting to models page
-    return res.redirect('/models');
+    
+    return res.status(200).send({ message: "Model deleted successfully" });
 
 })
 
