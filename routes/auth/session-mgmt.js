@@ -1,5 +1,5 @@
 var fs = require('fs')
-const SESSION_DURATION = 21600000; // 21600000 ms == 6 hrs
+const SESSION_DURATION = 14400000; // 14400000 ms == 4 hrs
 
 initalizeSessions();
 
