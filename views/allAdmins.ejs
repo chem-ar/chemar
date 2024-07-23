@@ -96,8 +96,10 @@
         const email = btn.id;
 
         document.getElementById('confirmDeleteBtn').onclick = function () {
-            fetch(`/alladmin/delete?email=${email}`, {
-                method: "GET"
+            fetch(`/alladmin/delete`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email })
             }).then(response => {
                 if (response.ok) {
                     fetchAdmins()
