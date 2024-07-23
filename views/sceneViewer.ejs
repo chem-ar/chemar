@@ -292,8 +292,8 @@
         function startAR()  {
           ARstarted = true;
           moleculeGroup.visible = true;
-          moleculePositionDivisor = 64;
-          moleculeSizeDivisor = 64;
+          moleculePositionDivisor = 1024;
+          moleculeSizeDivisor = 128;
           moleculeGroup.position.set(markerRoot1.position.x/moleculePositionDivisor, markerRoot1.position.y/moleculePositionDivisor, markerRoot1.position.z/moleculePositionDivisor).applyMatrix4(controller.matrixWorld);
           moleculeGroup.scale.set(moleculeGroup.scale.x/moleculeSizeDivisor, moleculeGroup.scale.y/moleculeSizeDivisor, moleculeGroup.scale.z/moleculeSizeDivisor);
           moleculeGroup.quaternion.setFromRotationMatrix(controller.matrixWorld);  
