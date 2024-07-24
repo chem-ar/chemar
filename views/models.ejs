@@ -198,12 +198,19 @@
                 method: "GET"
             }).then(response => {
                 if (response.ok) {
-                    location.reload();
+                    $('#deleteModal').modal('hide')
+                    toastr.success('Deleted Successfully')
+                    fetchModels();
                 } else {
                     console.error("Failed to delete model.");
+                    toastr.error('Delete Unsuccessfull')
+                    fetchModels();
                 }
-            }).catch(error => console.error("Error:", error));
-        };
+            }).catch(error =>{
+                console.error("Error:", error)
+                toastr.error('Error in deleting, please try again!');
+            });  
+        }
     }
 
     //To populate data to the table
@@ -213,7 +220,7 @@
             '<a class="text-white modelfiles-in-table" id="Name" href="modelfiles/' +  modelData.files.obj + '">' + modelData.files.obj + '</a>',
             '<a class="text-white modelfiles-in-table" id="Name" href="modelfiles/' +  modelData.files.mtl +'">' + modelData.files.mtl + '</a>',
             <% if (isAdmin){%>
-            `<td class="options-column">
+            `<td class class="options-column">
                                 <div class=" d-grid gap-2">
                                     <button type="button" id=${modelData.id} onclick="${(e) => handleEditClick(e, modelData.id)}" class="btn editModelBtn" style="background-color: #FFB300; color: black;" data-bs-toggle="modal" data-bs-target="#editModal">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16" aria-label="Edit icon">
@@ -230,6 +237,9 @@
                             </td>`
             <%}%>
         ]).draw().node();
+
+        newRow.querySelector('.editModelBtn').addEventListener('click', handleEditClick);
+        newRow.querySelector('.deleteModelBtn').addEventListener('click', handleDeleteClick);
     }
 
 </script>
