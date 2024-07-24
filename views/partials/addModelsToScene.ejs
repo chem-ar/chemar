@@ -1,0 +1,73 @@
+<div class="input-group flex-nowrap">    
+    <select name="add-model-select" id="add-model-select" class="form-select">
+        <option value="">Pick a model</option>
+    </select>
+    <button type="button" class="btn btn-info" id="add-model-btn">
+        <span
+            id="add-model-spinner"
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-label="Adding"
+            style="display: none;"
+        ></span>
+        Add
+    </button>
+</div>
+
+<script type="module">
+    import { createModel } from '/js/scenes/rendering.js';
+    import { addModelToScene } from '/js/scenes/scene-mgmt.js';
+    import { addMolToMenu } from '/js/scenes/add-mol-to-menu.js';
+
+    const addModelSelect = document.getElementById('add-model-select');
+    const addModelBtn = document.getElementById('add-model-btn');
+    const addModelSpinner = document.getElementById('add-model-spinner');
+
+    // created in sceneEditor.ejs
+    const moleculeList = document.getElementById('molecule-list');
+
+    let models = [];
+
+    fetch('/models/all')
+        .then(response => response.json())
+        .then(body => {
+            models = body.models;
+
+            const options = models.map(modelInfo => {
+                const option = document.createElement('option');
+                option.value = modelInfo.id;
+                option.text = modelInfo.name;
+                return option;
+            });
+
+            addModelSelect.append(...options);
+        })
+        .catch(error => {
+            toastr.error(
+                error.message,
+                "Failed to populate list of models"
+            );
+        });
+    
+    addModelBtn.addEventListener('click', () => {
+        const option = addModelSelect.selectedOptions[0];
+        const modelId = option.value;
+        if (modelId === '') return;
+
+        const modelInfo = models.find(modelInfo => modelInfo.id == modelId);
+
+        addModelSpinner.style.display = '';
+        addModelBtn.disabled = true;
+
+        createModel(modelInfo)
+            .then(createdModel => {        
+                addModelToScene(modelInfo, createdModel);
+                addMolToMenu(createdModel, modelInfo.name, moleculeList);
+            })
+            .finally(() => { 
+                addModelSpinner.style.display = 'none';
+                addModelBtn.disabled = false;
+            });
+
+    });
+</script>
