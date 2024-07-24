@@ -29,7 +29,13 @@
     let models = [];
 
     fetch('/models/all')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Server returned status code ${response.status}`);
+            }
+
+            return response.json();
+        })
         .then(body => {
             models = body.models;
 
