@@ -141,12 +141,6 @@
     text-decoration: none;
   }
 
-  .molnames-in-table,
-  .modelfiles-in-table,
-  .names-in-scenes {
-    text-decoration: underline rgb(0, 208, 255);
-  }
-
   .modelname-in-table,
   .modelname-in-table:hover,
   .modeldesc-in-table,
