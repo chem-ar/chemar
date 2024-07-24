@@ -1,13 +1,14 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
+var { checkSession } = require('./auth/session-mgmt')
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
     const scenesDirectory = './public/scenes/';
 
     //Admin check
-    let isAdmin = (req.signedCookies.admin == 'true');
+    let isAdmin = checkSession(req, res);
 
     // Load the scene catalog data
     let sceneCatalog;
@@ -51,6 +52,9 @@ router.get('/', function(req, res, next) {
 
 // Endpoint to delete a scene
 router.post('/deleteScene/:scene', function(req, res) {
+    const isAdmin = checkSession(req, res);
+    if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
+
     const sceneName = req.params.scene;
     const scenePath = `./public/scenes/${sceneName}.json`;
     console.log(scenePath);
@@ -84,6 +88,9 @@ router.post('/deleteScene/:scene', function(req, res) {
 
 // Handle adding a new scene
 router.post('/addScene', function(req, res) {
+    const isAdmin = checkSession(req, res);
+    if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
+
     // Get new scene info from request body
     var newSceneName = req.body.name;
     var newSceneDesc = req.body.desc; // Check if 'description' is correctly accessed
@@ -146,7 +153,7 @@ router.get('/list', function(req, res) {
     const scenes = './public/scenes/';
 
     //Admin check
-    let isAdmin = (req.signedCookies.admin == 'true');
+    let isAdmin = checkSession(req, res);
 
     res.status(200).send(fs.readdirSync(scenes));
 });

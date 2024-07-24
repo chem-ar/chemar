@@ -507,11 +507,14 @@ document.getElementById("saveBtn").addEventListener('click', () => {
             },
             body: JSON.stringify(scene)
         })
-        .then(response => {
-            if (!response.ok) {
+        .then(async response => {
+            const body = await response.json().catch(_err => ({}));
+            if (response.status === 401 && body.error) {
+                throw new Error(body.error);
+            } else if (!response.ok) {
                 throw new Error(`Server returned error code ${response.status}`);
             }
-            return response.json();
+            return body;
         })
         .then(data => {
             console.log(data); // log the response data to the console
@@ -569,6 +572,7 @@ function updateScenesList() {
 
         sceneFileInput.addEventListener('change', function(e) {
             const file = sceneFileInput.files[0];
+            if (!file) return;
 
             // Extract the PNG file name
             pngFileName = file.name;
@@ -581,14 +585,27 @@ function updateScenesList() {
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.onload = function() {
                     try {    
+                        let response;
+                        try {
+                            response = JSON.parse(xhr.responseText);
+                        } catch (error) {
+                            // ignore invalid JSON error
+                            if (error instanceof SyntaxError) {
+                                response = {};
+                            } else {    
+                                throw error;
+                            }
+                        }
+
                         if (xhr.status === 200) {
-                            let response = JSON.parse(xhr.responseText);
                             if (response.success) {
                                 updateSceneImg(response.fileSrc);
                             } else {
                                 console.error('Error: ' + response.message);
                                 throw new Error(response.message ?? "An unexpected error occurred");
                             }
+                        } else if (xhr.status === 401 && response.error) {
+                            throw new Error(response.error);
                         } else {
                             console.error('Error: ' + xhr.status);
                             throw new Error(`Server returned status code ${xhr.status}`);
