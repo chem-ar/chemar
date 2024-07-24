@@ -141,7 +141,7 @@
     }
     
     //To handle edit button functionality    
-    function handleEditClick(event) {
+    function handleEditClick(event){
         const btn = event.currentTarget;
         const row = btn.closest('tr');
         const modelName = row.children[0].textContent;
@@ -168,13 +168,22 @@
                 body: JSON.stringify(updatedModel)
             }).then(response => {
                 if (response.ok) {
-                    location.reload();
-                } else {
-                    console.error("Failed to update model.");
+                    $('#editModal').modal('hide')
+                    toastr.success('Edited Successfuly')
+                    fetchModels();
+                }else if(response.status == 409){
+                    $('#editModal').modal('hide')
+                    toastr.error('Model with same name & description exist')
+                    fetchModels();
+                }else {
+                    throw new Error("Server returned status code: " + response.status)
                 }
                 //catch used to catch any errors
-            }).catch(error => console.error("Error:", error));
-        };
+            }).catch(error =>{
+                console.error("Error:", error)
+                toastr.error('Error in Editing, please try again!');
+            });  
+        }
     }
     //Delete button functionality
     function handleDeleteClick(event) {
@@ -196,7 +205,7 @@
             }).catch(error => console.error("Error:", error));
         };
     }
-    
+
     //To populate data to the table
     function populateTable(modelData) {
         const newRow = dataTable.row.add([ modelData.name,
