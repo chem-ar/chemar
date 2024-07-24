@@ -18,10 +18,10 @@
     </h4>
     <div class="px-5">
       <form id="changePasswordForm" onsubmit="changePassword(event)" action="" method="post">
-        
+        <div class="d-flex justify-content-center flex-column align-items-center">
           <div style="display: flex; justify-content: space-between;">
             <div>
-              <div class="form-outline form-white mb-4">
+              <div class="form-outline form-white mb-4 w-75">
                 <input
                   required
                   type="password"
@@ -33,7 +33,7 @@
                 >
               </div>
 
-              <div class="form-outline form-white mb-4">
+              <div class="form-outline form-white mb-4 w-75">
                 <input
                   required
                   type="password"
@@ -44,9 +44,17 @@
                   placeholder="New Password:"
                   onkeyup="checkPasswordStrength()"
                 >
+                <small class="text-muted">Password Requirements:</small>
+                <ul class="text-muted small mb-0">
+                  <li>At least 7 characters long</li>
+                  <li>At least one uppercase letter</li>
+                  <li>At least one lowercase letter</li>
+                  <li>At least one number</li>
+                  <li>At least one symbol (@!$%*?&)</li>
+                </ul>
               </div>
 
-              <div class="form-outline form-white mb-4">
+              <div class="form-outline form-white mb-4 w-75">
                 <input
                   required
                   type="password"
@@ -58,20 +66,11 @@
                   onkeyup="checkPassword()"
                 >
               </div>
-              <div id="passwordFeedback" class="text-white mb-4"></div>
+              <div id="passwordFeedback" class="text-white mb-4 w-75"></div>
               <input type="submit" class="btn btn-primary" value="Change Password">
             </div>
-            <div id="passwordRequirements" class="text-white mb-4">
-              <p>Password Requirements:</p>
-              <ul>
-                <li>At least 7 characters long</li>
-                <li>Contains at least one uppercase letter</li>
-                <li>Contains at least one lowercase letter</li>
-                <li>Contains at least one number</li>
-                <li>Contains at least one special character(@!$%*?&)</li>
-              </ul>
-            </div>
           </div>
+        </div>
       </form>
     </div>
 
