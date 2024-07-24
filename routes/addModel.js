@@ -60,9 +60,9 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
             }
         }
     }
-
-    const newObjFileName = name + path.extname(objFile.originalname);
-    const newMtlFileName = name + path.extname(mtlFile.originalname);
+    //Changing the format of files saved as modelNmae-ID
+    const newObjFileName = `${name}-${uniqueId(parsedData)}.obj`;
+    const newMtlFileName = `${name}-${uniqueId(parsedData)}.mtl`;
     fs.renameSync(objFile.path, path.join(objFile.destination, newObjFileName));
     fs.renameSync(mtlFile.path, path.join(mtlFile.destination, newMtlFileName));
 
