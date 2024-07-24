@@ -537,7 +537,8 @@ document.getElementById("saveBtn").addEventListener('click', () => {
     if (!validateName()) {
         toastr.error("Please enter a name and description");
     } else {
-        console.log("hello 1");  
+        
+        const oldSceneName = scene.name; 
         var sceneName = sceneNameInput.value;
         var sceneDescription = sceneDescriptionInput.value;
 
@@ -555,9 +556,10 @@ document.getElementById("saveBtn").addEventListener('click', () => {
             "trackingMarker": markerData,
             "molecules": sceneMolecules,
         }
-
-        // Update scene catalog file
-        fetch(`/sceneEditor/save/${scene.name}`, {
+        updateSceneCatalog(oldSceneName, sceneName, sceneDescription);
+        updateScenesList(); // Call the function to update the scenes list
+        // Save scene catalog file
+        fetch(`/sceneEditor/save/${oldSceneName}`, {
             method: "POST",
             headers: {
                 'Content-Type': "application/json"
@@ -572,8 +574,7 @@ document.getElementById("saveBtn").addEventListener('click', () => {
         })
         .then(data => {
             console.log(data); // log the response data to the console
-            updateSceneCatalog(scene.name, sceneName, sceneDescription);
-            updateScenesList(); // Call the function to update the scenes list
+           
           
             // Close the modal
             var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
