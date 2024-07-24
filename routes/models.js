@@ -11,20 +11,15 @@ router.get('/', function (req, res, next) {
     res.render('models', { title: 'Model Catalog', isAdmin: isAdmin });
 });
 
-router.get('/searchModels', function (req, res, next) {
-    const userSearch = decodeURIComponent(req.query.search || '').toLowerCase();
-
-    if (!userSearch) {
-        return res.send([]);
-    }
+router.get('/all', function (req, res, next) {
     const modelFileCatalog = './public/catalog/modelFileCatalog.json';
 
     const modelFileData = fs.readFileSync(modelFileCatalog);
-    const modelData = JSON.parse(modelFileData);
-    const searchResults = modelData.filter(model => model.name.toLowerCase().includes(userSearch));
+    const models = JSON.parse(modelFileData);
     
-    res.send(searchResults);
+    res.send({ models });
 });
+
 //To handle the edit functionality
 router.post('/edit', function (req, res, next) {
     const data = { ...req.body }
