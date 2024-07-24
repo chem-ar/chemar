@@ -1,8 +1,30 @@
-<!-- Add Model -->
+<style>
+  .btn-green {
+      background-color: #097242;
+      color: white;
+  }
+
+  .btn-green:hover {
+      background-color: #075c33;
+      color: white;
+  }
+
+  .btn-customsubmit {
+      background-color: #0071EB;
+      color: white;
+  }
+
+  .btn-customsubmit:hover {
+      background-color: #005bb5;
+      color: white;
+  }
+</style>
+
+<!-- Add Admin -->
 <div class="row content">
   <div class="col-12 text-start text-white bg-dark">
     <div>
-      <button class="btn btn-outline-success" type="button" id="addAdminButton" data-bs-toggle="collapse" data-bs-target="#addAdmin" aria-expanded="false" aria-controls="addAdmin">
+      <button class="btn btn-green" type="button" id="addAdminButton" data-bs-toggle="collapse" data-bs-target="#addAdmin" aria-expanded="false" aria-controls="addAdmin">
         Add Admin
       </button>
     </div>
@@ -13,16 +35,17 @@
       <div class="row d-flex flex-wrap">
         <div class="col-12 col-sm-6 d-flex  flex-wrap">
           <h4>Email:</h4>
-          <input type="text" class="form-control" id="email" name="email" placeholder="Admin Dal Email" required>
+          <input type="email" class="form-control" id="email" name="email" placeholder="Admin Dal Email" required>
           <h4>Password</h4>
           <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
-          <h4>Admin Role</h4>
-          <select id="adminRole" class="form-control">
-            <option value="admin">Admin ^</option>
+          <h4>Admin Role<i class="ms-2 fa-solid fa-caret-down"></i></h4>
+          <select id="adminRole" class="form-control custom-select">
+            <option value="admin">Admin<i class="fa-solid fa-caret-down"></i></option>
             <option value="owner">Owner</option>
           </select>
-          <button class="btn btn-success form-control my-2" id="uploadBtn">
-            <span id="uploadBtnSpinner" class="spinner-border spinner-border-sm" role="status" aria-label="Loading" style="display: none;"></span>
+
+          <button class="btn btn-customsubmit form-control my-2" id="addBtn">
+            <span id="addBtnSpinner" class="spinner-border spinner-border-sm" role="status" aria-label="Loading" style="display: none;"></span>
             Add
           </button>
         </div>
@@ -34,6 +57,7 @@
   </div>
 </div>
 
+<script src="https://kit.fontawesome.com/62461c2b58.js" crossorigin="anonymous"></script>
 <script type="module">
   const addAdminForm = document.getElementById('addAdmin');
   addAdminForm.addEventListener('submit', e => {
@@ -43,49 +67,43 @@
     if (document.getElementById('adminRole').value == 'owner') {
       adminType = true
     }
-    console.log(document.getElementById('adminRole').value);
     e.preventDefault();
     setAdminAdding(true);
 
     const formData = new FormData(addAdminForm);
-    fetch('/admin/addadmin', {
+    fetch('/alladmin/addadmin', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          email: email,
-          password,
-          password,
-          adminType: adminType
-        })
+        body: JSON.stringify({ email, password, adminType })
       })
       .then(async res => {
         if (res.ok) {
-                    fetchAdmins()
-                    addAdminForm.reset()
-                    document.getElementById('addAdminButton').setAttribute('class', 'btn btn-outline-success collapse')
-                    document.getElementById('addAdminButton').setAttribute('aria-expanded', 'false')
-                } else {
-                    console.error("Failed to delete admin.");
-                }
+          fetchAdmins()
+          addAdminForm.reset()
+          document.getElementById('addAdminButton').setAttribute('class', 'btn btn-outline-success collapse')
+          document.getElementById('addAdminButton').setAttribute('aria-expanded', 'false')
+        } else {
+          console.error("Failed to delete admin.");
+        }
       })
       .catch(err => {
-        toastr.error(err.message, "Failed to save model");
+        toastr.error(err.message, "Failed to add Admin");
       })
       .finally(() => setAdminAdding(false));
   });
 
-  function setAdminAdding(isUploading) {
-    const spinner = document.getElementById('uploadBtnSpinner');
-    const uploadBtn = document.getElementById('uploadBtn');
+  function setAdminAdding(isadding) {
+    const spinner = document.getElementById('addBtnSpinner');
+    const addBtn = document.getElementById('addBtn');
 
-    if (isUploading) {
+    if (isadding) {
       spinner.style.display = '';
-      uploadBtn.disabled = true;
+      addBtn.disabled = true;
     } else {
       spinner.style.display = 'none';
-      uploadBtn.disabled = false;
+      addBtn.disabled = false;
     }
   }
 </script>
