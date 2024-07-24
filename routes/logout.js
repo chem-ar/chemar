@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
+const {endSession} = require('./auth/session-mgmt')
 
 //Create cookie here then redirect
 router.get('/', function(req, res, next) {
-  const oneDay = 86400000
-  res.clearCookie('admin');
+  endSession(req, res)
   res.redirect("/");
 });
 
