@@ -432,22 +432,6 @@
                 
                 return true;
             }
-
-        /* var scenesListMenu = document.getElementById("sceneMenuList");
-        fetch('/scenes/list')
-            .then(response => response.json())
-            .then(data => {
-                const scenesList = data;
-
-                scenesList.map(scene => {
-                    const newOption = document.createElement("option");
-                    newOption.value = scene;
-                    newOption.text = scene.replace('.json', '');
-                    scenesListMenu.appendChild(newOption);
-                });
-            })
-            .catch(error => console.error(error));
-            */
         
         document.addEventListener("DOMContentLoaded", function () {
             const searchField = document.getElementById("search-field");
@@ -548,29 +532,12 @@
 
         var loadedScene = {};
 
-        /* document.getElementById('loadSaveBtn').addEventListener('click', () => {
-            var selectedScene = document.getElementById("sceneMenuList").value;
-
-            fetch(`/scenes/${selectedScene}`)
-                .then(response => response.json())
-                .then(data => {
-                    loadedScene = JSON.stringify(data);
-                    console.log(loadedScene);
-                });
-        });
-        */
-
-        /* document.getElementById('loadNoSaveBtn').addEventListener('click', () => {
-            console.log("No save and loaded.");
-        });
-        */
-
 // When the admin saves changes to the scene editor.
 document.getElementById("saveBtn").addEventListener('click', () => {
     if (!validateName()) {
         toastr.error("Please enter a name and description");
     } else {
-
+        console.log("hello 1");  
         var sceneName = sceneNameInput.value;
         var sceneDescription = sceneDescriptionInput.value;
 
@@ -607,7 +574,7 @@ document.getElementById("saveBtn").addEventListener('click', () => {
             console.log(data); // log the response data to the console
             updateSceneCatalog(scene.name, sceneName, sceneDescription);
             updateScenesList(); // Call the function to update the scenes list
-            
+          
             // Close the modal
             var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
             saveModal.hide();
