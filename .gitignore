@@ -266,12 +266,12 @@ dist
 
 
 
-# cache for molecules, models, and scenes 
+# cache for molecules, models, and scenes
 
-public/catalog 
+public/catalog
 
-public/molfiles 
+public/molfiles
 
-public/modelfiles 
+public/modelfiles
 
-public/scenes 
+public/scenes
