@@ -106,6 +106,12 @@
   background-color: #171A1F;
 }
 
+.molnames-in-table,
+.modelfiles-in-table,
+.names-in-scenes {
+  text-decoration: underline rgb(0, 208, 255);
+}
+
 @media screen and (max-width:600px ) {
   .btn {
     font-size: 0.81rem;
