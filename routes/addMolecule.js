@@ -1,9 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
+const { checkSession } = require('./auth/session-mgmt');
 
 // Post request when clicking submit button
 router.post('/', (req, res) => {
+    const isAdmin = checkSession(req, res);
+    if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
+
     // Assign values from form to variables
     var molName = req.body.name;
     var molFormula = req.body.formula;
@@ -43,6 +47,9 @@ router.post('/', (req, res) => {
 });
 
 router.post('/saveMolFile', async (req, res) => {
+    const isAdmin = checkSession(req, res);
+    if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
+    
     // Assign values from form to variables
     const cid = req.body.pubchemId;
     fileName = `${cid}.mol`;

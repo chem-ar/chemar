@@ -1,12 +1,13 @@
 var express = require('express');
 var router = express.Router();
+var { checkSession } = require('./auth/session-mgmt')
 var fs = require('fs');
 
 router.get('/', function(req, res, next) {
     const molfiles = './public/molfiles/';
 
     //Admin check
-    let isAdmin = (req.signedCookies.admin == 'true');
+    let isAdmin = checkSession(req, res);
 
     try {
         let listItems = fs.readdirSync(molfiles);
