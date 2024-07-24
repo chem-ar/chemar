@@ -1,10 +1,12 @@
 var express = require('express');
 var router = express.Router();
-var fs = require('fs');
+var { checkSession } = require('./auth/session-mgmt')
 
 router.get('/', function(req, res, next) {
     //Admin check
-    if (req.signedCookies.admin == 'true') res.redirect('/');
+    const isAdmin = checkSession(req, res);
+    if (isAdmin) return res.redirect("/admin");
+
     res.render('login', {title: 'Login Page'});
 });
 
