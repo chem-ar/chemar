@@ -105,14 +105,13 @@
             animate();
           });
 
-        var scene, camera, renderer, clock, deltaTime, totalTime, clone, controller, moleculeGroup,controls, ARstarted, moleculeSizeDivisor, moleculePositionDivisor;
+        var scene, camera, renderer, clock, deltaTime, totalTime, clone, moleculeARGroup, controls, moleculeSizeDivisor = 128;
 
         var arToolkitSource, arToolkitContext;
 
+        var markerX, markerY, markerZ;
+
         var markerRoot1, markerRoot2, markerVisible;
-
-
-        var mesh1;
 
         function initialize() {
 
@@ -254,7 +253,7 @@
           // setup Populate Molcules to Marker
           ////////////////////////////////////////////////////////////
           console.log(moleculeData.trackingMarker);
-          moleculeGroup = new THREE.Group();
+          moleculeARGroup = new THREE.Group();
           for (let item of moleculeData.molecules) {
             const marker = moleculeData.trackingMarker;
             createModel(
@@ -267,37 +266,35 @@
               markerRoot1.add(molecule);
 
               clone = molecule.clone();
-              moleculeGroup.add(clone);
+              moleculeARGroup.add(clone);
             });
           }          
     
-          moleculeGroup.visible = false;
-          markerRoot1.add(mesh1);
-
+          moleculeARGroup.visible = false;
       
-          ////////////////////////////////////////////////////////////
-          // setup ARController
-          ////////////////////////////////////////////////////////////
-
-          controller = renderer.xr.getController(0);
-          scene.add(controller);
         }
 
         function update() {
           // update artoolkit on every frame
           if (arToolkitSource.ready !== false)
             arToolkitContext.update(arToolkitSource.domElement);
+            markerX = markerRoot1.position.x;
+            markerY = markerRoot1.position.y;
+            markerZ = markerRoot1.position.z;
+
+            
         }
 
         function startAR()  {
-          ARstarted = true;
-          moleculeGroup.visible = true;
-          moleculePositionDivisor = 1024;
-          moleculeSizeDivisor = 128;
-          moleculeGroup.position.set(markerRoot1.position.x/moleculePositionDivisor, markerRoot1.position.y/moleculePositionDivisor, markerRoot1.position.z/moleculePositionDivisor).applyMatrix4(controller.matrixWorld);
-          moleculeGroup.scale.set(moleculeGroup.scale.x/moleculeSizeDivisor, moleculeGroup.scale.y/moleculeSizeDivisor, moleculeGroup.scale.z/moleculeSizeDivisor);
-          moleculeGroup.quaternion.setFromRotationMatrix(controller.matrixWorld);  
-          scene.add(moleculeGroup);
+          moleculeARGroup.visible = true;
+          markerRoot1.visible = false;
+          camera.position.set(markerX, markerY, markerZ);
+            moleculeARGroup.scale.set(
+            moleculeARGroup.scale.x/moleculeSizeDivisor, 
+            moleculeARGroup.scale.y/moleculeSizeDivisor, 
+            moleculeARGroup.scale.z/moleculeSizeDivisor);
+            moleculeARGroup.quaternion.copy(markerRoot1.quaternion);
+            scene.add(moleculeARGroup);
         }
 
         function render() {
