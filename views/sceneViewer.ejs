@@ -32,6 +32,10 @@
     <script src="/threex/threex-arbasecontrols.js"></script>
     <script src="/threex/threex-armarkercontrols.js"></script>
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
     <!-- include datgui debugging purposes -->
 
     <!-- include Mol file to CJSON conversion extras -->
@@ -60,12 +64,23 @@
         color: white;
         font-family: "Lucida Grande", sans-serif;
         padding: 1em;
-        background-color: #000;
+        background-color: transparent;
       }
 
       #gui {
         transform: translate(0, -20px);
       }
+
+      #UIButton {
+        background-color: #0071EB;
+        color: White;
+      }
+
+      #modal-text {
+        color: white;
+      }
+
+
     </style>
   </head>
 
@@ -73,10 +88,39 @@
   <body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
   <div id="gui_container"></div>
   <div id="text">
-    <a href = "/scenes/" style = "text-decoration: none">
-      ◄ <span style = "text-decoration: underline"> Back to Scenes</span> 
+    <a href = "/scenes/" id="UIButton" class="btn">
+     <span> ◄ Back to Scenes</span> 
     </a>
+    <button type="button" id="UIButton" class="btn" data-toggle="modal" data-target="#myModal">How does AR work?</button>
     <br />
+      <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="canvasModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                  <h5 class="modal-title text-white" id="canvasModalLabel">What are the differences?</h5>
+
+                </div>
+                <div class="modal-body">
+                  <p id="modal-text">The current implementation for rendering molecules relies solely on the marker being in view, which means once a user looks away from the marker the rendered molecules will disappear. To fix this I will be implementing a way for users to enter ‘AR Mode’ and view the molecules even when the marker is out of view. This mode will allow users to move the molecules, view them when marker is out of sight and walk around the rendered molecules. 
+                    What was changed:
+                    
+                    Molecules rendered in Advanced AR mode appeared to be very stretched
+                    
+                    This was fixed by changing the scale of the cloned molecules
+                    Added a new animation loop
+                    Changed the camera's perspective
+                    
+                    
+                    Users were unable to render molecules using the marker method once they exited Advanced AR Mode
+                    
+                    Added a page refresh when leaving Advanced AR Mode
+                    
+                    
+                    Changed the name of the button that accesses Advanced AR Mode to 'Advanced AR Mode'</p>
+                </div>
+            </div>
+        </div>
+      </div>
   </div>
 
   <!-- 
@@ -89,6 +133,10 @@
         import { ARButton } from "/js/ARButton.js";
         import { OrbitControls } from "/js/OrbitControls.js";
         import { adjustMolToMarker } from '/js/scenes/scene-mgmt.js';
+
+        $(document).ready(function() {
+          $('#myModal').appendTo("body");
+        });   
 
         let requestedFile =
           window.location.pathname.substring(
@@ -217,13 +265,11 @@
               arToolkitContext.getProjectionMatrix()
             );
           });
-
           ////////////////////////////////////////////////////////////
           // setup ARButton
           ////////////////////////////////////////////////////////////
           const button = ARButton.createButton(renderer);
           document.body.appendChild(button);
-
           button.addEventListener("click", startAR);
 
            ////////////////////////////////////////////////////////////
