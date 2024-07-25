@@ -19,7 +19,7 @@ class ARButton {
 				svg.style.right = '20px';
 				svg.style.top = '20px';
 				svg.addEventListener( 'click', function () {
-					window.location.reload();
+
 					currentSession.end();
 
 				} );
@@ -54,7 +54,7 @@ class ARButton {
 
 				await renderer.xr.setSession( session );
 
-				button.textContent = 'STOP ADVANCED AR';
+				button.textContent = 'STOP AR';
 				sessionInit.domOverlay.root.style.display = '';
 
 				currentSession = session;
@@ -65,7 +65,7 @@ class ARButton {
 
 				currentSession.removeEventListener( 'end', onSessionEnded );
 
-				button.textContent = 'START ADVANCED AR';
+				button.textContent = 'START AR';
 				sessionInit.domOverlay.root.style.display = 'none';
 
 				currentSession = null;
@@ -80,7 +80,7 @@ class ARButton {
 			button.style.left = 'calc(50% - 50px)';
 			button.style.width = '100px';
 
-			button.textContent = 'START ADVANCED AR';
+			button.textContent = 'START AR';
 
 			button.onmouseenter = function () {
 
@@ -101,7 +101,7 @@ class ARButton {
 					navigator.xr.requestSession( 'immersive-ar', sessionInit ).then( onSessionStarted );
 
 				} else {
-					window.location.reload();
+
 					currentSession.end();
 
 				}
@@ -129,7 +129,7 @@ class ARButton {
 
 			disableButton();
 
-			button.textContent = 'ADVANCED AR NOT SUPPORTED';
+			button.textContent = 'AR NOT SUPPORTED';
 
 		}
 
@@ -139,7 +139,7 @@ class ARButton {
 
 			console.warn( 'Exception when trying to call xr.isSessionSupported', exception );
 
-			button.textContent = 'ADVANCED AR NOT ALLOWED';
+			button.textContent = 'AR NOT ALLOWED';
 
 		}
 
