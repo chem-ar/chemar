@@ -82,6 +82,10 @@ class ARButton {
 
 			button.textContent = 'START AR';
 
+			//Named changed to distinguish between AR using a marker and not using a marker.
+
+			button.textContent = 'START ADVANCED AR';
+
 			button.onmouseenter = function () {
 
 				button.style.opacity = '1.0';
@@ -131,6 +135,11 @@ class ARButton {
 
 			button.textContent = 'AR NOT SUPPORTED';
 
+			//Named changed to distinguish between AR using a marker and not using a marker.
+
+			button.textContent = 'ADVANCED AR NOT SUPPORTED';
+
+
 		}
 
 		function showARNotAllowed( exception ) {
@@ -140,6 +149,10 @@ class ARButton {
 			console.warn( 'Exception when trying to call xr.isSessionSupported', exception );
 
 			button.textContent = 'AR NOT ALLOWED';
+
+			//Named changed to distinguish between AR using a marker and not using a marker.
+
+			button.textContent = 'ADVANCED AR NOT SUPPORTED';
 
 		}
 
