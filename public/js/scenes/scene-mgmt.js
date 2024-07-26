@@ -49,6 +49,8 @@ export function initScene(pngFile, markerData, threeArea, window){
         map: loader.load(`/images/${pngFile}`)
     });
     paperMaterial.side = THREE.DoubleSide;
+    var pageTint = new THREE.Color( 0xCACFD2);
+    paperMaterial.color = pageTint;
 
     let paperDimensions = new THREE.Vector2( 8.5, 11 );
     paperGeometry = new THREE.PlaneGeometry( paperDimensions.y, paperDimensions.x );
