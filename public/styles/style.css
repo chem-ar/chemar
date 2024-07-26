@@ -148,11 +148,6 @@
     max-width: 120px;
   }
   
-  .modelfiles-in-table {
-    font-size: 0.94rem;
-    word-break: break-all;
-  }
-  
   .nav-link{
     font-size: larger;
   }
@@ -174,10 +169,7 @@
   }
 
   .moltable-header,
-  .modeltable-header {
-    word-break: break-all;
-  }
-
+  .modeltable-header,
   .table-striped>tbody>tr:nth-of-type(odd)>td,
   .table-striped>tbody>tr:nth-of-type(even)>td {
     word-break: break-all;
