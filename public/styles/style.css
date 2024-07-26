@@ -61,17 +61,10 @@
   font-size: 1.19rem;
 }
 
-.molnames-in-table:hover,
-.names-in-scenes:hover,
-.modelfiles-in-table:hover {
+.molnames-in-table,
+.names-in-scenes,
+.modelfiles-in-table {
   text-decoration: underline rgb(0, 208, 255);
-}
-
-.modelname-in-table,
-.modelname-in-table:hover,
-.modeldesc-in-table,
-.modeldesc-in-table:hover {
-  color: white;
 }
 
 .nav-link {
@@ -107,9 +100,7 @@
   .modelfiles-in-table,
   .names-in-scenes,
   .modelname-in-table,
-  .modelname-in-table:hover,
-  .modeldesc-in-table,
-  .modeldesc-in-table:hover {
+  .modeldesc-in-table {
     font-size: 0.94rem;
     word-break: break-all;
   }
@@ -117,17 +108,8 @@
   .molformulas-in-table,
   .desc-in-scenes,
   .modelname-in-table,
-  .modelname-in-table:hover,
-  .modeldesc-in-table,
-  .modeldesc-in-table:hover {
+  .modeldesc-in-table {
     text-decoration: none;
-  }
-
-  .modelname-in-table,
-  .modelname-in-table:hover,
-  .modeldesc-in-table,
-  .modeldesc-in-table:hover {
-    color: white;
   }
 
   .molnames-in-table-head {
