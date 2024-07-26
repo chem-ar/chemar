@@ -10,67 +10,61 @@
   <link rel="stylesheet" href="home.css">
 
   <div class="p-3 mb-2 bg-dark text-white">
-    <h2 class="display-5 fw-bold" style="text-align: center">
+    <h2 class="display-5 fw-bold">
       Admin Tools
     </h2>
-    <h4 class="display-7 mt-3" style="text-align: center">
+    <h4 class="display-7 mt-3">
       Change Password
     </h4>
-    <div class="px-5">
-      <form id="changePasswordForm" onsubmit="changePassword(event)" action="" method="post">
-        <div class="d-flex justify-content-center flex-column align-items-center">
-          <div style="display: flex; justify-content: space-between;">
-            <div>
-              <div class="form-outline form-white mb-4 w-75">
-                <input
-                  required
-                  type="password"
-                  id="oldPassword"
-                  class="form-control-lg"
-                  size="50"
-                  name="oldPassword"
-                  placeholder="Old Password:"
-                >
-              </div>
-
-              <div class="form-outline form-white mb-4 w-75">
-                <input
-                  required
-                  type="password"
-                  id="newPassword"
-                  class="form-control-lg"
-                  size="50"
-                  name="newPassword"
-                  placeholder="New Password:"
-                  onkeyup="checkPasswordStrength()"
-                >
-                <small class="text-muted">Password Requirements:</small>
-                <ul class="text-muted small mb-0">
-                  <li>At least 7 characters long</li>
-                  <li>At least one uppercase letter</li>
-                  <li>At least one lowercase letter</li>
-                  <li>At least one number</li>
-                  <li>At least one symbol (@!$%*?&)</li>
-                </ul>
-              </div>
-
-              <div class="form-outline form-white mb-4 w-75">
-                <input
-                  required
-                  type="password"
-                  id="confirmNewPassword"
-                  class="form-control-lg"
-                  size="50"
-                  name="confirmNewPassword"
-                  placeholder="Confirm New Password:"
-                  onkeyup="checkPassword()"
-                >
-              </div>
-              <div id="passwordFeedback" class="text-white mb-4 w-75"></div>
-              <input type="submit" class="btn btn-primary" value="Change Password">
-            </div>
-          </div>
+    <div class="align-items-center">
+      <form id="changePasswordForm" onsubmit="changePassword(event)" action="" method="post" class="w-50">
+        <div class="form-outline form-white mb-4 w-75">
+          <input
+            required
+            type="password"
+            id="oldPassword"
+            class="form-control-lg"
+            size="50"
+            name="oldPassword"
+            placeholder="Old Password:"
+          >
         </div>
+
+        <div class="form-outline form-white mb-4 w-75">
+          <input
+            required
+            type="password"
+            id="newPassword"
+            class="form-control-lg"
+            size="50"
+            name="newPassword"
+            placeholder="New Password:"
+            onkeyup="checkPasswordStrength()"
+          >
+          <small class="text-muted">Password Requirements:</small>
+          <ul class="text-muted small mb-0">
+            <li>At least 7 characters long</li>
+            <li>At least one uppercase letter</li>
+            <li>At least one lowercase letter</li>
+            <li>At least one number</li>
+            <li>At least one symbol (@!$%*?&)</li>
+          </ul>
+        </div>
+
+        <div class="form-outline form-white mb-4 w-75">
+          <input
+            required
+            type="password"
+            id="confirmNewPassword"
+            class="form-control-lg"
+            size="50"
+            name="confirmNewPassword"
+            placeholder="Confirm New Password:"
+            onkeyup="checkPassword()"
+          >
+        </div>
+        <div id="passwordFeedback" class="text-white mb-4 w-75"></div>
+        <input type="submit" class="btn btn-primary" value="Change Password">
       </form>
     </div>
 
@@ -158,12 +152,6 @@
         return regex.test(password);
       }
     </script>
-
-    <h4 class="display-7 mt-5" style="text-align: center">
-      Site Analytics
-    </h4>
-    <p style="text-align:center">Spot for site visitor information.</p>
-  </div>
   <footer>
     <%- include('partials/footer') %>
   </footer>
