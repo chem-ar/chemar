@@ -3,6 +3,7 @@ var multer = require('multer');
 var router = express.Router();
 var fs = require('fs');
 const path = require('path');
+const { checkSession } = require('./auth/session-mgmt');
 
 // Set up multer to handle file uploads
 const storage = multer.diskStorage({
@@ -42,6 +43,15 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     const modelDescription = req.body.modelDescription;
     const objFile = req.files['objFileName'][0];
     const mtlFile = req.files['mtlFileName'][0];
+
+    const isAdmin = checkSession(req, res);
+    if (!isAdmin) {
+        // delete files saved by multer
+        fs.unlinkSync(objFile.path);
+        fs.unlinkSync(mtlFile.path);
+        
+        return res.status(401).send({ error: "User not logged in" });
+    }
 
     // Read modelFileCatalog json file and add info to it
     var rawdata = fs.readFileSync('./public/catalog/modelFileCatalog.json');

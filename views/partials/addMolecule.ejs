@@ -207,10 +207,12 @@
                                 formula: compoundDetails.formula
                             })
                         }).then(async response => {
-                            const body = await response.json();
+                            const body = await response.json().catch(_error => ({}));
                             if (response.status === 400 && body.error) {
                                 throw new Error(body.error);
-                            } else if (!response.ok){
+                            } else if (response.status === 401 && body.error) {
+                                throw new Error(body.error);
+                            } else if (!response.ok) {
                                 throw new Error(`Server returned status code ${response.status}`);
                             }
 
@@ -285,8 +287,10 @@ function uploadMol(formElement) {
         body: formData
     })
         .then(async res => {
-            const body = await res.json();
+            const body = await res.json().catch(_err => ({}));
             if (res.status === 400 && body.error) {
+                throw new Error(body.error);
+            } else if (res.status === 401 && body.error) {
                 throw new Error(body.error);
             } else if (!res.ok) {
                 throw new Error(`Server returned status code ${res.status}`);
