@@ -18,7 +18,6 @@
   background-color: #202020;
 }
 
-
 .table-striped>thead>tr>th {
   background-color: white;
   color: #202020;
@@ -54,13 +53,17 @@
 .molnames-in-table,
 .molformulas-in-table,
 .names-in-scenes,
-.desc-in-scenes {
+.desc-in-scenes,
+.modelname-in-table,
+.modeldesc-in-table,
+.modelfiles-in-table {
   text-decoration: none;
   font-size: 1.19rem;
 }
 
 .molnames-in-table:hover,
-.names-in-scenes:hover {
+.names-in-scenes:hover,
+.modelfiles-in-table:hover {
   text-decoration: underline rgb(0, 208, 255);
 }
 
@@ -68,21 +71,10 @@
 .modelname-in-table:hover,
 .modeldesc-in-table,
 .modeldesc-in-table:hover {
-  text-decoration: none;
   color: white;
-  font-size: 1.19rem; 
 }
 
-.modelfiles-in-table {
-  font-size: 1.19rem;
-  text-decoration: none
-}
-
-.modelfiles-in-table:hover {
-  text-decoration: underline rgb(0, 208, 255);
-}
-
-.nav-link{
+.nav-link {
   font-size: larger;
 }
 
@@ -95,20 +87,14 @@
 }
 
 .about-links {
-  color: #21BEF2
+  color: #21BEF2;
 }
 
 .main-background-color {
   background-color: #171A1F;
 }
 
-.molnames-in-table,
-.modelfiles-in-table,
-.names-in-scenes {
-  text-decoration: underline rgb(0, 208, 255);
-}
-
-@media screen and (max-width:600px ) {
+@media screen and (max-width: 600px) {
   .btn {
     font-size: 0.81rem;
     font-weight: 350;
@@ -148,7 +134,7 @@
     max-width: 120px;
   }
   
-  .nav-link{
+  .nav-link {
     font-size: larger;
   }
   
