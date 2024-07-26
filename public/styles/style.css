@@ -33,11 +33,7 @@
   backdrop-filter: blur(10px);
 }
 
-.table-striped>tbody>tr:nth-of-type(odd)>td {
-  background-color: #191F24;
-  color: white;
-}
-
+.table-striped>tbody>tr:nth-of-type(odd)>td,
 .table-striped>tbody>tr:nth-of-type(even)>td {
   background-color: #191F24;
   color: white;
