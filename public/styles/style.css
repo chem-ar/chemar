@@ -127,8 +127,8 @@
     font-size: 1rem;
   }
 
-  .moltable-header,
-  .modeltable-header,
+  #molTable th,
+  #modelTable th,
   .table-striped>tbody>tr:nth-of-type(odd)>td,
   .table-striped>tbody>tr:nth-of-type(even)>td {
     word-break: break-all;
