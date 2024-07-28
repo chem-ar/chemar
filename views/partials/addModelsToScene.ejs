@@ -28,7 +28,7 @@
 
     let models = [];
 
-    fetch('/models/all')
+    fetch('/catalog/modelFileCatalog.json')
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Server returned status code ${response.status}`);
@@ -37,7 +37,7 @@
             return response.json();
         })
         .then(body => {
-            models = body.models;
+            models = body;
 
             const options = models.map(modelInfo => {
                 const option = document.createElement('option');

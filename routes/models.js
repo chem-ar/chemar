@@ -12,18 +12,6 @@ router.get('/', function (req, res, next) {
     res.render('models', { title: 'Model Catalog', isAdmin: isAdmin });
 });
 
-router.get('/all', function (req, res, next) {
-    const isAdmin = checkSession(req, res);
-    if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
-
-    const modelFileCatalog = './public/catalog/modelFileCatalog.json';
-
-    const modelFileData = fs.readFileSync(modelFileCatalog);
-    const models = JSON.parse(modelFileData);
-
-    res.send({ models });
-});
-
 //To handle the edit functionality
 router.post('/edit', function (req, res, next) {
     const isAdmin = checkSession(req, res);
