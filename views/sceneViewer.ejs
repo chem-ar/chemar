@@ -285,7 +285,7 @@
 
         function startAR()  {
           moleculeARGroup.visible = true;
-          markerRoot1.visible = false;
+          markerRoot1.clear();
           camera.position.set(markerX, markerY, markerZ);
           //Dividing by 100 because coordinates are measured in centimetres
           moleculeARGroup.position.set(markerX/100, markerY/100, markerZ/100);
