@@ -80,6 +80,12 @@
         color: white;
       }
 
+      #canvasModalLabel {
+        font-weight: bold;
+        padding-bottom: 1rem;
+      }
+
+
 
     </style>
   </head>
@@ -97,26 +103,20 @@
         <div class="modal-dialog">
             <div class="modal-content bg-dark">
                 <div class="modal-header">
-                  <h5 class="modal-title text-white" id="canvasModalLabel">What are the differences?</h5>
-
+                  <h5 class="modal-title text-white" id="canvasModalLabel">How does AR work?</h5>
                 </div>
                 <div class="modal-body">
-                  <p id="modal-text">The current implementation for rendering molecules relies solely on the marker being in view, which means once a user looks away from the marker the rendered molecules will disappear. To fix this I will be implementing a way for users to enter ‘AR Mode’ and view the molecules even when the marker is out of view. This mode will allow users to move the molecules, view them when marker is out of sight and walk around the rendered molecules. 
-                    What was changed:
-                    
-                    Molecules rendered in Advanced AR mode appeared to be very stretched
-                    
-                    This was fixed by changing the scale of the cloned molecules
-                    Added a new animation loop
-                    Changed the camera's perspective
-                    
-                    
-                    Users were unable to render molecules using the marker method once they exited Advanced AR Mode
-                    
-                    Added a page refresh when leaving Advanced AR Mode
-                    
-                    
-                    Changed the name of the button that accesses Advanced AR Mode to 'Advanced AR Mode'</p>
+                  <h5 class="modal-title text-white" id="canvasModalLabel">How can I see the molecules on my worksheet?</h5>
+                    <p id="modal-text">To see the molecules that your instructor has added to your worksheet hold you devices camera up to the kanji symbol on the page. 
+                                        Once your devices cameraa recognizes this symbol you should see the intended molecules renderering on the page. To keep seeing these 
+                                        molecules make sure the marker is in view of camera. For best results keep your device ~6 inches away from the page as this will allow 
+                                        your camera to have it in view at all times.
+                    </p>
+                    <h5 class="modal-title text-white" id="canvasModalLabel">How to see molecules without the marker?</h5>
+                    <p id="modal-text">To see the molecules without the use of a marker you can click the experimental AR button. This mode will allow you to view the molecules 
+                      your instructor has added to the lesson without the marker in view. Within this mode you will be able to walk around the rendered molecule without the worry
+                      of having the marker in view of the camera. Though please note this mode is still being developed in our lab so you may get some unexpected results when using it.
+                    </p>
                 </div>
             </div>
         </div>
