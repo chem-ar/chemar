@@ -195,7 +195,6 @@
           ////////////////////////////////////////////////////////////
 
           camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 20);
-          camera.position.set(0, 0, 1);
           scene.add(camera);
 
            ////////////////////////////////////////////////////////////
@@ -206,11 +205,9 @@
             antialias: true,
             alpha: true,
           });
-          renderer.setClearColor(new THREE.Color("lightgrey"), 0);
-          renderer.setSize(640, 480);
-          renderer.domElement.style.position = "absolute";
-          renderer.domElement.style.top = "0px";
-          renderer.domElement.style.left = "0px";
+          renderer.setPixelRatio( window.devicePixelRatio );
+	        renderer.setSize( window.innerWidth, window.innerHeight );
+          renderer.outputEncoding = THREE.sRGBEncoding;
           renderer.xr.enabled = true;
 
           document.body.appendChild(renderer.domElement);
@@ -232,7 +229,8 @@
           });
 
           function onResize() {
-          
+            camera.aspect = window.innerWidth / window.innerHeight;
+             renderer.setSize( window.innerWidth, window.innerHeight );
             arToolkitSource.onResize();
             arToolkitSource.copySizeTo(renderer.domElement);
             if (arToolkitContext.arController !== null) {
@@ -333,8 +331,10 @@
 
         function startAR()  {
           moleculeARGroup.visible = true;
-          markerRoot1.visible = false;
+          markerRoot1.clear();
           camera.position.set(markerX, markerY, markerZ);
+          //Dividing by 100 because coordinates are measured in centimetres
+          moleculeARGroup.position.set(markerX/100, markerY/100, markerZ/100);
             moleculeARGroup.scale.set(
             moleculeARGroup.scale.x/moleculeSizeDivisor, 
             moleculeARGroup.scale.y/moleculeSizeDivisor, 

@@ -258,12 +258,20 @@ dist
 
 .pnp.*
 
-# cache for molecules, models, and scenes 
 
-public/catalog 
 
-public/molfiles 
+# session-mgmt and user login credential data
 
-public/modelfiles 
+/routes/auth/admin.json
 
-public/scenes 
+
+
+# cache for molecules, models, and scenes
+
+public/catalog
+
+public/molfiles
+
+public/modelfiles
+
+public/scenes

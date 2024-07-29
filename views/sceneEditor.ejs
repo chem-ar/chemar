@@ -474,7 +474,7 @@
                 });
         });
 
-        async function searchModel(userQuery){
+        function searchModel(userQuery){
             const trimmedQuery = userQuery.trim();
 
             if(trimmedQuery === "") {
@@ -482,15 +482,20 @@
                 return;
             }
             const encodedUserQuery = encodeURIComponent(trimmedQuery);
-            const searchResults = await fetch(`/models/searchModels?search=${encodedUserQuery}`)
-                .then(searchResponse => {
-                    if (!searchResponse.ok) {
+            fetch(`/models/searchModels?search=${encodedUserQuery}`)
+                .then(async searchResponse => {
+                    const body = await searchResponse.json().catch(_error => ({}));
+
+                    if (searchResponse.status === 401 && body.error) {
+                        throw new Error(body.error);
+                    } else if (!searchResponse.ok) {
                         throw new Error(`Server returned status code ${searchResponse.status}`);
                     }
-                    return searchResponse.json();
+
+                    return body.searchResults;
                 })
+                .then(searchResults => displaySearchResults(searchResults))
                 .catch(error => toastr.error(error.message, "Search failed"));
-            displaySearchResults(searchResults);
         }
 
         function displaySearchResults(models) {
@@ -511,7 +516,7 @@
                 nameDiv.innerText = modelInfo.name;
 
                 const btnDiv = document.createElement('div');
-                btnDiv.classList = "col-4";
+                btnDiv.classList = "col-4 d-flex justify-content-end";
 
                 const addModelBtn = document.createElement('button');
                 addModelBtn.classList = "btn btn-outline-light";
@@ -603,11 +608,14 @@ document.getElementById("saveBtn").addEventListener('click', () => {
             },
             body: JSON.stringify(scene)
         })
-        .then(response => {
-            if (!response.ok) {
+        .then(async response => {
+            const body = await response.json().catch(_err => ({}));
+            if (response.status === 401 && body.error) {
+                throw new Error(body.error);
+            } else if (!response.ok) {
                 throw new Error(`Server returned error code ${response.status}`);
             }
-            return response.json();
+            return body;
         })
         .then(data => {
             console.log(data); // log the response data to the console
@@ -665,6 +673,7 @@ function updateScenesList() {
 
         sceneFileInput.addEventListener('change', function(e) {
             const file = sceneFileInput.files[0];
+            if (!file) return;
 
             // Extract the PNG file name
             pngFileName = file.name;
@@ -677,14 +686,27 @@ function updateScenesList() {
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.onload = function() {
                     try {    
+                        let response;
+                        try {
+                            response = JSON.parse(xhr.responseText);
+                        } catch (error) {
+                            // ignore invalid JSON error
+                            if (error instanceof SyntaxError) {
+                                response = {};
+                            } else {    
+                                throw error;
+                            }
+                        }
+
                         if (xhr.status === 200) {
-                            let response = JSON.parse(xhr.responseText);
                             if (response.success) {
                                 updateSceneImg(response.fileSrc);
                             } else {
                                 console.error('Error: ' + response.message);
                                 throw new Error(response.message ?? "An unexpected error occurred");
                             }
+                        } else if (xhr.status === 401 && response.error) {
+                            throw new Error(response.error);
                         } else {
                             console.error('Error: ' + xhr.status);
                             throw new Error(`Server returned status code ${xhr.status}`);
