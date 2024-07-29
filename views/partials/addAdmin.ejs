@@ -16,6 +16,8 @@
           <input type="email" class="form-control" id="email" name="email" placeholder="Admin Dal Email" required>
           <h4>Password</h4>
           <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+          <small id="passwordFeedback" class="form-text mb-2"></small>
+          <div class="w-100"></div>
           <small class="text-muted">Password Requirements:</small>
           <ul class="text-muted small mb-0">
             <li>At least 7 characters long</li>
@@ -46,6 +48,20 @@
 <script src="https://kit.fontawesome.com/62461c2b58.js" crossorigin="anonymous"></script>
 <script type="module">
   const addAdminForm = document.getElementById('addAdmin');
+  const passwordInput = document.getElementById('password');
+  const passwordFeedback = document.getElementById('passwordFeedback');
+
+  passwordInput.addEventListener('input', () => {
+    const password = passwordInput.value;
+    if (validatePassword(password)) {
+      passwordFeedback.textContent = "Strong Password";
+      passwordFeedback.style.color = "green";
+    } else {
+      passwordFeedback.textContent = "Weak Password";
+      passwordFeedback.style.color = "red";
+    }
+  });
+
   addAdminForm.addEventListener('submit', e => {
     let email = document.getElementById('email').value;
     let password = document.getElementById('password').value;
@@ -82,6 +98,10 @@
       .finally(() => setAdminAdding(false));
   });
 
+  function validatePassword(password){
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*!])[A-Za-z\d@#$%^&*!]{7,}$/;
+    return regex.test(password);
+  }
   function setAdminAdding(isadding) {
     const spinner = document.getElementById('addBtnSpinner');
     const addBtn = document.getElementById('addBtn');
