@@ -1,4 +1,5 @@
 class ARButton {
+    //The names of some buttons have been changed to fit our interpretation of AR mode in ChemAR. Please note these changes when reading this file.
 
 	static createButton( renderer, sessionInit = {} ) {
 
@@ -19,7 +20,7 @@ class ARButton {
 				svg.style.right = '20px';
 				svg.style.top = '20px';
 				svg.addEventListener( 'click', function () {
-					window.location.reload();					window.location.reload();
+					window.location.reload();
 					currentSession.end();
 
 				} );
@@ -54,7 +55,7 @@ class ARButton {
 
 				await renderer.xr.setSession( session );
 
-				button.textContent = 'STOP ADVANCED ADVANCED AR';
+				button.textContent = 'STOP ADVANCED AR';
 				sessionInit.domOverlay.root.style.display = '';
 
 				currentSession = session;
@@ -65,7 +66,7 @@ class ARButton {
 
 				currentSession.removeEventListener( 'end', onSessionEnded );
 
-				button.textContent = 'START ADVANCED ADVANCED AR';
+				button.textContent = 'START ADVANCED AR';
 				sessionInit.domOverlay.root.style.display = 'none';
 
 				currentSession = null;
@@ -101,7 +102,7 @@ class ARButton {
 					navigator.xr.requestSession( 'immersive-ar', sessionInit ).then( onSessionStarted );
 
 				} else {
-					window.location.reload();					window.location.reload();
+					window.location.reload();				
 					currentSession.end();
 
 				}
@@ -128,7 +129,7 @@ class ARButton {
 		function showARNotSupported() {
 
 			disableButton();
-						button.textContent = 'AR NOT SUPPORTED';
+		    button.textContent = 'AR NOT SUPPORTED';
 
 			//Named changed to distinguish between AR using a marker and not using a marker.
 			button.textContent = 'ADVANCED AR NOT SUPPORTED';
@@ -144,7 +145,6 @@ class ARButton {
 
 			//Named changed to distinguish between AR using a marker and not using a marker.
 
-			button.textContent = 'ADVANCED AR NOT ALLOWED';
 			button.textContent = 'ADVANCED AR NOT ALLOWED';
 
 		}
