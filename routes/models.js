@@ -76,7 +76,7 @@ router.post('/edit', function (req, res, next) {
 
 //Handling the delete functionality
 router.get('/delete', function (req, res, next) {
-    let { isAdmin, isowner } = checkSession(req, res);
+    const isAdmin = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     const id = req.query.id

@@ -7,7 +7,7 @@
 <% if (!isAdmin) { %>
 <%- include('partials/navbar') %>
 <% } %>
-  <link rel="stylesheet" href="home.css">
+
 
   <div class="p-3 mb-2 bg-dark text-white">
     <h2 class="display-5 fw-bold">
@@ -23,7 +23,7 @@
             required
             type="password"
             id="oldPassword"
-            class="form-control-lg"
+            class="form-control-lg changePassword"
             size="50"
             name="oldPassword"
             placeholder="Old Password:"
@@ -73,7 +73,8 @@
       const newPasswordInput = document.getElementById('newPassword');
       const passwordFeedback = document.getElementById('passwordFeedback');
 
-      function changePassword(e) {
+      function changePassword(e) 
+      {
         e.preventDefault();
         const form = document.getElementById('changePasswordForm');
         var oldPassword = document.getElementById('oldPassword').value;
@@ -113,7 +114,6 @@
             });
         }
       }
-
       // Check if passwords match
       function checkPassword(e) {
         var newPassword = newPasswordInput.value;
@@ -155,7 +155,6 @@
   <footer>
     <%- include('partials/footer') %>
   </footer>
-
 </body>
 
 </html>

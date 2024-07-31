@@ -1,0 +1,47 @@
+var fs = require('fs'); 
+
+function initializeCache(){
+   
+    let catalogExists = fs.existsSync('./public/catalog');
+
+    let molFilesExists = fs.existsSync('./public/molfiles');
+    let scenesExists = fs.existsSync('./public/scenes');
+    let modelFilesExists = fs.existsSync('./public/modelfiles');
+ 
+    let molfiles= fs.existsSync('./public/catalog/molfileCatalog.json');
+    let modelFiles= fs.existsSync('./public/catalog/modelFileCatalog.json');
+    let scenes = fs.existsSync('./public/catalog/sceneCatalog.json');
+
+
+    if(!catalogExists){
+        fs.mkdirSync('./public/catalog', {recursive: true});
+    }
+
+    if(!molFilesExists){
+        fs.mkdirSync('./public/molfiles', {recursive: true});
+    }
+   
+    if(!scenesExists){
+        fs.mkdirSync('./public/scenes', {recursive: true});
+    }
+
+    if(!modelFilesExists){
+        fs.mkdirSync('./public/modelfiles', {recursive: true});
+    }
+
+
+
+    if(!molfiles){
+        fs.writeFileSync("./public/catalog/molfileCatalog.json", "{}");
+    }
+
+    if(!modelFiles){
+        fs.writeFileSync("./public/catalog/modelFileCatalog.json", "[]");
+    }
+    
+    if(!scenes){
+        fs.writeFileSync("./public/catalog/sceneCatalog.json", "{}");
+    } 
+}
+
+module.exports = initializeCache;

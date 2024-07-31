@@ -3,18 +3,14 @@ var fs = require("fs");
 var http = require("http");
 var https = require("https");
 
-var createError = require("http-errors");
 var express = require("express");
+require('express-async-errors');
+
+var createError = require("http-errors");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var bodyParser = require('body-parser');
-
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var adminRouter = require('./routes/admin');
@@ -36,6 +32,8 @@ var loginRouter = require('./routes/login');
 var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
 var jmolRouter = require('./routes/jmol');
+
+const initializeCache = require("./routes/cache/setup");
 
 var app = express();
 app.use(express.json({ limit: '1000gb' }));
@@ -65,6 +63,7 @@ app.use(cookieParser("iauuhdfsoivfdsoviufh"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 
+initializeCache();
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
