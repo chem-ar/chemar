@@ -39,7 +39,7 @@
           <h4>Password</h4>
           <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
           <h4>Admin Role</h4>
-          <select class="form-select" id="adminRole" aria-label="Default select example">
+          <select class="form-select" id="adminRole" aria-label="Default select example" required>
             <option value="" selected>Select Admin Role</option>
             <option value="admin">Admin</option>
             <option value="owner">Owner</option>
@@ -63,10 +63,6 @@
   addAdminForm.addEventListener('submit', e => {
     let email = document.getElementById('email').value;
     let password = document.getElementById('password').value;
-    if(document.getElementById('adminRole').value === "") {
-      toastr.error("Please select an admin role", "Error");
-      return;
-    }
     let adminType = false
     if (document.getElementById('adminRole').value == 'owner') {
       adminType = true
