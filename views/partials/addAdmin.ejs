@@ -38,9 +38,10 @@
           <input type="email" class="form-control" id="email" name="email" placeholder="Admin Dal Email" required>
           <h4>Password</h4>
           <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
-          <h4>Admin Role<i class="ms-2 fa-solid fa-caret-down"></i></h4>
-          <select id="adminRole" class="form-control custom-select">
-            <option value="admin">Admin<i class="fa-solid fa-caret-down"></i></option>
+          <h4>Admin Role</h4>
+          <select class="form-select" id="adminRole" aria-label="Default select example">
+            <option value="" selected>Select Admin Role</option>
+            <option value="admin">Admin</option>
             <option value="owner">Owner</option>
           </select>
 
@@ -48,9 +49,6 @@
             <span id="addBtnSpinner" class="spinner-border spinner-border-sm" role="status" aria-label="Loading" style="display: none;"></span>
             Add
           </button>
-        </div>
-        <div class="col-12 col-sm-6 d-flex align-content-stretch flex-wrap">
-          <textarea class="form-control" name="preview" id="preview" style="display: none"></textarea>
         </div>
       </div>
     </form>
@@ -65,6 +63,10 @@
   addAdminForm.addEventListener('submit', e => {
     let email = document.getElementById('email').value;
     let password = document.getElementById('password').value;
+    if(document.getElementById('adminRole').value === "") {
+      toastr.error("Please select an admin role", "Error");
+      return;
+    }
     let adminType = false
     if (document.getElementById('adminRole').value == 'owner') {
       adminType = true
