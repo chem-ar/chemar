@@ -54,7 +54,7 @@ router.post('/edit', function (req, res, next) {
                 exists = true;
             }
         }
-        
+
     }
     if(!exists){
         const previousName = modelData[n].name;
