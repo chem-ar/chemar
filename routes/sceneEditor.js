@@ -33,7 +33,6 @@ router.post('/updateCatalog/:oldSceneName', (req, res) => {
       if (typeof sceneCatalog === 'object') {
           let sceneUpdated = false;
 
-          // Iterate over the keys (filenames) in the sceneCatalog object
           Object.keys(sceneCatalog).forEach(filename => {
               const scene = sceneCatalog[filename];
               if (scene.name === oldSceneName) {
@@ -77,6 +76,7 @@ router.post('/updateCatalog/:oldSceneName', (req, res) => {
       }
   });
 });
+
 
 router.get('/:id', function(req , res){
   var scenefiles = fs.readdirSync('./public/scenes/');
@@ -148,5 +148,6 @@ router.post('/save/:scene', (req, res) => {
     })
   });
 });
+
 
 module.exports = router;
