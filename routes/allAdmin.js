@@ -39,14 +39,14 @@ router.get('/delete', async function (req, res, next) {
     let email = req.query.email;
 
     let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
-    let adminDeleteIndex
+    let adminDeleteIndex = -1;
     adminData.map((ele, i) => {
         if(ele.email == email){
             adminDeleteIndex = i
         }
     })
 
-    if(!adminDeleteIndex){
+    if(adminDeleteIndex === -1){
         return res.status(400).json({error: 'Email does not exists'})
     }
 
