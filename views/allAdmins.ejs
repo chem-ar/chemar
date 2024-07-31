@@ -4,6 +4,8 @@
 <%- include('partials/navbarowner') %>
 <%}%>
 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <div class="container mb-4 main-background-color">
     <div class="row content">
@@ -100,15 +102,25 @@
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email })
-            }).then(response => {
+            }).then(async response => {
+                let result = await response.json();
                 if (response.ok) {
-                    fetchAdmins()
+                    toastr.success(result.message, "Admin deleted successfully");
+
+                    // Refresh the admin list
+                    fetchAdmins();
                 } else {
-                    console.error("Failed to delete admin.");
+                    let error = result.error;
+                    console.error("Failed to delete admin:", error);
+                    toastr.error(error || "Failed to delete admin", "Error");
                 }
-            }).catch(error => console.error("Error:", error));
-        };
-    }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            toastr.error(error.message, "Failed to delete Admin");
+        });
+    };
+}
 
     // Populate the table with data
     function populateTable(adminData) {

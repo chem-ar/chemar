@@ -9,8 +9,8 @@ function initializeCache(){
     let modelFilesExists = fs.existsSync('./public/modelfiles');
  
     let molfiles= fs.existsSync('./public/catalog/molfileCatalog.json');
-    let modelFiles= fs.existsSync('./public/catalog/modelFileCatalog.json ')
-    let scenes = fs.existsSync('./public/catalog/sceneCatalog.json ');
+    let modelFiles= fs.existsSync('./public/catalog/modelFileCatalog.json');
+    let scenes = fs.existsSync('./public/catalog/sceneCatalog.json');
 
 
     if(!catalogExists){
