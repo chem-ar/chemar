@@ -101,17 +101,17 @@
             fetch(`/alladmin/delete?email=${email}`, {
                 method: "GET"
             }).then(async response => {
-            if (response.ok) {
                 let result = await response.json();
-                toastr.success(result.message, "Admin deleted successfully");
+                if (response.ok) {
+                    toastr.success(result.message, "Admin deleted successfully");
 
-                // Refresh the admin list
-                fetchAdmins();
-            } else {
-                let error = await response.json();
-                console.error("Failed to delete admin:", error);
-                toastr.error(error.message || "Failed to delete admin", "Error");
-            }
+                    // Refresh the admin list
+                    fetchAdmins();
+                } else {
+                    let error = result.error;
+                    console.error("Failed to delete admin:", error);
+                    toastr.error(error || "Failed to delete admin", "Error");
+                }
         })
         .catch(error => {
             console.error("Error:", error);
