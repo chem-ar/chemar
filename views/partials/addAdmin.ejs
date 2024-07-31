@@ -86,6 +86,7 @@
           addAdminForm.reset()
           document.getElementById('addAdminButton').setAttribute('class', 'btn btn-outline-success collapse')
           document.getElementById('addAdminButton').setAttribute('aria-expanded', 'false')
+          passwordFeedback.textContent = "";
         }else if(res.status == 401){
           toastr.error('Password Requirements Unmatched')
         } else {
