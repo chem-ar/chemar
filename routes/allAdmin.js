@@ -39,7 +39,7 @@ router.get('/delete', async function (req, res, next) {
     })
 
     if(!adminDeleteIndex){
-        return res.status(401).json({error: 'Email does not exists'})
+        return res.status(400).json({error: 'Email does not exists'})
     }
     adminData.splice(adminDeleteIndex, 1)
 
