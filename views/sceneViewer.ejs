@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta
       name="viewport"
@@ -69,16 +69,17 @@
     </style>
   </head>
 
-  <html>
-    <body style="margin: 0px; overflow: hidden; font-family: Monospace">
-      <div id="gui_container"></div>
-      <div id="text">
-        <a href="/scenes/" style="text-decoration: none">
-          ◄ <span style="text-decoration: underline"> Back to Scenes</span>
-        </a>
-        <br />
-      </div>
-      <!-- 
+<html lang="en">
+  <body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
+  <div id="gui_container"></div>
+  <div id="text">
+    <a href = "/scenes/" style = "text-decoration: none">
+      ◄ <span style = "text-decoration: underline"> Back to Scenes</span> 
+    </a>
+    <br />
+  </div>
+
+  <!-- 
     Example created by Lee Stemkoski: https://github.com/stemkoski
     Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/
   -->
@@ -104,17 +105,26 @@
             animate();
           });
 
-        var scene, camera, renderer, clock, deltaTime, totalTime, clone, controller, moleculeGroup,controls;
+        var scene, camera, renderer, clock, deltaTime, totalTime, clone, moleculeARGroup, controls, moleculeSizeDivisor = 128;
 
         var arToolkitSource, arToolkitContext;
 
+        var markerX, markerY, markerZ;
+
         var markerRoot1, markerRoot2, markerVisible;
 
-        scene = new THREE.Scene();
-
-        var mesh1;
-
         function initialize() {
+
+           ////////////////////////////////////////////////////////////
+          // setup Scene
+          ////////////////////////////////////////////////////////////
+
+          scene = new THREE.Scene();
+
+           ////////////////////////////////////////////////////////////
+          // setup Light Sources
+          ////////////////////////////////////////////////////////////
+
           let ambientLight = new THREE.AmbientLight(0xffffff, 1);
           scene.add(ambientLight);
 
@@ -132,22 +142,31 @@
 
           scene.add(spotLight);
 
-          camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 4000);
-          camera.position.set(0, 0, 1);
+           ////////////////////////////////////////////////////////////
+          // setup Camera
+          ////////////////////////////////////////////////////////////
+
+          camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 20);
           scene.add(camera);
+
+           ////////////////////////////////////////////////////////////
+          // setup Renderer
+          ////////////////////////////////////////////////////////////
 
           renderer = new THREE.WebGLRenderer({
             antialias: true,
             alpha: true,
           });
-          renderer.setClearColor(new THREE.Color("lightgrey"), 0);
-          renderer.setSize(640, 480);
-          renderer.domElement.style.position = "absolute";
-          renderer.domElement.style.top = "0px";
-          renderer.domElement.style.left = "0px";
+          renderer.setPixelRatio( window.devicePixelRatio );
+	        renderer.setSize( window.innerWidth, window.innerHeight );
+          renderer.outputEncoding = THREE.sRGBEncoding;
           renderer.xr.enabled = true;
 
           document.body.appendChild(renderer.domElement);
+
+           ////////////////////////////////////////////////////////////
+          // setup Clock
+          ////////////////////////////////////////////////////////////
 
           clock = new THREE.Clock();
           deltaTime = 0;
@@ -162,6 +181,8 @@
           });
 
           function onResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+             renderer.setSize( window.innerWidth, window.innerHeight );
             arToolkitSource.onResize();
             arToolkitSource.copySizeTo(renderer.domElement);
             if (arToolkitContext.arController !== null) {
@@ -226,8 +247,11 @@
             }
           );
 
+           ////////////////////////////////////////////////////////////
+          // setup Populate Molcules to Marker
+          ////////////////////////////////////////////////////////////
           console.log(moleculeData.trackingMarker);
-          moleculeGroup = new THREE.Group();
+          moleculeARGroup = new THREE.Group();
           for (let item of moleculeData.molecules) {
             const marker = moleculeData.trackingMarker;
             createModel(
@@ -240,40 +264,37 @@
               markerRoot1.add(molecule);
 
               clone = molecule.clone();
-              moleculeGroup.add(clone);
+              moleculeARGroup.add(clone);
             });
           }          
-          moleculeGroup.visible = false;
-          scene.add(moleculeGroup);
-          markerRoot1.add(mesh1);
-
-
-          ////////////////////////////////////////////////////////////
-          // setup ARController
-          ////////////////////////////////////////////////////////////
-
-          controller = renderer.xr.getController(0);
-          controller.addEventListener('select', controllerOnSelect);
-          scene.add(controller);
-        }
-
-        function controllerOnSelect( event ){
-          const ARcontroller = event.target;
-          ARcontroller.attach(moleculeGroup);       
+    
+          moleculeARGroup.visible = false;
+      
         }
 
         function update() {
           // update artoolkit on every frame
           if (arToolkitSource.ready !== false)
             arToolkitContext.update(arToolkitSource.domElement);
+            markerX = markerRoot1.position.x;
+            markerY = markerRoot1.position.y;
+            markerZ = markerRoot1.position.z;
 
-          moleculeGroup.position.x = markerRoot1.position.x;
-          moleculeGroup.position.y = markerRoot1.position.y;
-          moleculeGroup.position.z = markerRoot1.position.z;
+            
         }
 
         function startAR()  {
-          moleculeGroup.visible = true;
+          moleculeARGroup.visible = true;
+          markerRoot1.clear();
+          camera.position.set(markerX, markerY, markerZ);
+          //Dividing by 100 because coordinates are measured in centimetres
+          moleculeARGroup.position.set(markerX/100, markerY/100, markerZ/100);
+            moleculeARGroup.scale.set(
+            moleculeARGroup.scale.x/moleculeSizeDivisor, 
+            moleculeARGroup.scale.y/moleculeSizeDivisor, 
+            moleculeARGroup.scale.z/moleculeSizeDivisor);
+            moleculeARGroup.quaternion.copy(markerRoot1.quaternion);
+            scene.add(moleculeARGroup);
         }
 
         function render() {
