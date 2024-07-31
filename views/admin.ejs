@@ -9,27 +9,27 @@
 <% } %>
   <link rel="stylesheet" href="home.css">
 
-  <div class="p-3 mb-2 bg-dark text-white">
-    <h2 class="admin-page fw-bold" style="text-align: center">
-      Admin Tools
-    </h2>
-    <h4 class="admin-page mt-3" style="text-align: center">
-      Change Password
-    </h4>
-    <div class="px-5">
-      <form id="changePasswordForm" onsubmit="changePassword(event)" action="" method="post">
-        <div align="center">
-          <div class="form-outline form-white mb-4">
-            <input
-              required
-              type="password"
-              id="oldPassword"
-              class="form-control-lg changePassword"
-              size="50"
-              name="oldPassword"
-              placeholder="Old Password:"
-            >
-          </div>
+<div class="p-3 mb-2 text-white main-background-color">
+  <h2 class="admin-page fw-bold" style="text-align: center">
+    Admin Tools
+  </h2>
+  <h4 class="admin-page mt-3" style="text-align: center">
+    Change Password
+  </h4>
+  <div class="px-5">
+    <form id="changePasswordForm" class="changePassword" onsubmit="changePassword(event)" method="post">
+      <div align="center">
+        <div class="form-outline form-white mb-4">
+          <input
+            required
+            type="password"
+            id="oldPassword"
+            class="form-control-lg changePassword"
+            size="50"
+            name="oldPassword"
+            placeholder="Old Password:"
+          >
+        </div>
 
           <div class="form-outline form-white mb-4">
             <input

@@ -17,7 +17,6 @@ export function initScene(pngFile, markerData, threeArea, window){
 
     scene1 = new THREE.Scene();
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 4000 );
-
     
     scene1.add( camera );
 
@@ -61,7 +60,6 @@ export function initScene(pngFile, markerData, threeArea, window){
     paperPlane.position.x = paperDimensions.y/2;
     paperPlane.position.y = paperDimensions.x/2;
 
-
     markerMaterial = new THREE.MeshLambertMaterial({
         map: loader.load('/test_marker.png')
     });
@@ -81,7 +79,6 @@ export function initScene(pngFile, markerData, threeArea, window){
     controls = new OrbitControls( camera, renderer.domElement );
     controls.dampingFactor = 10;
     controls.minDistance = 1;
-
     camera.position.x = 0;
     camera.position.y = 0;
     camera.position.z = 2;
@@ -129,7 +126,6 @@ export function onMarkerXChange(event) {
     const newMarkerX = event.target.value;
     markerLocationHelper.position.x = newMarkerX;
     markerPlane.position.x = newMarkerX;
-
     sceneMolecules.forEach(({ molecule, initialPosition }) => {
         molecule.position.x = Number(initialPosition.x) + Number(newMarkerX);
     });
