@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs'); 
+const { checkSession } = require('./auth/session-mgmt');
 const path = require('path');
 router.get('/', function(req, res, next) {
   const scenes = './public/scenes/'
