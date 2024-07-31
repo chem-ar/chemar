@@ -88,7 +88,7 @@
           document.getElementById('addAdminButton').setAttribute('aria-expanded', 'false')
           passwordFeedback.textContent = "";
         }else if(res.status == 401){
-          toastr.error('Password Requirements Unmatched')
+          toastr.error((await res.json()).error || "Failed to delete admin.");
         } else {
           console.error("Failed to delete admin.");
         }
