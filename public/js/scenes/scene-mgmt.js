@@ -116,9 +116,6 @@ export function addModelToScene(modelInfo, model, cjson) {
         rotation: model.rotation,
         scale: model.scale,
         modelInfo: modelInfo,
-        
-        // want to store vals instead of reference to obj
-        initialPosition: { ...model.position }
     };
 
     sceneMolecules.push(newMolData);
