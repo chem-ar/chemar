@@ -10,10 +10,10 @@
   <link rel="stylesheet" href="home.css">
 
   <div class="p-3 mb-2 bg-dark text-white">
-    <h2 class="display-5 fw-bold" style="text-align: center">
+    <h2 class="admin-page fw-bold" style="text-align: center">
       Admin Tools
     </h2>
-    <h4 class="display-7 mt-3" style="text-align: center">
+    <h4 class="admin-page mt-3" style="text-align: center">
       Change Password
     </h4>
     <div class="px-5">
@@ -24,7 +24,7 @@
               required
               type="password"
               id="oldPassword"
-              class="form-control-lg"
+              class="form-control-lg changePassword"
               size="50"
               name="oldPassword"
               placeholder="Old Password:"
@@ -36,7 +36,7 @@
               required
               type="password"
               id="newPassword"
-              class="form-control-lg"
+              class="form-control-lg changePassword"
               size="50"
               name="newPassword"
               placeholder="New Password:"
@@ -48,7 +48,7 @@
               required
               type="password"
               id="confirmNewPassword"
-              class="form-control-lg"
+              class="form-control-lg changePassword"
               size="50"
               name="confirmNewPassword"
               placeholder="Confirm New Password:"
@@ -56,7 +56,7 @@
             >
           </div>
 
-          <input type="submit" class="btn btn-primary" value="Change Password">
+          <input type="submit" id="changePasswordBtn" class="btn btn-primary" value="Change Password">
         </div>
       </form>
     </div>
