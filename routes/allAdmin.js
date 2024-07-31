@@ -51,7 +51,7 @@ router.get('/delete', async function (req, res, next) {
 // adding admins
 router.post('/addadmin', async function (req, res, next) {
     let {isAdmin, isowner} = checkSession(req, res);
-    if (!isAdmin && isowner) return res.status(401).json({error: 'Please log in as owner of the page'})
+    if (!isowner) return res.status(401).json({error: 'Please log in as owner of the page'})
 
     let data = { ...req.body }
 
