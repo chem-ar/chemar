@@ -1,8 +1,30 @@
-<!-- Add Model -->
+<style>
+  .btn-green {
+      background-color: #097242;
+      color: white;
+  }
+
+  .btn-green:hover {
+      background-color: #075c33;
+      color: white;
+  }
+
+  .btn-customsubmit {
+      background-color: #0071EB;
+      color: white;
+  }
+
+  .btn-customsubmit:hover {
+      background-color: #005bb5;
+      color: white;
+  }
+</style>
+
+<!-- Add Admin -->
 <div class="row content">
   <div class="col-12 text-start text-white bg-dark">
     <div>
-      <button class="btn btn-outline-success" type="button" id="addAdminButton" data-bs-toggle="collapse" data-bs-target="#addAdmin" aria-expanded="false" aria-controls="addAdmin">
+      <button class="btn btn-green" type="button" id="addAdminButton" data-bs-toggle="collapse" data-bs-target="#addAdmin" aria-expanded="false" aria-controls="addAdmin">
         Add Admin
       </button>
     </div>
@@ -22,7 +44,7 @@
             <option value="owner">Owner</option>
           </select>
 
-          <button class="btn btn-success form-control my-2" id="addBtn">
+          <button class="btn btn-customsubmit form-control my-2" id="addBtn">
             <span id="addBtnSpinner" class="spinner-border spinner-border-sm" role="status" aria-label="Loading" style="display: none;"></span>
             Add
           </button>
@@ -34,6 +56,8 @@
     </form>
   </div>
 </div>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <script src="https://kit.fontawesome.com/62461c2b58.js" crossorigin="anonymous"></script>
 <script type="module">
@@ -58,19 +82,29 @@
       })
       .then(async res => {
         if (res.ok) {
-          fetchAdmins()
-          addAdminForm.reset()
-          document.getElementById('addAdminButton').setAttribute('class', 'btn btn-outline-success collapse')
-          document.getElementById('addAdminButton').setAttribute('aria-expanded', 'false')
+            let result = await res.json();
+            toastr.success(result.message, "Admin added successfully");
+
+            // Refresh the admin list
+            fetchAdmins();
+
+            // Reset the form
+            addAdminForm.reset();
+
+            // Collapse the add admin button
+            document.getElementById('addAdminButton').setAttribute('class', 'btn btn-outline-success collapse');
+            document.getElementById('addAdminButton').setAttribute('aria-expanded', 'false');
         } else {
-          console.error("Failed to delete admin.");
+            let error = await res.json();
+            console.error("Failed to add admin:", error);
+            toastr.error(error.message || "Failed to add admin", "Error");
         }
-      })
-      .catch(err => {
+    })
+    .catch(err => {
         toastr.error(err.message, "Failed to add Admin");
-      })
-      .finally(() => setAdminAdding(false));
-  });
+    })
+    .finally(() => setAdminAdding(false)); // Ensure this function is defined to handle the UI state
+});
 
   function setAdminAdding(isadding) {
     const spinner = document.getElementById('addBtnSpinner');
