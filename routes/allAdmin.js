@@ -21,7 +21,7 @@ function emailExists(email){
 router.get('/alladmin', async function (req, res, next) {
     let {isAdmin, isowner} = checkSession(req, res);
     if (!isowner) return res.status(401).json({error: 'Please log in as owner of the page'});
-    res.redirect('allAdmins', { title: 'allAdmin', isowner })
+    res.render('allAdmins', { title: 'allAdmin', isowner })
 })
 
 router.get('/alladminsearch', async function (req, res, next) {
