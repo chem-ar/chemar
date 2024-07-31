@@ -258,15 +258,31 @@ dist
 
 .pnp.*
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> develop
 # session-mgmt and user login credential data
+
 /routes/auth/admin.json
+<<<<<<< HEAD
 
 # cache for molecules, models, and scenes 
+=======
+>>>>>>> develop
 
-public/catalog 
 
-public/molfiles 
 
-public/modelfiles 
+# cache for molecules, models, and scenes
 
+<<<<<<< HEAD
+=======
+public/catalog
+
+public/molfiles
+
+public/modelfiles
+
+>>>>>>> develop
 public/scenes

@@ -4,6 +4,20 @@ var { checkSession } = require('./auth/session-mgmt')
 const bcrypt = require('bcrypt');
 var fs = require('fs')
 
+function emailExists(email){
+    let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
+
+    let exists = false
+
+    adminData.map((ele, i) => {
+        if(ele.email == email){
+            exists = true
+        }
+    })
+    
+    return exists
+}
+
 router.get('/alladmin', async function (req, res, next) {
     let {isAdmin, isowner} = checkSession(req, res);
     if (!isowner) return res.status(401).json({error: 'Please log in as owner of the page'});
@@ -39,7 +53,7 @@ router.get('/delete', async function (req, res, next) {
     })
 
     if(!adminDeleteIndex){
-        return res.status(401).json({error: 'Email does not exists'})
+        return res.status(400).json({error: 'Email does not exists'})
     }
     adminData.splice(adminDeleteIndex, 1)
 
@@ -51,9 +65,13 @@ router.get('/delete', async function (req, res, next) {
 // adding admins
 router.post('/addadmin', async function (req, res, next) {
     let {isAdmin, isowner} = checkSession(req, res);
-    if (!isAdmin && isowner) return res.status(401).json({error: 'Please log in as owner of the page'})
+    if (!isowner) return res.status(401).json({error: 'Please log in as owner of the page'})
 
     let data = { ...req.body }
+
+    if(emailExists(data.email, res)){
+        return res.status(400).json({error: 'Email already exists'})
+    }
 
     let hashPassword = await bcrypt.hash(data.password, 5)
 
