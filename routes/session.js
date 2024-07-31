@@ -21,7 +21,7 @@ router.post('/', async function (req, res) {
   }
 
   if (!adminPass) {
-    return res.status(401).send({ message: 'Admin Not Found' })
+    return res.status(401).send({ error: 'Admin Not Found' })
   }
 
   const hash = await bcrypt.compare(req.body.password, adminPass)
