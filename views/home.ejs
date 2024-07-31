@@ -71,7 +71,7 @@
         style="
           margin-left: auto;
           margin-right: auto;
-          width: auto;
+          width: 100%;
           border-color: transparent;
           text-align: center;
         "
@@ -81,7 +81,7 @@
           <div class="accordion-item instructions">
             <h2 class="accordion-header instructions" id="stepOne">
               <button
-                class="accordion-button instructions"
+                class="accordion-button collapsed instructions"
                 type="button"
                 data-bs-toggle="collapse"
                 data-bs-target="#collapseOne"
@@ -98,7 +98,11 @@
               data-bs-parent="#instructions"
             >
               <div class="accordion-body instructions">
-                <strong>Browse the catalog to see a list of available molecules.</strong>
+                <b>
+                  You should have been given a scene sheet. Make sure you 
+                  have this. It has a QR code and a tracking marker (a black 
+                  and white symbol).
+                </b>
               </div>
             </div>
           </div>
@@ -122,7 +126,10 @@
               data-bs-parent="#instructions"
             >
               <div class="accordion-body">
-                <strong>Click on a molecule's name or CSID to open its webpage</strong>
+                <b>
+                  Scan the QR code to be taken to a scene. Your device's 
+                  camera will turn on.
+                </b>
               </div>
             </div>
           </div>
@@ -146,32 +153,11 @@
               data-bs-parent="#instructions"
             >
               <div class="accordion-body">
-                <strong>Scan the displayed QR code with your phone's camera application or QR code reader to retrieve a link to
-                  the augmented reality viewer for that molecule</strong>
-              </div>
-            </div>
-          </div>
-          <div class="accordion-item instructions">
-            <h2 class="accordion-header instructions" id="headingFour">
-              <button
-                class="accordion-button collapsed instructions"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseFour"
-                aria-expanded="false"
-                aria-controls="collapseFour"
-              >
-                Step 4
-              </button>
-            </h2>
-            <div
-              id="collapseFour"
-              class="accordion-collapse collapse instructions"
-              aria-labelledby="headingFour"
-              data-bs-parent="#instructions"
-            >
-              <div class="accordion-body">
-                <strong>Point your camera in the direction of the marker and you will see the molecule appear.</strong>
+                <b>
+                  Point your camera at the scene sheet. Ensure the tracking 
+                  marker is in view. If successful, you should see some
+                  molecules appear, hovering over the page!
+                </b>
               </div>
             </div>
           </div>
