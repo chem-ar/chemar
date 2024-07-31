@@ -83,8 +83,8 @@
         body: JSON.stringify({ email, password, adminType })
       })
       .then(async res => {
+        let result = await res.json();
         if (res.ok) {
-            let result = await res.json();
             toastr.success(result.message, "Admin added successfully");
 
             // Refresh the admin list
@@ -97,9 +97,9 @@
             document.getElementById('addAdminButton').setAttribute('class', 'btn btn-outline-success collapse');
             document.getElementById('addAdminButton').setAttribute('aria-expanded', 'false');
         } else {
-            let error = await res.json();
+            let error = result.error;
             console.error("Failed to add admin:", error);
-            toastr.error(error.message || "Failed to add admin", "Error");
+            toastr.error(error || "Failed to add admin", "Error");
         }
     })
     .catch(err => {
