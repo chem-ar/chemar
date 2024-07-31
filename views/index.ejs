@@ -1,6 +1,9 @@
 Include the header and navbar partials
 <%- include('partials/header') %>
-<% if (isAdmin) { %>
+<% if (isowner) { %>
+  <%- include('partials/navbarowner') %>
+<% } %>
+<% else if (isAdmin) { %>
   <%- include('partials/navbarAdmin') %>
 <% } %>
 <% if (!isAdmin) { %>

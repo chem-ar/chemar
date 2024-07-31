@@ -14,6 +14,7 @@ var bodyParser = require('body-parser');
 
 var indexRouter = require('./routes/index');
 var adminRouter = require('./routes/admin');
+var allAdminRouter = require('./routes/allAdmin')
 var modelsRouter = require('./routes/models');
 var aboutRouter = require('./routes/about');
 
@@ -66,7 +67,7 @@ initializeCache();
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/molecules', moleculeRouter);
+app.use('/molecules', moleculeRouter);  
 app.use('/catalog', catalogRouter);
 app.use('/item', itemRouter);
 app.use('/scenes', scenesRouter);
@@ -74,6 +75,7 @@ app.use('/models', modelsRouter);
 
 app.use('/about', aboutRouter);
 app.use('/admin', adminRouter);
+app.use('/alladmin', allAdminRouter);
 
 app.use('/sceneviewer', sceneViewer);
 app.use('/sceneeditor', sceneEditor);

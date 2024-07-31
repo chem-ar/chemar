@@ -44,7 +44,7 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     const objFile = req.files['objFileName'][0];
     const mtlFile = req.files['mtlFileName'][0];
 
-    const isAdmin = checkSession(req, res);
+    let {isAdmin, isowner} = checkSession(req, res);
     if (!isAdmin) {
         // delete files saved by multer
         fs.unlinkSync(objFile.path);
