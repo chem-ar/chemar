@@ -3,21 +3,18 @@ var fs = require("fs");
 var http = require("http");
 var https = require("https");
 
-var createError = require("http-errors");
 var express = require("express");
+require('express-async-errors');
+
+var createError = require("http-errors");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var bodyParser = require('body-parser');
 
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-
 var indexRouter = require('./routes/index');
 var adminRouter = require('./routes/admin');
+var allAdminRouter = require('./routes/allAdmin')
 var modelsRouter = require('./routes/models');
 var aboutRouter = require('./routes/about');
 
@@ -70,7 +67,7 @@ initializeCache();
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/molecules', moleculeRouter);
+app.use('/molecules', moleculeRouter);  
 app.use('/catalog', catalogRouter);
 app.use('/item', itemRouter);
 app.use('/scenes', scenesRouter);
@@ -78,6 +75,7 @@ app.use('/models', modelsRouter);
 
 app.use('/about', aboutRouter);
 app.use('/admin', adminRouter);
+app.use('/alladmin', allAdminRouter);
 
 app.use('/sceneviewer', sceneViewer);
 app.use('/sceneeditor', sceneEditor);

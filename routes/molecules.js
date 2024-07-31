@@ -7,7 +7,7 @@ router.get('/', function(req, res, next) {
     const molfiles = './public/molfiles/';
 
     //Admin check
-    let isAdmin = checkSession(req, res);
+    let {isAdmin, isowner} = checkSession(req, res);
 
     try {
         let listItems = fs.readdirSync(molfiles);
@@ -26,9 +26,8 @@ router.get('/', function(req, res, next) {
             }
         }
 
-        console.log(finalList);
 
-        res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin });
+        res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin, isowner });
     } catch (error) {
         console.error('Error:', error);
         res.sendStatus(500); // Send error response
