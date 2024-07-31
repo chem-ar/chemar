@@ -11,7 +11,7 @@ function emailExists(email){
 
     adminData.map((ele, i) => {
         if(ele.email == email){
-            return exists = true
+            exists = true
         }
     })
     
