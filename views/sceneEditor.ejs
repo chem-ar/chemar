@@ -229,27 +229,18 @@
                                     <h4>Add Models</h4>
                                 </div>
                                 <div class = "col-8">
-                                    <button type="button" class="btn btn-outline-light float-end" data-bs-toggle="collapse" href="#searchMenu" role="button" aria-expanded="false" aria-controls="searchMenu">
+                                    <button type="button" class="btn btn-outline-light float-end" data-bs-toggle="collapse" href="#chooseModelMenu" role="button" aria-expanded="false" aria-controls="chooseModelMenu">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                                           </svg>
-                                        Search Models
+                                        Choose Model
                                     </button>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-12 mt-2">
-                                  <div class="collapse multi-collapse" id="searchMenu">
-                                    <div class="input-group flex-nowrap">
-                                        <input type="text" id = "search-field" class="form-control" placeholder="Model Name" aria-label="Username" aria-describedby="addon-wrapping">
-                                        <button class="btn btn-info" type="button" id="search-button">Search</button>
-                                    </div>
-                                    <div class = "row">
-                                        <div class = "col-12 mb-2">
-                                            <div id = "search-results">
-                                            </div>
-                                        </div>
-                                    </div>
+                                  <div class="collapse multi-collapse" id="chooseModelMenu">
+                                    <%- include('partials/addModelsToScene') %>
                                   </div>
                                 </div>
                             </div>
@@ -369,8 +360,10 @@
         var sceneDescription = document.getElementById("sceneDescription");
         let sceneNameInput = document.getElementById('newNameInput');
         let sceneDescriptionInput = document.getElementById('newDescriptionInput');
-        const moleculeList = document.getElementById('molecule-list');
         const threeArea = document.getElementById('three-area');
+
+        // mooleculeList is also used at partials/addModelsToScene.ejs
+        const moleculeList = document.getElementById('molecule-list');
 
         const markerXSlider = document.getElementById('markerXSlider');
         const markerXInput = document.getElementById('markerXInput');
@@ -432,100 +425,6 @@
                 
                 return true;
             }
-        
-        document.addEventListener("DOMContentLoaded", function () {
-            const searchField = document.getElementById("search-field");
-            const searchButton = document.getElementById("search-button");
-
-            searchButton.addEventListener("click", function (event) {
-                event.preventDefault();
-                searchModel(searchField.value);
-            });    
-
-            searchField.addEventListener("keypress", function(event) {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    searchButton.click();
-                    }
-                });
-        });
-
-        function searchModel(userQuery){
-            const trimmedQuery = userQuery.trim();
-
-            if(trimmedQuery === "") {
-                displaySearchResults([]);
-                return;
-            }
-            const encodedUserQuery = encodeURIComponent(trimmedQuery);
-            fetch(`/models/searchModels?search=${encodedUserQuery}`)
-                .then(async searchResponse => {
-                    const body = await searchResponse.json().catch(_error => ({}));
-
-                    if (searchResponse.status === 401 && body.error) {
-                        throw new Error(body.error);
-                    } else if (!searchResponse.ok) {
-                        throw new Error(`Server returned status code ${searchResponse.status}`);
-                    }
-
-                    return body.searchResults;
-                })
-                .then(searchResults => displaySearchResults(searchResults))
-                .catch(error => toastr.error(error.message, "Search failed"));
-        }
-
-        function displaySearchResults(models) {
-            const searchResults = document.getElementById("search-results");
-            searchResults.innerHTML = '';
-
-            if (models.length === 0) {
-                searchResults.innerHTML = '<p class="text-danger p-2">No results found</p>';
-                return;
-            }
-            
-            models.forEach(modelInfo => {
-                const rowDiv = document.createElement('div');
-                rowDiv.classList = "row g-3 mt-1";
-
-                const nameDiv = document.createElement('div');
-                nameDiv.classList = "col-8";
-                nameDiv.innerText = modelInfo.name;
-
-                const btnDiv = document.createElement('div');
-                btnDiv.classList = "col-4 d-flex justify-content-end";
-
-                const addModelBtn = document.createElement('button');
-                addModelBtn.classList = "btn btn-outline-light";
-                addModelBtn.innerText = "Add to scene";
-                addModelBtn.type = 'button';
-                addModelBtn.addEventListener('click', async e => {
-                    const spinner = document.createElement('span');
-                    spinner.classList = "spinner-border";
-                    spinner.role = "status";
-                    spinner.ariaLabel = "Loading";
-                    const lineBreak = document.createElement('br');
-
-                    e.target.prepend(spinner, lineBreak);
-                    e.target.disabled = true;
-
-                    const createdModel = await createModel(modelInfo)
-                        .finally(() => { 
-                            e.target.removeChild(spinner);
-                            e.target.removeChild(lineBreak);
-                            e.target.disabled = false;
-                        });
-
-                    addModelToScene(modelInfo, createdModel);
-                    addMolToMenu(createdModel, modelInfo.name, moleculeList);
-                });
-
-                btnDiv.appendChild(addModelBtn);
-                rowDiv.appendChild(nameDiv);
-                rowDiv.appendChild(btnDiv);
-
-                searchResults.appendChild(rowDiv);
-            })
-        }
 
         let offcanvas = document.getElementById('mainMenu')
         offcanvas.classList.add('show')
