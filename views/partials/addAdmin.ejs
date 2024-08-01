@@ -48,13 +48,14 @@
             <li>At least one number</li>
             <li>At least one symbol (@!$%*?&)</li>
           </ul>
-          <h4>Admin Role</h4>
+          <h4 class="w-100">Admin Role<i class="ms-2 fa-solid fa-caret-down"></i></h4>
           <select class="form-select" id="adminRole" aria-label="Default select example" required>
-            <option value="" selected>Select Admin Role</option>
-            <option value="admin">Admin</option>
-            <option value="owner">Owner</option>
+            <select id="adminRole" class="form-control custom-select">
+              <option value="admin">Admin<i class="fa-solid fa-caret-down"></i></option>
+              <option value="owner">Owner</option>
+            </select>
           </select>
-
+  
           <button class="btn btn-customsubmit form-control my-2" id="addBtn">
             <span id="addBtnSpinner" class="spinner-border spinner-border-sm" role="status" aria-label="Loading" style="display: none;"></span>
             Add
@@ -116,7 +117,7 @@
             // Collapse the add admin button
             document.getElementById('addAdminButton').setAttribute('class', 'btn btn-outline-success collapse');
             document.getElementById('addAdminButton').setAttribute('aria-expanded', 'false');
-            passwordFeedback.textContent = ""
+            
         } else {
             let error = result.error;
             console.error("Failed to add admin:", error);
