@@ -11,23 +11,6 @@ router.get('/', function (req, res, next) {
     res.render('models', { title: 'Model Catalog', isAdmin: isAdmin, isowner });
 });
 
-router.get('/searchModels', function (req, res, next) {
-    let { isAdmin, isowner } = checkSession(req, res);
-    if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
-
-    const userSearch = decodeURIComponent(req.query.search || '').toLowerCase();
-
-    if (!userSearch) {
-        return res.send({ searchResults: [] });
-    }
-    const modelFileCatalog = './public/catalog/modelFileCatalog.json';
-
-    const modelFileData = fs.readFileSync(modelFileCatalog);
-    const modelData = JSON.parse(modelFileData);
-    const searchResults = modelData.filter(model => model.name.toLowerCase().includes(userSearch));
-
-    res.send({ searchResults });
-});
 //To handle the edit functionality
 router.post('/edit', function (req, res, next) {
     let { isAdmin, isowner } = checkSession(req, res);
