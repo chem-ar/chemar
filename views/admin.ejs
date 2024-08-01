@@ -9,17 +9,16 @@
 <% } %>
   <link rel="stylesheet" href="home.css">
 
-<div class="p-3 mb-2 text-white main-background-color">
-  <h2 class="admin-page fw-bold" style="text-align: center">
-    Admin Tools
-  </h2>
-  <h4 class="admin-page mt-3" style="text-align: center">
-    Change Password
-  </h4>
-  <div class="px-5">
-    <form id="changePasswordForm" class="changePassword" onsubmit="changePassword(event)" method="post">
-      <div align="center">
-        <div class="form-outline form-white mb-4">
+  <div class="p-3 mb-2 text-white main-background-color">
+    <h2 class="display-5 fw-bold">
+      Admin Tools
+    </h2>
+    <h4 class="admin-page mt-3">
+      Change Password
+    </h4>
+    <div class="align-items-center">
+      <form id="changePasswordForm" onsubmit="changePassword(event)" action="" method="post" class="w-50">
+        <div class="form-outline form-white mb-4 w-75">
           <input
             required
             type="password"
@@ -30,43 +29,50 @@
             placeholder="Old Password:"
           >
         </div>
-
-          <div class="form-outline form-white mb-4">
-            <input
-              required
-              type="password"
-              id="newPassword"
-              class="form-control-lg changePassword"
-              size="50"
-              name="newPassword"
-              placeholder="New Password:"
-            >
-          </div>
-
-          <div class="form-outline form-white mb-4">
-            <input
-              required
-              type="password"
-              id="confirmNewPassword"
-              class="form-control-lg changePassword"
-              size="50"
-              name="confirmNewPassword"
-              placeholder="Confirm New Password:"
-              onkeyup="checkPassword()"
-            >
-          </div>
-
-          <input type="submit" id="changePasswordBtn" class="btn btn-primary" value="Change Password">
+        <div class="form-outline form-white mb-4 w-75">
+          <input
+            required
+            type="password"
+            id="newPassword"
+            class="form-control-lg"
+            size="50"
+            name="newPassword"
+            placeholder="New Password:"
+            onkeyup="checkPasswordStrength()"
+          >
+          <small class="text-bright-white">Password Requirements:</small>
+          <ul class="text-bright-white small mb-0">
+            <li>At least 7 characters long</li>
+            <li>At least one uppercase letter</li>
+            <li>At least one lowercase letter</li>
+            <li>At least one number</li>
+            <li>At least one symbol (@!$%*?&)</li>
+          </ul>
         </div>
+        <div class="form-outline form-white mb-4 w-75">
+          <input
+            required
+            type="password"
+            id="confirmNewPassword"
+            class="form-control-lg"
+            size="50"
+            name="confirmNewPassword"
+            placeholder="Confirm New Password:"
+            onkeyup="checkPassword()"
+          >
+        </div>
+        <div id="passwordFeedback" class="text-white mb-4 w-75"></div>
+        <input type="submit" id="changePasswordBtn" class="btn btn-primary" value="Change Password">
       </form>
     </div>
 
     <script>
-
       const confirmedNewPasswordInput = document.getElementById('confirmNewPassword');
       const newPasswordInput = document.getElementById('newPassword');
+      const passwordFeedback = document.getElementById('passwordFeedback');
 
-      function changePassword(e) {
+      function changePassword(e) 
+      {
         e.preventDefault();
         const form = document.getElementById('changePasswordForm');
         var oldPassword = document.getElementById('oldPassword').value;
@@ -98,6 +104,7 @@
               form.reset();
               confirmedNewPasswordInput.style.backgroundColor = '';
               newPasswordInput.style.backgroundColor = '';
+              passwordFeedback.textContent = '';
             })
             .catch(error => {
               console.error("Error:", error);
@@ -105,7 +112,6 @@
             });
         }
       }
-
       // Check if passwords match
       function checkPassword(e) {
         var newPassword = newPasswordInput.value;
@@ -121,17 +127,30 @@
           newPasswordInput.style.backgroundColor = '#ff9980';
         }
       }
-    </script>
 
-    <h4 class="display-7 mt-5" style="text-align: center">
-      Site Analytics
-    </h4>
-    <p style="text-align:center">Spot for site visitor information.</p>
-  </div>
+      function checkPasswordStrength() {
+        var newPassword = newPasswordInput.value;
+        var strength = validatePassword(newPassword);
+
+        if (strength) {
+          newPasswordInput.style.backgroundColor = '#b3ffb3';
+          passwordFeedback.textContent = 'Strong Password';
+          passwordFeedback.style.color = '#b3ffb3';
+        } else {
+          newPasswordInput.style.backgroundColor = '#ff9980';
+          passwordFeedback.textContent = 'Weak Password';
+          passwordFeedback.style.color = '#ff9980';
+        }
+      }
+
+      function validatePassword(password) {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*!])[A-Za-z\d@#$%^&*!]{7,}$/;
+        return regex.test(password);
+      }
+    </script>
   <footer>
     <%- include('partials/footer') %>
   </footer>
-
 </body>
 
 </html>

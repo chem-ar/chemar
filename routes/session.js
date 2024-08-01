@@ -3,6 +3,7 @@ var router = express.Router();
 var fs = require('fs');
 const { startSession, checkSession } = require('./auth/session-mgmt')
 const bcrypt = require('bcrypt')
+const { checkPassword } = require('./checkPassword');
 
 //Create cookie here then redirect
 router.get('/', function (req, res) {
@@ -49,6 +50,11 @@ router.post('/changepassword', async function (req, res) {
   if (!admin) {
     return res.status(401).json({ error: "Invalid Credentials." })
   }
+
+  if(!checkPassword(req.body.newPassword)){
+    return res.status(401).json({error: 'Password is not strong'})
+  }
+  
   const hash = await bcrypt.compare(req.body.password, admin.password)
   if (isAdmin && hash) {
     let newPassword = await bcrypt.hash(req.body.newPassword, 5)
