@@ -11,8 +11,7 @@
     <div class="row content">
         <div class="col-12 pt-4 text-start text-white">
             <h1 class="display-4 fw-bold">Admin Catalog</h1>
-            <%- include('partials/addAdmin') %>
-            <p></p>
+                    <%- include('partials/addAdmin') %>
             <table id="adminTable" class="table table-striped text-white" style="width:100%">
                 <thead>
                 <tr>
@@ -49,6 +48,17 @@
       </div>
   </div>
 </div>
+
+<script>
+    document.getElementById('addAdminButton').addEventListener('click', function() {
+        var x = document.getElementById('passwordRequirements');
+        if (x.style.display === 'none') {
+            x.style.display = 'block';
+        } else {
+            x.style.display = 'none';
+        }
+    });
+</script>
 
 <style>
     .modal-content .modal-body {
@@ -91,7 +101,7 @@
             })
             .catch((error) => toastr.error(error.message, "Unable to fetch data"));
     }
-
+    
     // Delete button functionality
     function handleDeleteClick(event) {
         const btn = event.currentTarget;
