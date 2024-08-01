@@ -73,7 +73,7 @@ function checkSession(req, res) {
         return false
     }
 
-    activeSessions.filter(session => ((Date.now() - session.time) <= SESSION_DURATION));
+    activeSessions = activeSessions.filter(session => ((Date.now() - session.time) <= SESSION_DURATION));
 
     const session = activeSessions.find(session => session.token === token);
     if (session) {

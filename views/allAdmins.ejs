@@ -4,6 +4,8 @@
 <%- include('partials/navbarowner') %>
 <%}%>
 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <div class="container mb-4 main-background-color">
     <div class="row content">
@@ -13,8 +15,8 @@
             <table id="adminTable" class="table table-striped text-white" style="width:100%">
                 <thead>
                 <tr>
-                    <th class="alladmin-table-header">Email</th>
-                    <th class="options-column alladmin-table-header">Delete</th>
+                    <th class="model-table-header">Email</th>
+                    <th class="options-column model-table-header">Delete</th>
                 </tr>
                 </thead>
                 <tbody id="table-body">
@@ -108,15 +110,25 @@
         document.getElementById('confirmDeleteBtn').onclick = function () {
             fetch(`/alladmin/delete?email=${email}`, {
                 method: "GET"
-            }).then(response => {
+            }).then(async response => {
+                let result = await response.json();
                 if (response.ok) {
-                    fetchAdmins()
+                    toastr.success(result.message, "Admin deleted successfully");
+
+                    // Refresh the admin list
+                    fetchAdmins();
                 } else {
-                    console.error("Failed to delete admin.");
+                    let error = result.error;
+                    console.error("Failed to delete admin:", error);
+                    toastr.error(error || "Failed to delete admin", "Error");
                 }
-            }).catch(error => console.error("Error:", error));
-        };
-    }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            toastr.error(error.message, "Failed to delete Admin");
+        });
+    };
+}
 
     // Populate the table with data
     function populateTable(adminData) {
@@ -124,7 +136,7 @@
         // Add new row to the DataTable
         const newRow = dataTable.row.add([
             adminData.email,
-            `<button type="button" class="btn btn-danger deleteModelBtn" id="${adminData.email}" data-bs-toggle="modal" data-bs-target="#deleteModal" data-file="">
+            `<button type="button" class="btn deleteModelBtn" style="background-color: #CC0000; color: white;" id="${adminData.email}" data-bs-toggle="modal" data-bs-target="#deleteModal" data-file="">
                 <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16" aria-label="Delete icon">
                     <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                     <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>

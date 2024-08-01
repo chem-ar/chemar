@@ -67,7 +67,7 @@ initializeCache();
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/molecules', moleculeRouter);
+app.use('/molecules', moleculeRouter);  
 app.use('/catalog', catalogRouter);
 app.use('/item', itemRouter);
 app.use('/scenes', scenesRouter);
