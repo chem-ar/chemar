@@ -199,8 +199,10 @@
 
         document.getElementById('confirmDeleteBtn').onclick = function () {
             //Fetch request made to delete the model
-            fetch(`/models/delete?id=${id}`, {
-                method: "GET"
+            fetch(`/models/delete`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id })
             }).then(response => {
                 if (response.ok) {
                     $('#deleteModal').modal('hide')
