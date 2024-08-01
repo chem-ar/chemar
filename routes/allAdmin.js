@@ -33,10 +33,10 @@ router.get('/alladminsearch', async function (req, res, next) {
     return res.send(adminData)
 })
 
-router.get('/delete', async function (req, res, next) {
+router.delete('/delete', async function (req, res, next) {
     let {isAdmin, isowner} = checkSession(req, res);
     if (!isowner) return res.status(401).json({error: 'Please log in as owner of the page'})
-    let email = req.query.email;
+    let email = req.body.email;
 
     let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
     let adminDeleteIndex = -1;
