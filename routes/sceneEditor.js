@@ -1,12 +1,11 @@
 var express = require('express');
 var router = express.Router();
-var fs = require('fs');
+var fs = require('fs'); 
 const { checkSession } = require('./auth/session-mgmt');
 const path = require('path');
 
 router.get('/', function(req, res, next) {
   const scenes = './public/scenes/'
-
   res.render('sceneEditor', { title: 'Scene Viewer' });
 });
 
@@ -38,7 +37,6 @@ router.post('/updateCatalog/:oldSceneName', (req, res) => {
       if (typeof sceneCatalog === 'object') {
           let sceneUpdated = false;
 
-          // Iterate over the keys (filenames) in the sceneCatalog object
           Object.keys(sceneCatalog).forEach(filename => {
               const scene = sceneCatalog[filename];
               if (scene.name === oldSceneName) {
@@ -59,7 +57,9 @@ router.post('/updateCatalog/:oldSceneName', (req, res) => {
 
                       // Update the sceneCatalog key
                       sceneCatalog[newFilename] = scene;
-                      delete sceneCatalog[filename];
+                      if (newFilename !== filename) {
+                        delete sceneCatalog[filename];
+                      }
 
                       // Write the updated scene catalog back to the file
                       fs.writeFile('./public/catalog/sceneCatalog.json', JSON.stringify(sceneCatalog, null, 2), err => {
@@ -83,10 +83,10 @@ router.post('/updateCatalog/:oldSceneName', (req, res) => {
   });
 });
 
-router.get('/:id', function (req, res) {
+
+router.get('/:id', function(req , res){
   let { isAdmin, isowner } = checkSession(req, res);
   if (!isAdmin) return res.redirect("/");
-
   var scenefiles = fs.readdirSync('./public/scenes/');
 
   if (scenefiles.includes(req.params.id)) {
@@ -161,5 +161,6 @@ router.post('/save/:scene', (req, res) => {
     })
   });
 });
+
 
 module.exports = router;
