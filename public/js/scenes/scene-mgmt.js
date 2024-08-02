@@ -139,7 +139,19 @@ export function updateSceneImg(fileSrc) {
 export function exportSceneData() {
     const { position, rotation: { x, y, z }, scale } = markerPlane;
     const markerData = { position, rotation: { x, y, z }, scale };
-    return { markerData, sceneMolecules };
+
+    const exportedMols = sceneMolecules.map(mol => ({
+        // filter out mol.molecule because it bloats scene.json files
+        Title: mol.Title,
+        cjson: mol.cjson,
+        position: mol.position,
+        rotation: mol.rotation,
+        scale: mol.scale,
+        modelInfo: mol.modelInfo,
+        initialPosition: mol.initialPosition
+    }));
+
+    return { markerData, sceneMolecules: exportedMols };
 }
 
 /**
