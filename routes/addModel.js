@@ -44,7 +44,7 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     const objFile = req.files['objFileName'][0];
     const mtlFile = req.files['mtlFileName'][0];
 
-    const isAdmin = checkSession(req, res);
+    let {isAdmin, isowner} = checkSession(req, res);
     if (!isAdmin) {
         // delete files saved by multer
         fs.unlinkSync(objFile.path);
@@ -73,9 +73,9 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     //Changing the format of files saved as modelNmae-ID
     const newObjFileName = `${name}-${uniqueId(parsedData)}.obj`;
     const newMtlFileName = `${name}-${uniqueId(parsedData)}.mtl`;
-
     fs.renameSync(objFile.path, path.join(objFile.destination, newObjFileName));
     fs.renameSync(mtlFile.path, path.join(mtlFile.destination, newMtlFileName));
+
     // Variables to be added to modelFileCatalog
     var modelName = req.body.name;
     obj = {

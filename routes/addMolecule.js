@@ -5,7 +5,7 @@ const { checkSession } = require('./auth/session-mgmt');
 
 // Post request when clicking submit button
 router.post('/', (req, res) => {
-    const isAdmin = checkSession(req, res);
+    let { isAdmin, isowner } = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     // Assign values from form to variables
@@ -22,9 +22,9 @@ router.post('/', (req, res) => {
     if (fileIsPresent) {
         return res.status(400).send({ error: 'This molecule already exists' });
     }
-    
+
     // Create new mol file in ./public/molefiles/
-    fs.writeFile('./public/molfiles/'+fileName, molFileContent, function (err) {
+    fs.writeFile('./public/molfiles/' + fileName, molFileContent, function (err) {
         if (err) {
             return res.status(500).send({ error: 'Cannot save the molecule: ' + err });
         }
@@ -47,9 +47,9 @@ router.post('/', (req, res) => {
 });
 
 router.post('/saveMolFile', async (req, res) => {
-    const isAdmin = checkSession(req, res);
+    let { isAdmin, isowner } = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
-    
+
     // Assign values from form to variables
     const cid = req.body.pubchemId;
     fileName = `${cid}.mol`;

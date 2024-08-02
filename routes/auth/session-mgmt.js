@@ -13,7 +13,8 @@ function initalizeSessions() {
 }
 
 function startSession(req, res) {
-    if (!checkSession(req, res)) {
+    let {isAdmin, isowner} = checkSession(req, res);
+    if (!isAdmin) {
         let token = globalThis.crypto.randomUUID()
         let sess = {
             token: token,
@@ -22,7 +23,14 @@ function startSession(req, res) {
 
         let ad = fs.readFileSync('./routes/auth/admin.json');
         let adminData = JSON.parse(ad)
-        adminData.admin.session.push(sess)
+        let adminIndex
+        let email = req.body.email;
+        for (let i = 0; i < adminData.length; i++) {
+            if (adminData[i].email == email) {
+                adminIndex = i
+            }
+        }
+        adminData[adminIndex].session.push(sess)
 
         fs.writeFileSync('./routes/auth/admin.json', JSON.stringify(adminData))
 
@@ -35,20 +43,53 @@ function checkSession(req, res) {
 
     let ad = fs.readFileSync('./routes/auth/admin.json')
     let adminData = JSON.parse(ad)
+    let isowner = false
 
-    const activeSessions = adminData.admin.session
-        .filter(session => ((Date.now() - session.time) <= SESSION_DURATION));
-    
+    let adminIndex
+    let email = req.body.email
+    let activeSessions
+
+    for (let i = 0; i < adminData.length; i++) {
+        if (adminData[i].email == email && email) {
+            activeSessions = adminData[i].session
+            adminIndex = i
+        }
+        else {
+            for (let j = 0; j < adminData[i].session.length; j++) {
+                if (token == adminData[i].session[j].token) {
+                    activeSessions = adminData[i].session;
+                    adminIndex = i;
+                    isowner = adminData[i].owner
+                    break;
+                }
+                if (activeSessions) {
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!activeSessions) {
+        return false
+    }
+
+    activeSessions = activeSessions.filter(session => ((Date.now() - session.time) <= SESSION_DURATION));
+
     const session = activeSessions.find(session => session.token === token);
     if (session) {
         res.cookie('session', token, { maxAge: SESSION_DURATION });
         session.time = Date.now();
     }
 
-    adminData.admin.session = activeSessions;
+    adminData[adminIndex].session = activeSessions;
     fs.writeFileSync('./routes/auth/admin.json', JSON.stringify(adminData));
 
-    return session !== undefined;
+    let isAdmin = false
+    if(session){
+        isAdmin = true
+    }
+
+    return {isAdmin, isowner};
 }
 
 function endSession(req, res) {
@@ -56,15 +97,19 @@ function endSession(req, res) {
     let ad = fs.readFileSync('./routes/auth/admin.json')
     let adminData = JSON.parse(ad)
     const token = req.cookies.session;
-    adminData.admin.session.map((e, ind) => {
-        if (e.token === token) {
-            i = ind
-            return;
-        }
+    let adminIndex;
+    adminData.map((e, ai) => {
+        e.session.map((ele, ind) => {
+            if (ele.token === token) {
+                i = ind
+                adminIndex = ai;
+                return;
+            }
+        })
     })
 
     if (i != -1) {
-        adminData.admin.session.splice(i, 1)
+        adminData[adminIndex].session.splice(i, 1)
     }
 
     fs.writeFileSync('./routes/auth/admin.json', JSON.stringify(adminData))
