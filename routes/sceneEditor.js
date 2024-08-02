@@ -2,14 +2,14 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 const { checkSession } = require('./auth/session-mgmt');
+const path = require('path');
 
-router.get('/', function (req, res, next) {
+router.get('/', function(req, res, next) {
   const scenes = './public/scenes/'
 
   res.render('sceneEditor', { title: 'Scene Viewer' });
 });
 
-// Endpoint to update the scene catalog file
 router.post('/updateCatalog/:oldSceneName', (req, res) => {
   let { isAdmin, isowner } = checkSession(req, res);
   if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
@@ -17,6 +17,7 @@ router.post('/updateCatalog/:oldSceneName', (req, res) => {
   const oldSceneName = req.params.oldSceneName;
   const newSceneName = req.body.name;
   const newSceneDescription = req.body.description;
+  const scenesDirectory = './public/scenes'; // Directory where scene files are stored
 
   // Read the scene catalog file
   fs.readFile('./public/catalog/sceneCatalog.json', 'utf8', (err, data) => {
@@ -25,37 +26,60 @@ router.post('/updateCatalog/:oldSceneName', (req, res) => {
       return res.status(500).json({ success: false, error: 'Error reading scene catalog file' });
     }
 
-    // Parse the JSON data
-    const sceneCatalog = JSON.parse(data);
+      let sceneCatalog;
+      try {
+          sceneCatalog = JSON.parse(data || '{}'); // Handle empty file
+      } catch (parseErr) {
+          console.error('Error parsing scene catalog file:', parseErr);
+          return res.status(500).json({ success: false, error: 'Error parsing scene catalog file' });
+      }
 
-    // Check if sceneCatalog is an object
-    if (typeof sceneCatalog === 'object') {
-      // Iterate over the keys (filenames) in the sceneCatalog object
-      Object.keys(sceneCatalog).forEach(filename => {
-        // Access the scene object using the filename
-        const scene = sceneCatalog[filename];
+      // Check if sceneCatalog is an object
+      if (typeof sceneCatalog === 'object') {
+          let sceneUpdated = false;
 
-        // Perform your operations with the scene object
-        if (scene.name === oldSceneName) {
-          // Update the scene's name and description
-          scene.name = newSceneName;
-          scene.desc = newSceneDescription;
-        }
-      });
+          // Iterate over the keys (filenames) in the sceneCatalog object
+          Object.keys(sceneCatalog).forEach(filename => {
+              const scene = sceneCatalog[filename];
+              if (scene.name === oldSceneName) {
+                  scene.name = newSceneName;
+                  scene.desc = newSceneDescription;
+                  sceneUpdated = true;
 
-      // Write the updated scene catalog back to the file
-      fs.writeFile('./public/catalog/sceneCatalog.json', JSON.stringify(sceneCatalog, null, 2), err => {
-        if (err) {
-          console.error('Error writing scene catalog file:', err);
-          return res.status(500).json({ success: false, error: 'Error writing scene catalog file' });
-        }
+                  // Rename the scene file to match the new scene name
+                  const oldFilePath = path.join(scenesDirectory, filename);
+                  const newFilename = `${newSceneName}.json`; // Ensure new filename is valid
+                  const newFilePath = path.join(scenesDirectory, newFilename);
 
-        // Return success response
-        res.status(200).json({ success: true });
-      });
-    } else {
-      return res.status(400).json({ success: false, error: 'Invalid scene catalog data' });
-    }
+                  fs.rename(oldFilePath, newFilePath, (renameErr) => {
+                      if (renameErr) {
+                          console.error('Error renaming scene file:', renameErr);
+                          return res.status(500).json({ success: false, error: 'Error renaming scene file' });
+                      }
+
+                      // Update the sceneCatalog key
+                      sceneCatalog[newFilename] = scene;
+                      delete sceneCatalog[filename];
+
+                      // Write the updated scene catalog back to the file
+                      fs.writeFile('./public/catalog/sceneCatalog.json', JSON.stringify(sceneCatalog, null, 2), err => {
+                          if (err) {
+                              console.error('Error writing scene catalog file:', err);
+                              return res.status(500).json({ success: false, error: 'Error writing scene catalog file' });
+                          }
+
+                          res.status(200).json({ success: true });
+                      });
+                  });
+              }
+          });
+
+          if (!sceneUpdated) {
+              return res.status(400).json({ success: false, error: 'Scene not found' });
+          }
+      } else {
+          return res.status(400).json({ success: false, error: 'Invalid scene catalog data' });
+      }
   });
 });
 

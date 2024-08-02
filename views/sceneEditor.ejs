@@ -439,6 +439,8 @@ document.getElementById("saveBtn").addEventListener('click', () => {
     if (!validateName()) {
         toastr.error("Please enter a name and description");
     } else {
+        
+        const oldSceneName = scene.name; 
         var sceneName = sceneNameInput.value;
         var sceneDescription = sceneDescriptionInput.value;
 
@@ -456,9 +458,9 @@ document.getElementById("saveBtn").addEventListener('click', () => {
             "trackingMarker": markerData,
             "molecules": sceneMolecules,
         }
-
-        // Update scene catalog file
-        fetch(`/sceneEditor/save/${scene.name}`, {
+        updateSceneCatalog(oldSceneName, sceneName, sceneDescription);
+        // Save scene catalog file
+        fetch(`/sceneEditor/save/${oldSceneName}`, {
             method: "POST",
             headers: {
                 'Content-Type': "application/json"
@@ -476,7 +478,7 @@ document.getElementById("saveBtn").addEventListener('click', () => {
         })
         .then(data => {
             console.log(data); // log the response data to the console
-            updateSceneCatalog(scene.name, sceneName, sceneDescription);
+           
           
             // Close the modal
             var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
@@ -509,18 +511,6 @@ function updateSceneCatalog(oldSceneName, newSceneName, newSceneDescription) {
     })
     .catch(err => {
         console.error(err);
-    });
-}
-
-function updateScenesList() {
-    fetch('https://localhost:4000/scenes/list')
-        .then(response => response.text())
-        .then(data => {
-            console.log(data); // log the data to the console
-            // Here you can update your scenes list on the frontend if needed
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
     });
 }
 
