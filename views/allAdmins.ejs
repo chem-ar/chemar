@@ -1,0 +1,155 @@
+<%- include('partials/header') %>
+<!--ADMIN NAVBAR CHECK-->
+<% if (isowner){%>
+<%- include('partials/navbarowner') %>
+<%}%>
+<script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<div class="container mb-4 main-background-color">
+    <div class="row content">
+        <div class="col-12 pt-4 text-start text-white">
+            <h1 class="display-4 fw-bold">Admin Catalog</h1>
+                    <%- include('partials/addAdmin') %>
+            <table id="adminTable" class="table table-striped text-white" style="width:100%">
+                <thead>
+                <tr>
+                    <th class="model-table-header">Email</th>
+                    <th class="options-column model-table-header">Delete</th>
+                </tr>
+                </thead>
+                <tbody id="table-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content bg-dark">
+          <div class="modal-header">
+              <h5 class="modal-title text-white" id="deleteModalLabel">Confirm Delete</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              Are you sure you want to delete this Admin?
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" id="confirmDeleteBtn" class="btn btn-danger" data-bs-dismiss="modal">Delete</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<script>
+    document.getElementById('addAdminButton').addEventListener('click', function() {
+        var x = document.getElementById('passwordRequirements');
+        if (x.style.display === 'none') {
+            x.style.display = 'block';
+        } else {
+            x.style.display = 'none';
+        }
+    });
+</script>
+
+<style>
+    .modal-content .modal-body {
+        color: white;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $('#deleteModal').appendTo("body");
+
+        // Initialize the DataTable
+        dataTable = $('#adminTable').DataTable({
+            ordering: true
+        });
+        
+        fetchAdmins();
+    });
+
+    let dataTable;
+
+    // Fetch the admin data from the server
+    function fetchAdmins() {
+        fetch("/alladmin/alladminsearch")
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error Status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then((adminData) => {
+                dataTable.clear();
+
+                // Populate the table with the fetched admin data
+                for (const admin of adminData) {
+                    populateTable(admin);
+                }
+
+                dataTable.draw();
+            })
+            .catch((error) => toastr.error(error.message, "Unable to fetch data"));
+    }
+    
+    // Delete button functionality
+    function handleDeleteClick(event) {
+        const btn = event.currentTarget;
+        const email = btn.id;
+
+        document.getElementById('confirmDeleteBtn').onclick = function () {
+            fetch(`/alladmin/delete`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email })
+            }).then(async response => {
+                let result = await response.json();
+                if (response.ok) {
+                    toastr.success(result.message, "Admin deleted successfully");
+
+                    // Refresh the admin list
+                    fetchAdmins();
+                } else {
+                    let error = result.error;
+                    console.error("Failed to delete admin:", error);
+                    toastr.error(error || "Failed to delete admin", "Error");
+                }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            toastr.error(error.message, "Failed to delete Admin");
+        });
+    };
+}
+
+    // Populate the table with data
+    function populateTable(adminData) {
+
+        // Add new row to the DataTable
+        const newRow = dataTable.row.add([
+            adminData.email,
+            `<button type="button" class="btn deleteModelBtn" style="background-color: #CC0000; color: white;" id="${adminData.email}" data-bs-toggle="modal" data-bs-target="#deleteModal" data-file="">
+                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16" aria-label="Delete icon">
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                </svg> Delete
+            </button>`
+        ]).draw().node();
+
+        // Ensure the new row is now part of the DOM before querying
+        $(newRow).find('.deleteModelBtn').on('click', handleDeleteClick);
+
+    }
+</script>
+
+<%- include('partials/footer') %>

@@ -1,16 +1,17 @@
 var express = require('express');
 var router = express.Router();
-var fs = require('fs'); 
+var fs = require('fs');
 const { checkSession } = require('./auth/session-mgmt');
 const path = require('path');
+
 router.get('/', function(req, res, next) {
   const scenes = './public/scenes/'
 
-  res.render('sceneEditor', { title: 'Scene Viewer'});
+  res.render('sceneEditor', { title: 'Scene Viewer' });
 });
 
 router.post('/updateCatalog/:oldSceneName', (req, res) => {
-  const isAdmin = checkSession(req, res);
+  let { isAdmin, isowner } = checkSession(req, res);
   if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
   const oldSceneName = req.params.oldSceneName;
@@ -20,10 +21,10 @@ router.post('/updateCatalog/:oldSceneName', (req, res) => {
 
   // Read the scene catalog file
   fs.readFile('./public/catalog/sceneCatalog.json', 'utf8', (err, data) => {
-      if (err) {
-          console.error('Error reading scene catalog file:', err);
-          return res.status(500).json({ success: false, error: 'Error reading scene catalog file' });
-      }
+    if (err) {
+      console.error('Error reading scene catalog file:', err);
+      return res.status(500).json({ success: false, error: 'Error reading scene catalog file' });
+    }
 
       let sceneCatalog;
       try {
@@ -82,26 +83,26 @@ router.post('/updateCatalog/:oldSceneName', (req, res) => {
   });
 });
 
-router.get('/:id', function(req , res){
-  const isAdmin = checkSession(req, res);
+router.get('/:id', function (req, res) {
+  let { isAdmin, isowner } = checkSession(req, res);
   if (!isAdmin) return res.redirect("/");
 
   var scenefiles = fs.readdirSync('./public/scenes/');
 
-  if(scenefiles.includes(req.params.id)){
+  if (scenefiles.includes(req.params.id)) {
     res.render('sceneEditor', {
-      title: 'Scene Viewer', 
+      title: 'Scene Viewer',
       item: req.params.id
     });
   }
-  
-  else{
-    res.render('error', { title: 'ChemAR - Error', message: 'Scene not found', error: {status: 404, stack: 'Scene not found'}});
+
+  else {
+    res.render('error', { title: 'ChemAR - Error', message: 'Scene not found', error: { status: 404, stack: 'Scene not found' } });
   }
 });
 
-router.post('/upload/images/', function(req, res) {
-  const isAdmin = checkSession(req, res);
+router.post('/upload/images/', function (req, res) {
+  let { isAdmin, isowner } = checkSession(req, res);
   if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
   // Extract image data and image name from the request body
@@ -117,25 +118,25 @@ router.post('/upload/images/', function(req, res) {
   const imagePath = './public/images/' + imageName;
 
   // Write the image data to the file system
-  fs.writeFile(imagePath, imageData, 'base64', function(err) {
-      if (err) {
-          console.error('Error saving image:', err);
-          return res.status(500).json({ success: false, error: 'Error saving image' });
-      }
-      
-      // Return the success response with the file path
-      res.status(200).json({
-          success: true,
-          message: "File uploaded successfully.",
-          fileSrc: '/images/' + imageName // Assuming '/images/' is the URL path to access uploaded images
-      });
+  fs.writeFile(imagePath, imageData, 'base64', function (err) {
+    if (err) {
+      console.error('Error saving image:', err);
+      return res.status(500).json({ success: false, error: 'Error saving image' });
+    }
+
+    // Return the success response with the file path
+    res.status(200).json({
+      success: true,
+      message: "File uploaded successfully.",
+      fileSrc: '/images/' + imageName // Assuming '/images/' is the URL path to access uploaded images
+    });
   });
 });
 
 router.post('/save/:scene', (req, res) => {
-  const isAdmin = checkSession(req, res);
+  let { isAdmin, isowner } = checkSession(req, res);
   if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
-  
+
   // Get the scene name from the params.
   const sceneName = req.params.scene;
   const scenePath = `./public/scenes/${sceneName}.json`; // Save the file path.

@@ -1,8 +1,30 @@
+<style>
+    .btn-green {
+        background-color: #097242;
+        color: white;
+    }
+
+    .btn-green:hover {
+        background-color: #075c33;
+        color: white;
+    }
+
+    .btn-customsubmit {
+        background-color: #0071EB;
+        color: white;
+    }
+
+    .btn-customsubmit:hover {
+        background-color: #005bb5;
+        color: white;
+    }
+</style>
+
 <!-- Add Model -->
 <div class="row content">
-    <div class="col-12 text-start text-white bg-dark">
+    <div class="col-12 text-start text-white main-background-color">
         <div>
-            <button class="btn btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#uploadFile"
+            <button class="btn btn-green" type="button" data-bs-toggle="collapse" data-bs-target="#uploadFile"
                 aria-expanded="false" aria-controls="uploadFile">
                 Upload File 
             </button>
@@ -22,7 +44,7 @@
                     required accept=".obj">
                     <input type="file" class="form-control" id="mtlFileName" name="mtlFileName" placeholder="File name" onchange="" 
                     required accept=".mtl">
-                    <button class="btn btn-success form-control my-2" id="uploadBtn">
+                    <button class="btn btn-customsubmit form-control my-2" id="uploadBtn">
                         <span
                             id="uploadBtnSpinner"
                             class="spinner-border spinner-border-sm"
