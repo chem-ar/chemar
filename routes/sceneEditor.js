@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs'); 
-const path = require('path');
 const { checkSession } = require('./auth/session-mgmt');
+const path = require('path');
 
 router.get('/', function(req, res, next) {
   const scenes = './public/scenes/'
@@ -57,7 +57,9 @@ router.post('/updateCatalog/:oldSceneName', (req, res) => {
 
                       // Update the sceneCatalog key
                       sceneCatalog[newFilename] = scene;
-                      delete sceneCatalog[filename];
+                      if (newFilename !== filename) {
+                        delete sceneCatalog[filename];
+                      }
 
                       // Write the updated scene catalog back to the file
                       fs.writeFile('./public/catalog/sceneCatalog.json', JSON.stringify(sceneCatalog, null, 2), err => {
