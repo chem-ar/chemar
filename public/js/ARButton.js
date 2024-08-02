@@ -1,4 +1,5 @@
 class ARButton {
+    //The names of some buttons have been changed to fit our interpretation of AR mode in ChemAR. Please note these changes when reading this file.
 
 	static createButton( renderer, sessionInit = {} ) {
 
@@ -101,7 +102,7 @@ class ARButton {
 					navigator.xr.requestSession( 'immersive-ar', sessionInit ).then( onSessionStarted );
 
 				} else {
-					window.location.reload();
+					window.location.reload();				
 					currentSession.end();
 
 				}
@@ -128,7 +129,7 @@ class ARButton {
 		function showARNotSupported() {
 
 			disableButton();
-			button.textContent = 'AR NOT SUPPORTED';
+		    button.textContent = 'AR NOT SUPPORTED';
 
 			//Named changed to distinguish between AR using a marker and not using a marker.
 			button.textContent = 'ADVANCED AR NOT SUPPORTED';
