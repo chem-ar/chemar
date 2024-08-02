@@ -113,9 +113,6 @@ export function addModelToScene(modelInfo, model, cjson) {
         rotation: model.rotation,
         scale: model.scale,
         modelInfo: modelInfo,
-        
-        // want to store vals instead of reference to obj
-        initialPosition: { ...model.position }
     };
 
     sceneMolecules.push(newMolData);
@@ -126,19 +123,12 @@ export function onMarkerXChange(event) {
     const newMarkerX = event.target.value;
     markerLocationHelper.position.x = newMarkerX;
     markerPlane.position.x = newMarkerX;
-    sceneMolecules.forEach(({ molecule, initialPosition }) => {
-        molecule.position.x = Number(initialPosition.x) + Number(newMarkerX);
-    });
 }
 
 export function onMarkerYChange(event) {
     const newMarkerY = event.target.value;
     markerLocationHelper.position.y = newMarkerY;
     markerPlane.position.y = newMarkerY;
-
-    sceneMolecules.forEach(({ molecule, initialPosition }) => {
-        molecule.position.y = Number(initialPosition.y) + Number(newMarkerY);
-    });
 }
 
 export function updateSceneImg(fileSrc) {
