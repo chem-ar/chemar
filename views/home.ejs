@@ -24,16 +24,17 @@
           "OrbitControls": "./js/OrbitControls.js"
         }
       }
-    </script>
-
+  </script>
 
 </head>
-<% if (isAdmin){%>
-<%- include('partials/navbarAdmin') %>
-<%}%>
-<% if (!isAdmin){%>
-<%- include('partials/navbar') %>
-<%}%>
+  <% if (isowner) { %>
+    <%- include('partials/navbarowner') %>
+  <% } else if (isAdmin) { %>
+    <%- include('partials/navbarAdmin') %>
+  <% } %>
+  <% if (!isAdmin){%>
+      <%- include('partials/navbar') %>
+  <%}%>
 
   <body class="bg-dark">
     <canvas class="webgl"></canvas>
@@ -43,13 +44,13 @@
           Chemistry + Augmented Reality
         </h1>
         <div style = "margin-left: 10%; margin-right: 10%;">
-        <p
-          class="col-md-8"
-          style="margin-right: auto; margin-left: auto; text-align: center"
-        >
-          View molecular diagrams in augmented reality using only a web browser
-        </p>
-</div>
+          <p
+            class="col-md-8"
+            style="margin-right: auto; margin-left: auto; text-align: center"
+          >
+            View molecular diagrams in augmented reality using only a web browser
+          </p>
+        </div>
         <div
           class="col-md-4 mb-5 text-center"
           style="margin-right: auto; margin-left: auto;"
@@ -164,8 +165,9 @@
     </section>
 
     <section class="section" style ="margin-left: 40%;">
-     <div style = "margin-left: auto; margin-right: auto;">
-      <h2 style = "text-align: center;">Changelog</h2>
+      <div style = "margin-left: auto; margin-right: auto;">
+        <h2 style = "text-align: center;">Changelog</h2>
+        <p>No recent changes</p>
       </div>
     </section>
 

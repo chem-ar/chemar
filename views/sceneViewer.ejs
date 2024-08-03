@@ -5,7 +5,7 @@
       name="viewport"
       content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
-    <title></title>
+    <title><%= title %></title>
 
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
@@ -32,6 +32,11 @@
     <script src="/threex/threex-arbasecontrols.js"></script>
     <script src="/threex/threex-armarkercontrols.js"></script>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+ 
     <!-- include datgui debugging purposes -->
 
     <!-- include Mol file to CJSON conversion extras -->
@@ -60,12 +65,35 @@
         color: white;
         font-family: "Lucida Grande", sans-serif;
         padding: 1em;
-        background-color: #000;
+        background-color: transparent;
       }
 
       #gui {
         transform: translate(0, -20px);
       }
+
+      .UIButton {
+        background-color: #0071EB;
+        color: White;
+      }
+
+      .UIButton:hover {
+        background-color: #0071EB;
+        color: White;
+      }
+
+
+      #myModal p {
+        color: white;
+      }
+
+      #myModal h2 {
+        font-weight: bold;
+        padding-bottom: 1rem;
+      }
+
+
+
     </style>
   </head>
 
@@ -73,23 +101,52 @@
   <body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
   <div id="gui_container"></div>
   <div id="text">
-    <a href = "/scenes/" style = "text-decoration: none">
-      ◄ <span style = "text-decoration: underline"> Back to Scenes</span> 
+    <a href = "/scenes/" class="btn UIButton">
+     <span> ◄ Back to Scenes</span> 
     </a>
+    <button type="button" class="btn UIButton" data-bs-toggle="modal" data-bs-target="#myModal">How does AR work?</button>
+   
     <br />
+  </div>
+
+  
+
+  <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="canvasModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+              <h1 class="modal-title text-white h5" >How does AR work?</h1>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <h2 class="modal-title text-white h4" >How can I see the molecules on my worksheet?</h2>
+                <p class="myModal">To see the molecules that your instructor has added to your worksheet, hold you device's camera up to the kanji symbol on the page. 
+                                    Once your device's camera recognizes this symbol you should see the intended molecules renderering on the page. To keep seeing these 
+                                    molecules, make sure the marker is in view of your camera. For best results keep your device ~6 inches away from the page as this will allow 
+                                    your camera to have it in view at all times.
+                </p>
+                <h2 class="modal-title text-white h4" >Can I see the molecules without my worksheet?</h2>
+                <p class="myModal">To see the molecules without the use of a marker you can click the experimental AR button. This mode will allow you to view the molecules 
+                  your instructor has added to the lesson without the marker in view. Within this mode you will be able to walk around the rendered molecule without the worry
+                  of having the marker in view of the camera. Though please note this mode is still being developed in our lab so you may get some unexpected results when using it.
+                </p>
+            </div>
+        </div>
+    </div>
   </div>
 
   <!-- 
     Example created by Lee Stemkoski: https://github.com/stemkoski
-    Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/
+    Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/ and https://threejs.org/examples/?q=webxr
   -->
-      <script type="module">
+  <script type="module">
         import * as THREE from "/js/three.module.js";
         import { createModel } from "/js/scenes/rendering.js";
         import { ARButton } from "/js/ARButton.js";
         import { OrbitControls } from "/js/OrbitControls.js";
         import { adjustMolToMarker } from '/js/scenes/scene-mgmt.js';
 
+      
         let requestedFile =
           window.location.pathname.substring(
             window.location.pathname.lastIndexOf("/") + 1
@@ -215,13 +272,11 @@
               arToolkitContext.getProjectionMatrix()
             );
           });
-
           ////////////////////////////////////////////////////////////
           // setup ARButton
           ////////////////////////////////////////////////////////////
           const button = ARButton.createButton(renderer);
           document.body.appendChild(button);
-
           button.addEventListener("click", startAR);
 
            ////////////////////////////////////////////////////////////
@@ -250,7 +305,6 @@
            ////////////////////////////////////////////////////////////
           // setup Populate Molcules to Marker
           ////////////////////////////////////////////////////////////
-          console.log(moleculeData.trackingMarker);
           moleculeARGroup = new THREE.Group();
           for (let item of moleculeData.molecules) {
             const marker = moleculeData.trackingMarker;
