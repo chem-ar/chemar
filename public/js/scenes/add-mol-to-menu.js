@@ -1,4 +1,4 @@
-export function addMolToMenu(molecule, Title, molMenu) {
+export function addMolToMenu(molecule, Title, molMenu, scene) {
     let moleculeItem = document.createElement('div');
     moleculeItem.classList = 'list-group-item list-group-item-action mb-2';
 
@@ -13,6 +13,36 @@ export function addMolToMenu(molecule, Title, molMenu) {
     let moleculeCollapseContent = document.createElement('div');
     moleculeCollapseContent.classList = 'card card-body bg-dark border-light text-white  my-2';
     moleculeCollapse.appendChild(moleculeCollapseContent);
+
+    let moleculeDeleteButton = document.createElement("button");
+    moleculeDeleteButton.setAttribute('name', 'Delete');
+    moleculeDeleteButton.setAttribute('id', 'moleculeDeleteButton');
+    moleculeDeleteButton.innerText="Delete Molecule";
+    moleculeDeleteButton.style.backgroundColor = "purple";
+    moleculeDeleteButton.addEventListener("click", function() {
+        const sceneName = scene.name; 
+        const moleculeTitle = Title; 
+        fetch(`/sceneEditor/delete/${sceneName}/${moleculeTitle}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log("Molecule deleted successfully");
+            } else {
+                return response.text().then(text => {
+                    console.error("Error Response:", text);
+                });
+            }
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+        });
+        
+    })
+    moleculeCollapseContent.appendChild(moleculeDeleteButton);
 
     let moleculePositionRow = document.createElement('div');
     moleculeCollapseContent.appendChild(moleculePositionRow);
