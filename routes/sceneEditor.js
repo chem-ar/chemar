@@ -4,6 +4,55 @@ var fs = require('fs');
 const { checkSession } = require('./auth/session-mgmt');
 const path = require('path');
 
+router.delete('/delete/:scene/:molecule', (req, res) => {
+  let { isAdmin, isowner } = checkSession(req, res);
+  if (!isAdmin) return res.status(401).json({ error: "User not logged in" });
+
+  // Extract scene and molecule names from the request parameters
+  const sceneName = req.params.scene;
+  const moleculeTitle = req.params.molecule;
+
+  // Correct file path to the scene JSON
+  const path = require('path');
+  const sceneFilePath = path.resolve(__dirname, `../public/scenes/${sceneName}.json`);
+  //console.log(`Resolved scene file path: ${sceneFilePath}`);
+
+  // Check if the scene file exists
+  if (!fs.existsSync(sceneFilePath)) {
+      return res.status(404).json({ error: "Scene not found" });
+  }
+
+  // Load the scene JSON file
+  fs.readFile(sceneFilePath, 'utf8', (err, data) => {
+      if (err) {
+          return res.status(500).json({ error: "Scene file not found" });
+      }
+      let sceneData;
+      try {
+          sceneData = JSON.parse(data);
+      } catch (parseError) {
+          return res.status(500).json({ error: "Failed to parse scene data" });
+      }
+      // Find the molecule in the molecules array and remove it
+      const moleculeIndex = sceneData.molecules.findIndex(mol => mol.Title === moleculeTitle);
+      if (moleculeIndex === -1) {
+          return res.status(404).json({ error: "Molecule not found" });
+      }
+      // Remove the molecule from the array
+      sceneData.molecules.splice(moleculeIndex, 1);
+
+      // Save the updated JSON file
+      fs.writeFile(sceneFilePath, JSON.stringify(sceneData, null, 2), (writeErr) => {
+          if (writeErr) {
+              return res.status(500).json({ error: "Failed to update scene file" });
+          }
+          // otherwise success message
+          res.status(200).json({ message: "Molecule deleted successfully" });
+      });
+  });
+});
+
+
 router.get('/', function(req, res, next) {
   const scenes = './public/scenes/'
   res.render('sceneEditor', { title: 'Scene Viewer' });

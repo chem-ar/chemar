@@ -406,7 +406,7 @@
                     const model = await createModel(modelInfo, item.position, item.rotation, item.scale);
                     
                     addModelToScene(modelInfo, model, item.cjson);
-                    addMolToMenu(model, modelInfo.name, moleculeList);
+                    addMolToMenu(model, modelInfo.name, moleculeList, scene);
                 }
             })
             .catch(error => {
