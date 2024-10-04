@@ -18,7 +18,7 @@ export function addMolToMenu(molecule, Title, molMenu, scene) {
     moleculeDeleteButton.setAttribute('name', 'Delete');
     moleculeDeleteButton.setAttribute('id', 'moleculeDeleteButton');
     moleculeDeleteButton.innerText="Delete Molecule";
-    moleculeDeleteButton.style.backgroundColor = "purple";
+    moleculeDeleteButton.classList.add('btn', 'btn-outline-light', 'float-end');
     moleculeDeleteButton.addEventListener("click", function() {
         const sceneName = scene.name; 
         const moleculeTitle = Title; 
