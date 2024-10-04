@@ -17,7 +17,7 @@ export function addMolToMenu(molecule, Title, molMenu, scene) {
     let moleculeDeleteButton = document.createElement("button");
     moleculeDeleteButton.setAttribute('name', 'Delete');
     moleculeDeleteButton.setAttribute('id', 'moleculeDeleteButton');
-    moleculeDeleteButton.innerText="Delete Molecule";
+    moleculeDeleteButton.innerText="Remove Model From Scene";
     moleculeDeleteButton.classList.add('btn', 'btn-outline-light', 'float-end');
     moleculeDeleteButton.addEventListener("click", function() {
         const sceneName = scene.name; 
@@ -31,6 +31,7 @@ export function addMolToMenu(molecule, Title, molMenu, scene) {
         .then(response => {
             if (response.ok) {
                 console.log("Molecule deleted successfully");
+                location.reload();
             } else {
                 return response.text().then(text => {
                     console.error("Error Response:", text);
