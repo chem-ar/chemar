@@ -9,41 +9,53 @@ export function addMolToMenu(molecule, Title, molMenu, scene) {
     let moleculeCollapse = document.createElement('div');
     moleculeCollapse.classList = 'collapse';
     moleculeCollapse.id = 'molecule' + molecule.uuid;
-    
+
     let moleculeCollapseContent = document.createElement('div');
     moleculeCollapseContent.classList = 'card card-body bg-dark border-light text-white  my-2';
     moleculeCollapse.appendChild(moleculeCollapseContent);
+    
+    let thisScene = scene;
+    console.log(thisScene);
+    if (thisScene && thisScene.molecules) {
+        let moleculesInScene = thisScene.molecules;
+        console.log("Molecules in Scene:", moleculesInScene);
 
-    let moleculeDeleteButton = document.createElement("button");
-    moleculeDeleteButton.setAttribute('name', 'Delete');
-    moleculeDeleteButton.setAttribute('id', 'moleculeDeleteButton');
-    moleculeDeleteButton.innerText="Remove Model From Scene";
-    moleculeDeleteButton.classList.add('btn', 'btn-outline-light', 'float-end');
-    moleculeDeleteButton.addEventListener("click", function() {
-        const sceneName = scene.name; 
-        const moleculeTitle = Title; 
-        fetch(`/sceneEditor/delete/${sceneName}/${moleculeTitle}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
+        moleculesInScene.forEach(item => {
+            if (item.Title === Title) {
+                let moleculeDeleteButton = document.createElement("button");
+                moleculeDeleteButton.setAttribute('name', 'Delete');
+                moleculeDeleteButton.setAttribute('id', 'moleculeDeleteButton');
+                moleculeDeleteButton.innerText="Remove Model From Scene";
+                moleculeDeleteButton.classList.add('btn', 'btn-outline-light', 'float-end');
+                moleculeDeleteButton.addEventListener("click", function() {
+                    const sceneName = scene.name; 
+                    const moleculeTitle = Title; 
+                    fetch(`/sceneEditor/delete/${sceneName}/${moleculeTitle}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log("Molecule deleted successfully");
+                            location.reload();
+                        } else {
+                            return response.text().then(text => {
+                                console.error("Error Response:", text);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Fetch error:", error);
+                    });
+                    
+                })
+                moleculeCollapseContent.appendChild(moleculeDeleteButton);
             }
-        })
-        .then(response => {
-            if (response.ok) {
-                console.log("Molecule deleted successfully");
-                location.reload();
-            } else {
-                return response.text().then(text => {
-                    console.error("Error Response:", text);
-                });
-            }
-        })
-        .catch(error => {
-            console.error("Fetch error:", error);
         });
-        
-    })
-    moleculeCollapseContent.appendChild(moleculeDeleteButton);
+    }
+
 
     let moleculePositionRow = document.createElement('div');
     moleculeCollapseContent.appendChild(moleculePositionRow);
