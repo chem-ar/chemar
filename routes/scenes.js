@@ -99,6 +99,7 @@ router.post('/addScene', function (req, res) {
     var scene = {
         "name": newSceneName,
         "desc": newSceneDesc, // Make sure the 'desc' field is populated
+        "sceneOwner": "",
         "trackingMarker": {
             "position": {
                 "x": 0,
