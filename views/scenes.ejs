@@ -119,12 +119,17 @@
 </div>
 
 <script>
-
+    
 document.addEventListener("DOMContentLoaded", function() {
     // Add event listener to form submission
     document.getElementById("newSceneAddBtn")?.addEventListener("click", function(event) {
         // Prevent default form submission behavior
         event.preventDefault();
+        let cookies = document.cookie;
+        let sessionValue = cookies.split('=')[1];
+    
+        console.log(cookies);
+        console.log(sessionValue);
 
         // Gather data from form fields
         var newSceneName = document.getElementById("newSceneName").value;
@@ -134,6 +139,7 @@ document.addEventListener("DOMContentLoaded", function() {
         var scene = {
             name: newSceneName,
             desc: newSceneDesc,
+            sceneOwner: "",
             trackingMarker: {
                 position: {
                     x: 0,
