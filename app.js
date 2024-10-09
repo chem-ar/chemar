@@ -32,6 +32,7 @@ var loginRouter = require('./routes/login');
 var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
 var jmolRouter = require('./routes/jmol');
+var forgotPasswordRouter = require('./routes/forgotPasswordPage')
 
 const initializeCache = require("./routes/cache/setup");
 
@@ -86,6 +87,7 @@ app.use('/login', loginRouter);
 app.use('/session', sessionRouter);
 app.use('/logout', logoutRouter);
 app.use('/jmol', jmolRouter);
+app.use('/forgotPasswordPage', forgotPasswordRouter);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
