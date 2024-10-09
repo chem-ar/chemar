@@ -36,6 +36,9 @@ var forgotPasswordRouter = require('./routes/forgotPasswordPage')
 
 const initializeCache = require("./routes/cache/setup");
 
+//Forget Password Route
+var passwordResetRouter = require('./routes/passwordReset');
+
 var app = express();
 app.use(express.json({ limit: '1000gb' }));
 app.use(bodyParser.urlencoded({ limit: '1000gb', extended: true }));
@@ -91,6 +94,8 @@ app.use('/forgotPasswordPage', forgotPasswordRouter);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+
+app.use('/passwordReset', passwordResetRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
