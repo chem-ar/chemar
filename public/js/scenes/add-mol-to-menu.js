@@ -56,6 +56,11 @@ export function addMolToMenu(molecule, Title, molMenu, scene) {
         });
     }
 
+    toastr.success('Model added successfully', 'Success', {
+        timeOut: 3000,
+        positionClass: 'toast-top-right',
+        progressBar: true
+    });
 
     let moleculePositionRow = document.createElement('div');
     moleculeCollapseContent.appendChild(moleculePositionRow);
