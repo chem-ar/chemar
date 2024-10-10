@@ -125,12 +125,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("newSceneAddBtn")?.addEventListener("click", function(event) {
         // Prevent default form submission behavior
         event.preventDefault();
-        let cookies = document.cookie;
-        let sessionValue = cookies.split('=')[1];
-    
-        console.log(cookies);
-        console.log(sessionValue);
-
+        
         // Gather data from form fields
         var newSceneName = document.getElementById("newSceneName").value;
         var newSceneDesc = document.getElementById("newSceneDesc").value;
@@ -139,7 +134,6 @@ document.addEventListener("DOMContentLoaded", function() {
         var scene = {
             name: newSceneName,
             desc: newSceneDesc,
-            sceneOwner: "",
             trackingMarker: {
                 position: {
                     x: 0,
@@ -156,7 +150,8 @@ document.addEventListener("DOMContentLoaded", function() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(scene)
+            body: JSON.stringify(scene),
+            credentials: 'include' 
         })
         .then(async response => {
             const body = await response.json().catch(_error => ({}));
