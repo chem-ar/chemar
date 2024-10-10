@@ -400,13 +400,15 @@
                 markerYInput.value = markerData.position.y;
 
                 // Draw each molecule in three when sceneEditor is loaded.
+                let counter = 0;
                 for(let item of scene.molecules) {
                     
                     const modelInfo = item.modelInfo;
                     const model = await createModel(modelInfo, item.position, item.rotation, item.scale);
                     
                     addModelToScene(modelInfo, model, item.cjson);
-                    addMolToMenu(model, modelInfo.name, moleculeList, scene);
+                    addMolToMenu(model, modelInfo.name, moleculeList, scene, counter);
+                    counter++;
                 }
             })
             .catch(error => {
