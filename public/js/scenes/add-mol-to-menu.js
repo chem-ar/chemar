@@ -38,8 +38,15 @@ export function addMolToMenu(molecule, Title, molMenu, scene) {
                     })
                     .then(response => {
                         if (response.ok) {
+                            toastr.success('Model deleted successfully', 'Success', {
+                                timeOut: 3000,
+                                positionClass: 'toast-top-right',
+                                progressBar: true
+                            });
                             console.log("Molecule deleted successfully");
-                            location.reload();
+                            setTimeout(() => {
+                                location.reload();
+                            }, 3000); //Reloads page after 3 seconds, give enough time for notification to appear
                         } else {
                             return response.text().then(text => {
                                 console.error("Error Response:", text);
@@ -48,6 +55,7 @@ export function addMolToMenu(molecule, Title, molMenu, scene) {
                     })
                     .catch(error => {
                         console.error("Fetch error:", error);
+                        toastr.error('Failed to delete the model', 'Error');
                     });
                     
                 })
@@ -56,11 +64,11 @@ export function addMolToMenu(molecule, Title, molMenu, scene) {
         });
     }
 
-    toastr.success('Model added successfully', 'Success', {
-        timeOut: 3000,
-        positionClass: 'toast-top-right',
-        progressBar: true
-    });
+    // toastr.success('Model added successfully', 'Success', {
+    //     timeOut: 3000,
+    //     positionClass: 'toast-top-right',
+    //     progressBar: true
+    // });
 
     let moleculePositionRow = document.createElement('div');
     moleculeCollapseContent.appendChild(moleculePositionRow);
