@@ -73,14 +73,14 @@ export function addMolToMenu(molecule, Title, molMenu, scene, index) {
                     .then(response => {
                         if (response.ok) {
                             toastr.success('Model deleted successfully', 'Success', {
-                                timeOut: 3000,
+                                timeOut: 1000,
                                 positionClass: 'toast-top-right',
                                 progressBar: true
                             });
                             console.log("Molecule deleted successfully");
                             setTimeout(() => {
                                 location.reload();
-                            }, 3000);
+                            }, 1000);
                         } else {
                             return response.text().then(text => {
                                 console.error("Error Response:", text);
