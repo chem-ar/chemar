@@ -4,13 +4,13 @@ var fs = require('fs');
 const { checkSession } = require('./auth/session-mgmt');
 const path = require('path');
 
-router.delete('/delete/:scene/:molecule', (req, res) => {
+router.delete('/delete/:scene/:moleculeIndex', (req, res) => {
   let { isAdmin, isowner } = checkSession(req, res);
   if (!isAdmin) return res.status(401).json({ error: "User not logged in" });
 
   // Extract scene and molecule names from the request parameters
   const sceneName = req.params.scene;
-  const moleculeTitle = req.params.molecule;
+  const molIndex = req.params.moleculeIndex;
 
   // Correct file path to the scene JSON
   const path = require('path');
@@ -33,13 +33,9 @@ router.delete('/delete/:scene/:molecule', (req, res) => {
       } catch (parseError) {
           return res.status(500).json({ error: "Failed to parse scene data" });
       }
-      // Find the molecule in the molecules array and remove it
-      const moleculeIndex = sceneData.molecules.findIndex(mol => mol.Title === moleculeTitle);
-      if (moleculeIndex === -1) {
-          return res.status(404).json({ error: "Molecule not found" });
-      }
+      
       // Remove the molecule from the array
-      sceneData.molecules.splice(moleculeIndex, 1);
+      sceneData.molecules.splice(molIndex, 1);
 
       // Save the updated JSON file
       fs.writeFile(sceneFilePath, JSON.stringify(sceneData, null, 2), (writeErr) => {
