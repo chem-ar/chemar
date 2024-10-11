@@ -1,4 +1,4 @@
-export function addMolToMenu(molecule, Title, molMenu, scene) {
+export function addMolToMenu(molecule, Title, molMenu, scene, index) {
     let moleculeItem = document.createElement('div');
     moleculeItem.classList = 'list-group-item list-group-item-action mb-2';
 
@@ -15,11 +15,45 @@ export function addMolToMenu(molecule, Title, molMenu, scene) {
     moleculeCollapse.appendChild(moleculeCollapseContent);
     
     let thisScene = scene;
-    console.log(thisScene);
+    
     if (thisScene && thisScene.molecules) {
         let moleculesInScene = thisScene.molecules;
-        console.log("Molecules in Scene:", moleculesInScene);
+        
+        let moleculeDeleteButton = document.createElement("button");
+        moleculeDeleteButton.setAttribute('name', 'Delete');
+        moleculeDeleteButton.setAttribute('id', 'moleculeDeleteButton');
+        moleculeDeleteButton.innerText="Remove Model From Scene";
+        moleculeDeleteButton.classList.add('btn', 'btn-outline-light', 'float-end');
+        moleculeDeleteButton.style.display = 'none';
 
+        const thisIndex = index;
+        moleculeDeleteButton.addEventListener("click", function() {
+            const sceneName = scene.name; 
+            const moleculeTitle = Title; 
+            
+            
+            fetch(`/sceneEditor/delete/${sceneName}/${thisIndex}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log("Molecule deleted successfully");
+                        location.reload();
+                } else {
+                    return response.text().then(text => {
+                        console.error("Error Response:", text);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Fetch error:", error);
+            });
+                        
+        })
+        moleculeCollapseContent.appendChild(moleculeDeleteButton);
         moleculesInScene.forEach(item => {
             if (item.Title === Title) {
                 let moleculeDeleteButton = document.createElement("button");
