@@ -3,8 +3,10 @@ var fs = require("fs");
 var http = require("http");
 var https = require("https");
 
+var dotenv = require('dotenv'); // Using .Env file for email secret in localhost.
 var express = require("express");
 require('express-async-errors');
+dotenv.config({ path: './.env' }); // .env file path.
 
 var createError = require("http-errors");
 var path = require("path");
@@ -71,7 +73,7 @@ initializeCache();
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/molecules', moleculeRouter);  
+app.use('/molecules', moleculeRouter);
 app.use('/catalog', catalogRouter);
 app.use('/item', itemRouter);
 app.use('/scenes', scenesRouter);
@@ -107,7 +109,7 @@ app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
-//   // render the error page
+  //   // render the error page
   res.status(err.status || 500);
   res.render("error", { title: "MoleculAR - Error" });
 });
