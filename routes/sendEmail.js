@@ -2,11 +2,11 @@ const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 const dotenv = require('dotenv');
 // These id's and secrets should come from .env file.
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = process.env.REDIRECT_URI;
-const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
-const USER = process.env.USER;
+const CLIENT_ID = process.env.CLIENT_ID || "527897734454-hsdddi8i40nadj134ea17dor8h58onso.apps.googleusercontent.com";
+const CLIENT_SECRET = process.env.CLIENT_SECRET || "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";
+const REDIRECT_URI = process.env.REDIRECT_URI || "https://developers.google.com/oauthplayground";
+const REFRESH_TOKEN = process.env.REFRESH_TOKEN || "1//04jeeMMoaqjAbCgYIARAAGAQSNwF-L9IrTd1G3cZEArKnhCSaY1wdkz-8iqkks1v06UJ4jp2e6hNaVEepHqy2gR3S6Ioclw2-RJU";
+const USER = process.env.USER || "shahriarhossain.3686@gmail.com";
 
 const oAuth2Client = new google.auth.OAuth2(
     CLIENT_ID,
