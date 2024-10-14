@@ -67,8 +67,20 @@ router.post('/saveMolFile', async (req, res) => {
     const response = await fetch(url);
 
     if (!response.ok) {
-        const errMsg = `Failed to fetch molecule data from PubChem API. Status: ${response.status}`;
-        return res.status(500).send({ error: errMsg });
+        let errMsg = `Failed to fetch molecule data from PubChem API. Status: ${response.status}`;
+    
+        // Send the status code from PubChem to the frontend
+        if (response.status === 404) {
+            errMsg = '3D Model of Molecule not found in PubChem API.';
+            return res.status(404).send({ error: errMsg });
+        } else if (response.status >= 500) {
+            errMsg = 'PubChem API is currently unavailable. Please try again later.';
+            return res.status(503).send({ error: errMsg });
+        } else {
+            // Handle any other PubChem-related errors
+            return res.status(response.status).send({ error: errMsg });
+        }
+    
     }
 
     const molFileData = await response.text();
