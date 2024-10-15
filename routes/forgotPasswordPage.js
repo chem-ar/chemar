@@ -38,13 +38,13 @@ router.post('/', async function (req, res) {
         try {
             let r = await sendMail(adminEmail, link);
             console.log(r); //
-            return res.redirect('/confirmationMessage');
-            
+
+
         } catch (error) {
             console.log(error); //
         }
     }
-    res.render("forgotPasswordPage", { title: 'Forgot Password Page' });
+    res.render("confirmationMessage", { title: 'Confirmation Message', message: 'An email has been sent! Please check your junk email and inbox!' });
 
 });
 

@@ -2,11 +2,11 @@ const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 const dotenv = require('dotenv');
 // These id's and secrets should come from .env file.
-const CLIENT_ID = process.env.CLIENT_ID || "875656222736-56b6nb0u8u0ma7c83mbmhiooavs5sivl.apps.googleusercontent.com";
-const CLIENT_SECRET = process.env.CLIENT_SECRET || "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";
+const CLIENT_ID = "875656222736-ip7hujo32jhjskno15s9pdi95jom97ig.apps.googleusercontent.com";
+const CLIENT_SECRET = "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";
 const REDIRECT_URI = process.env.REDIRECT_URI || "https://developers.google.com/oauthplayground";
-const REFRESH_TOKEN = process.env.REFRESH_TOKEN || "1//04YI4Df5idYMuCgYIARAAGAQSNwF-L9IrNVUI8C0Jf-SggX-V7GmB6OF4BSNYha8Qpmz9pGtl56xbMI6HjLxC8dFlINQ0naTsUqw";
-const USER = process.env.USER || "daluni.chemar@gmail.com";
+const REFRESH_TOKEN = "1//04waHLtEtFY5JCgYIARAAGAQSNwF-L9Irpr1LP4mAUe9_tNoT5z0XtgAd3KTZ1mDIlELqFa_OfzL8Y7Thp5CcNMsxWma4QMX4cJ4";
+const USER = "daluni.chemar@gmail.com";
 
 const oAuth2Client = new google.auth.OAuth2(
     CLIENT_ID,
@@ -32,7 +32,7 @@ async function sendMail(email, link) {
         });
 
         const mailOptions = {
-            from: "ChemAr <shahriarhossain.3686@gmail.com>",
+            from: "ChemAr <daluni.chemar@gmail.com>",
             to: email,
             subject: "Forgot Password | ChemAr-test",
             text: `Hi, here is your link: ${link}`,
