@@ -41,7 +41,14 @@ export function addMolToMenu(molecule, Title, molMenu, scene, index) {
             .then(response => {
                 if (response.ok) {
                     console.log("Molecule deleted successfully");
+                    toastr.success('Model deleted successfully', 'Success', {
+                        timeOut: 1000,
+                        positionClass: 'toast-top-right',
+                        progressBar: true
+                    });
+                    setTimeout(() => {
                         location.reload();
+                    }, 1000);
                 } else {
                     return response.text().then(text => {
                         console.error("Error Response:", text);
@@ -50,52 +57,18 @@ export function addMolToMenu(molecule, Title, molMenu, scene, index) {
             })
             .catch(error => {
                 console.error("Fetch error:", error);
+                toastr.error('Failed to delete the model', 'Error');
             });
                         
         })
         moleculeCollapseContent.appendChild(moleculeDeleteButton);
         moleculesInScene.forEach(item => {
             if (item.Title === Title) {
-                let moleculeDeleteButton = document.createElement("button");
-                moleculeDeleteButton.setAttribute('name', 'Delete');
-                moleculeDeleteButton.setAttribute('id', 'moleculeDeleteButton');
-                moleculeDeleteButton.innerText="Remove Model From Scene";
-                moleculeDeleteButton.classList.add('btn', 'btn-outline-light', 'float-end');
-                moleculeDeleteButton.addEventListener("click", function() {
-                    const sceneName = scene.name; 
-                    const moleculeTitle = Title; 
-                    fetch(`/sceneEditor/delete/${sceneName}/${moleculeTitle}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            toastr.success('Model deleted successfully', 'Success', {
-                                timeOut: 1000,
-                                positionClass: 'toast-top-right',
-                                progressBar: true
-                            });
-                            console.log("Molecule deleted successfully");
-                            setTimeout(() => {
-                                location.reload();
-                            }, 1000);
-                        } else {
-                            return response.text().then(text => {
-                                console.error("Error Response:", text);
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Fetch error:", error);
-                        toastr.error('Failed to delete the model', 'Error');
-                    });
-                    
-                })
-                moleculeCollapseContent.appendChild(moleculeDeleteButton);
+                moleculeDeleteButton.style.display = 'block';
             }
         });
+
+                
     }
 
     let moleculePositionRow = document.createElement('div');
