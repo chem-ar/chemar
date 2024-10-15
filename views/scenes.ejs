@@ -30,8 +30,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% for (let filename in sceneCatalog) { %>
-                        <% let scene = sceneCatalog[filename]; %>
+                    <% for (let scene of list) { %>
+                        <% let filename = scene.filename; %>
                             <tr>
                                 <td>
                                     <a class="text-white names-in-scenes" id="Name<%= filename %>" href="/sceneViewer/<%= filename.slice(0, -5) %>"><%= filename.slice(0, -5) %></a>
