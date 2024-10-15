@@ -22,4 +22,42 @@ router.get('/', function (req, res) {
 
 });
 
+
+function emailExists(email) {
+    let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"));
+    return adminData.some(ele => ele.email === email);
+}
+
+router.post('/reset-password', async function (req, res) {
+    let { isAdmin, isowner } = checkSession(req, res);
+    
+    if (!isAdmin) {
+        return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const { email, newPassword } = req.body;
+
+    if (!emailExists(email)) {
+        return res.status(404).json({ error: 'Email not found' });
+    }
+
+    let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"));
+    let adminIndex = adminData.findIndex(ele => ele.email === email);
+
+    if (adminIndex === -1) {
+        return res.status(404).json({ error: 'Admin not found' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the admin's password
+    adminData[adminIndex].password = hashedPassword;
+
+    // Save the updated admin data back to admin.json
+    fs.writeFileSync("./routes/auth/admin.json", JSON.stringify(adminData));
+
+    return res.status(200).send({ message: 'Password reset successfully' });
+});
+
 module.exports = router;
