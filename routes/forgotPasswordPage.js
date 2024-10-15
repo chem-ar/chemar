@@ -38,6 +38,8 @@ router.post('/', async function (req, res) {
         try {
             let r = await sendMail(adminEmail, link);
             console.log(r); //
+            return res.redirect('/confirmationMessage');
+            
         } catch (error) {
             console.log(error); //
         }
