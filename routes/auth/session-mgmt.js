@@ -34,7 +34,7 @@ function startSession(req, res) {
 
         fs.writeFileSync('./routes/auth/admin.json', JSON.stringify(adminData))
 
-        res.cookie('session', token, { maxAge: SESSION_DURATION });
+        res.cookie('session', token, { maxAge: SESSION_DURATION, httpOnly: true, secure: true });
     }
 }
 
