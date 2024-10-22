@@ -208,9 +208,16 @@
                             })
                         }).then(async response => {
                             const body = await response.json().catch(_error => ({}));
+                            // account for all the common errors that could be received from the backend
                             if (response.status === 400 && body.error) {
                                 throw new Error(body.error);
                             } else if (response.status === 401 && body.error) {
+                                throw new Error(body.error);
+                            } else if (response.status === 404 && body.error) {
+                                throw new Error(body.error || 'Molecule not found in PubChem API.');
+                            } else if (response.status === 503 && body.error) {
+                                throw new Error(body.error || 'PubChem API is currently unavailable.');
+                            } else if (body.error) {
                                 throw new Error(body.error);
                             } else if (!response.ok) {
                                 throw new Error(`Server returned status code ${response.status}`);

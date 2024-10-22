@@ -30,8 +30,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% for (let filename in sceneCatalog) { %>
-                        <% let scene = sceneCatalog[filename]; %>
+                    <% for (let scene of list) { %>
+                        <% let filename = scene.filename; %>
                             <tr>
                                 <td>
                                     <a class="text-white names-in-scenes" id="Name<%= filename %>" href="/sceneViewer/<%= filename.slice(0, -5) %>"><%= filename.slice(0, -5) %></a>
@@ -119,13 +119,13 @@
 </div>
 
 <script>
-
+    
 document.addEventListener("DOMContentLoaded", function() {
     // Add event listener to form submission
     document.getElementById("newSceneAddBtn")?.addEventListener("click", function(event) {
         // Prevent default form submission behavior
         event.preventDefault();
-
+        
         // Gather data from form fields
         var newSceneName = document.getElementById("newSceneName").value;
         var newSceneDesc = document.getElementById("newSceneDesc").value;
@@ -150,7 +150,8 @@ document.addEventListener("DOMContentLoaded", function() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(scene)
+            body: JSON.stringify(scene),
+            credentials: 'include' 
         })
         .then(async response => {
             const body = await response.json().catch(_error => ({}));

@@ -1,16 +1,20 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
+const path = require('path');
 var { checkSession } = require('./auth/session-mgmt')
 
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
     const scenesDirectory = './public/scenes/';
-
-    //Admin check
+    // Admin and owner check
     let { isAdmin, isowner } = checkSession(req, res);
 
+    // Retrieve the current user's email using the session token
+    const sessionToken = req.cookies.session;
+    const adminEmail = findAdminEmailBySession(sessionToken);
+    
     // Load the scene catalog data
     let sceneCatalog;
     try {
@@ -18,8 +22,7 @@ router.get('/', function (req, res, next) {
         sceneCatalog = JSON.parse(sceneCatalogJSON);
     } catch (error) {
         console.error('Error loading scene catalog:', error);
-        res.sendStatus(500); // Send error response if scene catalog cannot be loaded
-        return;
+        return res.sendStatus(500); // Send error response if scene catalog cannot be loaded
     }
 
     // Get the list of scene files
@@ -28,24 +31,32 @@ router.get('/', function (req, res, next) {
         sceneFiles = fs.readdirSync(scenesDirectory);
     } catch (error) {
         console.error('Error reading scene files:', error);
-        res.sendStatus(500); // Send error response if scene files cannot be read
-        return;
+        return res.sendStatus(500); // Send error response if scene files cannot be read
     }
 
-    // Combine scene catalog data with scene files
+    // Combine scene catalog data with scene files, filter according to ownership
     let finalList = [];
     for (let filename of sceneFiles) {
         // Check if the scene file exists in the scene catalog
         if (sceneCatalog.hasOwnProperty(filename)) {
-            finalList.push({
-                filename: filename,
-                name: sceneCatalog[filename].name,
-                desc: sceneCatalog[filename].desc
-            });
-        } else {
-            console.error(`Scene '${filename}' not found in catalog.`);
-        }
+            const sceneOwner = sceneCatalog[filename].sceneOwner;    
+
+            // Show scene if:
+            // 1. The user is the website owner (isowner === true)
+            // 2. The scene has no owner field (meaning the owner field is absent)
+            // 3. The current user is the owner of the scene
+            if (isowner || !sceneCatalog[filename].hasOwnProperty('sceneOwner') || sceneOwner === adminEmail || !isAdmin) {
+                finalList.push({
+                    filename: filename,
+                    name: sceneCatalog[filename].name,
+                    desc: sceneCatalog[filename].desc,
+                    sceneOwner: sceneOwner || 'No Owner'
+                });
+                console.log(`Added scene: ${filename}`);
+            } 
+        } 
     }
+    // Render the scenes page, passing the filtered list of scenes
     res.render('scenes', { title: 'Catalog', list: finalList, isAdmin: isAdmin, sceneCatalog: sceneCatalog, isowner });
 });
 
@@ -94,7 +105,10 @@ router.post('/addScene', function (req, res) {
     // Get new scene info from request body
     var newSceneName = req.body.name;
     var newSceneDesc = req.body.desc; // Check if 'description' is correctly accessed
+    var sessionToken = req.cookies.session;
 
+    var adminEmail = findAdminEmailBySession(sessionToken);
+    
     // Create scene object
     var scene = {
         "name": newSceneName,
@@ -129,11 +143,12 @@ router.post('/addScene', function (req, res) {
                         sceneCatalog = JSON.parse(sceneCatalogData);
                     }
                 }
-
+                
                 // Add new scene entry to the scene catalog
                 sceneCatalog[newSceneName + ".json"] = {
                     "name": newSceneName,
-                    "desc": newSceneDesc
+                    "desc": newSceneDesc,
+                    "sceneOwner": adminEmail
                 };
 
                 // Write updated scene catalog back to the file
@@ -155,5 +170,38 @@ router.get('/list', function (req, res) {
 
     res.status(200).send(fs.readdirSync(scenes));
 });
+
+function findAdminEmailBySession(sessionToken) {
+    // Path to the admin.json file (relative to the current file in the routes folder)
+    const filePath = path.join(__dirname, 'auth', 'admin.json');
+    console.log(filePath);
+
+    // Read and parse the admin.json file
+    let adminData;
+    try {
+        const data = fs.readFileSync(filePath, 'utf-8');
+        adminData = JSON.parse(data);
+    } catch (error) {
+        console.error('Error reading admin.json:', error);
+        return null;
+    }
+
+    // Iterate through the adminData array
+    for (let admin of adminData) {
+        // Check if the admin has sessions
+        if (admin.session) {
+            // Check each session for a matching token
+            for (let sess of admin.session) {
+                if (sess.token === sessionToken) {
+                    // Return the admin's email if the session token matches
+                    return admin.email;
+                }
+            }
+        }
+    }
+
+    // Return null if no matching session token is found
+    return null;
+}
 
 module.exports = router;
