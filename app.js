@@ -3,8 +3,10 @@ var fs = require("fs");
 var http = require("http");
 var https = require("https");
 
+var dotenv = require('dotenv'); // Using .Env file for email secret in localhost.
 var express = require("express");
 require('express-async-errors');
+dotenv.config({ path: './.env' }); // .env file path.
 
 var createError = require("http-errors");
 var path = require("path");
@@ -32,8 +34,13 @@ var loginRouter = require('./routes/login');
 var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
 var jmolRouter = require('./routes/jmol');
+var forgotPasswordRouter = require('./routes/forgotPasswordPage')
+var messageRouter = require('./routes/confirmationMessage')
 
 const initializeCache = require("./routes/cache/setup");
+
+//Forget Password Route
+var passwordResetRouter = require('./routes/passwordReset');
 
 var app = express();
 app.use(express.json({ limit: '1000gb' }));
@@ -67,7 +74,7 @@ initializeCache();
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/molecules', moleculeRouter);  
+app.use('/molecules', moleculeRouter);
 app.use('/catalog', catalogRouter);
 app.use('/item', itemRouter);
 app.use('/scenes', scenesRouter);
@@ -86,9 +93,13 @@ app.use('/login', loginRouter);
 app.use('/session', sessionRouter);
 app.use('/logout', logoutRouter);
 app.use('/jmol', jmolRouter);
+app.use('/forgotPasswordPage', forgotPasswordRouter);
+app.use('/confirmationMessage', messageRouter);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+
+app.use('/passwordReset', passwordResetRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
@@ -100,7 +111,7 @@ app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
-//   // render the error page
+  //   // render the error page
   res.status(err.status || 500);
   res.render("error", { title: "MoleculAR - Error" });
 });
