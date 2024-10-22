@@ -146,6 +146,13 @@
         import { OrbitControls } from "/js/OrbitControls.js";
         import { adjustMolToMarker } from '/js/scenes/scene-mgmt.js';
 
+        // Import post-processing components
+        import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.145.0/examples/jsm/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.145.0/examples/jsm/postprocessing/RenderPass.js';
+        import { OutlinePass } from 'https://cdn.jsdelivr.net/npm/three@0.145.0/examples/jsm/postprocessing/OutlinePass.js';
+        import { ShaderPass } from 'https://cdn.jsdelivr.net/npm/three@0.145.0/examples/jsm/postprocessing/ShaderPass.js';
+        import { FXAAShader } from 'https://cdn.jsdelivr.net/npm/three@0.145.0/examples/jsm/shaders/FXAAShader.js';
+
       
         let requestedFile =
           window.location.pathname.substring(
@@ -162,7 +169,7 @@
             animate();
           });
 
-        var scene, camera, renderer, clock, deltaTime, totalTime, clone, moleculeARGroup, controls, moleculeSizeDivisor = 128;
+        var scene, camera, renderer, clock, deltaTime, totalTime, clone, moleculeARGroup, controls, composer, outlinePass, moleculeSizeDivisor = 128;
 
         var arToolkitSource, arToolkitContext;
 
@@ -220,6 +227,23 @@
           renderer.xr.enabled = true;
 
           document.body.appendChild(renderer.domElement);
+          
+          // setup for border
+          composer = new THREE.EffectComposer(renderer);
+        let renderPass = new THREE.RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        outlinePass = new THREE.OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera);
+        outlinePass.edgeStrength = 2.5;
+        outlinePass.edgeGlow = 0.0;
+        outlinePass.edgeThickness = 1.0;
+        outlinePass.visibleEdgeColor.set('#ffffff'); // White outline
+        outlinePass.hiddenEdgeColor.set('#000000'); // Black hidden edges
+        composer.addPass(outlinePass);
+
+        let fxaaPass = new THREE.ShaderPass(THREE.FXAAShader);
+        fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+        composer.addPass(fxaaPass);
 
            ////////////////////////////////////////////////////////////
           // setup Clock
@@ -317,6 +341,8 @@
               adjustMolToMarker(molecule, marker);
               markerRoot1.add(molecule);
 
+              outlinePass.selectedObjects.push(molecule);
+
               clone = molecule.clone();
               moleculeARGroup.add(clone);
             });
@@ -352,7 +378,7 @@
         }
 
         function render() {
-          renderer.render(scene, camera);
+          composer.render(scene, camera);
         }
 
         function animate() {
