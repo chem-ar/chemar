@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 const CLIENT_ID = "875656222736-ip7hujo32jhjskno15s9pdi95jom97ig.apps.googleusercontent.com";
 const CLIENT_SECRET = "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";
 const REDIRECT_URI = process.env.REDIRECT_URI || "https://developers.google.com/oauthplayground";
-const REFRESH_TOKEN = "1//04waHLtEtFY5JCgYIARAAGAQSNwF-L9Irpr1LP4mAUe9_tNoT5z0XtgAd3KTZ1mDIlELqFa_OfzL8Y7Thp5CcNMsxWma4QMX4cJ4";
+const REFRESH_TOKEN = "1//04RiZewVbtyHCCgYIARAAGAQSNwF-L9Irs77_BrIVK_tIpWy3a21qpG6t9Adkvat-_uemJjADXO48TERLoHlFr6CD-Rrbp4Xqceo";
 const USER = "daluni.chemar@gmail.com";
 
 const oAuth2Client = new google.auth.OAuth2(
