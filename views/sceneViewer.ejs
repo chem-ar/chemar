@@ -181,13 +181,13 @@
           // setup Light Sources
           ////////////////////////////////////////////////////////////
 
-          let ambientLight = new THREE.AmbientLight(0x000000, 0);
+          let ambientLight = new THREE.AmbientLight(0x707070, 1);
           scene.add(ambientLight);
 
           let spotLight = new THREE.SpotLight(0xffffff);
           spotLight.position.set(100, 1000, 100);
 
-          //maybe changing the spotlight color?
+          //to adjust shading, make changes to spotlight and ambient light. 
 
           spotLight.castShadow = true;
 
