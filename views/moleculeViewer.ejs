@@ -203,9 +203,38 @@
 
     <div id="control-panel2">
         <input type="button" value="Get obj file" id="get-obj" onclick='jmolScript("write " + cid + ".obj;")'>
+        <input type="button" id="saveAsModelBtn"  value="Save Model" class="btn btn-primary">
     </div>
 
-    
+    <script>
+        // On Save as Model button click, prompt the user for model name and description and file name
+        document.getElementById('saveAsModelBtn').addEventListener('click', function () {
+            
+        /*
+        Prompt the user to enter model name, then description then file name, 
+        if any are empty or user clicks cancel, then cancel and abort
+        */
+        let modelName = prompt("Enter the Model Name:");
+        if (modelName === null || modelName.trim() === "") return;  
+
+        let modelDesc = prompt("Enter the Model Description:");
+        if (modelDesc === null || modelDesc.trim() === "") return;  
+
+        let fileName = prompt("Enter the Name You want for the File:");
+        if (fileName === null || fileName.trim() === "") return;  
+
+
+
+        // Encode the model name, description, and file name
+        modelName = encodeURIComponent(modelName);
+        modelDesc = encodeURIComponent(modelDesc);
+        fileName = encodeURIComponent(fileName);
+        
+        //  trick JmolScript to send the files to the server instead of the local filesystem
+        jmolScript(`write ${window.location.origin}/addmodel/quickSaveModel/${modelName}/${modelDesc}/${fileName}.obj`);
+
+    });
+    </script>
     
 </body>
 </html>
