@@ -133,6 +133,28 @@ router.get('/:id', function(req , res){
   let { isAdmin, isowner } = checkSession(req, res);
   if (!isAdmin) return res.redirect("/");
   var scenefiles = fs.readdirSync('./public/scenes/');
+  const sessionToken = req.cookies.session;
+  let adminEmail = findAdminEmailBySession(sessionToken);
+  let file = req.params.id;
+  let sceneOwner;
+  let sceneCatalog;
+  try {
+      const sceneCatalogJSON = fs.readFileSync('./public/catalog/sceneCatalog.json', 'utf8');
+      sceneCatalog = JSON.parse(sceneCatalogJSON);
+  } catch (error) {
+      console.error('Error loading scene catalog:', error);
+      return res.sendStatus(500); // Send error response if scene catalog cannot be loaded
+  }
+
+  if(sceneCatalog.hasOwnProperty(file)){
+    let thisScene = sceneCatalog[file];
+    if (thisScene.hasOwnProperty("sceneOwner")) {
+      sceneOwner = thisScene.sceneOwner;
+      if (sceneOwner !== adminEmail && !isowner ){
+        return res.redirect("/");
+      }
+    }
+  }
 
   if (scenefiles.includes(req.params.id)) {
     res.render('sceneEditor', {
@@ -206,6 +228,39 @@ router.post('/save/:scene', (req, res) => {
     })
   });
 });
+
+function findAdminEmailBySession(sessionToken) {
+  // Path to the admin.json file (relative to the current file in the routes folder)
+  const filePath = path.join(__dirname, 'auth', 'admin.json');
+  console.log(filePath);
+
+  // Read and parse the admin.json file
+  let adminData;
+  try {
+      const data = fs.readFileSync(filePath, 'utf-8');
+      adminData = JSON.parse(data);
+  } catch (error) {
+      console.error('Error reading admin.json:', error);
+      return null;
+  }
+
+  // Iterate through the adminData array
+  for (let admin of adminData) {
+      // Check if the admin has sessions
+      if (admin.session) {
+          // Check each session for a matching token
+          for (let sess of admin.session) {
+              if (sess.token === sessionToken) {
+                  // Return the admin's email if the session token matches
+                  return admin.email;
+              }
+          }
+      }
+  }
+
+  // Return null if no matching session token is found
+  return null;
+}
 
 
 module.exports = router;
