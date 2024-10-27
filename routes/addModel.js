@@ -108,6 +108,9 @@ const parseFileFromJmolReq = (req) => {
     return decodedData;
 };
 
+// for checking model's status using quicksave
+let modelSaveStatus = {};
+
 // Endpoint to save models directly from the molecule page through jmol instead of local download.
 router.post('/quickSaveModel/:modelname/:modelDesc/:fileName', (req, res) => {
     const { modelname, modelDesc, fileName } = req.params;
@@ -174,7 +177,14 @@ router.post('/quickSaveModel/:modelname/:modelDesc/:fileName', (req, res) => {
     // Save the updated catalog back to the file
     fs.writeFileSync(catalogPath, JSON.stringify(parsedData, null, 2));
 
+    modelSaveStatus[modelname] = true;
+
     res.send({ message: `${fileName} saved and catalog updated successfully` });
 });
 
+router.get('/modelStatus/:modelname', (req, res) => {
+    const { modelname } = req.params;
+    const isSaved = modelSaveStatus[modelname] || false;
+    res.json({ isSaved });
+});
 module.exports = router;
