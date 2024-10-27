@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs'); 
-const { checkSession } = require('./auth/session-mgmt');
+const { checkSession, findAdminEmailBySession } = require('./auth/session-mgmt');
 const path = require('path');
 
 router.delete('/delete/:scene/:moleculeIndex', (req, res) => {
@@ -138,6 +138,8 @@ router.get('/:id', function(req , res){
   let file = req.params.id;
   let sceneOwner;
   let sceneCatalog;
+  
+  // get the sceneCatalog file
   try {
       const sceneCatalogJSON = fs.readFileSync('./public/catalog/sceneCatalog.json', 'utf8');
       sceneCatalog = JSON.parse(sceneCatalogJSON);
@@ -146,20 +148,24 @@ router.get('/:id', function(req , res){
       return res.sendStatus(500); // Send error response if scene catalog cannot be loaded
   }
 
+  // find the owner of the requested scene
   if(sceneCatalog.hasOwnProperty(file)){
     let thisScene = sceneCatalog[file];
+    // check if the scene has an owner
     if (thisScene.hasOwnProperty("sceneOwner")) {
       sceneOwner = thisScene.sceneOwner;
+      // if the current user is not the ower of the scene or the owner of the website, redirect to the scene catalog page.
       if (sceneOwner !== adminEmail && !isowner ){
-        return res.redirect("/");
+        return res.redirect("/scenes");
       }
     }
   }
 
-  if (scenefiles.includes(req.params.id)) {
+  // if the requested file exists, redirect to the scene editor with the requested file
+  if (scenefiles.includes(file)) {
     res.render('sceneEditor', {
       title: 'Scene Viewer',
-      item: req.params.id
+      item: file
     });
   }
 
@@ -229,38 +235,6 @@ router.post('/save/:scene', (req, res) => {
   });
 });
 
-function findAdminEmailBySession(sessionToken) {
-  // Path to the admin.json file (relative to the current file in the routes folder)
-  const filePath = path.join(__dirname, 'auth', 'admin.json');
-  console.log(filePath);
-
-  // Read and parse the admin.json file
-  let adminData;
-  try {
-      const data = fs.readFileSync(filePath, 'utf-8');
-      adminData = JSON.parse(data);
-  } catch (error) {
-      console.error('Error reading admin.json:', error);
-      return null;
-  }
-
-  // Iterate through the adminData array
-  for (let admin of adminData) {
-      // Check if the admin has sessions
-      if (admin.session) {
-          // Check each session for a matching token
-          for (let sess of admin.session) {
-              if (sess.token === sessionToken) {
-                  // Return the admin's email if the session token matches
-                  return admin.email;
-              }
-          }
-      }
-  }
-
-  // Return null if no matching session token is found
-  return null;
-}
 
 
 module.exports = router;
