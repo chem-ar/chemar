@@ -123,63 +123,76 @@ router.post('/quickSaveModel/:modelname/:modelDesc/:fileName', (req, res) => {
     // Read the modelFileCatalog.json file
     const catalogPath = path.join(__dirname, '../public/catalog/modelFileCatalog.json');
     let parsedData = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+    
+    try {
+    
+        // If it's an .obj file, create a new entry in the catalog
+        if (fileName.endsWith('.obj')) {
+            // Check if the model already exists
+            for (const entry of parsedData) {
+                if (entry.name === modelname && entry.description === decodeURIComponent(modelDesc)) {
+                    modelSaveStatus[modelname] = { error: 'This model already exists' };
+                    return res.status(400).send({
+                        error: 'This model already exists'
+                    });
+                }
+            }
 
-    // If it's an .obj file, create a new entry in the catalog
-    if (fileName.endsWith('.obj')) {
-        // Check if the model already exists
-        for (const entry of parsedData) {
-            if (entry.name === modelname && entry.description === decodeURIComponent(modelDesc)) {
+            // Create a new unique ID for the model, used from an existing function
+            const newId = uniqueId(parsedData);
+            
+            // Create new entry
+            const newObjFileName = `${modelname}-${newId}.obj`;
+            const newEntry = {
+                id: newId,
+                name: modelname,
+                description: decodeURIComponent(modelDesc),
+                files: {
+                    obj: newObjFileName
+                }
+            };
+
+            // Rename the saved .obj file to the new format
+            fs.renameSync(filePath, path.join(__dirname, '../public/modelfiles', newObjFileName));
+
+            // Add the new entry to the catalog
+            parsedData.push(newEntry);
+        } 
+        // If it's an .mtl file, find the existing entry and update it
+        else if (fileName.endsWith('.mtl')) {
+            const modelEntry = parsedData.find(entry => entry.name === modelname && entry.description === decodeURIComponent(modelDesc) );
+
+            if (modelEntry && !modelEntry.files.mtl) {
+                const newMtlFileName = `${modelname}-${modelEntry.id}.mtl`;
+
+                // Rename the saved .mtl file to the new format
+                fs.renameSync(filePath, path.join(__dirname, '../public/modelfiles', newMtlFileName));
+
+                // Add the .mtl file to the files array in the catalog entry
+                modelEntry.files.mtl = newMtlFileName;
+            } else if(modelEntry.files.mtl) {
+                modelSaveStatus[modelname] = { error: 'This model already exists' };
                 return res.status(400).send({
                     error: 'This model already exists'
+                });
+            }else {
+                modelSaveStatus[modelname] = { error: 'Model not found' };
+                return res.status(404).send({
+                    error: 'Model not found'
                 });
             }
         }
 
-        // Create a new unique ID for the model, used from an existing function
-        const newId = uniqueId(parsedData);
-        
-        // Create new entry
-        const newObjFileName = `${modelname}-${newId}.obj`;
-        const newEntry = {
-            id: newId,
-            name: modelname,
-            description: decodeURIComponent(modelDesc),
-            files: {
-                obj: newObjFileName
-            }
-        };
+        // Save the updated catalog back to the file
+        fs.writeFileSync(catalogPath, JSON.stringify(parsedData, null, 2));
 
-        // Rename the saved .obj file to the new format
-        fs.renameSync(filePath, path.join(__dirname, '../public/modelfiles', newObjFileName));
+        modelSaveStatus[modelname] = { success: true };
 
-        // Add the new entry to the catalog
-        parsedData.push(newEntry);
-    } 
-    // If it's an .mtl file, find the existing entry and update it
-    else if (fileName.endsWith('.mtl')) {
-        const modelEntry = parsedData.find(entry => entry.name === modelname);
-
-        if (modelEntry) {
-            const newMtlFileName = `${modelname}-${modelEntry.id}.mtl`;
-
-            // Rename the saved .mtl file to the new format
-            fs.renameSync(filePath, path.join(__dirname, '../public/modelfiles', newMtlFileName));
-
-            // Add the .mtl file to the files array in the catalog entry
-            modelEntry.files.mtl = newMtlFileName;
-        } else {
-            return res.status(404).send({
-                error: 'Model not found'
-            });
-        }
+        res.send({ message: `${fileName} saved and catalog updated successfully` });
+    }catch (error) {
+        modelSaveStatus[modelname] = { error: 'Failed to save model' };
+        res.status(500).send({ error: 'Failed to save model' });
     }
-
-    // Save the updated catalog back to the file
-    fs.writeFileSync(catalogPath, JSON.stringify(parsedData, null, 2));
-
-    modelSaveStatus[modelname] = true;
-
-    res.send({ message: `${fileName} saved and catalog updated successfully` });
 });
 
 router.get('/modelStatus/:modelname', (req, res) => {
