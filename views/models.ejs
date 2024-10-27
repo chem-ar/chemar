@@ -171,15 +171,15 @@
             }).then(response => {
                 if (response.ok) {
                     $('#editModal').modal('hide')
-                    toastr.success('Edited Successfuly')
+                    toastr.success('Edited Successfuly', "Success")
                     fetchModels();
                 }else if(response.status == 409){
                     $('#editModal').modal('hide')
-                    toastr.error('Model with same name & description exist')
+                    toastr.error('Model with same name & description exist' , "Error")
                     fetchModels();
                 }else if(response.status == 401){
                     $('#editModal').modal('hide')
-                    toastr.error('Please Login to edit')
+                    toastr.error('Please Login to edit', "Error")
                 }else {
                     throw new Error("Server returned status code: " + response.status)
                 }
@@ -206,19 +206,19 @@
             }).then(response => {
                 if (response.ok) {
                     $('#deleteModal').modal('hide')
-                    toastr.success('Deleted Successfully')
+                    toastr.success('Deleted Successfully', "Success")
                     fetchModels();
                 }else if(response.status == 401){
                     $('#deleteModal').modal('hide')
-                    toastr.error('Please Login to delete')
+                    toastr.error('Please Login to delete', "Error")
                 }else {
                     console.error("Failed to delete model.");
-                    toastr.error('Delete Unsuccessfull')
+                    toastr.error('Delete Unsuccessfull', "Error")
                     fetchModels();
                 }
             }).catch(error =>{
                 console.error("Error:", error)
-                toastr.error('Error in deleting, please try again!');
+                toastr.error('Error in deleting, please try again!', "Error");
             });  
         }
     }
