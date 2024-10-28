@@ -62,7 +62,6 @@ async function logMailError(result) {
 
     try {
         await fs.appendFile('MailError.log', logMessage);
-        console.log("Logged error to email.log");
     } catch (err) {
         console.error("Failed to write to log file:", err);
     }
