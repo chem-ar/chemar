@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 const dotenv = require('dotenv');
+const fs = require('fs').promises;
 // These id's and secrets should come from .env file.
 const CLIENT_ID = "875656222736-ip7hujo32jhjskno15s9pdi95jom97ig.apps.googleusercontent.com";
 const CLIENT_SECRET = "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";
@@ -40,9 +41,30 @@ async function sendMail(email, link) {
         };
 
         const result = await transport.sendMail(mailOptions);
+        await logMailError(result);
         return result;
     } catch (error) {
+        await logMailError(error);
         return error;
+    }
+}
+
+
+// Function to log error if present in result
+async function logMailError(result) {
+    let logMessage;
+
+    if (result?.response?.data?.error) {
+        logMessage = `${result.response.headers.date} - Google Cloud Error: ${result.response.data.error} - ${result.response.data.error_description} - ${result.response.status}\n`;
+    } else {
+        return;
+    }
+
+    try {
+        await fs.appendFile('MailError.log', logMessage);
+        console.log("Logged error to email.log");
+    } catch (err) {
+        console.error("Failed to write to log file:", err);
     }
 }
 
