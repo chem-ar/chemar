@@ -6,7 +6,7 @@ const fs = require('fs').promises;
 const CLIENT_ID = "875656222736-ip7hujo32jhjskno15s9pdi95jom97ig.apps.googleusercontent.com";
 const CLIENT_SECRET = "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";
 const REDIRECT_URI = process.env.REDIRECT_URI || "https://developers.google.com/oauthplayground";
-const REFRESH_TOKEN = "1//04RiZewVbtyHCCgYIARAAGAQSNwF-L9Irs77_BrIVK_tIpWy3a21qpG6t9Adkvat-_uemJjADXO48TERLoHlFr6CD-Rrbp4Xqceo";
+const REFRESH_TOKEN = "1//04AsJcSv594arCgYIARAAGAQSNwF-L9IrPmOPSc5VEoyTbes6o80ekloCoFchDVtsmtIHxcccJ_E3EB6yklPyr42VFd520t7wRkM";
 const USER = "daluni.chemar@gmail.com";
 
 const oAuth2Client = new google.auth.OAuth2(
