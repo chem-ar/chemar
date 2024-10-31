@@ -375,7 +375,8 @@
 
         let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
 
-        fetch('/scenes' + '/' + requestedFile)
+        fetch('/scenes' + '/' + requestedFile, {
+            credentials: 'include'})
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`Server returned status code ${response.status}`);
