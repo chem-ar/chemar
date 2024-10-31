@@ -65,7 +65,7 @@ router.post('/', async function (req, res) {
         adminData[adminIndex].password = newPassword
         let arr = JSON.stringify(adminData)
         fs.writeFileSync("./routes/auth/admin.json", arr)
-        return res.redirect("/");
+        return res.redirect("/login");
     }
 });
 
