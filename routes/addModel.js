@@ -97,4 +97,107 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
 }
 );
 
+// Function to parse incoming file data from Jmol request
+const parseFileFromJmolReq = (req) => {
+    // Extract file data from the request body
+    const fileData = Object.keys(req.body)[0];
+    // Remove the base64 prefix and newline characters
+    const pureEncodedData = fileData.substring(8).replaceAll('\r\n', "");
+    // Decode from base64
+    const decodedData = Buffer.from(pureEncodedData, 'base64');
+    return decodedData;
+};
+
+// for checking model's status using quicksave
+let modelSaveStatus = {};
+
+// Endpoint to save models directly from the molecule page through jmol instead of local download.
+router.post('/quickSaveModel/:modelname/:modelDesc/:fileName', (req, res) => {
+    const { modelname, modelDesc, fileName } = req.params;
+    const fileData = parseFileFromJmolReq(req);
+
+    // path for saving the file then writing the file in the folder
+    const filePath = path.join(__dirname, '../public/modelfiles', fileName);
+    fs.writeFileSync(filePath, fileData);
+
+    // Read the modelFileCatalog.json file
+    const catalogPath = path.join(__dirname, '../public/catalog/modelFileCatalog.json');
+    let parsedData = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+    
+    try {
+    
+        // If it's an .obj file, create a new entry in the catalog
+        if (fileName.endsWith('.obj')) {
+            // Check if the model already exists
+            for (const entry of parsedData) {
+                if (entry.name === modelname && entry.description === decodeURIComponent(modelDesc)) {
+                    modelSaveStatus[modelname] = { error: 'This model already exists' };
+                    return res.status(400).send({
+                        error: 'This model already exists'
+                    });
+                }
+            }
+
+            // Create a new unique ID for the model, used from an existing function
+            const newId = uniqueId(parsedData);
+            
+            // Create new entry
+            const newObjFileName = `${modelname}-${newId}.obj`;
+            const newEntry = {
+                id: newId,
+                name: modelname,
+                description: decodeURIComponent(modelDesc),
+                files: {
+                    obj: newObjFileName
+                }
+            };
+
+            // Rename the saved .obj file to the new format
+            fs.renameSync(filePath, path.join(__dirname, '../public/modelfiles', newObjFileName));
+
+            // Add the new entry to the catalog
+            parsedData.push(newEntry);
+        } 
+        // If it's an .mtl file, find the existing entry and update it
+        else if (fileName.endsWith('.mtl')) {
+            const modelEntry = parsedData.find(entry => entry.name === modelname && entry.description === decodeURIComponent(modelDesc) );
+
+            if (modelEntry && !modelEntry.files.mtl) {
+                const newMtlFileName = `${modelname}-${modelEntry.id}.mtl`;
+
+                // Rename the saved .mtl file to the new format
+                fs.renameSync(filePath, path.join(__dirname, '../public/modelfiles', newMtlFileName));
+
+                // Add the .mtl file to the files array in the catalog entry
+                modelEntry.files.mtl = newMtlFileName;
+            } else if(modelEntry.files.mtl) {
+                modelSaveStatus[modelname] = { error: 'This model already exists' };
+                return res.status(400).send({
+                    error: 'This model already exists'
+                });
+            }else {
+                modelSaveStatus[modelname] = { error: 'Model not found' };
+                return res.status(404).send({
+                    error: 'Model not found'
+                });
+            }
+        }
+
+        // Save the updated catalog back to the file
+        fs.writeFileSync(catalogPath, JSON.stringify(parsedData, null, 2));
+
+        modelSaveStatus[modelname] = { success: true };
+
+        res.send({ message: `${fileName} saved and catalog updated successfully` });
+    }catch (error) {
+        modelSaveStatus[modelname] = { error: 'Failed to save model' };
+        res.status(500).send({ error: 'Failed to save model' });
+    }
+});
+
+router.get('/modelStatus/:modelname', (req, res) => {
+    const { modelname } = req.params;
+    const isSaved = modelSaveStatus[modelname] || false;
+    res.json({ isSaved });
+});
 module.exports = router;

@@ -145,7 +145,6 @@
         import { ARButton } from "/js/ARButton.js";
         import { OrbitControls } from "/js/OrbitControls.js";
         import { adjustMolToMarker } from '/js/scenes/scene-mgmt.js';
-
       
         let requestedFile =
           window.location.pathname.substring(
@@ -181,12 +180,14 @@
            ////////////////////////////////////////////////////////////
           // setup Light Sources
           ////////////////////////////////////////////////////////////
-
-          let ambientLight = new THREE.AmbientLight(0xffffff, 1);
+          // changed ambient light
+          let ambientLight = new THREE.AmbientLight(0x070707, 1);
           scene.add(ambientLight);
 
           let spotLight = new THREE.SpotLight(0xffffff);
-          spotLight.position.set(100, 1000, 100);
+          spotLight.position.set(140, 65, 95);
+
+          //to adjust shading, make changes to spotlight and ambient light. 
 
           spotLight.castShadow = true;
 
@@ -316,6 +317,8 @@
             ).then((molecule) => {
               adjustMolToMarker(molecule, marker);
               markerRoot1.add(molecule);
+
+              outlinePass.selectedObjects.push(molecule);
 
               clone = molecule.clone();
               moleculeARGroup.add(clone);

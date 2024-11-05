@@ -77,6 +77,14 @@
             border: none;
         }
     </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+    <script>
+        toastr.options = { escapeHtml: true, closeButton: true, progressBar: true };
+    </script>
 </head>
 
 <body>
@@ -203,9 +211,182 @@
 
     <div id="control-panel2">
         <input type="button" value="Get obj file" id="get-obj" onclick='jmolScript("write " + cid + ".obj;")'>
+        <input type="button" id="saveAsModelBtn"  value="Save Model" class="btn btn-primary">
     </div>
 
+    <!-- Modal Structure for Save Model -->
+    <div id="saveModelModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Save Model</h2>
+            <form id="modelForm">
+                <label for="modelName">Model Name:</label>
+                <input type="text" id="modelName" name="modelName" required>
+                
+                <label for="modelDesc">Model Description:</label>
+                <textarea id="modelDesc" name="modelDesc" required></textarea>
+                
+                <label for="fileName">File Name:</label>
+                <input type="text" id="fileName" name="fileName" required>
+                
+                <button type="button" onclick="submitModelForm()">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        /* General Modal Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9010;
+            overflow: auto; 
+        }
+
+        /* Modal Content Styling */
+        .modal-content {
+            background-color: #ffffff;
+            color: #333333;
+            padding: 20px;
+            border-radius: 5px;
+            width: 90%; 
+            max-width: 500px; 
+            box-sizing: border-box;
+            z-index: 9011;
+            position: relative;
+            margin: 5% auto; 
+        }
+
+        /* Close Button */
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333333;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #ff0000;
+        }
+
+        /* Input and Textarea Fields */
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            background-color: #ffffff;
+            color: #333333;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Save Button Styling */
+        button {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px 20px;
+            background-color: #0071EB;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #005bb5;
+        }
+    </style>
+
+    <script>
     
+        document.getElementById('saveAsModelBtn').addEventListener('click', function () {
+            document.getElementById("saveModelModal").style.display = "block";
+        });
+
+        // Close Modal Function
+        function closeModal() {
+            document.getElementById("saveModelModal").style.display = "none";
+        }
+
+        // Submit Form
+        function submitModelForm() {
+            const modelName = document.getElementById("modelName").value.trim();
+            const modelDesc = document.getElementById("modelDesc").value.trim();
+            const fileName = document.getElementById("fileName").value.trim();
+
+            // Validate Inputs
+            if (!modelName || !modelDesc || !fileName) {
+                alert("All fields are required.");
+                return;
+            }
+
+            // Encode the model name, description, and file name
+            const encodedModelName = encodeURIComponent(modelName);
+            const encodedModelDesc = encodeURIComponent(modelDesc);
+            const encodedFileName = encodeURIComponent(fileName);
+
+            
+
+            // Call JmolScript to save model
+            jmolScript(`write ${window.location.origin}/addmodel/quickSaveModel/${encodedModelName}/${encodedModelDesc}/${encodedFileName}.obj`);
+            
+            // Poll model status
+            pollModelStatus(modelName);
+        }
+
+        // check if the model has been saved or not
+        function pollModelStatus(normalModelName) {
+            let notified = false; // Flag to ensure notification shows only once
+
+            // check periodically to see if model was saved, if so check for success or error messages
+            const interval = setInterval(async () => {
+                try {
+                    const response = await fetch(`${window.location.origin}/addmodel/modelStatus/${normalModelName}`);
+                    const data = await response.json();
+        
+                    // If there's an error and we haven't shown the error notification
+                    if (data.isSaved && data.isSaved.error && !notified) {
+                        notified = true;
+                        clearInterval(interval);
+                        toastr.error(data.isSaved.error + ", Try Changing the Name or Description", 'Error', {
+                            timeOut: 3000,
+                            positionClass: 'toast-top-right',
+                            progressBar: true
+                        });
+                    } 
+                    // If the model is successfully saved and we haven't shown the success notification
+                    else if (data.isSaved && data.isSaved.success && !notified) {
+                        notified = true;
+
+                        // Close the modal
+                        closeModal();
+
+                        clearInterval(interval);
+                        toastr.success('Model Added Successfully', 'Success', {
+                            timeOut: 1500,
+                            positionClass: 'toast-top-right',
+                            progressBar: true
+                        });
+                        setTimeout(() => {
+                            window.location.href = "/molecules";
+                        }, 1500);
+                    }
+                } catch (error) {
+                    console.error('Error polling model status:', error);
+                }
+            }, 1); // Poll every 0.01 seconds
+        }
+    </script>
     
 </body>
 </html>
