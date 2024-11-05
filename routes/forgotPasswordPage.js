@@ -27,10 +27,13 @@ router.post('/', async function (req, res) {
         let protocol = req.protocol;
         let host = req.hostname;
         let url = "/passwordReset";
-        let port = process.env.PORT || 4000; // Have to declare the port here. or else it doesnt work in localhost.
+        let port = process.env.PORT || 4000;
+        let baseUrl = `${protocol}://${host}${url}` // If the Server is running on production no need for port.
 
-        let baseUrl = `${protocol}://${host}:${port}${url}`
-        // let baseUrl = "https://localhost:4000/passwordReset"
+        if (port == 4000) {
+            baseUrl = `${protocol}://${host}:${port}${url}` // If the server is running in devlopment the port needs to be added. 
+        }
+
 
         let tokenlink = baseUrl.concat("?token=", token);
         let link = tokenlink.concat("&email=", adminEmail);

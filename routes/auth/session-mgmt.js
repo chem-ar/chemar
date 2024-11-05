@@ -1,4 +1,5 @@
 var fs = require('fs')
+const path = require('path');
 const SESSION_DURATION = 14400000; // 14400000 ms == 4 hrs
 
 initalizeSessions();
@@ -116,5 +117,38 @@ function endSession(req, res) {
     res.clearCookie('session');
 }
 
+function findAdminEmailBySession(sessionToken) {
+    // Path to the admin.json file (relative to the current file in the routes folder)
+    const filePath = path.join(__dirname, 'admin.json');
+    console.log(filePath);
+  
+    // Read and parse the admin.json file
+    let adminData;
+    try {
+        const data = fs.readFileSync(filePath, 'utf-8');
+        adminData = JSON.parse(data);
+    } catch (error) {
+        console.error('Error reading admin.json:', error);
+        return null;
+    }
+  
+    // Iterate through the adminData array
+    for (let admin of adminData) {
+        // Check if the admin has sessions
+        if (admin.session) {
+            // Check each session for a matching token
+            for (let sess of admin.session) {
+                if (sess.token === sessionToken) {
+                    // Return the admin's email if the session token matches
+                    return admin.email;
+                }
+            }
+        }
+    }
+  
+    // Return null if no matching session token is found
+    return null;
+  }
 
-module.exports = { startSession, checkSession, endSession }
+
+module.exports = { startSession, checkSession, endSession, findAdminEmailBySession }
