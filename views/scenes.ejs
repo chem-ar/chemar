@@ -21,7 +21,7 @@
             <%}%>
 
             <p></p>
-            <table id="molTable" class="table table-striped text-white" style="width:100%">
+            <table id="sceneTable" class="table table-striped text-white" style="width:100%">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -98,9 +98,9 @@
                     molDescription.innerHTML = data[item].desc;
                 }
             }
-            if(!$.fn.DataTable.isDataTable('#molTable')){
+            if(!$.fn.DataTable.isDataTable('#sceneTable')){
                 // Initialize DataTable
-                $('#molTable').DataTable();
+                $('#sceneTable').DataTable();
             }
         })
         .catch(err => toastr.error(err.message));
