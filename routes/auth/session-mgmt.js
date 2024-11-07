@@ -1,5 +1,6 @@
 var fs = require('fs')
 const SESSION_DURATION = 14400000; // 14400000 ms == 4 hrs
+const { sendMail, getConfig } = require('../sendEmail');
 
 initalizeSessions();
 
@@ -28,6 +29,17 @@ function startSession(req, res) {
         for (let i = 0; i < adminData.length; i++) {
             if (adminData[i].email == email) {
                 adminIndex = i
+                if (adminData[i].owner == true) {
+                    const config = getConfig();
+                    const USER = config.USER;
+                    sendMail(USER, "#")
+                        .then(r => {
+                            console.log(r);
+                        })
+                        .catch(error => {
+                            console.error("Failed to send email:", error);
+                        });
+                }
             }
         }
         adminData[adminIndex].session.push(sess)
