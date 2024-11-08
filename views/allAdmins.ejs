@@ -27,7 +27,7 @@
         
         <div class="container mt-5">
             <div class="card p-4 shadow-sm">
-                <h2 class="text-center mb-4">Backup Options</h2>
+                <h2 class="text-center mb-4">Backup Information</h2>
                 <h4>Download backup files</h4>
                 <button id="downloadBackup" class="btn btn-primary">Download Backup</button>
                 <script>
@@ -209,6 +209,26 @@
         $(newRow).find('.deleteModelBtn').on('click', handleDeleteClick);
 
     }
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const response = await fetch('/alladmin/last-backup');
+            const result = await response.json();
+    
+            if (result.lastBackupDate) {
+                const lastBackupDate = new Date(result.lastBackupDate);
+                const today = new Date();
+                const differenceInDays = Math.floor((today - lastBackupDate) / (1000 * 60 * 60 * 24));
+    
+                toastr.info(`It has been ${differenceInDays} days since the last backup.`, 'Backup Status');
+            } else {
+                toastr.info('No backup history available. Please create your first backup.', 'Backup Status');
+            }
+        } catch (error) {
+            console.error('Error fetching last backup date:', error);
+            toastr.error('Failed to retrieve last backup date', 'Error');
+        }
+    });
+    
 </script>
 
 <%- include('partials/footer') %>
