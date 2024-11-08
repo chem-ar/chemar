@@ -92,15 +92,19 @@
                 var id = item.replace(".json", "");
                 // Check if the molecule ID exists before trying to update the name and formula
                 if (document.getElementById("Name"+id) != null) {
-                    var molName = document.getElementById("Name"+id);
-                    molName.innerHTML = data[item].name;
-                    var molDescription = document.getElementById("Description"+id)
-                    molDescription.innerHTML = data[item].desc;
+                    var sceneName = document.getElementById("Name"+id);
+                    sceneName.innerHTML = data[item].name;
+                    var sceneDescription = document.getElementById("Description"+id)
+                    sceneDescription.innerHTML = data[item].desc;
                 }
             }
             if(!$.fn.DataTable.isDataTable('#sceneTable')){
                 // Initialize DataTable
-                $('#sceneTable').DataTable();
+                $('#sceneTable').DataTable({
+                    columnDefs: [
+                        { orderable: false, targets: [2] }
+                    ]
+                });
             }
         })
         .catch(err => toastr.error(err.message));

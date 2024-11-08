@@ -103,7 +103,10 @@
 
         // Initialize the DataTable
         dataTable = new DataTable('#modelTable', {
-            ordering: true
+            ordering: true,
+            columnDefs: [
+                { orderable: false, targets: [4] }
+            ]
         });
         
         fetchModels();
