@@ -2,7 +2,11 @@ var express = require('express');
 var router = express.Router();
 var { checkSession } = require('./auth/session-mgmt')
 const bcrypt = require('bcrypt');
-var fs = require('fs')
+const fs = require('fs-extra');
+const archiver = require('archiver');
+const path = require('path');
+const multer = require('multer');
+const unzipper = require('unzipper');
 var {checkPassword} = require('./checkPassword')
 
 function emailExists(email){
@@ -98,5 +102,117 @@ router.post('/addadmin', async function (req, res, next)
 
     return res.status(200).send({message: 'add success'})
 })
+
+
+router.get('/download-backup', async (req, res, next) => {
+    let { isAdmin, isowner } = checkSession(req, res);
+    if (!isowner) return res.status(401).json({ error: 'Please log in as the owner of the page' });
+
+    // Generate the filename with the format YYYY-MM-DD-CHEMAR-BACKUP.zip
+    const date = new Date();
+    const formattedDate = date.toISOString().split('T')[0];
+    const filename = `${formattedDate}-CHEMAR-BACKUP.zip`;
+    const outputPath = path.resolve(__dirname, `../${filename}`);
+
+    const output = fs.createWriteStream(outputPath);
+    const archive = archiver('zip', { zlib: { level: 9 } });
+
+    output.on('close', () => {
+        res.download(outputPath, filename, (err) => {
+            if (err) {
+                console.error('Download failed:', err);
+                res.status(500).send({ error: 'Failed to download the file' });
+            } else {
+                fs.unlinkSync(outputPath); 
+            }
+        });
+    });
+
+    archive.on('error', (err) => {
+        throw err;
+    });
+
+    archive.pipe(output);
+
+    const directories = [
+        path.resolve(__dirname, '../public/catalog'),
+        path.resolve(__dirname, '../public/modelfiles'),
+        path.resolve(__dirname, '../public/molfiles'),
+        path.resolve(__dirname, '../public/scenes')
+    ];
+
+    directories.forEach((dir) => {
+        archive.directory(dir, path.basename(dir));
+    });
+
+    await archive.finalize();
+});
+
+// Temporary upload directory
+const upload = multer({ dest: 'uploads/' });
+// structure to check against when zip files get uploaded
+const REQUIRED_DIRECTORIES = [
+    'catalog/',
+    'modelfiles/',
+    'molfiles/',
+    'scenes/'
+];
+
+router.post('/upload-backup', upload.single('backupZip'), async (req, res) => {
+    let { isAdmin, isowner } = checkSession(req, res);
+    if (!isowner) return res.status(401).json({ error: 'Please log in as the owner of the page' });
+
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const zipPath = path.resolve(req.file.path);
+    const extractPath = path.resolve(__dirname, '../public');
+
+    try {
+        // Validate the structure of the uploaded ZIP file
+        const directoryContents = [];
+        const zip = fs.createReadStream(zipPath).pipe(unzipper.Parse({ forceStream: true }));
+
+        for await (const entry of zip) {
+            // Collect each entry path
+            directoryContents.push(entry.path); 
+            entry.autodrain(); 
+        }
+
+        // Check if all required directories exist in the uploaded ZIP file
+        const isValidStructure = REQUIRED_DIRECTORIES.every((requiredDir) =>
+            directoryContents.some((path) => path.startsWith(requiredDir))
+        );
+
+        if (!isValidStructure) {
+            // Delete the uploaded file
+            await fs.remove(zipPath); 
+            return res.status(400).json({
+                error: 'Invalid backup structure. Please upload a ZIP with the correct directory structure.'
+            });
+        }
+
+        // Extract and overwrite files in the respective folders
+        fs.createReadStream(zipPath)
+            .pipe(unzipper.Extract({ path: extractPath }))
+            .on('close', async () => {
+                // Clean up the uploaded ZIP file
+                await fs.remove(zipPath); 
+                res.status(200).json({ message: 'Backup restored successfully' });
+            })
+            .on('error', async (error) => {
+                // Clean up on error
+                await fs.remove(zipPath); 
+                console.error('Extraction error:', error);
+                res.status(500).json({ error: 'Failed to extract the backup' });
+            });
+    } catch (error) {
+        console.error('Upload processing error:', error);
+        res.status(500).json({ error: 'An error occurred while processing the backup' });
+    }
+});
+
+
 
 module.exports = router;
