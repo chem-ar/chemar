@@ -103,6 +103,15 @@ router.post('/addadmin', async function (req, res, next)
     return res.status(200).send({message: 'add success'})
 })
 
+const BACKUP_DATES_PATH = path.resolve(__dirname, '../public/backupDates.json');
+
+// Ensure backupDates.json exists, or initialize with an empty array if it doesn't
+function ensureBackupDatesFile() {
+    if (!fs.existsSync(BACKUP_DATES_PATH)) {
+        fs.writeFileSync(BACKUP_DATES_PATH, JSON.stringify([]), 'utf8');
+    }
+}
+
 
 router.get('/download-backup', async (req, res, next) => {
     let { isAdmin, isowner } = checkSession(req, res);
@@ -117,13 +126,20 @@ router.get('/download-backup', async (req, res, next) => {
     const output = fs.createWriteStream(outputPath);
     const archive = archiver('zip', { zlib: { level: 9 } });
 
-    output.on('close', () => {
+    output.on('close', async () => {
+        // Check and create backupDates.json if necessary
+        ensureBackupDatesFile(); 
+
+        let backupDates = JSON.parse(fs.readFileSync(BACKUP_DATES_PATH, 'utf8'));
+        backupDates.push(formattedDate);
+        fs.writeFileSync(BACKUP_DATES_PATH, JSON.stringify(backupDates, null, 2));
+
         res.download(outputPath, filename, (err) => {
             if (err) {
                 console.error('Download failed:', err);
                 res.status(500).send({ error: 'Failed to download the file' });
             } else {
-                fs.unlinkSync(outputPath); 
+                fs.unlinkSync(outputPath);
             }
         });
     });
@@ -146,6 +162,21 @@ router.get('/download-backup', async (req, res, next) => {
     });
 
     await archive.finalize();
+});
+
+// Route to get the last backup date
+router.get('/last-backup', (req, res) => {
+    // Ensure backupDates.json exists
+    ensureBackupDatesFile(); 
+
+    const backupDates = JSON.parse(fs.readFileSync(BACKUP_DATES_PATH, 'utf8'));
+
+    if (backupDates.length > 0) {
+        const lastBackupDate = backupDates[backupDates.length - 1];
+        res.json({ lastBackupDate });
+    } else {
+        res.json({ lastBackupDate: null });
+    }
 });
 
 // Temporary upload directory
