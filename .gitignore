@@ -275,3 +275,7 @@ public/molfiles
 public/modelfiles
 
 public/scenes
+
+
+# backup dates
+public/backupDates.json

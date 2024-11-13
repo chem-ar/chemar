@@ -27,6 +27,65 @@
                 </tbody>
             </table>
         </div>
+        <br>
+        
+        <div class="container mt-5">
+            <div class="card p-4 shadow-sm">
+                <h2 class="text-center mb-4">Backup Information</h2>
+                <h4>Download Backup Files</h4>
+                <button id="downloadBackup" class="btn btn-primary">Download Backup</button>
+                <script>
+                    document.getElementById('downloadBackup').addEventListener('click', () => {
+                        window.location.href = '/alladmin/download-backup';
+                    });
+                    </script>
+                <br>
+                <h4>Restore Backup</h4>
+                <form id="backupUploadForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <input type="file" id="backupFile" name="backupZip" accept=".zip" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Upload & Restore</button>
+                </form>
+            </div>
+        </div>
+        
+
+        <script>
+            document.getElementById('backupUploadForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+            
+                const fileInput = document.getElementById('backupFile');
+                const formData = new FormData();
+                formData.append('backupZip', fileInput.files[0]);
+            
+                try {
+                    const response = await fetch('/alladmin/upload-backup', {
+                        method: 'POST',
+                        body: formData
+                    });
+            
+                    const result = await response.json();
+                    if (response.ok) {
+                        toastr.success(result.message, 'Success', {
+                            timeOut: 3000,
+                            positionClass: 'toast-top-right',
+                            progressBar: true
+                        });
+                    } else {
+                        toastr.error(result.error || 'Failed to restore backup', 'Error', {
+                            timeOut: 3000,
+                            positionClass: 'toast-top-right',
+                            progressBar: true
+                        });
+                    }
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    toastr.error('Failed to upload the backup file', 'Error');
+                }
+            });
+            </script>
+
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -154,6 +213,26 @@
         $(newRow).find('.deleteModelBtn').on('click', handleDeleteClick);
 
     }
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const response = await fetch('/alladmin/last-backup');
+            const result = await response.json();
+    
+            if (result.lastBackupDate) {
+                const lastBackupDate = new Date(result.lastBackupDate);
+                const today = new Date();
+                const differenceInDays = Math.floor((today - lastBackupDate) / (1000 * 60 * 60 * 24));
+    
+                toastr.info(`It has been ${differenceInDays} days since the last backup.`, 'Backup Status');
+            } else {
+                toastr.info('No backup history available. Please create your first backup.', 'Backup Status');
+            }
+        } catch (error) {
+            console.error('Error fetching last backup date:', error);
+            toastr.error('Failed to retrieve last backup date', 'Error');
+        }
+    });
+    
 </script>
 
 <%- include('partials/footer') %>
