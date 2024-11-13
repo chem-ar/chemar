@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs'); 
-const { checkSession } = require('./auth/session-mgmt');
+const { checkSession, findAdminEmailBySession } = require('./auth/session-mgmt');
 const path = require('path');
 
 router.delete('/delete/:scene/:moleculeIndex', (req, res) => {
@@ -133,11 +133,39 @@ router.get('/:id', function(req , res){
   let { isAdmin, isowner } = checkSession(req, res);
   if (!isAdmin) return res.redirect("/");
   var scenefiles = fs.readdirSync('./public/scenes/');
+  const sessionToken = req.cookies.session;
+  let adminEmail = findAdminEmailBySession(sessionToken);
+  let file = req.params.id;
+  let sceneOwner;
+  let sceneCatalog;
+  
+  // get the sceneCatalog file
+  try {
+      const sceneCatalogJSON = fs.readFileSync('./public/catalog/sceneCatalog.json', 'utf8');
+      sceneCatalog = JSON.parse(sceneCatalogJSON);
+  } catch (error) {
+      console.error('Error loading scene catalog:', error);
+      return res.sendStatus(500); // Send error response if scene catalog cannot be loaded
+  }
 
-  if (scenefiles.includes(req.params.id)) {
+  // find the owner of the requested scene
+  if(sceneCatalog.hasOwnProperty(file)){
+    let thisScene = sceneCatalog[file];
+    // check if the scene has an owner
+    if (thisScene.hasOwnProperty("sceneOwner")) {
+      sceneOwner = thisScene.sceneOwner;
+      // if the current user is not the ower of the scene or the owner of the website, redirect to the scene catalog page.
+      if (sceneOwner !== adminEmail && !isowner ){
+        return res.redirect("/scenes");
+      }
+    }
+  }
+
+  // if the requested file exists, redirect to the scene editor with the requested file
+  if (scenefiles.includes(file)) {
     res.render('sceneEditor', {
       title: 'Scene Viewer',
-      item: req.params.id
+      item: file
     });
   }
 
@@ -206,6 +234,7 @@ router.post('/save/:scene', (req, res) => {
     })
   });
 });
+
 
 
 module.exports = router;
