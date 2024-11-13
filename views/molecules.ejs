@@ -192,7 +192,11 @@
             }
             if(!$.fn.DataTable.isDataTable('#molTable')){
                 // Initialize DataTable
-                $('#molTable').DataTable();
+                $('#molTable').DataTable({
+                    columnDefs: [
+                        { orderable: false, targets: [2] }
+                    ]
+                });
             }
         })
         .catch(err => toastr.error(err.message));
