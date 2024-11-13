@@ -10,29 +10,304 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css"/>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
-      crossorigin="anonymous"/>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
-      crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="home.css"/>
-    <title> <%=title%> </title>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="home.css"/>
+  <title><%= title %></title>
+  <style>
+    /* Importing Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Akaya+Kanadaka&family=Nunito:ital,wght@0,700;1,700&family=Roboto:ital,wght@0,400;0,500;1,700&display=swap');
 
-  <body>
+    /* Global Styles */
+    body, html {
+        font-family: "Roboto", sans-serif;
+        font-weight: 400;
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+    }
+
+    /* Styling for About Page */
+    .about-page {
+        background-color: rgba(26, 26, 26, 0.8);
+        color: #f0f0f0;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        margin: 2rem auto;
+        max-width: 900px;
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Heading Styles */
+    .about-page h2 {
+        font-size: 2.5rem;
+        color: #21BEF2;
+        margin-top: 1.5rem;
+        text-align: center;
+        font-family: 'Nunito', sans-serif;
+    }
+
+    .about-page h4 {
+        font-size: 1.8rem;
+        color: #ffcb47;
+        margin-top: 1.5rem;
+        font-family: 'Nunito', sans-serif;
+    }
+
+    /* Enhanced Link Styling */
+    .about-links {
+        color: #21BEF2;
+        text-decoration: none;
+        position: relative;
+        transition: color 0.3s ease;
+    }
+
+    .about-links::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -3px;
+        width: 100%;
+        height: 2px;
+        background-color: #21BEF2;
+        border-radius: 2px;
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 0.3s ease;
+    }
+
+    .about-links:hover {
+        color: #ffcb47;
+    }
+
+    .about-links:hover::after {
+        transform: scaleX(1);
+        transform-origin: left;
+        box-shadow: 0px 0px 10px rgba(255, 203, 71, 0.5);
+    }
+
+    /* Button Styling with Click Pop-Out Effect */
+    .btn-info {
+        background-color: #21BEF2;
+        border: none;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1), 
+                    background-color 0.7s ease, 
+                    box-shadow 0.7s ease;
+    }
+
+    .btn-info:hover {
+        transform: scale(1.2); /* Slightly reduced pop-out to make it smoother */
+        background-color: #ff8c47; /* Bright orange color on hover */
+        color: #1a1a1a; /* Dark text color for contrast */
+        box-shadow: 0px 0px 20px rgba(255, 140, 71, 0.8); /* Bigger shadow for depth */
+    }
+
+    .btn-info.pop-out {
+        transform: scale(1.3);
+        background-color: #ff8c47;
+        box-shadow: 0px 0px 20px rgba(255, 140, 71, 0.8);
+    }
+
+    /* Smooth Scrollbar Styling */
+    ::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #1a1a1a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #333;
+        border-radius: 20px;
+        border: 3px solid #1a1a1a;
+    }
+
+    /* Canvas Styling */
+    canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 5;
+    }
+
+    /* Content Wrapper to layer correctly */
+    .content-wrapper {
+        position: relative;
+        z-index: 10;
+    }
+  </style>
+</head>
+
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="/js/molFileToJson.js"></script>
+
+  <canvas class="webgl"></canvas>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const canvas = document.querySelector("canvas.webgl");
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.position.z = 5;
+
+    const ambientLight = new THREE.AmbientLight(0x404040, 3);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+    directionalLight.position.set(10, 10, 10).normalize();
+    scene.add(ambientLight, directionalLight);
+
+    const sphereRadiusRatio = 0.8; // Smaller ratio to reduce sphere sizes
+    const moleculeGroup = new THREE.Group();
+    moleculeGroup.scale.set(0.5, 0.5, 0.5); // Slightly smaller than previous
+    scene.add(moleculeGroup);
+
+    const moleculeGeometries = {
+        C: new THREE.SphereGeometry(0.5 * sphereRadiusRatio, 32, 32),
+        H: new THREE.SphereGeometry(0.2 * sphereRadiusRatio, 32, 32),
+        O: new THREE.SphereGeometry(0.3 * sphereRadiusRatio, 32, 32),
+        N: new THREE.SphereGeometry(0.4 * sphereRadiusRatio, 32, 32),
+        S: new THREE.SphereGeometry(0.5 * sphereRadiusRatio, 32, 32),
+        P: new THREE.SphereGeometry(0.6 * sphereRadiusRatio, 32, 32),
+        F: new THREE.SphereGeometry(0.3 * sphereRadiusRatio, 32, 32),
+        Cl: new THREE.SphereGeometry(0.4 * sphereRadiusRatio, 32, 32),
+        Br: new THREE.SphereGeometry(0.4 * sphereRadiusRatio, 32, 32),
+        I: new THREE.SphereGeometry(0.5 * sphereRadiusRatio, 32, 32),
+    };
+
+    const moleculeMaterials = {
+        C: new THREE.MeshPhongMaterial({ color: 0x444444 }), // Less vibrant
+        H: new THREE.MeshPhongMaterial({ color: 0xcccccc }), // Softer white
+        O: new THREE.MeshPhongMaterial({ color: 0xcc6666 }), // Softer red
+        N: new THREE.MeshPhongMaterial({ color: 0x6666cc }), // Softer blue
+        S: new THREE.MeshPhongMaterial({ color: 0xcccc66 }), // Softer yellow
+        P: new THREE.MeshPhongMaterial({ color: 0xcc66cc }), // Softer pink
+        F: new THREE.MeshPhongMaterial({ color: 0x66cc66 }), // Softer green
+        Cl: new THREE.MeshPhongMaterial({ color: 0x66cc66 }), // Same soft green
+        Br: new THREE.MeshPhongMaterial({ color: 0x66cc66 }), // Same soft green
+        I: new THREE.MeshPhongMaterial({ color: 0x66cc66 }), // Same soft green
+    };
+
+    const cylinderMaterial = new THREE.MeshBasicMaterial({ color: 0x999999 }); // Softer bond color
+
+    function addAtoms(molObject, center) {
+        molObject.atoms.forEach(atom => {
+            const atomGeometry = moleculeGeometries[atom.type];
+            const atomMaterial = moleculeMaterials[atom.type];
+            if (atomGeometry && atomMaterial) {
+                const atomMesh = new THREE.Mesh(atomGeometry, atomMaterial);
+                atomMesh.position.set(
+                    atom.position.x - center.x,
+                    atom.position.y - center.y,
+                    atom.position.z - center.z
+                );
+                moleculeGroup.add(atomMesh);
+            }
+        });
+    }
+
+    function addBonds(molObject, center) {
+        molObject.bonds.forEach(bond => {
+            const start = molObject.atoms[bond[0] - 1].position;
+            const end = molObject.atoms[bond[1] - 1].position;
+
+            const startVec = new THREE.Vector3(
+                start.x - center.x,
+                start.y - center.y,
+                start.z - center.z
+            );
+            const endVec = new THREE.Vector3(
+                end.x - center.x,
+                end.y - center.y,
+                end.z - center.z
+            );
+
+            const distance = startVec.distanceTo(endVec);
+            const cylinderRadius = bond[2] === 1 ? 0.03 : 0.1;
+
+            const bondGeometry = new THREE.CylinderGeometry(cylinderRadius, cylinderRadius, distance, 8);
+            bondGeometry.translate(0, distance / 2, 0);
+            bondGeometry.rotateX(Math.PI / 2);
+
+            const bondMesh = new THREE.Mesh(bondGeometry, cylinderMaterial);
+            bondMesh.position.copy(startVec);
+            bondMesh.lookAt(endVec);
+
+            moleculeGroup.add(bondMesh);
+        });
+    }
+
+    function drawMolecule(molFile) {
+        while (moleculeGroup.children.length > 0) {
+            moleculeGroup.remove(moleculeGroup.children[0]);
+        }
+
+        const molObject = molFileToJSON(molFile);
+        const moleculeCenter = new THREE.Vector3(
+            (Math.min(...molObject.atoms.map(atom => atom.position.x)) + Math.max(...molObject.atoms.map(atom => atom.position.x))) / 2,
+            (Math.min(...molObject.atoms.map(atom => atom.position.y)) + Math.max(...molObject.atoms.map(atom => atom.position.y))) / 2,
+            (Math.min(...molObject.atoms.map(atom => atom.position.z)) + Math.max(...molObject.atoms.map(atom => atom.position.z))) / 2
+        );
+
+        addAtoms(molObject, moleculeCenter);
+        addBonds(molObject, moleculeCenter);
+    }
+
+    function getMolecule(CSID) {
+        fetch(`/frontPageMolecule/${CSID}.mol`)
+            .then(response => response.text())
+            .then(molFile => drawMolecule(molFile))
+            .catch(error => console.error("Error loading molecule:", error));
+    }
+
+    getMolecule("5280795");
+
+    function animate() {
+        requestAnimationFrame(animate);
+        moleculeGroup.rotation.y += 0.002;
+        moleculeGroup.rotation.x += 0.0003;
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+    });
+
+    window.addEventListener("scroll", () => {
+        const scrollY = window.scrollY;
+        const scaleValue = 0.5 + (scrollY / 500) * 0.5; // Adjust scaling factor
+        moleculeGroup.scale.set(scaleValue, scaleValue, scaleValue);
+    });
+});
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const emailButton = document.querySelector(".btn-info");
+
+    emailButton.addEventListener("click", () => {
+        emailButton.classList.add("pop-out");
+        setTimeout(() => emailButton.classList.remove("pop-out"), 500); // Keep the pop-out effect slightly longer
+    });
+});
+  </script>
+
+<div class="content-wrapper">
     <div class="about-page p-3 mb-2 text-white main-background-color text-center">
-      <h2 class="display-6 fw-bold">About ChemAR</h2>
-      <p>
+      <h2 class="display-6 fw-bold fade-in-section">About ChemAR</h2>
+      <p class="fade-in-section">
         The Chemical Augmented Reality Project is an innovative web application
         designed to provide users with an immersive experience by enabling the
         visualization of 3D molecular models through Augmented Reality (AR).
@@ -41,15 +316,16 @@
         web browser. These dynamic models are generated from .mol files,
         meticulously designed to emulate the classic "ball and stick" molecular
         representation, ensuring both accuracy and familiarity for users
-        engaging with chemical structures. <br /><br /><br />
+        engaging with chemical structures.
       </p>
-      <h2 class="display-6 fw-bold">Team Mission</h2>
-      <div class="row">
+
+      <h2 class="display-6 fw-bold fade-in-section">Team Mission</h2>
+      <div class="row fade-in-section">
         <div class="col-sm">
           <p>
             The Chemical Augmented Reality Project has been established to
             enrich the academic journey of Dalhousie students. Our mission is to
-            provide an unparalleled immersive experience by utilzing the ability
+            provide an unparalleled immersive experience by utilizing the ability
             of Augmented Reality (AR) to visualize intricate 3D molecular
             models. At the heart of the web application lies the AR.js library,
             a development technology that detects markers, enabling a
@@ -58,14 +334,15 @@
             introduce dynamic molecular models, generated from .mol files. The
             classic "ball and stick" representation is emulated, displaying both
             accuracy and familiarity for users engaging with complex chemical
-            structures.<br /><br /><br />
+            structures.
           </p>
         </div>
       </div>
-      <h2 class="display-6 fw-bold">Project Features</h2>
 
-      <h4>Visualizations and 3D Models</h4>
-      <p>
+      <h2 class="display-6 fw-bold fade-in-section">Project Features</h2>
+
+      <h4 class="fade-in-section">Visualizations and 3D Models</h4>
+      <p class="fade-in-section">
         The Chemical Augmented Reality Project utilizes both the PubChem and
         ChemSpider Representational State Transfer - Application Programming
         Interface(s) (REST-APIs); which have access to an extensive
@@ -73,71 +350,69 @@
         that display the structure of the molecular elements and compounds
         that are present on the web application.
       </p>
-      <p>
+      <p class="fade-in-section">
         Read more about the PubChem API
         <a class="about-links" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6030920/" target="_blank">here</a>.
       </p>
-      <p>
+      <p class="fade-in-section">
         Read more about the ChemSpider API
         <a class="about-links" href="https://developer.rsc.org/" target="_blank">here</a>.
       </p>
 
-      <h4>Molecules</h4>
-      <p>
+      <h4 class="fade-in-section">Molecules</h4>
+      <p class="fade-in-section">
         The Molecule page contains the molecule catalog which feature the
         deployed chemical elements and compounds, organized for user
-        convienience. Additionally, users may further share or access these
+        convenience. Additionally, users may further share or access these
         to retrieve specific molecular visual data on alternative devices
         via the Quick Response (QR) Code.
       </p>
-      <p>
+      <p class="fade-in-section">
         Read more about the molecule catalog
         <a class="about-links" href="https://chem-space.com/" target="_blank">here</a>.
       </p>
 
-      <h4>Scenes</h4>
-      <p>
+      <h4 class="fade-in-section">Scenes</h4>
+      <p class="fade-in-section">
         The Scenes page contains information on specific compound
         structures and concepts covered within the course material.
       </p>
 
-      <h4>Study Help</h4>
-      <p>
+      <h4 class="fade-in-section">Study Help</h4>
+      <p class="fade-in-section">
         For any help or questions related to the content presented within
         the web application, it is advised that students reach out to their
         teaching assistant(s) or course instructor.
       </p>
-      <br /><br />
 
-      <h2 class="display-6 fw-bold">Privacy Policy</h2>
-      <br />
-      <h4>Statement</h4>
-      <p>
+      <h2 class="display-6 fw-bold fade-in-section">Privacy Policy</h2>
+      
+      <h4 class="fade-in-section">Statement</h4>
+      <p class="fade-in-section">
         The ChemAR project is committed to protecting the
         privacy of its users. The following outlines our privacy policy and
         practices.
       </p>
-      <h4>Personal Information</h4>
-      <p> We do not collect any personal information from our users.</p>
-      <h4>External Links</h4>
-      <p>
+      <h4 class="fade-in-section">Personal Information</h4>
+      <p class="fade-in-section"> We do not collect any personal information from our users.</p>
+      <h4 class="fade-in-section">External Links</h4>
+      <p class="fade-in-section">
         The ChemAR project website may contain links to other websites.
         The ChemAR project is not responsible for the privacy practices
         or the content of such websites.
-      <p>
-      <br /><br />
+      </p>
 
-      <h2 class="display-6 fw-bold">Contact us</h2>
-      <p>
+      <h2 class="display-6 fw-bold fade-in-section">Contact Us</h2>
+      <p class="fade-in-section">
         Your feedback and suggestions are highly valuable to us. 
-        <br><br>
-        <a href="mailto:mark.wall@dal.ca" target="_blank" class="btn btn-info"
-          >Email Us</a>
+      </p>
+      <p class="fade-in-section">
+        <a href="mailto:mark.wall@dal.ca" target="_blank" class="btn btn-info">Email Us</a>
       </p>
     </div>
     <footer>
       <%- include('partials/footer') %>
     </footer>
-    
+    </div>
   </body>
 </html>
