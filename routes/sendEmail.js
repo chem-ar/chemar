@@ -1,22 +1,27 @@
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
-const dotenv = require('dotenv');
-const fs = require('fs').promises;
-// These id's and secrets should come from .env file.
-const CLIENT_ID = "875656222736-ip7hujo32jhjskno15s9pdi95jom97ig.apps.googleusercontent.com";
-const CLIENT_SECRET = "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";
-const REDIRECT_URI = process.env.REDIRECT_URI || "https://developers.google.com/oauthplayground";
-const REFRESH_TOKEN = "1//04AsJcSv594arCgYIARAAGAQSNwF-L9IrPmOPSc5VEoyTbes6o80ekloCoFchDVtsmtIHxcccJ_E3EB6yklPyr42VFd520t7wRkM";
-const USER = "daluni.chemar@gmail.com";
+const fs = require('fs');
 
-const oAuth2Client = new google.auth.OAuth2(
-    CLIENT_ID,
-    CLIENT_SECRET,
-    REDIRECT_URI
-);
-oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+
 
 async function sendMail(email, link) {
+    const config = getConfig();
+    // const { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, REFRESH_TOKEN, USER } = config;
+
+    const CLIENT_ID = config.CLIENT_ID;
+    const CLIENT_SECRET = config.CLIENT_SECRET;
+    const REDIRECT_URI = config.REDIRECT_URI;
+    const REFRESH_TOKEN = config.REFRESH_TOKEN;
+    const USER = config.USER;
+
+    console.log(CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN);
+
+    const oAuth2Client = new google.auth.OAuth2(
+        CLIENT_ID,
+        CLIENT_SECRET,
+        REDIRECT_URI
+    );
+    oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
     try {
         const accessToken = await oAuth2Client.getAccessToken();
 
@@ -33,11 +38,11 @@ async function sendMail(email, link) {
         });
 
         const mailOptions = {
-            from: "ChemAr <daluni.chemar@gmail.com>",
+            from: "ChemAR <" + USER + ">",
             to: email,
-            subject: "Forgot Password | ChemAr-test",
+            subject: "Forgot Password | ChemAR",
             text: `Hi, here is your link: ${link}`,
-            html: `<h1>Hello from ChemAr</h1><p>Here is your password reset link: <a href="${link}">${link}</a></p>`,
+            html: `<h1>Hello from ChemAR</h1><p>Here is your password reset link: <a href="${link}">${link}</a></p>`,
         };
 
         const result = await transport.sendMail(mailOptions);
@@ -67,4 +72,32 @@ async function logMailError(result) {
     }
 }
 
-module.exports = { sendMail };
+function getConfig() {
+    try {
+        const data = fs.readFileSync("./routes/emailconfig.json", 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        console.error("Error reading config file:", error);
+        throw error;
+    }
+}
+
+
+function updateConfig(newConfig) {
+    try {
+        // Read existing configuration
+        const currentConfig = getConfig();
+
+        // Merge current config with new values
+        const updatedConfig = { ...currentConfig, ...newConfig };
+
+        // Write updated config back to the file
+        fs.writeFileSync("./routes/emailconfig.json", JSON.stringify(updatedConfig, null, 2), 'utf8');
+        console.log("Config updated successfully");
+    } catch (error) {
+        console.error("Error updating config file:", error);
+        throw error;
+    }
+}
+
+module.exports = { sendMail, getConfig, updateConfig };

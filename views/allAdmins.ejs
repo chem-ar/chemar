@@ -11,7 +11,11 @@
     <div class="row content">
         <div class="col-12 pt-4 text-start text-white">
             <h1 class="display-4 fw-bold">Admin Catalog</h1>
-                    <%- include('partials/addAdmin') %>
+            <div class="d-flex gap-2 pb-4">
+                <%- include('partials/addAdmin') %>
+                <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=875656222736-ip7hujo32jhjskno15s9pdi95jom97ig.apps.googleusercontent.com&redirect_uri=https://dalchemar.azurewebsites.net/refreshToken&scope=https://mail.google.com&response_type=code&prompt=consent&access_type=offline" type="button" class="btn btn-info">Renew Google Cloud Token</a>
+                <!-- IF you are testing it on local host Change the href's redirect_uri = https://localhost:4000/refreshToken -->
+            </div>    
             <table id="adminTable" class="table table-striped text-white" style="width:100%">
                 <thead>
                 <tr>
