@@ -42,7 +42,7 @@ async function sendMail(email, link) {
             to: email,
             subject: "Forgot Password | ChemAR",
             text: `Hi, here is your link: ${link}`,
-            html: `<h1>Hello from ChemAr</h1><p>Here is your password reset link: <a href="${link}">${link}</a></p>`,
+            html: `<h1>Hello from ChemAR</h1><p>Here is your password reset link: <a href="${link}">${link}</a></p>`,
         };
 
         const result = await transport.sendMail(mailOptions);
