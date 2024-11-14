@@ -30,8 +30,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% for (let scene of list) { %>
-                        <% if (isAdmin || scene.studentAccessible) { %>
+                    <% for (let scene of list) { %>    
                         <% let filename = scene.filename; %>
                             <tr>
                                 <td>
@@ -69,7 +68,7 @@
                                     </div>
                                 </td>
                             </tr>
-                            <%}%>
+                            
                         <%}%>
                 </tbody>
             </table>
