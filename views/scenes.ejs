@@ -31,6 +31,7 @@
                 </thead>
                 <tbody>
                     <% for (let scene of list) { %>
+                        <% if (isAdmin || scene.studentAccessible) { %>
                         <% let filename = scene.filename; %>
                             <tr>
                                 <td>
@@ -68,6 +69,7 @@
                                     </div>
                                 </td>
                             </tr>
+                            <%}%>
                         <%}%>
                 </tbody>
             </table>
@@ -129,6 +131,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // Gather data from form fields
         var newSceneName = document.getElementById("newSceneName").value;
         var newSceneDesc = document.getElementById("newSceneDesc").value;
+        var studentAccessible = document.getElementById("studentAccessible").checked;
 
         // Create scene object
         var scene = {
@@ -141,7 +144,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     z: 0
                 }
             },
-            molecules: []
+            molecules: [],
+            studentAccessible: studentAccessible
         };
 
         // Send data to server using fetch API

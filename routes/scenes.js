@@ -120,7 +120,8 @@ router.post('/addScene', function (req, res) {
                 "z": 0
             }
         },
-        "molecules": []
+        "molecules": [],
+        studentAccessible: studentAccessible || false
     };
 
     // Write scene data to a new JSON file
