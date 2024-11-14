@@ -11,16 +11,16 @@ router.get('/', function (req, res) {
 
 router.post('/', async function (req, res) {
     let adminEmail = req.body.email;
-    let isAdmin;
+    let Admin;
     let admins = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
     for (let i = 0; i < admins.length; i++) {
         if (adminEmail == admins[i].email) {
-            isAdmin = true;
+            Admin = true;
             break;
         }
     }
 
-    if (isAdmin) {
+    if (Admin) {
         let token = await generateToken(req, res)
 
         //https://www.geeksforgeeks.org/how-to-get-the-full-url-in-expressjs/
@@ -47,7 +47,8 @@ router.post('/', async function (req, res) {
             console.log(error); //
         }
     }
-    res.render("confirmationMessage", { title: 'Confirmation Message', message: 'An email has been sent! Please check your junk email and inbox!' });
+    let { isAdmin, isowner } = checkSession(req, res);
+    res.render("confirmationMessage", { title: 'Confirmation Message', message: 'If an account exist with this email, you will recive the password reset link', isAdmin: isAdmin, isowner });
 
 });
 
