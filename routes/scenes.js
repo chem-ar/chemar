@@ -106,6 +106,7 @@ router.post('/addScene', function (req, res) {
     var newSceneName = req.body.name;
     var newSceneDesc = req.body.desc; // Check if 'description' is correctly accessed
     var sessionToken = req.cookies.session;
+    var studentAccessible = req.body.studentAccessible === 'true' || false;
 
     var adminEmail = findAdminEmailBySession(sessionToken);
     
@@ -149,7 +150,8 @@ router.post('/addScene', function (req, res) {
                 sceneCatalog[newSceneName + ".json"] = {
                     "name": newSceneName,
                     "desc": newSceneDesc,
-                    "sceneOwner": adminEmail
+                    "sceneOwner": adminEmail,
+                    "studentAccessible": studentAccessible
                 };
 
                 // Write updated scene catalog back to the file
