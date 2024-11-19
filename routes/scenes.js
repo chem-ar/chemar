@@ -106,7 +106,7 @@ router.post('/addScene', function (req, res) {
     var newSceneName = req.body.name;
     var newSceneDesc = req.body.desc; // Check if 'description' is correctly accessed
     var sessionToken = req.cookies.session;
-    var studentAccessible = req.body.studentAccessible === 'true' || false;
+    var studentAccessible = req.body.studentAccessible;
 
     var adminEmail = findAdminEmailBySession(sessionToken);
     
@@ -122,7 +122,7 @@ router.post('/addScene', function (req, res) {
             }
         },
         "molecules": [],
-        studentAccessible: studentAccessible || false
+        studentAccessible: studentAccessible
     };
 
     // Write scene data to a new JSON file
