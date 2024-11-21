@@ -40,19 +40,19 @@ router.get('/', function (req, res, next) {
         // Check if the scene file exists in the scene catalog
         if (sceneCatalog.hasOwnProperty(filename)) {
             const sceneOwner = sceneCatalog[filename].sceneOwner;    
+            const accessible = sceneCatalog[filename].studentAccessible; 
 
             // Show scene if:
             // 1. The user is the website owner (isowner === true)
             // 2. The scene has no owner field (meaning the owner field is absent)
             // 3. The current user is the owner of the scene
-            if (isowner || !sceneCatalog[filename].hasOwnProperty('sceneOwner') || sceneOwner === adminEmail || !isAdmin) {
+            if (isowner || !sceneCatalog[filename].hasOwnProperty('sceneOwner') || sceneOwner === adminEmail ||  (!isAdmin && (sceneCatalog[filename].hasOwnProperty('studentAccessible') && accessible  ))) {
                 finalList.push({
                     filename: filename,
                     name: sceneCatalog[filename].name,
                     desc: sceneCatalog[filename].desc,
                     sceneOwner: sceneOwner || 'No Owner'
                 });
-                console.log(`Added scene: ${filename}`);
             } 
         } 
     }
@@ -106,6 +106,7 @@ router.post('/addScene', function (req, res) {
     var newSceneName = req.body.name;
     var newSceneDesc = req.body.desc; // Check if 'description' is correctly accessed
     var sessionToken = req.cookies.session;
+    var studentAccessible = req.body.studentAccessible;
 
     var adminEmail = findAdminEmailBySession(sessionToken);
     
@@ -120,7 +121,8 @@ router.post('/addScene', function (req, res) {
                 "z": 0
             }
         },
-        "molecules": []
+        "molecules": [],
+        studentAccessible: studentAccessible
     };
 
     // Write scene data to a new JSON file
@@ -148,7 +150,8 @@ router.post('/addScene', function (req, res) {
                 sceneCatalog[newSceneName + ".json"] = {
                     "name": newSceneName,
                     "desc": newSceneDesc,
-                    "sceneOwner": adminEmail
+                    "sceneOwner": adminEmail,
+                    "studentAccessible": studentAccessible
                 };
 
                 // Write updated scene catalog back to the file
