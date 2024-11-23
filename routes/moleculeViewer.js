@@ -2,20 +2,24 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs'); 
 var path = require('path');
+var { checkSession } = require('./auth/session-mgmt');
 
 router.get('/', function(req, res, next) {
-  
-  res.render('moleculeViewer', { title: 'Molecule Viewer', item: 2519});
+  //Admin check
+  let {isAdmin, isowner} = checkSession(req, res);
+  res.render('moleculeViewer', { title: 'Molecule Viewer', item: 2519, isAdmin: isAdmin, isowner});
 });
 
 router.get('/:id', function(req , res){
-  
+  //Admin check
+  let {isAdmin, isowner} = checkSession(req, res);
   var molfiles = fs.readdirSync('./public/molfiles/')
   
   if(molfiles.includes(req.params.id + '.mol')){    
     res.render('moleculeViewer', {
       title: 'Molecule Viewer', 
-      item: req.params.id
+      item: req.params.id,
+      isAdmin: isAdmin, isowner
     });
   }
 
@@ -23,7 +27,8 @@ router.get('/:id', function(req , res){
   else{
     res.render('moleculeViewer', {
       title: 'Molecule Viewer', 
-      item: 2519
+      item: 2519,
+      isAdmin: isAdmin, isowner
     });  
   }
 });
