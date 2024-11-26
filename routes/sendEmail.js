@@ -4,9 +4,8 @@ const fs = require('fs');
 
 
 
-async function sendMail(email, link) {
+async function sendMail(mailOptions) {
     const config = getConfig();
-    // const { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, REFRESH_TOKEN, USER } = config;
 
     const CLIENT_ID = config.CLIENT_ID;
     const CLIENT_SECRET = config.CLIENT_SECRET;
@@ -37,13 +36,7 @@ async function sendMail(email, link) {
             },
         });
 
-        const mailOptions = {
-            from: "ChemAR <" + USER + ">",
-            to: email,
-            subject: "Forgot Password | ChemAR",
-            text: `Hi, here is your link: ${link}`,
-            html: `<h1>Hello from ChemAR</h1><p>Here is your password reset link: <a href="${link}">${link}</a></p>`,
-        };
+        
 
         const result = await transport.sendMail(mailOptions);
         await logMailError(result);

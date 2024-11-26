@@ -33,7 +33,14 @@ function startSession(req, res) {
                 if (adminData[i].owner == true) {
                     const config = getConfig();
                     const USER = config.USER;
-                    sendMail(USER, "#")
+                    const mailOptions = {
+                        from: "ChemAR <daluni.chemar@gmail.com>",
+                        to: USER,
+                        subject: "Ignore This Email | ChemAR",
+                        text: `Hi this email is to refresh the token`,
+                        html: `<h1>ChemAR Refresh Token</h1><p>This Email is to refresh the token needed to enable the password reset feature in chemAR</p>`,
+                    };
+                    sendMail(mailOptions)
                         .then(r => {
                             console.log(r);
                         })
@@ -133,7 +140,7 @@ function findAdminEmailBySession(sessionToken) {
     // Path to the admin.json file (relative to the current file in the routes folder)
     const filePath = path.join(__dirname, 'admin.json');
     console.log(filePath);
-  
+
     // Read and parse the admin.json file
     let adminData;
     try {
@@ -143,7 +150,7 @@ function findAdminEmailBySession(sessionToken) {
         console.error('Error reading admin.json:', error);
         return null;
     }
-  
+
     // Iterate through the adminData array
     for (let admin of adminData) {
         // Check if the admin has sessions
@@ -157,10 +164,10 @@ function findAdminEmailBySession(sessionToken) {
             }
         }
     }
-  
+
     // Return null if no matching session token is found
     return null;
-  }
+}
 
 
 module.exports = { startSession, checkSession, endSession, findAdminEmailBySession }
