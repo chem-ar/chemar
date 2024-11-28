@@ -39,7 +39,14 @@ router.post('/', async function (req, res) {
         let link = tokenlink.concat("&email=", adminEmail);
 
         try {
-            let r = await sendMail(adminEmail, link);
+            const mailOptions = {
+                from: "ChemAR <daluni.chemar@gmail.com>",
+                to: adminEmail,
+                subject: "Forgot Password | ChemAR",
+                text: `Hi, here is your link: ${link}`,
+                html: `<h1>Hello from ChemAR</h1><p>Here is your password reset link: <a href="${link}">${link}</a></p>`,
+            };
+            let r = await sendMail(mailOptions);
             console.log(r); //
 
 

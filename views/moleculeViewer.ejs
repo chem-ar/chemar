@@ -12,15 +12,31 @@
 
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            color: white;
-            background: #202020;
-        }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; 
+    min-height: 100vh; 
+    margin: 0;
+    color: white;
+    background: #202020;
+    position: relative; 
+    padding-bottom: 60px;
+}
+
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    background: #202020;
+    color: white;
+    padding: 10px 0;
+    font-size: 14px;
+ 
+}
 
         .content,
         .content-display,
@@ -36,7 +52,40 @@
             justify-content: center;
             align-items: center;
         }
+        #contro-panel2{
+            
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 4px;
+    background-color: #333;
+    width: 100%; 
+    max-width: 500px;
+    position: relative; 
+    box-sizing: border-box; 
+        }
+      
+#control-panel2 input[type="button"] {
+    font-size: 1rem;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 4px;
+    background-color: #0071EB;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
 
+#control-panel2 input[type="button"]:hover {
+    background-color: #005bb5;
+}
+
+
+.content {
+    margin-bottom: 20px; 
+}
         #control-panel,
         #control-panel2 {
             display: flex;
@@ -135,7 +184,7 @@
         fetchData()
             .then(data => {
                 jmolSetAppletColor('0x202020');
-                jmolApplet(['600', '600'], "set antialiasdisplay\;load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
+                jmolApplet(['500', '400'], "set antialiasdisplay\;load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
             })
             .catch(error => {
                 console.error(error);
@@ -211,44 +260,49 @@
 
     <div id="control-panel2">
         <input type="button" value="Get obj file" id="get-obj" onclick='jmolScript("write " + cid + ".obj;")'>
-        <input type="button" id="saveAsModelBtn"  value="Save Model" class="btn btn-primary">
+        <% if (isAdmin) { %>
+            <input type="button" id="saveAsModelBtn"  value="Save Model" class="btn btn-primary">
+        <% } %>
     </div>
 
     <!-- Modal Structure for Save Model -->
-    <div id="saveModelModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Save Model</h2>
-            <form id="modelForm">
+    <!-- Modal Structure for Save Model -->
+<div id="saveModelModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Save Model</h2>
+        <form id="modelForm">
+            <div class="form-group">
                 <label for="modelName">Model Name:</label>
                 <input type="text" id="modelName" name="modelName" required>
-                
+            </div>
+            <div class="form-group">
                 <label for="modelDesc">Model Description:</label>
                 <textarea id="modelDesc" name="modelDesc" required></textarea>
-                
+            </div>
+            <div class="form-group">
                 <label for="fileName">File Name:</label>
                 <input type="text" id="fileName" name="fileName" required>
-                
-                <button type="button" onclick="submitModelForm()">Save</button>
-            </form>
-        </div>
+            </div>
+            <button type="button" onclick="submitModelForm()">Save</button>
+        </form>
     </div>
+</div>
 
     <style>
-        /* General Modal Styling */
+   
         .modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 9010;
             overflow: auto; 
         }
 
-        /* Modal Content Styling */
+   
         .modal-content {
             background-color: #ffffff;
             color: #333333;
@@ -262,7 +316,7 @@
             margin: 5% auto; 
         }
 
-        /* Close Button */
+        
         .close {
             position: absolute;
             top: 10px;
@@ -277,7 +331,7 @@
             color: #ff0000;
         }
 
-        /* Input and Textarea Fields */
+
         input[type="text"],
         textarea {
             width: 100%;
@@ -290,7 +344,7 @@
             box-sizing: border-box;
         }
 
-        /* Save Button Styling */
+      
         button {
             display: block;
             margin: 20px auto 0;
@@ -305,6 +359,137 @@
         button:hover {
             background-color: #005bb5;
         }
+
+        /* Responsive adjustments for mobile devices */
+@media (max-width: 768px) {
+   
+    html, body {
+        overflow-x: hidden; 
+        width: 100%; 
+    }
+
+
+    #jmolApplet {
+    position: relative;
+
+    flex-direction: column;
+    align-items: center; 
+    margin: auto; 
+    overflow: hidden; 
+
+    height: 0; /* Explicitly set to 0 to remove extra space */
+    padding: 0; /* Remove any padding */
+    border: none; /* Optional: Ensure no borders add to size */
+}
+
+#jmolApplet canvas {
+    max-width: 100%; 
+}
+
+.jsmol-text {
+    margin-top: 10px; 
+    text-align: center; 
+    font-size: 14px; 
+    color: white;
+}
+
+    
+    .modal-content {
+        width: 90%;
+        max-width: 400px; 
+        margin: auto;
+        box-sizing: border-box;
+    }
+
+    #control-panel2 input[type="button"],
+    #toggle-button,
+    #backButton input[type="button"] {
+        font-size: 0.9rem; 
+        padding: 8px 16px;
+    }
+
+    
+
+    
+    h5,
+    span {
+        text-align: center;
+    }
+
+  
+    input[type="text"],
+    textarea {
+        margin-bottom: 10px;
+    }
+    input[type="text"],
+        textarea {
+            width: 50%;
+            
+        }
+     
+.form-group {
+    display: flex;
+    flex-direction: column; 
+    
+  
+    padding: 10px;
+    margin-bottom: 15px;
+
+}
+
+
+.form-group label {
+    font-size: 16px; 
+    margin-bottom: 5px; 
+    color: #333; 
+}
+
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%; 
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+
+.form-group textarea {
+    resize: none; 
+    height: 80px; 
+}
+
+
+button {
+    display: block;
+    margin: 20px auto 0;
+    padding: 10px 20px;
+    background-color: #0071EB;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #005bb5;
+}
+
+
+.modal-content {
+    width: 90%;
+    max-width: 400px;
+    margin: auto;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.modal{
+    width: 100%;
+}
+        
+}
     </style>
 
     <script>
