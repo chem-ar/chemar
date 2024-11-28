@@ -8,6 +8,7 @@ router.get('/', function (req, res, next) {
 
     //Admin check
     let { isAdmin, isowner } = checkSession(req, res);
+    if (!isAdmin) return res.redirect("/");
     res.render('models', { title: 'Model Catalog', isAdmin: isAdmin, isowner });
 });
 
