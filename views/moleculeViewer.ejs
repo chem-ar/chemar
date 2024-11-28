@@ -184,7 +184,7 @@ footer {
         fetchData()
             .then(data => {
                 jmolSetAppletColor('0x202020');
-                jmolApplet(['600', '600'], "set antialiasdisplay\;load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
+                jmolApplet(['400', '400'], "set antialiasdisplay\;load data \"mydata\"" + data + "$$$$||end \"mydata\";spin on;background HOVER[NONE];", '0');
             })
             .catch(error => {
                 console.error(error);
@@ -367,15 +367,17 @@ footer {
     }
 
 
-#jmolApplet {
+    #jmolApplet {
     position: relative;
-    display: flex;
+
     flex-direction: column;
     align-items: center; 
     margin: auto; 
     overflow: hidden; 
-    width: 100%; 
-    max-width: 300px; 
+
+    height: 0; /* Explicitly set to 0 to remove extra space */
+    padding: 0; /* Remove any padding */
+    border: none; /* Optional: Ensure no borders add to size */
 }
 
 #jmolApplet canvas {
