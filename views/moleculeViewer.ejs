@@ -211,7 +211,9 @@
 
     <div id="control-panel2">
         <input type="button" value="Get obj file" id="get-obj" onclick='jmolScript("write " + cid + ".obj;")'>
-        <input type="button" id="saveAsModelBtn"  value="Save Model" class="btn btn-primary">
+        <% if (isAdmin) { %>
+            <input type="button" id="saveAsModelBtn"  value="Save Model" class="btn btn-primary">
+        <% } %>
     </div>
 
     <!-- Modal Structure for Save Model -->
