@@ -61,7 +61,7 @@ router.post('/', async function (req, res) {
 
 
 async function generateToken(req, res) {
-    deletToken(req, res);
+    deleteToken(req, res);
     let { isAdmin, isowner } = checkSession(req, res);
     if (!isAdmin) {
         let token = globalThis.crypto.randomUUID()
@@ -86,7 +86,7 @@ async function generateToken(req, res) {
     }
 }
 
-async function deletToken(req, res) {
+async function deleteToken(req, res) {
     let i = -1
     let ad = fs.readFileSync('./routes/auth/admin.json')
     let adminData = JSON.parse(ad)
