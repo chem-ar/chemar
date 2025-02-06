@@ -32,26 +32,36 @@
     </div>
 
     <div class="row">
-        <form class=" collapse multi-collapse" id="uploadFile" enctype="multipart/form-data">
+        <form class="collapse multi-collapse" id="uploadFile" enctype="multipart/form-data">
             <div class="row d-flex flex-wrap">
-                <div class="col-12 col-sm-6 d-flex  flex-wrap">
+                <div class="col-12 col-sm-6 d-flex flex-wrap">
                     <h4>Model name:</h4>
-                    <input type="text" class="form-control" id="modelName" name="name" placeholder="Ex: molecule_diagramName_number"  required>
+                    <input type="text" class="form-control" id="modelName" name="name" placeholder="Ex: molecule_diagramName_number" required>
+                    
                     <h4>Description:</h4>
                     <input type="text" class="form-control" id="modelDescription" name="modelDescription" placeholder="Model description" required>
-                    <h4>Files (.obj and .mtl):</h4>
-                    <input type="file" class="form-control" id="objFileName" name="objFileName" placeholder="File name" onchange="" 
-                    required accept=".obj">
-                    <input type="file" class="form-control" id="mtlFileName" name="mtlFileName" placeholder="File name" onchange="" 
-                    required accept=".mtl">
+
+                    <h4>Select File Type:</h4>
+                    <select class="form-control" id="fileType" name="fileType">
+                        <option value="obj-mtl">OBJ + MTL</option>
+                        <option value="gltf">GLTF</option>
+                    </select>
+
+                    <!-- OBJ + MTL Files -->
+                    <div id="objMtlUpload">
+                        <h4>Files (.obj and .mtl):</h4>
+                        <input type="file" class="form-control" id="objFileName" name="objFileName" required accept=".obj">
+                        <input type="file" class="form-control" id="mtlFileName" name="mtlFileName" required accept=".mtl">
+                    </div>
+
+                    <!-- GLTF File -->
+                    <div id="gltfUpload" style="display: none;">
+                        <h4>File (.gltf):</h4>
+                        <input type="file" class="form-control" id="gltfFileName" name="gltfFileName" accept=".gltf">
+                    </div>
+
                     <button class="btn btn-customsubmit form-control my-2" id="uploadBtn">
-                        <span
-                            id="uploadBtnSpinner"
-                            class="spinner-border spinner-border-sm"
-                            role="status"
-                            aria-label="Loading"
-                            style="display: none;"
-                        ></span>
+                        <span id="uploadBtnSpinner" class="spinner-border spinner-border-sm" role="status" aria-label="Loading" style="display: none;"></span>
                         Upload
                     </button>
                 </div>
@@ -65,6 +75,31 @@
 
 <script type="module">
     const uploadModelForm = document.getElementById('uploadFile');
+    const fileTypeSelector = document.getElementById('fileType');
+    const objMtlUpload = document.getElementById('objMtlUpload');
+    const gltfUpload = document.getElementById('gltfUpload');
+    const objInput = document.getElementById('objFileName');
+    const mtlInput = document.getElementById('mtlFileName');
+    const gltfInput = document.getElementById('gltfFileName');
+
+    fileTypeSelector.addEventListener('change', function () {
+        if (this.value === 'obj-mtl') {
+            objMtlUpload.style.display = 'block';
+            gltfUpload.style.display = 'none';
+
+            objInput.required = true;
+            mtlInput.required = true;
+            gltfInput.required = false;
+        } else {
+            objMtlUpload.style.display = 'none';
+            gltfUpload.style.display = 'block';
+
+            objInput.required = false;
+            mtlInput.required = false;
+            gltfInput.required = true;
+        }
+    });
+
     uploadModelForm.addEventListener('submit', e => {
         e.preventDefault();
         setModelUploading(true);
@@ -74,36 +109,27 @@
             method: 'POST',
             body: formData
         })
-            .then(async res => {
-                const body = await res.json().catch((_err) => ({}));
-                if (res.status === 400 && body.error) {
-                    throw new Error(body.error);
-                } else if (res.status === 401 && body.error) {
-                    throw new Error(body.error);
-                } else if (!res.ok) {
-                    throw new Error(`Server returned status code ${res.status}`);
-                }
-
-                toastr.success(body.message);
-                uploadModelForm.reset();
-                fetchModels();   // fetchModels is defined at views/models.ejs
-            })
-            .catch(err => {
-                toastr.error(err.message, "Failed to save model");
-            })
-            .finally(() => setModelUploading(false));
+        .then(async res => {
+            const body = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                throw new Error(body.error || `Server returned status code ${res.status}`);
+            }
+            toastr.success(body.message);
+            uploadModelForm.reset();
+            fetchModels(); // fetchModels is defined at views/models.ejs
+        })
+        .catch(err => {
+            toastr.error(err.message, "Failed to save model");
+        })
+        .finally(() => setModelUploading(false));
     });
 
     function setModelUploading(isUploading) {
         const spinner = document.getElementById('uploadBtnSpinner');
         const uploadBtn = document.getElementById('uploadBtn');
 
-        if (isUploading) {
-            spinner.style.display = '';
-            uploadBtn.disabled = true;
-        } else {
-            spinner.style.display = 'none';
-            uploadBtn.disabled = false;
-        }
+        spinner.style.display = isUploading ? '' : 'none';
+        uploadBtn.disabled = isUploading;
     }
 </script>
+
