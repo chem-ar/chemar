@@ -1010,7 +1010,7 @@ const molFileToJSON = (molFile) => {
 
 ### Adding the `.mol` file converter
 
-We can make a new file and call it `molFileToJSON.js`. We can then import the function into the project by adding the following line to the top of `index.js`:
+We can make a new file and call it `convertMolFileToJSON.js`. We can then import the function into the project by adding the following line to the top of `index.js`:
 
 ```html
 <!DOCTYPE html>
@@ -1018,7 +1018,7 @@ We can make a new file and call it `molFileToJSON.js`. We can then import the fu
 <head>
     <title>Three JS Molecules</title>
     <script src="js/three.min.js"></script>
-    <script src="js/molFileToJSON.js"></script>
+    <script src="js/convertMolFileToJSON.js"></script>
 
     ...
 
@@ -1263,14 +1263,14 @@ Next, remove the script tag for `three.js` from the `index.html` file:
     <title>Three JS Molecules</title>
 -   <script src="js/three.min.js"></script> -->
 
-    <script src="js/molFileToJSON.js"></script>
+    <script src="js/convertMolFileToJSON.js"></script>
 
     <style>
         body { margin: 0; }
     </style> 
 </head>
 ```
-And we then add `type="module"` to the script tag for `molFileToJSON.js`:
+And we then add `type="module"` to the script tag for `convertMolFileToJSON.js`:
 
 ```html
 <script type= "module" >
@@ -1285,11 +1285,11 @@ Then, import the THREE module:
 </script>
 ```
 
-This will allow us to use the ES6 module syntax in our `molFileToJSON.js` file.
+This will allow us to use the ES6 module syntax in our `convertMolFileToJSON.js` file.
 
 ### Importing OrbitControls
 
-OrbitControls is an addition to Three.js that allows us to rotate the camera around the scene. We can import OrbitControls by adding the following line to the `molFileToJSON.js` file. First, start by saving the `OrbitControls.js` file to the `./js/` folder, the continue by adding an import map to the head of the HTMl file:
+OrbitControls is an addition to Three.js that allows us to rotate the camera around the scene. We can import OrbitControls by adding the following line to the `convertMolFileToJSON.js` file. First, start by saving the `OrbitControls.js` file to the `./js/` folder, the continue by adding an import map to the head of the HTMl file:
 ```
 <script type="importmap">
     {
