@@ -24,7 +24,8 @@ router.get('/', function (req, res, next) {
 const uploadMiddleware = upload.fields([
     { name: 'objFileName', maxCount: 1 },
     { name: 'mtlFileName', maxCount: 1 },
-    { name: 'gltfFileName', maxCount: 1 }
+    { name: 'gltfFileName', maxCount: 1 },
+    { name: 'glbFileName', maxCount: 1 }
 ]);
 
 // Generate a unique ID for each model
@@ -45,6 +46,7 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
         if (req.files['objFileName']) fs.unlinkSync(req.files['objFileName'][0].path);
         if (req.files['mtlFileName']) fs.unlinkSync(req.files['mtlFileName'][0].path);
         if (req.files['gltfFileName']) fs.unlinkSync(req.files['gltfFileName'][0].path);
+        if (req.files['glbFileName']) fs.unlinkSync(req.files['glbFileName'][0].path);
 
         return res.status(401).send({ error: "User not logged in" });
     }
@@ -60,6 +62,7 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
             if (req.files['objFileName']) fs.unlinkSync(req.files['objFileName'][0].path);
             if (req.files['mtlFileName']) fs.unlinkSync(req.files['mtlFileName'][0].path);
             if (req.files['gltfFileName']) fs.unlinkSync(req.files['gltfFileName'][0].path);
+            if (req.files['glbFileName']) fs.unlinkSync(req.files['glbFileName'][0].path);
 
             return res.status(400).send({ error: 'This model already exists' });
         }
@@ -97,6 +100,15 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
         fs.renameSync(gltfFile.path, path.join(gltfFile.destination, newGltfFileName));
 
         modelEntry.files.gltf = newGltfFileName;
+    }
+    //Handle GLB file upload
+    else if (fileType === 'glb') {
+        const gltfFile = req.files['glbFileName'][0];
+
+        const newGlbFileName = `${name}-${newId}.glb`;
+        fs.renameSync(glbFile.path, path.join(glbFile.destination, newGlbfFileName));
+
+        modelEntry.files.glb = newGlbFileName;
     }
 
     // Add model to catalog

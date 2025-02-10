@@ -45,6 +45,7 @@
                     <select class="form-control" id="fileType" name="fileType">
                         <option value="obj-mtl">OBJ + MTL</option>
                         <option value="gltf">GLTF</option>
+                        <option value="glb">GLB</option>
                     </select>
 
                     <!-- OBJ + MTL Files -->
@@ -58,6 +59,12 @@
                     <div id="gltfUpload" style="display: none;">
                         <h4>File (.gltf):</h4>
                         <input type="file" class="form-control" id="gltfFileName" name="gltfFileName" accept=".gltf">
+                    </div>
+
+                    <!-- GLB File -->
+                    <div id="glbUpload" style="display: none;">
+                        <h4>File (.glb):</h4>
+                        <input type="file" class="form-control" id="glbFileName" name="glbFileName" accept=".glb">
                     </div>
 
                     <button class="btn btn-customsubmit form-control my-2" id="uploadBtn">
@@ -81,22 +88,36 @@
     const objInput = document.getElementById('objFileName');
     const mtlInput = document.getElementById('mtlFileName');
     const gltfInput = document.getElementById('gltfFileName');
+    const glbInput = document.getElementById('glbFileName');
 
     fileTypeSelector.addEventListener('change', function () {
         if (this.value === 'obj-mtl') {
             objMtlUpload.style.display = 'block';
             gltfUpload.style.display = 'none';
+            glbUpload.style.display = 'none';
 
             objInput.required = true;
             mtlInput.required = true;
             gltfInput.required = false;
-        } else {
+            glbInput.required = false;
+        } else if(this.value === 'gltf'){
             objMtlUpload.style.display = 'none';
             gltfUpload.style.display = 'block';
+            glbUpload.style.display = 'none';
 
             objInput.required = false;
             mtlInput.required = false;
             gltfInput.required = true;
+            glbInput.required = false;
+        }else{
+            objMtlUpload.style.display = 'none';
+            gltfUpload.style.display = 'none';
+            glbUpload.style.display = 'block';
+
+            objInput.required = false;
+            mtlInput.required = false;
+            gltfInput.required = false;
+            glbInput.required = true;
         }
     });
 
