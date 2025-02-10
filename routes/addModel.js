@@ -25,6 +25,7 @@ const uploadMiddleware = upload.fields([
     { name: 'objFileName', maxCount: 1 },
     { name: 'mtlFileName', maxCount: 1 },
     { name: 'gltfFileName', maxCount: 1 },
+    { name: 'binFileName', maxCount: 1 },
     { name: 'glbFileName', maxCount: 1 }
 ]);
 
@@ -38,16 +39,12 @@ const uniqueId = (parsedData) => {
 router.post('/saveModel', uploadMiddleware, (req, res) => {
     const name = req.body.name;
     const modelDescription = req.body.modelDescription;
-    const fileType = req.body.fileType; // "obj-mtl" or "gltf"
+    const fileType = req.body.fileType; // "obj-mtl", "gltf", or "glb"
     
     let { isAdmin } = checkSession(req, res);
     if (!isAdmin) {
         // Delete any uploaded files
-        if (req.files['objFileName']) fs.unlinkSync(req.files['objFileName'][0].path);
-        if (req.files['mtlFileName']) fs.unlinkSync(req.files['mtlFileName'][0].path);
-        if (req.files['gltfFileName']) fs.unlinkSync(req.files['gltfFileName'][0].path);
-        if (req.files['glbFileName']) fs.unlinkSync(req.files['glbFileName'][0].path);
-
+        Object.values(req.files).flat().forEach(file => fs.unlinkSync(file.path));
         return res.status(401).send({ error: "User not logged in" });
     }
 
@@ -58,12 +55,7 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     // Check if the model already exists
     for (const entry of parsedData) {
         if (entry.name === name && entry.description === modelDescription) {
-            // Delete uploaded files
-            if (req.files['objFileName']) fs.unlinkSync(req.files['objFileName'][0].path);
-            if (req.files['mtlFileName']) fs.unlinkSync(req.files['mtlFileName'][0].path);
-            if (req.files['gltfFileName']) fs.unlinkSync(req.files['gltfFileName'][0].path);
-            if (req.files['glbFileName']) fs.unlinkSync(req.files['glbFileName'][0].path);
-
+            Object.values(req.files).flat().forEach(file => fs.unlinkSync(file.path));
             return res.status(400).send({ error: 'This model already exists' });
         }
     }
@@ -92,21 +84,31 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
         modelEntry.files.obj = newObjFileName;
         modelEntry.files.mtl = newMtlFileName;
     }
-    // Handle GLTF file upload
+    // Handle GLTF file upload (must also have .bin file)
     else if (fileType === 'gltf') {
+        if (!req.files['binFileName']) {
+            Object.values(req.files).flat().forEach(file => fs.unlinkSync(file.path));
+            return res.status(400).send({ error: "GLTF file requires a corresponding .bin file." });
+        }
+
         const gltfFile = req.files['gltfFileName'][0];
+        const binFile = req.files['binFileName'][0];
 
         const newGltfFileName = `${name}-${newId}.gltf`;
+        const newBinFileName = `${name}-${newId}.bin`;
+
         fs.renameSync(gltfFile.path, path.join(gltfFile.destination, newGltfFileName));
+        fs.renameSync(binFile.path, path.join(binFile.destination, newBinFileName));
 
         modelEntry.files.gltf = newGltfFileName;
+        modelEntry.files.bin = newBinFileName;
     }
-    //Handle GLB file upload
+    // Handle GLB file upload
     else if (fileType === 'glb') {
-        const gltfFile = req.files['glbFileName'][0];
+        const glbFile = req.files['glbFileName'][0];
 
         const newGlbFileName = `${name}-${newId}.glb`;
-        fs.renameSync(glbFile.path, path.join(glbFile.destination, newGlbfFileName));
+        fs.renameSync(glbFile.path, path.join(glbFile.destination, newGlbFileName));
 
         modelEntry.files.glb = newGlbFileName;
     }

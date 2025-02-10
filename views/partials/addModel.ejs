@@ -44,7 +44,7 @@
                     <h4>Select File Type:</h4>
                     <select class="form-control" id="fileType" name="fileType">
                         <option value="obj-mtl">OBJ + MTL</option>
-                        <option value="gltf">GLTF</option>
+                        <option value="gltf">GLTF + BIN</option>
                         <option value="glb">GLB</option>
                     </select>
 
@@ -57,8 +57,9 @@
 
                     <!-- GLTF File -->
                     <div id="gltfUpload" style="display: none;">
-                        <h4>File (.gltf):</h4>
+                        <h4>File (.gltf and .bin):</h4>
                         <input type="file" class="form-control" id="gltfFileName" name="gltfFileName" accept=".gltf">
+                        <input type="file" class="form-control" id="binFileName" name="binFileName" required accept=".bin">
                     </div>
 
                     <!-- GLB File -->
@@ -88,6 +89,7 @@
     const objInput = document.getElementById('objFileName');
     const mtlInput = document.getElementById('mtlFileName');
     const gltfInput = document.getElementById('gltfFileName');
+    const binInput = document.getElementById('binFileName');
     const glbInput = document.getElementById('glbFileName');
 
     fileTypeSelector.addEventListener('change', function () {
@@ -99,6 +101,7 @@
             objInput.required = true;
             mtlInput.required = true;
             gltfInput.required = false;
+            binInput.required = false;
             glbInput.required = false;
         } else if(this.value === 'gltf'){
             objMtlUpload.style.display = 'none';
@@ -108,6 +111,7 @@
             objInput.required = false;
             mtlInput.required = false;
             gltfInput.required = true;
+            binInput.required = true;
             glbInput.required = false;
         }else{
             objMtlUpload.style.display = 'none';
@@ -117,6 +121,7 @@
             objInput.required = false;
             mtlInput.required = false;
             gltfInput.required = false;
+            binInput.required = false;
             glbInput.required = true;
         }
     });

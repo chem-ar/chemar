@@ -53,42 +53,58 @@ router.post('/edit', function (req, res, next) {
 
 // Handling the delete functionality
 router.delete('/delete', function (req, res, next) {
-    let { isAdmin, isowner } = checkSession(req, res);
+    let { isAdmin } = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     const id = req.body.id;
     const modelFileCatalog = './public/catalog/modelFileCatalog.json';
-    const modelFileData = fs.readFileSync(modelFileCatalog);
-    const modelData = JSON.parse(modelFileData);
 
-    let n = -1;
-    for (const key in modelData) {
-        if (modelData[key].id == parseInt(id)) {
-            n = key;
+    try {
+        const modelFileData = fs.readFileSync(modelFileCatalog, 'utf8');
+        const modelData = JSON.parse(modelFileData);
+
+        let modelIndex = modelData.findIndex(model => model.id === parseInt(id));
+
+        if (modelIndex === -1) {
+            console.error(`Model with ID ${id} not found.`);
+            return res.status(404).send({ error: "Model not found" });
         }
+
+        const modelDelete = modelData[modelIndex];
+        const filesToDelete = [];
+
+        // Delete model files based on the catalog entry
+        Object.values(modelDelete.files).forEach(file => {
+            const filePath = `./public/modelfiles/${file}`;
+            if (fs.existsSync(filePath)) {
+                filesToDelete.push(filePath);
+            } else {
+                console.warn(`File not found: ${filePath}`);
+            }
+        });
+
+        console.log(`Deleting files:`, filesToDelete);
+
+        // Delete files safely
+        filesToDelete.forEach(file => {
+            try {
+                fs.unlinkSync(file);
+                console.log(`Deleted: ${file}`);
+            } catch (err) {
+                console.error(`Error deleting ${file}:`, err);
+            }
+        });
+
+        // Remove model from catalog
+        modelData.splice(modelIndex, 1);
+        fs.writeFileSync(modelFileCatalog, JSON.stringify(modelData, null, 2));
+
+        return res.status(200).send({ message: "Model deleted successfully" });
+
+    } catch (error) {
+        console.error("Error deleting model:", error);
+        return res.status(500).send({ error: "Internal server error" });
     }
-    if (n === -1) return res.status(404).send({ error: "Model not found" });
-    
-    const modelDelete = modelData[n];
-    
-    // Deleting the .mtl, .obj, and .gltf files if they exist
-    const filesToDelete = [
-        `./public/modelfiles/${modelDelete.files.mtl}`,
-        `./public/modelfiles/${modelDelete.files.obj}`,
-        `./public/modelfiles/${modelDelete.name}-${id}.gltf`
-    ];
-    
-    filesToDelete.forEach(file => {
-        if (fs.existsSync(file)) {
-            fs.unlinkSync(file);
-        }
-    });
-    
-    // Remove model from array
-    modelData.splice(n, 1);
-    
-    fs.writeFileSync(modelFileCatalog, JSON.stringify(modelData));
-    return res.status(200).send({ message: "Model deleted successfully" });
 });
 
 module.exports = router;
