@@ -26,7 +26,14 @@ export async function createModel(modelData, position, rotation, scale) {
 
         // Load .gltf file
         const gltf = await gltfLoader.loadAsync(`/modelfiles/${files.gltf}`);
-        object = gltf.scene; // The model is contained in the scene of the glTF
+        object = gltf.scene;
+    }
+    else if (files.glb){
+        const gltfLoader = new GLTFLoader();
+
+        // Load .gltf file
+        const glb = await gltfLoader.loadAsync(`/modelfiles/${files.glb}`);
+        object = glb.scene;
     }
 
     // Set position, rotation, and scale if provided
