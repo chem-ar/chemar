@@ -24,16 +24,13 @@
                     <tr>
                         <th>Name</th>
                         <th>Description</th>
-                        <th>Obj File</th>
-                        <th>Mtl File</th>
-                        <!-- If the user is an admin, include the Options column -->
+                        <th>Uploaded Files</th>
                         <% if (isAdmin){%>
                             <th class="options-column">Options</th>
                         <%}%>
                     </tr>
                 </thead>            
-                <tbody id="table-body">
-                </tbody>
+                <tbody id="table-body"></tbody>
             </table>
         </div>
     </div>
@@ -97,53 +94,39 @@
 </style>
 
 <script>
+    
     $(document).ready(function () {
         $('#editModal').appendTo("body");
         $('#deleteModal').appendTo("body");
 
         // Initialize the DataTable
+    if ($('#modelTable').length) {
         dataTable = new DataTable('#modelTable', {
             ordering: true,
-            columnDefs: [
-                { orderable: false, targets: [4] }
-            ]
+            columnDefs: [{ orderable: false, targets: [3] }]
         });
-        
         fetchModels();
-    });
+    } else {
+        console.error("Table with ID #modelTable not found.");
+    }
+});
+
 
     let dataTable;
 
     // this function is also used at views/partials/addModel.ejs
     function fetchModels() {
-        // Fetch the model data from the server
-        fetch("/catalog/modelFileCatalog.json")
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error(`HTTP error Status: ${res.status}`);
-                }
-                return res.json();
-            })
-            .then((modelData) => {
-                dataTable.clear();
+    fetch("/catalog/modelFileCatalog.json")
+        .then((res) => res.json())
+        .then((modelData) => {
+            dataTable.clear();
+            modelData.forEach(populateTable);
+        })
+        .catch((error) => toastr.error(error.message, "Unable to fetch data"));
+}
 
-                // Populate the table with the fetched model data
-                for (const key in modelData) {
-                    populateTable(modelData[key]);
-                }
 
-                // event listeners for the edit and delete buttons
-                document.querySelectorAll('.editModelBtn').forEach(btn => {
-                    btn.addEventListener('click', handleEditClick);
-                });
-
-                document.querySelectorAll('.deleteModelBtn').forEach(btn => {
-                    btn.addEventListener('click', handleDeleteClick);
-                });
-
-            })
-            .catch((error) => toastr.error(error.message, "Unable to fetch data"));
-    }
+               
     
     //To handle edit button functionality    
     function handleEditClick(event){
