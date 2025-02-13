@@ -7,7 +7,7 @@ const { checkSession } = require('./auth/session-mgmt');
 const router = express.Router();
 
 // Define the upload directory
-const UPLOADS_DIR = "public/uploads";
+const UPLOADS_DIR = "uploads";
 
 // Ensure the upload directory exists
 if (!fs.existsSync(UPLOADS_DIR)) {
@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
         cb(null, UPLOADS_DIR);
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
+        cb(null, file.originalname);
     }
 });
 

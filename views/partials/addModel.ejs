@@ -117,9 +117,6 @@
         setModelUploading(true);
 
         const formData = new FormData(uploadModelForm);
-        for (const file of fileInput.files) {
-            formData.append("modelFiles", file);
-        }
 
         try {
             const res = await fetch('/addmodel/saveModel', {
