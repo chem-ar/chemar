@@ -39,7 +39,7 @@ const uniqueId = (parsedData) => {
 router.post('/saveModel', uploadMiddleware, (req, res) => {
     const name = req.body.name;
     const modelDescription = req.body.modelDescription;
-    const fileType = req.body.fileType; // "obj-mtl", "gltf", or "glb"
+    const fileType = req.body.fileType; 
     
     let { isAdmin } = checkSession(req, res);
     if (!isAdmin) {
