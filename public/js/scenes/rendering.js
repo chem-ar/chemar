@@ -17,7 +17,6 @@ export async function createModel(modelData, position, rotation, scale) {
         materials.preload();
         objLoader.setMaterials(materials);
 
-        // Load object
         object = await objLoader.loadAsync(`/modelfiles/${files.obj}`);
     }
     // If there is a .gltf file, use the GLTFLoader
@@ -36,7 +35,6 @@ export async function createModel(modelData, position, rotation, scale) {
         object = glb.scene;
     }
 
-    // Set position, rotation, and scale if provided
     if (object) {
         object.position.z = 1;
 

@@ -37,12 +37,6 @@ router.post('/edit', function (req, res, next) {
         const previousName = modelData[n].name;
         modelData[n].description = data.description;
         modelData[n].name = data.name;
-        modelData[n].files = {
-            obj: `${data.name}-${id}.obj`,
-            mtl: `${data.name}-${id}.mtl`
-        };
-        fs.renameSync(`./public/modelfiles/${previousName}-${id}.mtl`, `./public/modelfiles/${data.name}-${id}.mtl`);
-        fs.renameSync(`./public/modelfiles/${previousName}-${id}.obj`, `./public/modelfiles/${data.name}-${id}.obj`);
     } else {
         return res.status(409).send('');
     }
@@ -83,9 +77,7 @@ router.delete('/delete', function (req, res, next) {
             }
         });
 
-        console.log(`Deleting files:`, filesToDelete);
-
-        // Delete files safely
+        // Delete files
         filesToDelete.forEach(file => {
             try {
                 fs.unlinkSync(file);
