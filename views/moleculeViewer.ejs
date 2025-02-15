@@ -109,6 +109,11 @@ footer {
             font-size: 1.13rem;
             padding: 10px 20px;
         }
+        #backButton {
+            position: absolute;
+            left: 10px; 
+            top: 10px; 
+        }
 
         #control-panel2 input[type=button] {
             background-color: #0071EB;
@@ -124,7 +129,12 @@ footer {
             padding: 10px 20px;
             border-radius: 4px;
             border: none;
+            margin-top: 10px; 
+            margin-bottom: 10px; 
+            margin-left: 10px; 
+            margin-right: 10px;
         }
+        
     </style>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css">
@@ -209,7 +219,8 @@ footer {
 
         slider.addEventListener("input", function () {
             label.innerHTML = slider.value;
-            jmolScript("spacefill " + slider.value);
+            jmolScript("spacefill " + parseFloat(slider.value));
+            //jmolScript("spacefill " + float(slider.value));
         });
 
         document.body.appendChild(slider);
@@ -290,7 +301,12 @@ footer {
 </div>
 
     <style>
-   
+        #get-obj{
+            position: absolute;
+            right: 10px;
+            top: 10px; 
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -407,6 +423,11 @@ footer {
         font-size: 0.9rem; 
         padding: 8px 16px;
     }
+    #backButton {
+    position: absolute;
+    left: 10px; 
+    top: 10px; 
+}
 
     
 
