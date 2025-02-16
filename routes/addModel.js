@@ -6,18 +6,22 @@ const { checkSession } = require('./auth/session-mgmt');
 
 const router = express.Router();
 
-// Define the upload directory
-const UPLOADS_DIR = "uploads";
-
-// Ensure the upload directory exists
-if (!fs.existsSync(UPLOADS_DIR)) {
-    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-}
+// Base uploads directory
+const UPLOADS_DIR = 'uploads';
 
 // Set up multer storage for multiple file types
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, UPLOADS_DIR);
+        // Get file extension without the dot
+        const ext = path.extname(file.originalname).toLowerCase().substring(1);
+        
+        // Define target directory based on extension
+        const targetDir = `${UPLOADS_DIR}/${ext}`;
+        // Ensure the upload directory exists
+        if (!fs.existsSync(targetDir)) {
+            fs.mkdirSync(targetDir, { recursive: true });
+        }
+        cb(null, targetDir);
     },
     filename: (req, file, cb) => {
         cb(null, file.originalname);
