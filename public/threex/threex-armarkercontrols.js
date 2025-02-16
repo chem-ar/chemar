@@ -12,7 +12,7 @@ ARjs.MarkerControls = THREEx.ArMarkerControls = function(context, object3d, para
 		// size of the marker in meter
 		size : 1,
 		// type of marker - ['pattern', 'barcode', 'unknown' ]
-		type : 'unknown',
+		type : 'pattern',
 		// url of the pattern - IIF type='pattern'
 		patternUrl : null,
 		// value of the barcode - IIF type='barcode'
@@ -20,7 +20,7 @@ ARjs.MarkerControls = THREEx.ArMarkerControls = function(context, object3d, para
 		// change matrix mode - [modelViewMatrix, cameraTransformMatrix]
 		changeMatrixMode : 'modelViewMatrix',
 		// minimal confidence in the marke recognition - between [0, 1] - default to 1
-		minConfidence: 0.6,
+		minConfidence: 0.2,
 	}
 
 	// sanity check
