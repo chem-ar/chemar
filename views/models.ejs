@@ -211,10 +211,15 @@
 
     //To populate data to the table
     function populateTable(modelData) {
-        const newRow = dataTable.row.add([ modelData.name,
-            modelData.description,
-            '<a class="text-white modelfiles-in-table" id="Name" href="modelfiles/' +  modelData.files.obj + '">' + modelData.files.obj + '</a>',
-            '<a class="text-white modelfiles-in-table" id="Name" href="modelfiles/' +  modelData.files.mtl +'">' + modelData.files.mtl + '</a>',
+    let fileLinks = "";
+    fileLinks = modelData.files.map(file => 
+        `<a class="text-white modelfiles-in-table d-block" href="modelfiles/${file.trim()}">${file.trim()}</a>`
+    ).join('');
+    
+    const newRow = dataTable.row.add([
+        modelData.name,
+        modelData.description,
+        fileLinks, // Cleaned-up file links
             <% if (isAdmin){%>
             `<td class class="options-column">
                                 <div class=" d-grid gap-2">
