@@ -132,9 +132,11 @@ router.post('/quickSaveModel/:modelname/:modelDesc/:fileName', (req, res) => {
     }
 });
 
+// Endpoint to check model status
 router.get('/modelStatus/:modelname', (req, res) => {
     const { modelname } = req.params;
     res.json({ isSaved: modelSaveStatus[modelname] || false });
 });
 
 module.exports = router;
+

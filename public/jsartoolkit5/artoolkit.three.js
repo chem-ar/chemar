@@ -97,8 +97,8 @@
 			);
 
 			// The video plane shouldn't care about the z-buffer.
-			plane.material.depthTest = false;
-			plane.material.depthWrite = false;
+			plane.material.depthTest = true;
+			plane.material.depthWrite = true;
 
 			// Create a camera and a scene for the video plane and
 			// add the camera and the video plane to the scene.
@@ -113,7 +113,7 @@
 
 			var scene = new THREE.Scene();
 			var camera = new THREE.Camera();
-			camera.matrixAutoUpdate = false;
+			camera.matrixAutoUpdate = true;
 			camera.projectionMatrix.elements.set(this.getCameraMatrix());
 
 			scene.add(camera);
