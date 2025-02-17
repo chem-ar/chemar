@@ -8,32 +8,42 @@
         border-radius: 5px;
         margin-bottom: 10px;
     }
+
+
     .drop-zone.dragover {
         background-color: #f0f8ff;
     }
+
+
     .hidden {
         display: none;
     }
+
+
     .btn-green {
         background-color: #097242;
         color: white;
     }
+
 
     .btn-green:hover {
         background-color: #075c33;
         color: white;
     }
 
+
     .btn-customsubmit {
         background-color: #0071EB;
         color: white;
     }
+
 
     .btn-customsubmit:hover {
         background-color: #005bb5;
         color: white;
     }
 </style>
+
 
 <!-- Add Model -->
 <div class="row content">
@@ -46,6 +56,7 @@
         </div>
     </div>
 
+
     <div class="row">
         <form class="collapse multi-collapse" id="uploadFile" enctype="multipart/form-data">
             <div class="row d-flex flex-wrap">
@@ -53,8 +64,10 @@
                     <h4>Model Name:</h4>
                     <input type="text" class="form-control" id="modelName" name="name" required>
 
+
                     <h4>Description:</h4>
                     <input type="text" class="form-control" id="modelDescription" name="modelDescription" required>
+
 
                     <h4>Upload Model Files:</h4>
                     <div id="drop-zone" class="drop-zone">
@@ -63,7 +76,9 @@
                                accept=".obj,.mtl,.bin,.gltf,.glb,.fbx">
                     </div>
 
+
                     <div id="file-list"></div>
+
 
                     <button class="btn btn-customsubmit form-control my-2" id="uploadBtn">
                         <span id="uploadBtnSpinner" class="spinner-border spinner-border-sm" role="status" style="display: none;"></span>
@@ -75,22 +90,34 @@
     </div>
 </div>
 
+
 <script type="module">
-   const dropZone = document.getElementById("drop-zone");
+    const dropZone = document.getElementById("drop-zone");
     const fileInput = document.getElementById("fileInput");
     const fileList = document.getElementById("file-list");
     const uploadModelForm = document.getElementById("uploadFile");
+    const modelNameInput = document.getElementById("modelName");
+    const modelDescInput = document.getElementById("modelDescription");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const uploadSpinner = document.getElementById("uploadBtnSpinner");
 
-    dropZone.addEventListener("click", () => fileInput.click());
+
+    // Ensure click to upload still works
+    dropZone.addEventListener("click", () => {
+        fileInput.click();
+    });
+
 
     dropZone.addEventListener("dragover", (e) => {
         e.preventDefault();
         dropZone.classList.add("dragover");
     });
 
+
     dropZone.addEventListener("dragleave", () => {
         dropZone.classList.remove("dragover");
     });
+
 
     dropZone.addEventListener("drop", (e) => {
         e.preventDefault();
@@ -99,9 +126,11 @@
         updateFileList(fileInput.files);
     });
 
+
     fileInput.addEventListener("change", () => {
         updateFileList(fileInput.files);
     });
+
 
     function updateFileList(files) {
         fileList.innerHTML = "";
@@ -112,41 +141,61 @@
         }
     }
 
+
     uploadModelForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         setModelUploading(true);
 
-        const formData = new FormData(uploadModelForm);
+
+        const formData = new FormData();
+        formData.append("name", modelNameInput.value);
+        formData.append("modelDescription", modelDescInput.value);
+
+
+        let fileType = "";
+        for (const file of fileInput.files) {
+            const ext = file.name.split(".").pop().toLowerCase();
+            if (ext === "obj") {
+                formData.append("objFileName", file);
+                fileType = "obj-mtl";
+            } else if (ext === "mtl") {
+                formData.append("mtlFileName", file);
+            } else if (ext === "gltf") {
+                formData.append("gltfFileName", file);
+                fileType = "gltf";
+            } else if (ext === "bin") {
+                formData.append("binFileName", file);
+            } else if (ext === "glb") {
+                formData.append("glbFileName", file);
+                fileType = "glb";
+            }
+        }
+        formData.append("fileType", fileType);
+
 
         try {
-            const res = await fetch('/addmodel/saveModel', {
-                method: 'POST',
-                body: formData
-            });
+            const res = await fetch("/addmodel/saveModel", { method: "POST", body: formData });
+
+
+
 
             const body = await res.json();
-            if (!res.ok) throw new Error(body.error || `Server returned status code ${res.status}`);
+            if (!res.ok) throw new Error(body.error || `Server error ${res.status}`);
+
 
             toastr.success(body.message);
             uploadModelForm.reset();
-            fetchModels();
+            fileList.innerHTML = "";
         } catch (err) {
-            toastr.error(err.message, "Failed to save model");
+            toastr.error(err.message, "Upload failed");
         } finally {
             setModelUploading(false);
         }
     });
 
-    function setModelUploading(isUploading) {
-        const spinner = document.getElementById('uploadBtnSpinner');
-        const uploadBtn = document.getElementById('uploadBtn');
 
-        if (isUploading) {
-            spinner.style.display = '';
-            uploadBtn.disabled = true;
-        } else {
-            spinner.style.display = 'none';
-            uploadBtn.disabled = false;
-        }
+    function setModelUploading(isUploading) {
+        uploadSpinner.style.display = isUploading ? "" : "none";
+        uploadBtn.disabled = isUploading;
     }
 </script>
