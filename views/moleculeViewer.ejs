@@ -219,8 +219,14 @@ footer {
 
         slider.addEventListener("input", function () {
             label.innerHTML = slider.value;
-            jmolScript("spacefill " + parseFloat(slider.value));
-            //jmolScript("spacefill " + float(slider.value));
+            // Due to a bug in JSmol, I have to offset the value of any integer-parsed value very slightly.
+            // JSmol appears to not auto-parse the value as a float in it's method, so I have to set any value that could be parsed as an int to a slightly offset float
+            // The exact value for the offset is 0.001 added to the size.
+            let useValue = slider.value;
+            if (parseInt(useValue) == slider.value) {
+                useValue = parseFloat(useValue) + 0.001;
+            }
+            changeVanDerSize(useValue);
         });
 
         document.body.appendChild(slider);
@@ -261,6 +267,10 @@ footer {
 
 
     <script>
+        // Function to change Van-Der-Waals radius size
+        function changeVanDerSize(value) {
+            jmolScript("spacefill " + Float.$valueOf(value))
+        }
         // Function to change bond size
         function changeBondSize(value) {
             jmolScript("wireframe " + value);
