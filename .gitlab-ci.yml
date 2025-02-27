@@ -11,7 +11,7 @@ deploy-main-azure:      # This job runs in the deploy stage.
     - main #Change to your branch for testing. Change back to main/develop before merging
   script:
     - az login --username $PRODID --password $PRODPASSWORD
-    - az webapp up --name $PRODAPPNAME --resource-group $PRODRESOURCEGROUP --runtime "NODE|20-lts"
+    - az webapp up --name $PRODAPPNAME --resource-group $PRODRESOURCEGROUP --runtime "NODE|22-lts"
 
 kudu-scm-build:
   stage: post-deploy
@@ -26,7 +26,7 @@ deploy-develop-azure:
     - develop
   script:
     - az login --username $DEVID --password $DEVPASSWORD
-    - az webapp up --name $DEVAPPNAME --resource-group $DEVRESOURCEGROUP --runtime "NODE|20-lts"
+    - az webapp up --name $DEVAPPNAME --resource-group $DEVRESOURCEGROUP --runtime "NODE|22-lts"
 
 kudu-scm-build:
   stage: post-deploy
