@@ -1,136 +1,145 @@
-const express = require('express');
-const multer = require('multer');
-const fs = require('fs');
+var express = require('express');
+var multer = require('multer');
+var router = express.Router();
+var fs = require('fs');
 const path = require('path');
 const { checkSession } = require('./auth/session-mgmt');
 
-const router = express.Router();
 
-// Base uploads directory
-const UPLOADS_DIR = 'uploads';
-
-// Set up multer storage for multiple file types
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        // Get file extension without the dot
-        const ext = path.extname(file.originalname).toLowerCase().substring(1);
-        
-        // Define target directory based on extension
-        const targetDir = `${UPLOADS_DIR}/${ext}`;
-        // Ensure the upload directory exists
-        if (!fs.existsSync(targetDir)) {
-            fs.mkdirSync(targetDir, { recursive: true });
-        }
-        cb(null, targetDir);
+        cb(null, 'public/modelfiles/')
     },
     filename: (req, file, cb) => {
         cb(null, file.originalname);
     }
 });
+const upload = multer({ storage: storage });
 
-const upload = multer({
-    storage: storage,
-    limits: { fileSize: 50 * 1024 * 1024 }, // Limit files to 50MB
-    fileFilter: (req, file, cb) => {
-        const allowedExtensions = [".obj", ".mtl", ".bin", ".gltf", ".glb", ".fbx"];
-        if (!allowedExtensions.includes(path.extname(file.originalname).toLowerCase())) {
-            return cb(new Error("Invalid file type. Allowed: .obj, .mtl, .bin, .gltf, .glb, .fbx"));
-        }
-        cb(null, true);
-    }
+
+router.get('/', function (req, res, next) {
+    res.render('addModel', { title: 'Add New Model' });
 });
 
-// API Endpoint to handle file uploads
-router.post('/saveModel', upload.array("modelFiles", 10), (req, res) => {
+
+// Middleware to handle file uploading
+const uploadMiddleware = upload.fields([
+    { name: 'objFileName', maxCount: 1 },
+    { name: 'mtlFileName', maxCount: 1 },
+    { name: 'gltfFileName', maxCount: 1 },
+    { name: 'binFileName', maxCount: 1 },
+    { name: 'glbFileName', maxCount: 1 }
+]);
+
+
+// Generate a unique ID for each model
+const uniqueId = (parsedData) => {
+    if (parsedData.length == 0) return 1;
+    return parsedData[parsedData.length - 1].id + 1;
+};
+
+
+// Handle model saving
+router.post('/saveModel', uploadMiddleware, (req, res) => {
     const name = req.body.name;
     const modelDescription = req.body.modelDescription;
+    const fileType = req.body.fileType;
+   
     let { isAdmin } = checkSession(req, res);
-
     if (!isAdmin) {
-        // Delete uploaded files if the user is unauthorized
-        req.files.forEach(file => fs.unlinkSync(file.path));
-        return res.status(401).send({ error: "Unauthorized user" });
+        // Delete any uploaded files
+        Object.values(req.files).flat().forEach(file => fs.unlinkSync(file.path));
+        return res.status(401).send({ error: "User not logged in" });
     }
 
-    if (!req.files || req.files.length === 0) {
-        return res.status(400).json({ error: "No files uploaded" });
+
+    // Read model catalog
+    const catalogPath = './public/catalog/modelFileCatalog.json';
+    var parsedData = JSON.parse(fs.readFileSync(catalogPath));
+
+
+    // Check if the model already exists
+    for (const entry of parsedData) {
+        if (entry.name === name && entry.description === modelDescription) {
+            Object.values(req.files).flat().forEach(file => fs.unlinkSync(file.path));
+            return res.status(400).send({ error: 'This model already exists' });
+        }
     }
 
-    // Read modelFileCatalog.json
-    const catalogPath = path.join(__dirname, '../public/catalog/modelFileCatalog.json');
-    let parsedData = fs.existsSync(catalogPath) ? JSON.parse(fs.readFileSync(catalogPath, 'utf8')) : [];
 
-    // Check for duplicate model
-    const duplicate = parsedData.some(entry => entry.name === name && entry.description === modelDescription);
-    if (duplicate) {
-        req.files.forEach(file => fs.unlinkSync(file.path));
-        return res.status(400).send({ error: 'This model already exists' });
-    }
+    // Assign a unique ID
+    const newId = uniqueId(parsedData);
 
-    // Create a new model entry
-    const newId = parsedData.length ? parsedData[parsedData.length - 1].id + 1 : 1;
-    const uploadedFiles = req.files.map(file => file.filename);
 
-    const newModel = {
+    let modelEntry = {
         id: newId,
         name: name,
         description: modelDescription,
-        files: uploadedFiles
+        files: {}
     };
 
-    // Save the new entry to modelFileCatalog.json
-    parsedData.push(newModel);
+
+    // Handle OBJ + MTL file uploads
+    if (fileType === 'obj-mtl') {
+        const objFile = req.files['objFileName'][0];
+        const mtlFile = req.files['mtlFileName'][0];
+
+
+        const newObjFileName = objFile.originalname;
+        const newMtlFileName = mtlFile.originalname;
+
+
+        fs.renameSync(objFile.path, path.join(objFile.destination, newObjFileName));
+        fs.renameSync(mtlFile.path, path.join(mtlFile.destination, newMtlFileName));
+
+
+        modelEntry.files.obj = newObjFileName;
+        modelEntry.files.mtl = newMtlFileName;
+    }
+    // Handle GLTF file upload (must also have .bin file)
+    else if (fileType === 'gltf') {
+        if (!req.files['binFileName']) {
+            Object.values(req.files).flat().forEach(file => fs.unlinkSync(file.path));
+            return res.status(400).send({ error: "GLTF file requires a corresponding .bin file." });
+        }
+
+
+        const gltfFile = req.files['gltfFileName'][0];
+        const binFile = req.files['binFileName'][0];
+
+
+        const newGltfFileName = gltfFile.originalname;
+        const newBinFileName = binFile.originalname
+
+
+        fs.renameSync(gltfFile.path, path.join(gltfFile.destination, newGltfFileName));
+        fs.renameSync(binFile.path, path.join(binFile.destination, newBinFileName));
+
+
+        modelEntry.files.gltf = newGltfFileName;
+        modelEntry.files.bin = newBinFileName;
+    }
+    // Handle GLB file upload
+    else if (fileType === 'glb') {
+        const glbFile = req.files['glbFileName'][0];
+
+
+        const newGlbFileName = glbFile.originalname;
+        fs.renameSync(glbFile.path, path.join(glbFile.destination, newGlbFileName));
+
+
+        modelEntry.files.glb = newGlbFileName;
+    }
+
+
+    // Add model to catalog
+    parsedData.push(modelEntry);
     fs.writeFileSync(catalogPath, JSON.stringify(parsedData, null, 2));
 
-    return res.send({ message: "Model uploaded successfully", files: uploadedFiles });
+
+    return res.send({ message: 'Model saved!' });
 });
 
-// Function to parse incoming file data from Jmol request
-const parseFileFromJmolReq = (req) => {
-    const fileData = Object.keys(req.body)[0];
-    const pureEncodedData = fileData.substring(8).replaceAll('\r\n', "");
-    return Buffer.from(pureEncodedData, 'base64');
-};
-
-let modelSaveStatus = {};
-
-router.post('/quickSaveModel/:modelname/:modelDesc/:fileName', (req, res) => {
-    const { modelname, modelDesc, fileName } = req.params;
-    const fileData = parseFileFromJmolReq(req);
-
-    const filePath = path.join(__dirname, '../public/modelfiles', fileName);
-    fs.writeFileSync(filePath, fileData);
-
-    const catalogPath = path.join(__dirname, '../public/catalog/modelFileCatalog.json');
-    let parsedData = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
-    
-    try {
-        if (fileName.endsWith('.obj')) {
-            for (const entry of parsedData) {
-                if (entry.name === modelname && entry.description === decodeURIComponent(modelDesc)) {
-                    return res.status(400).send({ error: 'This model already exists' });
-                }
-            }
-            const newId = uniqueId(parsedData);
-            const newObjFileName = `${modelname}-${newId}.obj`;
-            fs.renameSync(filePath, path.join(__dirname, '../public/modelfiles', newObjFileName));
-            parsedData.push({ id: newId, name: modelname, description: decodeURIComponent(modelDesc), files: { obj: newObjFileName } });
-        } else if (fileName.endsWith('.mtl')) {
-            const modelEntry = parsedData.find(entry => entry.name === modelname && entry.description === decodeURIComponent(modelDesc));
-            if (modelEntry && !modelEntry.files.mtl) {
-                const newMtlFileName = `${modelname}-${modelEntry.id}.mtl`;
-                fs.renameSync(filePath, path.join(__dirname, '../public/modelfiles', newMtlFileName));
-                modelEntry.files.mtl = newMtlFileName;
-            } else {
-                return res.status(404).send({ error: 'Model not found' });
-            }
-        }
-        fs.writeFileSync(catalogPath, JSON.stringify(parsedData, null, 2));
-        res.send({ message: `${fileName} saved successfully` });
-    } catch (error) {
-        res.status(500).send({ error: 'Failed to save model' });
-    }
-});
 
 // Endpoint to check model status
 router.get('/modelStatus/:modelname', (req, res) => {
@@ -138,5 +147,5 @@ router.get('/modelStatus/:modelname', (req, res) => {
     res.json({ isSaved: modelSaveStatus[modelname] || false });
 });
 
-module.exports = router;
 
+module.exports = router;
