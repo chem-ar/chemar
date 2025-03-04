@@ -76,8 +76,8 @@ export function initScene(pngFile, markerData, threeArea, window) {
 
 function animate() {
     requestAnimationFrame(animate);
-    const delta = clock.getDelta(); // Time since last frame
-    mixers.forEach(mixer => mixer.update(delta)); // Update animations
+    const delta = clock.getDelta(); 
+    mixers.forEach(mixer => mixer.update(delta)); 
     renderer.render(scene1, camera);
     controls.update();
 }
@@ -90,7 +90,7 @@ function onResize(window) {
 
 export function addModelToScene(modelInfo, modelData, cjson) {
     const { object, mixer } = modelData;
-    if (mixer) mixers.push(mixer); // Store animation mixer
+    if (mixer) mixers.push(mixer); 
 
     const newMolData = {
         Title: modelInfo.name,
@@ -134,7 +134,8 @@ export function exportSceneData() {
         rotation: mol.rotation,
         scale: mol.scale,
         modelInfo: mol.modelInfo,
-        initialPosition: mol.initialPosition
+        initialPosition: mol.initialPosition,
+        animations: mol.animations?.map(anim => anim.name) || [] // Save animation names
     }));
 
     return { markerData, sceneMolecules: exportedMols };
