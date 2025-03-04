@@ -399,7 +399,6 @@
                     const modelInfo = item.modelInfo;
                     const modelData = await createModel(modelInfo, item.position, item.rotation, item.scale);
                     
-                    // Restore animations if present
                     if (modelData.mixer && item.animations) {
                         item.animations.forEach(animName => {
                             const clip = THREE.AnimationClip.findByName(modelData.animations, animName);
