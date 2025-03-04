@@ -68,12 +68,12 @@
         createModel(modelInfo)
             .then(createdModel => {        
                 addModelToScene(modelInfo, createdModel);
-                addMolToMenu(createdModel, modelInfo.name, moleculeList);
+                addMolToMenu(createdModel.object, modelInfo.name, moleculeList);
                 toastr.success(`${modelInfo.name} added successfully!`, "Success", {
-                timeOut: 3000,
-                positionClass: 'toast-top-right',
-                progressBar: true
-        });
+                    timeOut: 3000,
+                    positionClass: 'toast-top-right',
+                    progressBar: true
+                });
             })
             .catch(error => toastr.error(error.message, "Failed to add model"))
             .finally(() => { 
