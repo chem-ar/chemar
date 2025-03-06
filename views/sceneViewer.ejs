@@ -8,13 +8,11 @@
     <title>Model Viewer</title>
 
     <script type="module" src="https://unpkg.com/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
-    <!-- <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer"></script>
-    <script type="module" src="../modelviewer/model-viewer.min.js"></script> -->
 
     <style>
       model-viewer {
         width: 100%;
-        height: 100vh;
+        height: 50vh; /* Each model takes half the viewport height */
         background-color: #000;
       }
 
@@ -27,6 +25,12 @@
         position: absolute;
         top: 16px;
         left: 16px;
+      }
+
+      .model-container {
+        position: relative;
+        width: 100%;
+        height: 50vh; /* Each model takes half the viewport height */
       }
     </style>
   </head>
@@ -41,31 +45,37 @@
           window.location.pathname.lastIndexOf("/") + 1
         ) + ".json";
 
-        console.log(requestedFile);
+      console.log(requestedFile);
 
-        fetch("/scenes/" + requestedFile)
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-          })
-          .then((data) => {
-            const files = data.molecules[0].modelInfo.files;
+      fetch("/scenes/" + requestedFile)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          data.molecules.forEach((molecule) => {
+            const files = molecule.modelInfo.files;
             for (const [fileType, fileName] of Object.entries(files)) {
-              const filePath = `/modelfiles/${fileName}`; // Updated path
+              const filePath = `/modelfiles/${fileName}`;
               console.log(filePath);
-              if (fileType === "glb") {
-                initializeModelViewer(filePath);
+
+              if (fileType === "glb" || fileType === "gltf") {
+                initializeModelViewer(filePath, fileType);
               }
             }
-          })
-          .catch((error) => {
-            console.error("Error fetching JSON:", error);
           });
+        })
+        .catch((error) => {
+          console.error("Error fetching JSON:", error);
+        });
 
-      function initializeModelViewer(filePath) {
+      function initializeModelViewer(filePath, fileType) {
         const modelViewerContainer = document.getElementById("model-viewer-container");
+
+        const modelContainer = document.createElement("div");
+        modelContainer.className = "model-container";
 
         const modelViewer = document.createElement("model-viewer");
         modelViewer.setAttribute("src", filePath);
@@ -82,10 +92,9 @@
         arButton.textContent = "View in AR";
 
         modelViewer.appendChild(arButton);
-
-        modelViewerContainer.appendChild(modelViewer);
+        modelContainer.appendChild(modelViewer);
+        modelViewerContainer.appendChild(modelContainer);
       }
-      
     </script>
   </body>
 </html>
