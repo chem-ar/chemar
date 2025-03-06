@@ -28,7 +28,9 @@ const uploadMiddleware = upload.fields([
     { name: 'mtlFileName', maxCount: 1 },
     { name: 'gltfFileName', maxCount: 1 },
     { name: 'binFileName', maxCount: 1 },
-    { name: 'glbFileName', maxCount: 1 }
+    { name: 'glbFileName', maxCount: 1 },
+    { name: 'pdbFileName', maxCount: 1 },
+    { name: 'xyzFileName', maxCount: 1 }
 ]);
 
 
@@ -130,6 +132,7 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
 
         modelEntry.files.glb = newGlbFileName;
     }
+
 
 
     // Add model to catalog

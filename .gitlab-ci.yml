@@ -19,17 +19,3 @@ kudu-scm-build:
   script: |
     az rest --method POST --uri "https://dalchemar.scm.azurewebsites.net/api/command" --headers "Content-Type=application/json" "Authorization=Basic JGRhbGNoZW1hcjpUWDN0NDQxaWFYVFBtOW5OcjI4WFdHRm5YaENncG1ZNVJkODNrUFFrSERpY3M2SnYxWGhXcm05ZU5nc0s=" --body "{\"command\": \"sh -c \\\"cd /home/site/wwwroot && npm install\\\"\"}"
 
-deploy-develop-azure:
-  stage: deploy
-  image: mcr.microsoft.com/azure-cli
-  only:
-    - develop
-  script:
-    - az login --username $DEVID --password $DEVPASSWORD
-    - az webapp up --name $DEVAPPNAME --resource-group $DEVRESOURCEGROUP --runtime "NODE|22-lts"
-
-kudu-scm-build:
-  stage: post-deploy
-  image: mcr.microsoft.com/azure-cli:latest
-  script: |
-    az rest --method POST --uri "https://archemapp.scm.azurewebsites.net/api/command" --headers "Content-Type=application/json" "Authorization=Basic JGRhbGNoZW1hcjpUWDN0NDQxaWFYVFBtOW5OcjI4WFdHRm5YaENncG1ZNVJkODNrUFFrSERpY3M2SnYxWGhXcm05ZU5nc0s=" --body "{\"command\": \"sh -c \\\"cd /home/site/wwwroot && npm install\\\"\"}"
