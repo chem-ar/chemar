@@ -1,18 +1,42 @@
 <style>
+    .drop-zone {
+        border: 2px dashed #0071EB;
+        padding: 20px;
+        text-align: center;
+        color: #0071EB;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+
+    .drop-zone.dragover {
+        background-color: #f0f8ff;
+    }
+
+
+    .hidden {
+        display: none;
+    }
+
+
     .btn-green {
         background-color: #097242;
         color: white;
     }
+
 
     .btn-green:hover {
         background-color: #075c33;
         color: white;
     }
 
+
     .btn-customsubmit {
         background-color: #0071EB;
         color: white;
     }
+
 
     .btn-customsubmit:hover {
         background-color: #005bb5;
@@ -20,90 +44,158 @@
     }
 </style>
 
+
 <!-- Add Model -->
 <div class="row content">
     <div class="col-12 text-start text-white main-background-color">
         <div>
             <button class="btn btn-green" type="button" data-bs-toggle="collapse" data-bs-target="#uploadFile"
                 aria-expanded="false" aria-controls="uploadFile">
-                Upload File 
+                Upload Model
             </button>
         </div>
     </div>
 
+
     <div class="row">
-        <form class=" collapse multi-collapse" id="uploadFile" enctype="multipart/form-data">
+        <form class="collapse multi-collapse" id="uploadFile" enctype="multipart/form-data">
             <div class="row d-flex flex-wrap">
-                <div class="col-12 col-sm-6 d-flex  flex-wrap">
-                    <h4>Model name:</h4>
-                    <input type="text" class="form-control" id="modelName" name="name" placeholder="Ex: molecule_diagramName_number"  required>
+                <div class="col-12 col-sm-6">
+                    <h4>Model Name:</h4>
+                    <input type="text" class="form-control" id="modelName" name="name" required>
+
+
                     <h4>Description:</h4>
-                    <input type="text" class="form-control" id="modelDescription" name="modelDescription" placeholder="Model description" required>
-                    <h4>Files (.obj and .mtl):</h4>
-                    <input type="file" class="form-control" id="objFileName" name="objFileName" placeholder="File name" onchange="" 
-                    required accept=".obj">
-                    <input type="file" class="form-control" id="mtlFileName" name="mtlFileName" placeholder="File name" onchange="" 
-                    required accept=".mtl">
+                    <input type="text" class="form-control" id="modelDescription" name="modelDescription" required>
+
+
+                    <h4>Upload Model Files:</h4>
+                    <div id="drop-zone" class="drop-zone">
+                        Drag & Drop Files Here or Click to Upload
+                        <input type="file" class="hidden" id="fileInput" name="modelFiles" multiple
+                               accept=".obj,.mtl,.bin,.gltf,.glb,.fbx">
+                    </div>
+
+
+                    <div id="file-list"></div>
+
+
                     <button class="btn btn-customsubmit form-control my-2" id="uploadBtn">
-                        <span
-                            id="uploadBtnSpinner"
-                            class="spinner-border spinner-border-sm"
-                            role="status"
-                            aria-label="Loading"
-                            style="display: none;"
-                        ></span>
+                        <span id="uploadBtnSpinner" class="spinner-border spinner-border-sm" role="status" style="display: none;"></span>
                         Upload
                     </button>
-                </div>
-                <div class="col-12 col-sm-6 d-flex align-content-stretch flex-wrap">
-                    <textarea class="form-control" name="preview" id="preview" style="display: none"></textarea>
                 </div>
             </div>
         </form>
     </div>
 </div>
 
+
 <script type="module">
-    const uploadModelForm = document.getElementById('uploadFile');
-    uploadModelForm.addEventListener('submit', e => {
+    const dropZone = document.getElementById("drop-zone");
+    const fileInput = document.getElementById("fileInput");
+    const fileList = document.getElementById("file-list");
+    const uploadModelForm = document.getElementById("uploadFile");
+    const modelNameInput = document.getElementById("modelName");
+    const modelDescInput = document.getElementById("modelDescription");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const uploadSpinner = document.getElementById("uploadBtnSpinner");
+
+
+    // Ensure click to upload still works
+    dropZone.addEventListener("click", () => {
+        fileInput.click();
+    });
+
+
+    dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("dragover");
+    });
+
+
+    dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("dragover");
+    });
+
+
+    dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("dragover");
+        fileInput.files = e.dataTransfer.files;
+        updateFileList(fileInput.files);
+    });
+
+
+    fileInput.addEventListener("change", () => {
+        updateFileList(fileInput.files);
+    });
+
+
+    function updateFileList(files) {
+        fileList.innerHTML = "";
+        for (const file of files) {
+            const fileDiv = document.createElement("div");
+            fileDiv.textContent = file.name;
+            fileList.appendChild(fileDiv);
+        }
+    }
+
+
+    uploadModelForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         setModelUploading(true);
 
-        const formData = new FormData(uploadModelForm);
-        fetch('/addmodel/saveModel', {
-            method: 'POST',
-            body: formData
-        })
-            .then(async res => {
-                const body = await res.json().catch((_err) => ({}));
-                if (res.status === 400 && body.error) {
-                    throw new Error(body.error);
-                } else if (res.status === 401 && body.error) {
-                    throw new Error(body.error);
-                } else if (!res.ok) {
-                    throw new Error(`Server returned status code ${res.status}`);
-                }
 
-                toastr.success(body.message);
-                uploadModelForm.reset();
-                fetchModels();   // fetchModels is defined at views/models.ejs
-            })
-            .catch(err => {
-                toastr.error(err.message, "Failed to save model");
-            })
-            .finally(() => setModelUploading(false));
+        const formData = new FormData();
+        formData.append("name", modelNameInput.value);
+        formData.append("modelDescription", modelDescInput.value);
+
+
+        let fileType = "";
+        for (const file of fileInput.files) {
+            const ext = file.name.split(".").pop().toLowerCase();
+            if (ext === "obj") {
+                formData.append("objFileName", file);
+                fileType = "obj-mtl";
+            } else if (ext === "mtl") {
+                formData.append("mtlFileName", file);
+            } else if (ext === "gltf") {
+                formData.append("gltfFileName", file);
+                fileType = "gltf";
+            } else if (ext === "bin") {
+                formData.append("binFileName", file);
+            } else if (ext === "glb") {
+                formData.append("glbFileName", file);
+                fileType = "glb";
+            }
+        }
+        formData.append("fileType", fileType);
+
+
+        try {
+            const res = await fetch("/addmodel/saveModel", { method: "POST", body: formData });
+
+
+
+
+            const body = await res.json();
+            if (!res.ok) throw new Error(body.error || `Server error ${res.status}`);
+
+
+            toastr.success(body.message);
+            uploadModelForm.reset();
+            fileList.innerHTML = "";
+        } catch (err) {
+            toastr.error(err.message, "Upload failed");
+        } finally {
+            setModelUploading(false);
+        }
     });
 
-    function setModelUploading(isUploading) {
-        const spinner = document.getElementById('uploadBtnSpinner');
-        const uploadBtn = document.getElementById('uploadBtn');
 
-        if (isUploading) {
-            spinner.style.display = '';
-            uploadBtn.disabled = true;
-        } else {
-            spinner.style.display = 'none';
-            uploadBtn.disabled = false;
-        }
+    function setModelUploading(isUploading) {
+        uploadSpinner.style.display = isUploading ? "" : "none";
+        uploadBtn.disabled = isUploading;
     }
 </script>
