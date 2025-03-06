@@ -8,8 +8,8 @@
     <title>Model Viewer</title>
 
     <script type="module" src="https://unpkg.com/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
-    <!-- <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer"></script> -->
-    <!-- <script type="module" src="../modelviewer/model-viewer.min.js"></script> -->
+    <!-- <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer"></script>
+    <script type="module" src="../modelviewer/model-viewer.min.js"></script> -->
 
     <style>
       model-viewer {
@@ -53,16 +53,14 @@
           .then((data) => {
             const files = data.molecules[0].modelInfo.files;
             for (const [fileType, fileName] of Object.entries(files)) {
-              const filePath = `uploads/${fileType}/${fileName}`;
+              const filePath = `/modelfiles/${fileName}`; // Updated path
               console.log(filePath);
-              //uploads/glb/Astronaut.glb
               if (fileType === "glb") {
                 initializeModelViewer(filePath);
               }
             }
           })
           .catch((error) => {
-            console.log("test" + filePath);
             console.error("Error fetching JSON:", error);
           });
 
