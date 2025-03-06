@@ -51,10 +51,18 @@
             return response.json();
           })
           .then((data) => {
-            const filePath = data.molecules[0].modelInfo.files.glb;
-            initializeModelViewer(filePath);
+            const files = data.molecules[0].modelInfo.files;
+            for (const [fileType, fileName] of Object.entries(files)) {
+              const filePath = `uploads/${fileType}/${fileName}`;
+              console.log(filePath);
+              //uploads/glb/Astronaut.glb
+              if (fileType === "glb") {
+                initializeModelViewer(filePath);
+              }
+            }
           })
           .catch((error) => {
+            console.log("test" + filePath);
             console.error("Error fetching JSON:", error);
           });
 
@@ -69,7 +77,7 @@
         modelViewer.setAttribute("camera-controls", "");
         modelViewer.setAttribute("auto-rotate", "");
         modelViewer.setAttribute("shadow-intensity", "1");
-        
+
         const arButton = document.createElement("button");
         arButton.setAttribute("slot", "ar-button");
         arButton.className = "UIButton";
