@@ -351,7 +351,7 @@
             onMarkerXChange,
             onMarkerYChange,
             updateSceneImg,
-            exportSceneData
+            exportSceneData,
         } from '/js/scenes/scene-mgmt.js';
         import { addMolToMenu } from '/js/scenes/add-mol-to-menu.js';
 
@@ -375,14 +375,8 @@
 
         let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
 
-        fetch('/scenes' + '/' + requestedFile, {
-            credentials: 'include'})
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Server returned status code ${response.status}`);
-                }
-                return response.json();
-            })
+        fetch('/scenes/' + requestedFile, { credentials: 'include' })
+            .then(response => response.json())
             .then(async data => {
                 scene = data;
                 
@@ -391,8 +385,8 @@
                 sceneDescription.innerHTML = "Scene desc: " + scene.desc;
                 sceneNameInput.value = scene.name;
                 sceneDescriptionInput.value = scene.desc;
-                markerData = scene.trackingMarker
-               
+                markerData = scene.trackingMarker;
+
                 initScene(scene.png, markerData, threeArea, window);
                 
                 markerXSlider.value = markerData.position.x;
@@ -400,15 +394,23 @@
                 markerYSlider.value = markerData.position.y;
                 markerYInput.value = markerData.position.y;
 
-                // Draw each molecule in three when sceneEditor is loaded.
                 let counter = 0;
-                for(let item of scene.molecules) {
-                    
+                for (let item of scene.molecules) {
                     const modelInfo = item.modelInfo;
-                    const model = await createModel(modelInfo, item.position, item.rotation, item.scale);
+                    const modelData = await createModel(modelInfo, item.position, item.rotation, item.scale);
                     
-                    addModelToScene(modelInfo, model, item.cjson);
-                    addMolToMenu(model, modelInfo.name, moleculeList, scene, counter);
+                    if (modelData.mixer && item.animations) {
+                        item.animations.forEach(animName => {
+                            const clip = THREE.AnimationClip.findByName(modelData.animations, animName);
+                            if (clip) {
+                                const action = modelData.mixer.clipAction(clip);
+                                action.play();
+                            }
+                        });
+                    }
+
+                    addModelToScene(modelInfo, modelData, item.cjson);
+                    addMolToMenu(modelData.object, modelInfo.name, moleculeList, scene, counter);
                     counter++;
                 }
             })
@@ -416,6 +418,7 @@
                 console.error(error);
                 toastr.error(error.message, "Failed to load scene");
             });
+
 
 
             function validateName() {
