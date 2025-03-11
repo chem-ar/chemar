@@ -5,27 +5,42 @@
       name="viewport"
       content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
-    <title>Model Viewer</title>
+    <title>Model Viewer with AR.js</title>
 
+    <!-- A-Frame and AR.js libraries for marker detection -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.2/aframe/build/aframe-ar.js"></script>
+    <!-- model-viewer Library -->
     <script type="module" src="https://unpkg.com/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
 
     <style>
-      #camera-feed {
+      /* AR.js scene fills the screen and is placed behind other elements */
+      a-scene {
         position: fixed;
         top: 0;
         left: 0;
         width: 100vw;
         height: 100vh;
-        object-fit: cover;
         z-index: -1;
       }
-
+      /* The model-viewer container is centered and initially hidden */
+      #model-viewer-container {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
+        transition: transform 0.2s ease;
+      }
+      /* Styling for the model-viewer element (if needed) */
       model-viewer {
         width: 100%;
-        height: 50vh;
-        background-color: transparent; 
+        height: 100%;
+        background-color: transparent;
+        pointer-events: none;
       }
-
       .UIButton {
         background-color: #0071EB;
         color: white;
@@ -36,18 +51,36 @@
         top: 16px;
         left: 16px;
       }
-
       .model-container {
         position: relative;
         width: 100%;
-        height: 50vh;
+        height: 100%;
+      }
+      /* Back button styling */
+      #text {
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+        text-align: center;
+        z-index: 1;
       }
     </style>
   </head>
 
   <body style="margin: 0px; overflow: hidden; font-family: Monospace;">
-    <video id="camera-feed" autoplay playsinline></video>
+    <!-- A-Frame scene with AR.js enabled for marker detection -->
+    <a-scene embedded arjs="sourceType: webcam;">
+      <!-- Marker element using the default "hiro" preset -->
+      <a-marker preset="hiro" id="marker">
+        <a-entity geometry="primitive: box" material="opacity: 0;"></a-entity>
+      </a-marker>
+      <a-entity camera></a-entity>
+    </a-scene>
+    
+    <!-- Container for model-viewer elements (populated via JSON file selection) -->
     <div id="model-viewer-container"></div>
+    
+    <!-- Back Button -->
     <div id="text">
       <a href="javascript:history.back();" class="btn UIButton">
         <span> ◄ Back to Scenes</span> 
@@ -55,23 +88,11 @@
     </div>
 
     <script>
-      async function startCamera() {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-          const videoElement = document.getElementById("camera-feed");
-          videoElement.srcObject = stream;
-        } catch (error) {
-          console.error("Error cannot access camera:", error);
-        }
-      }
-
-      startCamera();
-
+      // Use the same method to select files as before.
       let requestedFile =
         window.location.pathname.substring(
           window.location.pathname.lastIndexOf("/") + 1
         ) + ".json";
-
       console.log(requestedFile);
 
       fetch("/scenes/" + requestedFile)
@@ -87,7 +108,6 @@
             for (const [fileType, fileName] of Object.entries(files)) {
               const filePath = `/modelfiles/${fileName}`;
               console.log(filePath);
-
               if (fileType === "glb" || fileType === "gltf") {
                 initializeModelViewer(filePath, fileType);
               }
@@ -122,6 +142,19 @@
         modelContainer.appendChild(modelViewer);
         modelViewerContainer.appendChild(modelContainer);
       }
+
+      // Set up AR.js marker event handling.
+      const marker = document.querySelector("#marker");
+      // When the marker is detected, show the model-viewer container.
+      marker.addEventListener("markerFound", function() {
+        console.log("Marker found!");
+        document.getElementById("model-viewer-container").style.display = "block";
+      });
+      // When the marker is lost, hide the model-viewer container.
+      marker.addEventListener("markerLost", function() {
+        console.log("Marker lost!");
+        document.getElementById("model-viewer-container").style.display = "none";
+      });
     </script>
   </body>
 </html>
