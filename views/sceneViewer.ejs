@@ -1,160 +1,111 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta
-      name="viewport"
-      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
-    />
-    <title>Model Viewer with AR.js</title>
+    <meta charset="utf-8">
+    <title>Dynamic AR.js & model-viewer Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
-    <!-- A-Frame and AR.js libraries for marker detection -->
+    <!-- A-Frame Library -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+
+    <!-- AR.js for A-Frame -->
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.2/aframe/build/aframe-ar.js"></script>
+
     <!-- model-viewer Library -->
     <script type="module" src="https://unpkg.com/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
 
     <style>
-      /* AR.js scene fills the screen and is placed behind other elements */
-      a-scene {
-        position: fixed;
+      body, html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      /* Parent container for all models */
+      #modelsContainer {
+        position: absolute;
         top: 0;
         left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: -1;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
       }
-      /* The model-viewer container is centered and initially hidden */
-      #model-viewer-container {
-        position: absolute;
-        width: 300px;
+      /* Each model container */
+      .modelContainer {
+        width: 300px;  /* Adjust dimensions as needed */
+        border: 2px dotted red;  /* For visualization purposes */
         height: 300px;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        display: none;
-        transition: transform 0.2s ease;
-      }
-      /* Styling for the model-viewer element (if needed) */
-      model-viewer {
-        width: 100%;
-        height: 100%;
-        background-color: transparent;
-        pointer-events: none;
-      }
-      .UIButton {
-        background-color: #0071EB;
-        color: white;
-        padding: 8px 16px;
-        border: none;
-        cursor: pointer;
-        position: absolute;
-        top: 16px;
-        left: 16px;
-      }
-      .model-container {
-        position: relative;
-        width: 100%;
-        height: 100%;
-      }
-      /* Back button styling */
-      #text {
-        position: absolute;
-        bottom: 20px;
-        width: 100%;
-        text-align: center;
-        z-index: 1;
+        margin: 10px;
+        display: none;  /* Hide by default until marker is found */
       }
     </style>
   </head>
-
-  <body style="margin: 0px; overflow: hidden; font-family: Monospace;">
+  
+  <body>
     <!-- A-Frame scene with AR.js enabled for marker detection -->
     <a-scene embedded arjs="sourceType: webcam;">
-      <!-- Marker element using the default "hiro" preset -->
+      <!-- Using the default Hiro marker -->
       <a-marker preset="hiro" id="marker">
         <a-entity geometry="primitive: box" material="opacity: 0;"></a-entity>
       </a-marker>
       <a-entity camera></a-entity>
     </a-scene>
     
-    <!-- Container for model-viewer elements (populated via JSON file selection) -->
-    <div id="model-viewer-container"></div>
-    
-    <!-- Back Button -->
-    <div id="text">
-      <a href="javascript:history.back();" class="btn UIButton">
-        <span> ◄ Back to Scenes</span> 
-      </a>      
-    </div>
+    <!-- Container where all model elements will be dynamically added -->
+    <div id="modelsContainer"></div>
 
     <script>
-      // Use the same method to select files as before.
-      let requestedFile =
-        window.location.pathname.substring(
-          window.location.pathname.lastIndexOf("/") + 1
-        ) + ".json";
-      console.log(requestedFile);
+      // Function to dynamically add a model
+      function addModel(modelSrc, modelAlt) {
+        // Create a new container for the model
+        const container = document.createElement('div');
+        container.classList.add('modelContainer');
 
-      fetch("/scenes/" + requestedFile)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then((data) => {
-          data.molecules.forEach((molecule) => {
-            const files = molecule.modelInfo.files;
-            for (const [fileType, fileName] of Object.entries(files)) {
-              const filePath = `/modelfiles/${fileName}`;
-              console.log(filePath);
-              if (fileType === "glb" || fileType === "gltf") {
-                initializeModelViewer(filePath, fileType);
-              }
-            }
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching JSON:", error);
-        });
+        // Create the model-viewer element and set its attributes
+        const modelViewer = document.createElement('model-viewer');
+        modelViewer.setAttribute('src', modelSrc);
+        modelViewer.setAttribute('alt', modelAlt);
+        modelViewer.setAttribute('ar', '');  // Enable AR features
+        modelViewer.setAttribute('camera-controls', '');  // Allow user interactions
+        modelViewer.style.width = '100%';
+        modelViewer.style.height = '100%';
+        modelViewer.style.pointerEvents = 'auto';
 
-      function initializeModelViewer(filePath, fileType) {
-        const modelViewerContainer = document.getElementById("model-viewer-container");
+        // Append the model-viewer into its container
+        container.appendChild(modelViewer);
 
-        const modelContainer = document.createElement("div");
-        modelContainer.className = "model-container";
-
-        const modelViewer = document.createElement("model-viewer");
-        modelViewer.setAttribute("src", filePath);
-        modelViewer.setAttribute("alt", "A 3D model");
-        modelViewer.setAttribute("ar", "");
-        modelViewer.setAttribute("ar-modes", "webxr scene-viewer quick-look");
-        modelViewer.setAttribute("camera-controls", "");
-        modelViewer.setAttribute("auto-rotate", "");
-        modelViewer.setAttribute("shadow-intensity", "1");
-
-        const arButton = document.createElement("button");
-        arButton.setAttribute("slot", "ar-button");
-        arButton.className = "UIButton";
-        arButton.textContent = "View in AR";
-
-        modelViewer.appendChild(arButton);
-        modelContainer.appendChild(modelViewer);
-        modelViewerContainer.appendChild(modelContainer);
+        // Append the container to the parent container
+        document.getElementById('modelsContainer').appendChild(container);
       }
 
-      // Set up AR.js marker event handling.
-      const marker = document.querySelector("#marker");
-      // When the marker is detected, show the model-viewer container.
-      marker.addEventListener("markerFound", function() {
-        console.log("Marker found!");
-        document.getElementById("model-viewer-container").style.display = "block";
+      // Function to update display state for all model containers
+      function updateModelDisplay(state) {
+        const modelContainers = document.querySelectorAll('.modelContainer');
+        modelContainers.forEach(container => {
+          container.style.display = state;
+        });
+      }
+
+      // Get the AR marker element from the A-Frame scene
+      const marker = document.querySelector('#marker');
+
+      // Add event listeners for marker detection
+      marker.addEventListener('markerFound', () => {
+        console.log('Marker found!');
+        updateModelDisplay('block');
       });
-      // When the marker is lost, hide the model-viewer container.
-      marker.addEventListener("markerLost", function() {
-        console.log("Marker lost!");
-        document.getElementById("model-viewer-container").style.display = "none";
+
+      marker.addEventListener('markerLost', () => {
+        console.log('Marker lost!');
+        updateModelDisplay('none');
       });
+
+      // Example: dynamically add models on page load
+      // You can add as many models as needed at runtime.
+      addModel('/Astronaut.glb', '3D Model 1');
+      // To add more models later, simply call addModel() with the appropriate source and alt text.
     </script>
   </body>
 </html>
