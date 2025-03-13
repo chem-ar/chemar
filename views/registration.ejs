@@ -1,0 +1,79 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<script type="module">
+    var form = document.getElementById("registrationForm");
+    form.addEventListener('submit', register);
+
+    async function register(e) {
+        e.preventDefault();
+
+        const email = document.getElementById("emailInput").value;
+        const password = document.getElementById("passwordInput").value;
+        const role = document.getElementById("roleInput").value;
+
+        try {
+            const response = await fetch('/registration/', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password, role })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Registration failed');
+            }
+
+            window.location.href = "/login";
+        } catch (error) {
+            console.error('Registration error:', error);
+            alert(error.message);
+        }
+    }
+</script>
+
+<section class="vh-100 gradient-custom">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="card bg-secondary text-white" style="border-radius: 1rem">
+                    <div class="card-body p-5 text-center">
+                        <div class="mb-md-5 mt-md-4 pb-5">
+                            <br><br><br>
+                            <h1 class="fw-bold mb-2">Registration</h1>
+                            <h4 class="mb-5">Please fill in the details:</h4>
+
+                            <form id="registrationForm">
+                                <div class="form-outline form-white mb-4">
+                                    <input type="email" id="emailInput" class="form-control form-control-lg" name="email"
+                                        placeholder="Email:" required>
+                                    <br>
+
+                                    <input type="password" id="passwordInput" class="form-control form-control-lg"
+                                        name="password" placeholder="Password:" required>
+                                    <br>
+
+                                    <select id="roleInput" class="form-control form-control-lg" name="role" required>
+                                        <option value="" disabled selected>Select Role</option>
+                                        <option value="Instructor">Instructor</option>
+                                        <option value="Admin">Admin</option>
+                                        <option value="Student">Student</option>
+                                    </select>
+                                    <br>
+                                </div>
+
+                                <button class="btn btn-outline-light btn-lg px-5" type="submit">
+                                    Register
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>
