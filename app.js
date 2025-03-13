@@ -38,32 +38,9 @@ var forgotPasswordRouter = require('./routes/forgotPasswordPage')
 var messageRouter = require('./routes/confirmationMessage')
 var refreshToken = require('./routes/refreshtoken')
 var registrationRouter = require('./routes/registration');
+var { connect } = require('./db'); 
+connect(); 
 
-// Azure SQL Database Connection --------------------------------------
-const sql = require('mssql');
-
-const dbConfig = {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD, 
-    server: process.env.DB_SERVER,
-    database: process.env.DB_NAME,
-    options: {
-        encrypt: true,
-        trustServerCertificate: false
-    }
-};
-
-async function connectToDatabase() {
-    try {
-        await sql.connect(dbConfig);
-        console.log('Connected to Azure SQL Database');
-    } catch (err) {
-        console.error('Error connecting to Azure SQL Database:', err);
-    }
-}
-
-connectToDatabase();
-// --------------------------------------
 const initializeCache = require("./routes/cache/setup");
 
 //Forget Password Route
