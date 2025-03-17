@@ -1,30 +1,29 @@
 var express = require('express');
 var router = express.Router();
 var { sql, connect } = require('../db');
-var bcrypt = require('bcrypt'); 
+var bcrypt = require('bcrypt');
 
 router.get('/', function (req, res, next) {
     res.render('registration', { title: 'Registration Page' });
 });
 
 router.post('/', async function (req, res, next) {
-    const { email, password, role } = req.body;
+    let { email, password, role } = req.body;
 
     try {
+        if (!role) {
+            role = 'student'; 
+        }
+
         const saltRounds = 10;
         const passwordHash = await bcrypt.hash(password, saltRounds);
 
         const pool = await connect();
-        const request = pool.request();
-
-        request.input('email', sql.NVarChar(255), email);
-        request.input('passwordHash', sql.NVarChar(255), passwordHash);
-        request.input('role', sql.NVarChar(50), role);
-
-        await request.query(`
-            INSERT INTO Users (email, password_hash, role)
-            VALUES (@email, @passwordHash, @role)
-        `);
+        await pool.request()
+            .input('email', sql.NVarChar(255), email)
+            .input('passwordHash', sql.NVarChar(255), passwordHash)
+            .input('role', sql.NVarChar(50), role)
+            .query(`INSERT INTO Users (email, password_hash, role) VALUES (@email, @passwordHash, @role)`);
 
         res.redirect('/login');
     } catch (err) {
