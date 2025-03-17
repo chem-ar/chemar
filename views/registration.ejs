@@ -50,9 +50,15 @@
                                     <input type="email" id="emailInput" class="form-control form-control-lg" name="email"
                                         placeholder="Email:" required>
                                     <br>
-
+                                
                                     <input type="password" id="passwordInput" class="form-control form-control-lg"
                                         name="password" placeholder="Password:" required>
+                                    <br>
+                                    <small>Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, a number, and a special character.</small>
+                                    <br>
+                                    <br>
+                                    <input type="password" id="passwordInput" class="form-control form-control-lg"
+                                        name="confirmPassword" placeholder="Confirm Password:" required>
                                     <br>
 
                                     <select id="roleInput" class="form-control form-control-lg" name="role" required>
@@ -61,7 +67,7 @@
                                         <option value="Admin">Admin</option>
                                         <option value="Student">Student</option>
                                     </select>
-                                    <br>
+                                    
                                 </div>
 
                                 <button class="btn btn-outline-light btn-lg px-5" type="submit">
