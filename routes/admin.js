@@ -1,16 +1,16 @@
 var express = require('express');
 var router = express.Router();
-var { checkSession } = require('./auth/session-mgmt')
-const bcrypt = require('bcrypt');
-var fs = require('fs')
-var {checkPassword} = require('./checkPassword')
+var { checkSession } = require('./auth/session-mgmt');
 
-/* GET admin page. */
-router.get('/', function (req, res, next) {
-    let {isAdmin, isowner} = checkSession(req, res);
-    if (!isAdmin) return res.redirect("/");
-    res.render('admin', { title: 'Admin', isAdmin: isAdmin, isowner });
+router.get('/', async function (req, res, next) {
+    let { isAdmin, isOwner } = await checkSession(req, res);
+    
+    if (!isAdmin) {
+        return res.redirect("/");
+    }
 
+    res.render('admin', { title: 'Admin', isAdmin, isOwner });
 });
 
 module.exports = router;
+
