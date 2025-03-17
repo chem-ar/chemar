@@ -8,6 +8,8 @@ var express = require("express");
 require('express-async-errors');
 dotenv.config({ path: './.env' }); // .env file path.
 
+const { checkSession } = require('./routes/auth/session-mgmt');
+
 var createError = require("http-errors");
 var path = require("path");
 var cookieParser = require("cookie-parser");
@@ -76,6 +78,29 @@ app.use(express.urlencoded({ extended: true }));
 
 initializeCache();
 
+app.use('/login', loginRouter);
+
+
+app.use(async (req, res, next) => {
+  let sessionData = await checkSession(req, res);
+  
+  if (!sessionData || !sessionData.role) {
+      res.locals.userRole = "guest";
+      res.locals.isAdmin = false;
+      res.locals.isInstructor = false;
+      res.locals.isOwner = false;
+  } else {
+      let role = sessionData.role.toLowerCase();
+      res.locals.userRole = role;
+      res.locals.isAdmin = role === "admin";
+      res.locals.isInstructor = role === "instructor";
+      res.locals.isOwner = role === "admin";  
+  }
+
+  next();
+});
+
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/molecules', moleculeRouter);
@@ -93,7 +118,6 @@ app.use('/sceneeditor', sceneEditor);
 app.use('/moleculeviewer', moleculeViewer);
 app.use('/addmolecule', addMolecule);
 app.use('/addmodel', addModel);
-app.use('/login', loginRouter);
 app.use('/session', sessionRouter);
 app.use('/logout', logoutRouter);
 app.use('/jmol', jmolRouter);

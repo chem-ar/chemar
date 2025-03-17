@@ -8,7 +8,7 @@
         e.preventDefault();
         var password = document.getElementById("passwordInput").value;
         let email = document.getElementById("emailInput").value;
-        fetch(`/session/`, {
+        fetch(`/login/`, {
           method: "Post",
           headers: {
             "Content-Type": "application/json"
@@ -88,3 +88,5 @@
         </div>
       </div>
     </section>
+
+    
