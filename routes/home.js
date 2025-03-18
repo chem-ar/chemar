@@ -14,6 +14,7 @@ router.get('/', async function (req, res) {
         navbar = 'partials/navbarAdmin'; 
     }
 
+    console.log(userRole);
     res.render('home', { title: 'Home', navbar: navbar, userRole });
 });
 

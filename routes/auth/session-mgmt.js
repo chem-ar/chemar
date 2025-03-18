@@ -5,7 +5,7 @@ async function checkSession(req, res) {
     const token = req.cookies.session;
 
     if (!token) {
-        return { isAdmin: false, isOwner: false };
+        return { isAdmin: false, isInstructor: false, isOwner: false };
     }
 
     try {
@@ -19,7 +19,7 @@ async function checkSession(req, res) {
 
         if (result.recordset.length === 0) {
             console.log("No session found in database for this token.");
-            return { isAdmin: false, isOwner: false };
+            return { isAdmin: false, isInstructor: false, isOwner: false };
         }
 
         const session = result.recordset[0];
@@ -34,10 +34,10 @@ async function checkSession(req, res) {
             .input('expiresAt', sql.BigInt, Date.now() + 14400000)
             .query(`UPDATE Sessions SET expires_at = @expiresAt WHERE token = @token`);
 
-        return { isAdmin: session.role === 'admin', isOwner: session.owner, role: session.role };
+        return { isAdmin: session.role === 'admin', isInstructor: session.role === 'instructor', isOwner: session.owner, role: session.role };
     } catch (err) {
         console.error("Error checking session:", err);
-        return { isAdmin: false, isOwner: false };
+        return { isAdmin: false, isInstructor: false, isOwner: false };
     }
 }
 

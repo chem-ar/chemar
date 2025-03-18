@@ -1,11 +1,10 @@
 <%- include('partials/header') %>
-<% if (isowner) { %>
+<% if (isAdmin) { %>
   <%- include('partials/navbarowner') %>
-<% } else if (isAdmin) { %>
+<% } else if (isInstructor) { %>
   <%- include('partials/navbarAdmin') %>
-<% } %>
-<% if (!isAdmin) { %>
-<%- include('partials/navbar') %>
+<% } else { %>
+  <%- include('partials/navbar') %>
 <% } %>
 
 
