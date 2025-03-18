@@ -10,11 +10,10 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    console.log("📩 Login request received"); 
 
     const { email, password } = req.body;
     if (!email || !password) {
-        console.log("❌ Missing email or password");
+        console.log("Missing email or password");
         return res.status(400).json({ message: "Email and password required." });
     }
 
@@ -25,17 +24,16 @@ router.post('/', async (req, res) => {
             .query(`SELECT id, password_hash, role FROM Users WHERE email = @email`);
 
         if (result.recordset.length === 0) {
-            console.log("❌ No user found for email:", email);
+            console.log("No user found for email:", email);
             return res.status(401).json({ message: "Invalid email or password." });
         }
 
         const user = result.recordset[0];
-        console.log("✅ User found:", email);
 
         // Verify password
         const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) {
-            console.log("❌ Incorrect password for:", email);
+            console.log("Incorrect password for:", email);
             return res.status(401).json({ message: "Invalid email or password." });
         }
 
@@ -49,8 +47,6 @@ router.post('/', async (req, res) => {
             .input('token', sql.NVarChar(255), token)
             .input('expiresAt', sql.BigInt, expiresAt)
             .query(`INSERT INTO Sessions (user_id, token, expires_at) VALUES (@userId, @token, @expiresAt)`);
-
-        console.log(`✅ Session stored successfully for ${user.email} with Token: ${token}`);
 
         // Set cookie
         res.cookie('session', token, { maxAge: SESSION_DURATION, httpOnly: true, secure: false });
