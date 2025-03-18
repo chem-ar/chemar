@@ -1,4 +1,3 @@
-//these are the required modules for the server (I think)
 var fs = require("fs");
 var http = require("http");
 var https = require("https");
@@ -13,10 +12,11 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var bodyParser = require('body-parser');
+var net = require('net'); // For checking available ports
 
 var indexRouter = require('./routes/index');
 var adminRouter = require('./routes/admin');
-var allAdminRouter = require('./routes/allAdmin')
+var allAdminRouter = require('./routes/allAdmin');
 var modelsRouter = require('./routes/models');
 var aboutRouter = require('./routes/about');
 
@@ -34,9 +34,9 @@ var loginRouter = require('./routes/login');
 var sessionRouter = require('./routes/session');
 var logoutRouter = require('./routes/logout');
 var jmolRouter = require('./routes/jmol');
-var forgotPasswordRouter = require('./routes/forgotPasswordPage')
-var messageRouter = require('./routes/confirmationMessage')
-var refreshToken = require('./routes/refreshtoken')
+var forgotPasswordRouter = require('./routes/forgotPasswordPage');
+var messageRouter = require('./routes/confirmationMessage');
+var refreshToken = require('./routes/refreshtoken');
 
 const initializeCache = require("./routes/cache/setup");
 
@@ -47,20 +47,60 @@ var app = express();
 app.use(express.json({ limit: '1000gb' }));
 app.use(bodyParser.urlencoded({ limit: '1000gb', extended: true }));
 
-http.createServer(app).listen(8000);
-https
-  .createServer(
-    {
-      key: fs.readFileSync("key.pem"),
-      cert: fs.readFileSync("cert.pem"),
-    },
-    app
-  )
-  .listen(4000, () => {
-    console.log("server is running at port 4000");
-  });
+function getAvailablePort(preferredPort) {
+  return new Promise((resolve, reject) => {
+      const server = net.createServer();
 
-// view engine setup
+      server.on('error', () => {
+          // If preferredPort fails, choose a random available port
+          const randomPort = Math.floor(Math.random() * (65535 - 1024) + 1024);
+          const fallbackServer = net.createServer();
+
+          fallbackServer.listen(randomPort, () => {
+              const port = fallbackServer.address()?.port; // Ensure it's not null
+              fallbackServer.close(() => resolve(port || randomPort));
+          }).on('error', (err) => {
+              console.error("❌ Error finding available port:", err);
+              reject(err);
+          });
+      });
+
+      server.listen(preferredPort, () => {
+          const port = server.address()?.port; // Ensure it's not null
+          server.close(() => resolve(port || preferredPort));
+      });
+  });
+}
+
+(async () => {
+  try {
+      const httpPort = await getAvailablePort(8000);
+      console.log(`✅ Selected HTTP port: ${httpPort}`);
+
+      const httpsPort = await getAvailablePort(4000);
+      console.log(`✅ Selected HTTPS port: ${httpsPort}`);
+
+      http.createServer(app).listen(httpPort, () => {
+          console.log(`🚀 HTTP server is running on port ${httpPort}`);
+      });
+
+      https.createServer(
+          {
+              key: fs.readFileSync("key.pem"),
+              cert: fs.readFileSync("cert.pem"),
+          },
+          app
+      ).listen(httpsPort, () => {
+          console.log(`🔒 HTTPS server is running on port ${httpsPort}`);
+      });
+
+  } catch (error) {
+      console.error("❌ Failed to start servers:", error);
+      process.exit(1); // Exit if something goes wrong
+  }
+})();
+
+// View engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
@@ -100,23 +140,20 @@ app.use('/refreshToken', refreshToken);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-
 app.use('/passwordReset', passwordResetRouter);
-// catch 404 and forward to error handler
+
+// Catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next(createError(404));
+    next(createError(404));
 });
 
-// error handler
+// Error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
+    res.locals.message = err.message;
+    res.locals.error = req.app.get("env") === "development" ? err : {};
 
-  //   // render the error page
-  res.status(err.status || 500);
-  res.render("error", { title: "MoleculAR - Error" });
+    res.status(err.status || 500);
+    res.render("error", { title: "MoleculAR - Error" });
 });
-
 
 module.exports = app;
