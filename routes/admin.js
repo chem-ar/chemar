@@ -7,6 +7,7 @@ router.get('/', async function (req, res, next) {
     let userRole = res.locals.userRole;
     if(userRole === 'instructor'){
         isAdmin = true;
+        isInstructor = true;
     }else if(userRole === 'admin'){
         isAdmin = true;
         isOwner = true;
