@@ -1,13 +1,13 @@
 <%- include('partials/header') %>
 <!--ADMIN NAVBAR CHECK-->
-<% if (isowner) { %>
+<% if (isOwner) { %>
     <%- include('partials/navbarowner') %>
-  <% } else if (isAdmin) { %>
+<% } else if (isInstructor || isAdmin) { %>
     <%- include('partials/navbarAdmin') %>
-  <% } %>
-<% if (!isAdmin){%>
+<% } else { %>
     <%- include('partials/navbar') %>
-<%}%>
+<% } %>
+
 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 
 
@@ -16,7 +16,7 @@
         <div class="col-12 pt-4 text-start text-white">
             <h1 class="display-4 fw-bold">Model Catalog</h1>
             <!--ADMIN CHECK-->
-            <% if (isAdmin){%>
+            <% if (isAdmin || isInstructor || isOwner){%>
                 <%- include('partials/addModel') %>
             <%}%>
             <p></p>
@@ -27,7 +27,7 @@
                         <th>Description</th>
                         <th>Uploaded Files</th>
                         <!--ADMIN CHECK-->
-                        <% if (isAdmin){%>
+                        <% if (isAdmin || isInstructor || isOwner){%>
                             <th class="options-column">Options</th>
                         <%}%>
                     </tr>

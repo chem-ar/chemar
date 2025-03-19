@@ -2,18 +2,22 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 const path = require('path');
-var { checkSession, findAdminEmailBySession } = require('./auth/session-mgmt')
+var { checkSession } = require('./auth/session-mgmt')
 
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
     const scenesDirectory = './public/scenes/';
     // Admin and owner check
-    let { isAdmin, isowner } = checkSession(req, res);
-
-    // Retrieve the current user's email using the session token
-    const sessionToken = req.cookies.session;
-    const adminEmail = findAdminEmailBySession(sessionToken);
+    let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
+        let userRole = res.locals.userRole;
+        if(userRole === 'instructor'){
+            isAdmin = true;
+            isInstructor = true;
+        }else if(userRole === 'admin'){
+            isAdmin = true;
+            isOwner = true;
+        }
     
     // Load the scene catalog data
     let sceneCatalog;
@@ -46,7 +50,7 @@ router.get('/', function (req, res, next) {
             // 1. The user is the website owner (isowner === true)
             // 2. The scene has no owner field (meaning the owner field is absent)
             // 3. The current user is the owner of the scene
-            if (isowner || !sceneCatalog[filename].hasOwnProperty('sceneOwner') || sceneOwner === adminEmail ||  (!isAdmin && (sceneCatalog[filename].hasOwnProperty('studentAccessible') && accessible  ))) {
+            if (isOwner || !sceneCatalog[filename].hasOwnProperty('sceneOwner') || (!isAdmin && (sceneCatalog[filename].hasOwnProperty('studentAccessible') && accessible  ))) {
                 finalList.push({
                     filename: filename,
                     name: sceneCatalog[filename].name,
@@ -57,13 +61,21 @@ router.get('/', function (req, res, next) {
         } 
     }
     // Render the scenes page, passing the filtered list of scenes
-    res.render('scenes', { title: 'Catalog', list: finalList, isAdmin: isAdmin, sceneCatalog: sceneCatalog, isowner });
+    res.render('scenes', { title: 'Catalog', list: finalList, isAdmin: isAdmin, sceneCatalog: sceneCatalog, isOwner: isOwner, isInstructor: isInstructor });
 });
 
 
 // Endpoint to delete a scene
 router.post('/deleteScene/:scene', function (req, res) {
-    let { isAdmin, isowner } = checkSession(req, res);
+    let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'instructor'){
+        isAdmin = true;
+        isInstructor = true;
+    }else if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     const sceneName = req.params.scene;
@@ -99,7 +111,15 @@ router.post('/deleteScene/:scene', function (req, res) {
 
 // Handle adding a new scene
 router.post('/addScene', function (req, res) {
-    let { isAdmin, isowner } = checkSession(req, res);
+    let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'instructor'){
+        isAdmin = true;
+        isInstructor = true;
+    }else if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     // Get new scene info from request body
@@ -108,7 +128,6 @@ router.post('/addScene', function (req, res) {
     var sessionToken = req.cookies.session;
     var studentAccessible = req.body.studentAccessible;
 
-    var adminEmail = findAdminEmailBySession(sessionToken);
     
     // Create scene object
     var scene = {
