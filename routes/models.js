@@ -5,14 +5,35 @@ var { checkSession } = require('./auth/session-mgmt');
 
 /* GET models page. */
 router.get('/', function (req, res, next) {
-    let { isAdmin, isowner } = checkSession(req, res);
-    if (!isAdmin) return res.redirect("/");
-    res.render('models', { title: 'Model Catalog', isAdmin: isAdmin, isowner });
+    let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'instructor'){
+        isAdmin = true;
+        isInstructor = true;
+    }else if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
+    
+    if (!isAdmin) {
+        return res.redirect("/");
+    }
+
+    res.render('models', { title: 'Model Catalog', isAdmin: isAdmin, isOwner: isOwner, isInstructor: isInstructor });
 });
 
 // To handle the edit functionality
 router.post('/edit', function (req, res, next) {
-    let { isAdmin, isowner } = checkSession(req, res);
+    let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'instructor'){
+        isAdmin = true;
+        isInstructor = true;
+    }else if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
+
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     const data = { ...req.body };
@@ -47,7 +68,15 @@ router.post('/edit', function (req, res, next) {
 
 // Handling the delete functionality
 router.delete('/delete', function (req, res, next) {
-    let { isAdmin } = checkSession(req, res);
+    let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'instructor'){
+        isAdmin = true;
+        isInstructor = true;
+    }else if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     const id = req.body.id;
