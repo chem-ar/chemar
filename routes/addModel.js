@@ -44,7 +44,16 @@ async function convertOBJToGLB(objPath, outputGlbPath) {
 router.post('/saveModel', uploadMiddleware, async (req, res) => {
     const name = req.body.name;
     const modelDescription = req.body.modelDescription;
-    let { isAdmin } = checkSession(req, res);
+    let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'instructor'){
+        isAdmin = true;
+        isInstructor = true;
+    }else if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
+    
     if (!isAdmin) {
         Object.values(req.files).flat().forEach(file => fs.unlinkSync(file.path));
         return res.status(401).send({ error: "User not logged in" });
