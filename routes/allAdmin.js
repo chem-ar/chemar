@@ -23,15 +23,26 @@ function emailExists(email){
     return exists
 }
 
-router.get('/alladmin', async function (req, res, next) {
-    let {isAdmin, isowner} = checkSession(req, res);
-    if (!isowner) return res.redirect("/");
-    res.render('allAdmins', { title: 'allAdmin', isowner })
+router.get('/', async function (req, res, next) {
+    let {isAdmin, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
+
+    if (!isOwner) return res.redirect("/");
+    res.render('allAdmins', { title: 'allAdmin', isOwner, isAdmin })
 })
 
 router.get('/alladminsearch', async function (req, res, next) {
-    let {isAdmin, isowner} = checkSession(req, res);
-    if (!isowner) return res.status(401).json({error: 'Please log in as owner of the page'})
+    let {isAdmin, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
+    if (!isOwner) return res.status(401).json({error: 'Please log in as owner of the page'})
 
     let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
 
@@ -39,8 +50,14 @@ router.get('/alladminsearch', async function (req, res, next) {
 })
 
 router.delete('/delete', async function (req, res, next) {
-    let {isAdmin, isowner} = checkSession(req, res);
-    if (!isowner) return res.status(401).json({error: 'Please log in as owner of the page'})
+    let {isAdmin, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
+    if (!isOwner) return res.status(401).json({error: 'Please log in as owner of the page'})
+
     let email = req.body.email;
 
     let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
@@ -73,8 +90,13 @@ router.delete('/delete', async function (req, res, next) {
 // adding admins
 router.post('/addadmin', async function (req, res, next) 
 {
-    let {isAdmin, isowner} = checkSession(req, res);
-    if (!isowner) return res.status(401).json({error: 'Please log in as owner of the page'})
+    let {isAdmin, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
+    if (!isOwner) return res.status(401).json({error: 'Please log in as owner of the page'})
 
     let data = { ...req.body }
     if(!checkPassword(data.password)){
@@ -114,8 +136,13 @@ function ensureBackupDatesFile() {
 
 
 router.get('/download-backup', async (req, res, next) => {
-    let { isAdmin, isowner } = checkSession(req, res);
-    if (!isowner) return res.status(401).json({ error: 'Please log in as the owner of the page' });
+    let {isAdmin, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
+    if (!isOwner) return res.status(401).json({error: 'Please log in as owner of the page'})
 
     // Generate the filename with the format YYYY-MM-DD-CHEMAR-BACKUP.zip
     const date = new Date();
@@ -190,8 +217,13 @@ const REQUIRED_DIRECTORIES = [
 ];
 
 router.post('/upload-backup', upload.single('backupZip'), async (req, res) => {
-    let { isAdmin, isowner } = checkSession(req, res);
-    if (!isowner) return res.status(401).json({ error: 'Please log in as the owner of the page' });
+    let {isAdmin, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
+    if (!isOwner) return res.status(401).json({error: 'Please log in as owner of the page'})
 
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
