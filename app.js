@@ -111,7 +111,7 @@ app.use('/models', modelsRouter);
 
 app.use('/about', aboutRouter);
 app.use('/admin', adminRouter);
-app.use('/alladmin', allAdminRouter);
+app.use('/allAdmin', allAdminRouter);
 
 app.use('/sceneviewer', sceneViewer);
 app.use('/sceneeditor', sceneEditor);
