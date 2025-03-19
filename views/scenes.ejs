@@ -1,12 +1,13 @@
 <%- include('partials/header') %>
 <!--ADMIN NAVBAR CHECK-->
-<% if (isAdmin) { %>
+<% if (isOwner) { %>
     <%- include('partials/navbarowner') %>
-<% } else if (isInstructor) { %>
+<% } else if (isInstructor || isAdmin) { %>
     <%- include('partials/navbarAdmin') %>
 <% } else { %>
     <%- include('partials/navbar') %>
 <% } %>
+
 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 
 <div class="container mb-4 main-background-color">
@@ -15,7 +16,7 @@
             <h1 class="display-4 fw-bold">Scenes Catalog</h1>
 
              <!--ADMIN CHECK-->
-             <% if (isAdmin || isInstructor){%>
+             <% if (isOwner|| isAdmin|| isInstructor){%>
                 <%- include('partials/addScene') %>
             <%}%>
 
