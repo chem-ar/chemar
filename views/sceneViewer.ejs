@@ -58,13 +58,20 @@
 
     <script>
       // add a model
-      function addModel(modelSrc) {
+      function addModel(molecule) {
+
+        const model = molecule.modelInfo.files.glb;
+        const filePath = `../modelfiles/${model}`;
+        const position = molecule.modelInfo.position;
+        const rotation = molecule.modelInfo.rotation;
+        const scale = molecule.modelInfo.scale;
+
         const marker = document.querySelector("#marker");
 
         // hold the model
         const modelEntity = document.createElement("a-entity");
 
-        modelEntity.setAttribute("gltf-model", modelSrc);
+        modelEntity.setAttribute("gltf-model", filePath);
         modelEntity.setAttribute("scale", "0.5 0.5 0.5"); 
         modelEntity.setAttribute("position", "0 0 0"); 
         modelEntity.setAttribute("rotation", "0 0 0"); 
@@ -115,14 +122,7 @@
         })
         .then((data) => {
           data.molecules.forEach((molecule) => {
-            const files = molecule.modelInfo.files;
-            for (const [fileType, fileName] of Object.entries(files)) {
-              const filePath = `../modelfiles/${fileName}`;
-              //console.log("AWESOME YEAH!"+filePath);
-              if (fileType === "glb" || fileType === "gltf") {
-                addModel(filePath, "");
-              }
-            }
+            addModel(molecule);
           });
         })
         .catch((error) => {
