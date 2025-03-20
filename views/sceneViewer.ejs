@@ -123,12 +123,10 @@
           data.molecules.forEach((molecule) => {
             const files = molecule.modelInfo.files;
             for (const [fileType, fileName] of Object.entries(files)) {
-              const filePath = `../public/modelfiles/${fileName}`;
-              console.log("AWESOME YEAH!"+filePath);
-
+              const filePath = `../modelfiles/${fileName}`;
+              //console.log("AWESOME YEAH!"+filePath);
               if (fileType === "glb" || fileType === "gltf") {
-                initializeModelViewer(filePath, fileType);
-                addModel(filePath, "Hello, World!");
+                addModel(filePath, "");
               }
             }
           });
