@@ -1,11 +1,19 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs'); 
-const { checkSession, findAdminEmailBySession } = require('./auth/session-mgmt');
+const { checkSession } = require('./auth/session-mgmt');
 const path = require('path');
 
 router.delete('/delete/:scene/:moleculeIndex', (req, res) => {
-  let { isAdmin, isowner } = checkSession(req, res);
+  let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'instructor'){
+        isAdmin = true;
+        isInstructor = true;
+    }else if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
   if (!isAdmin) return res.status(401).json({ error: "User not logged in" });
 
   // Extract scene and molecule names from the request parameters
@@ -55,7 +63,15 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/updateCatalog/:oldSceneName', (req, res) => {
-  let { isAdmin, isowner } = checkSession(req, res);
+  let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'instructor'){
+        isAdmin = true;
+        isInstructor = true;
+    }else if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
   if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
   const oldSceneName = req.params.oldSceneName;
@@ -130,11 +146,17 @@ router.post('/updateCatalog/:oldSceneName', (req, res) => {
 
 
 router.get('/:id', function(req , res){
-  let { isAdmin, isowner } = checkSession(req, res);
+  let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'instructor'){
+        isAdmin = true;
+        isInstructor = true;
+    }else if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
   if (!isAdmin) return res.redirect("/");
   var scenefiles = fs.readdirSync('./public/scenes/');
-  const sessionToken = req.cookies.session;
-  let adminEmail = findAdminEmailBySession(sessionToken);
   let file = req.params.id;
   let sceneOwner;
   let sceneCatalog;
@@ -155,7 +177,7 @@ router.get('/:id', function(req , res){
     if (thisScene.hasOwnProperty("sceneOwner")) {
       sceneOwner = thisScene.sceneOwner;
       // if the current user is not the ower of the scene or the owner of the website, redirect to the scene catalog page.
-      if (sceneOwner !== adminEmail && !isowner ){
+      if (!isOwner ){
         return res.redirect("/scenes");
       }
     }
@@ -175,7 +197,15 @@ router.get('/:id', function(req , res){
 });
 
 router.post('/upload/images/', function (req, res) {
-  let { isAdmin, isowner } = checkSession(req, res);
+  let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'instructor'){
+        isAdmin = true;
+        isInstructor = true;
+    }else if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
   if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
   // Extract image data and image name from the request body
@@ -207,7 +237,15 @@ router.post('/upload/images/', function (req, res) {
 });
 
 router.post('/save/:scene', (req, res) => {
-  let { isAdmin, isowner } = checkSession(req, res);
+  let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if(userRole === 'instructor'){
+        isAdmin = true;
+        isInstructor = true;
+    }else if(userRole === 'admin'){
+        isAdmin = true;
+        isOwner = true;
+    }
   if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
   // Get the scene name from the params.
