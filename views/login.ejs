@@ -8,7 +8,7 @@
         e.preventDefault();
         var password = document.getElementById("passwordInput").value;
         let email = document.getElementById("emailInput").value;
-        fetch(`/session/`, {
+        fetch(`/login/`, {
           method: "Post",
           headers: {
             "Content-Type": "application/json"
@@ -77,6 +77,9 @@
                     <!--Forgot Password Button-->
                     <a id="forgotPassBtn" class="btn btn-outline-light btn-lg px-5" style="color: red" type="button"
                       href="/forgotPasswordPage">Forgot Password</a>
+                      <br>
+                      <br>
+                    <a href="/registration" style="color: white">Don't have an account? Sign up!</a>
                   </form>
                 </div>
               </div>
@@ -85,3 +88,5 @@
         </div>
       </div>
     </section>
+
+    

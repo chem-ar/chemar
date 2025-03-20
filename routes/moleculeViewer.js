@@ -6,20 +6,25 @@ var { checkSession } = require('./auth/session-mgmt');
 
 router.get('/', function(req, res, next) {
   //Admin check
-  let {isAdmin, isowner} = checkSession(req, res);
-  res.render('moleculeViewer', { title: 'Molecule Viewer', item: 2519, isAdmin: isAdmin, isowner});
+  let { isAdmin, isInstructor, isOwner } = checkSession(req, res);
+
+  let userRole = req.session?.user?.role || 'student';
+
+  res.render('moleculeViewer', { title: 'Molecule Viewer', item: 2519, userRole, isAdmin, isInstructor, isOwner});
 });
 
 router.get('/:id', function(req , res){
   //Admin check
-  let {isAdmin, isowner} = checkSession(req, res);
+  let { isAdmin, isInstructor, isOwner } = checkSession(req, res);
+  let userRole = req.session?.user?.role || 'student';
+
   var molfiles = fs.readdirSync('./public/molfiles/')
   
   if(molfiles.includes(req.params.id + '.mol')){    
     res.render('moleculeViewer', {
       title: 'Molecule Viewer', 
       item: req.params.id,
-      isAdmin: isAdmin, isowner
+      isAdmin: isAdmin, isOwner, isInstructor
     });
   }
 
@@ -28,7 +33,7 @@ router.get('/:id', function(req , res){
     res.render('moleculeViewer', {
       title: 'Molecule Viewer', 
       item: 2519,
-      isAdmin: isAdmin, isowner
+      isAdmin: isAdmin, isOwner, isInstructor
     });  
   }
 });

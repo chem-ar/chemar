@@ -281,7 +281,7 @@ footer {
 
     <div id="control-panel2">
         <input type="button" value="Get obj file" id="get-obj" onclick='jmolScript("write " + cid + ".obj;")'>
-        <% if (isAdmin) { %>
+        <% if (isAdmin || isInstructor) { %>
             <input type="button" id="saveAsModelBtn"  value="Save Model" class="btn btn-primary">
         <% } %>
     </div>

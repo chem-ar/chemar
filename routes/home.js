@@ -1,11 +1,21 @@
-var express = require("express");
+var express = require('express');
 var router = express.Router();
+var { checkSession } = require('../auth/session-mgmt');
 
-/* GET home page. */
-router.get("/", function (req, res, next) {
-  const oneDay = 86400000;
-  res.cookie("name", "admin", {maxAge: oneDay}).send("cookies");
-  res.render("home", { title: "Express", testJSON: { name: "test" }, login: login });
+router.get('/', async function (req, res) {
+    let { isAdmin } = await checkSession(req, res);
+
+    let userRole = req.session?.user?.role || 'student';
+
+    let navbar = 'partials/navbar'; 
+    if (userRole === 'admin') {
+        navbar = 'partials/navbarowner'; 
+    } else if (userRole === 'instructor') {
+        navbar = 'partials/navbarAdmin'; 
+    }
+
+    console.log(userRole);
+    res.render('home', { title: 'Home', navbar: navbar, userRole });
 });
 
 module.exports = router;
