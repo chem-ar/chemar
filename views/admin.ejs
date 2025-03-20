@@ -9,200 +9,233 @@
 <% } %>
 
 
-<div class="p-3 mb-2 text-white main-background-color">
-  <h2 class="display-5 fw-bold">Admin Tools</h2>
-  <h4 class="admin-page mt-3">Change Password</h4>
-  <div class="form-container">
-    <form id="changePasswordForm" onsubmit="changePassword(event)" action="" method="post">
-      <div class="form-outline">
-        <input
-          required
-          type="password"
-          id="oldPassword"
-          class="form-control"
-          name="oldPassword"
-          placeholder="Old Password:"
-        >
-      </div>
-      <div class="form-outline">
-        <input
-          required
-          type="password"
-          id="newPassword"
-          class="form-control"
-          name="newPassword"
-          placeholder="New Password:"
-          onkeyup="checkPasswordStrength()"
-        >
-        <small class="text-bright-white">Password Requirements:</small>
-        <ul class="text-bright-white">
-          <li>At least 7 characters long</li>
-          <li>At least one uppercase letter</li>
-          <li>At least one lowercase letter</li>
-          <li>At least one number</li>
-          <li>At least one symbol (@!$%*?&)</li>
-        </ul>
-      </div>
-      <div class="form-outline">
-        <input
-          required
-          type="password"
-          id="confirmNewPassword"
-          class="form-control"
-          name="confirmNewPassword"
-          placeholder="Confirm New Password:"
-          onkeyup="checkPassword()"
-        >
-      </div>
-      <div id="passwordFeedback" class="text-white"></div>
-      <input type="submit" id="changePasswordBtn" class="btn btn-primary" value="Change Password">
-    </form>
+<div class="container mt-5">
+  <div class="card shadow-lg p-4 bg-dark text-white rounded">
+    <h2 class="text-center fw-bold">Account Management</h2>
+    <h4 class="text-center mt-3">Change Password</h4>
+    <div class="form-container mt-4">
+      <form id="changePasswordForm" onsubmit="changePassword(event)" action="" method="post">
+        <div class="form-outline">
+          <label for="roleSelect" class="text-bright-white">Select Role:</label>
+          <select id="roleSelect" name="role" class="form-control">
+            <option value="" disabled selected>Select your role</option>
+            <option value="Admin">Admin</option>
+            <option value="Instructor">Instructor</option>
+            <option value="Student">Student</option>
+          </select>
+        </div>
+        <div class="form-outline mb-3">
+          <label for="oldPassword" class="form-label">Old Password</label>
+          <input required type="password" id="oldPassword" class="form-control" name="oldPassword">
+        </div>
+        <div class="form-outline mb-3">
+          <label for="newPassword" class="form-label">New Password</label>
+          <input required type="password" id="newPassword" class="form-control" name="newPassword" onkeyup="checkPasswordStrength()">
+          <small class="text-muted">Password Requirements:</small>
+          <ul class="small text-muted">
+            <li>At least 7 characters long</li>
+            <li>At least one uppercase letter</li>
+            <li>At least one lowercase letter</li>
+            <li>At least one number</li>
+            <li>At least one symbol (@!$%*?&)</li>
+          </ul>
+        </div>
+        <div class="form-outline mb-3">
+          <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+          <input required type="password" id="confirmNewPassword" class="form-control" name="confirmNewPassword" onkeyup="checkPassword()">
+        </div>
+        <div id="passwordFeedback" class="text-white"></div>
+        <button type="submit" id="changePasswordBtn" class="btn btn-light w-100">Change Password</button>
+        <h4 class="text-center mt-4">Update Email Address</h4>
+        <div class="form-container mt-4">
+          <form id="changeEmailForm" onsubmit="changeEmail(event)" action="" method="post">
+            <div class="form-outline mb-3">
+              <label for="emailPassword" class="form-label">Current Password</label>
+              <input required type="password" id="emailPassword" class="form-control" name="emailPassword">
+            </div>
+            <div class="form-outline mb-3">
+              <label for="newEmail" class="form-label">New Email</label>
+              <input required type="email" id="newEmail" class="form-control" name="newEmail" 
+                  placeholder="Enter New Email (must be @dal.ca)" onkeyup="validateDalEmail()">
+              <small id="emailValidationMessage" class="text-danger"></small>
+            </div>
+            <div class="form-outline mb-3">
+              <label for="confirmNewEmail" class="form-label">Confirm New Email</label>
+              <input required type="email" id="confirmNewEmail" class="form-control" name="confirmNewEmail" onkeyup="checkEmailMatch()">
+            </div>
+            <div id="emailFeedback" class="text-white"></div>
+            <button type="submit" id="changeEmailBtn" class="btn btn-light w-100">Update Email</button>
+          </form>
+        </div>
+      </form>
+    </div>
+
+    <!-- Delete Account Section -->
+  <h4 class="admin-page mt-4">Warning</h4>
+  <p class="text-danger">Deleting your account is permanent and cannot be undone.</p>
+  <button class="btn btn-danger" onclick="confirmDelete()">Delete Account</button>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <h2 class="modal-title">Confirm Account Deletion</h2>
+    <p class="modal-text">
+      Are you sure you want to delete your account? <br>
+      This action <strong>cannot</strong> be undone.
+    </p>
+    <div class="modal-buttons">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="deleteAccount()">Delete</button>
+    </div>
   </div>
 </div>
-    <style>
-     
-    
+</div>
 
-
-
+<style>
 body {
-  font-family: Arial, sans-serif;
-  background-color: #181A1F;
+  font-family: 'Poppins', sans-serif;
+  background-color: #121212;
   color: white;
-  min-height: 100%;
-  margin: 0;
 }
-
-.main-background-color {
-  background-color: #181A1F;
-  text-align: left;
+.container {
+  max-width: 500px;
+  margin: auto;
 }
-
-
-.main-background-color h2 {
-  font-size: 2rem;
-  text-align: left;
-  margin-left: 40px;
+.card {
+  border-radius: 10px;
 }
-
-.main-background-color h4 {
-  font-size: 1.2rem;
-  text-align: left;
-  margin-bottom: 20px;
-  margin-left: 40px;
-  font-weight: normal;
-}
-
-.form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-top: 20px; 
-  margin-left: 40px;
-}
-
-
-.form-outline {
-  width: 500px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
 .form-control {
+  background-color: #222;
+  border: 1px solid #555;
+  color: white;
+  padding: 12px;
+  border-radius: 6px;
+}
+select.form-control {
+  appearance: none;
+  cursor: pointer;
+}
+
+select.form-control:focus {
+  outline: none;
+  border: 1px solid #007bff;
+}
+.form-control:focus {
+  background-color: #333;
+  border-color: #bbb;
+}
+.btn-light {
+  background-color: white;
+  color: black;
+  font-size: 1rem;
+  padding: 10px;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+.btn-light:hover {
+  background-color: #ddd;
+}
+ul.small {
+  padding-left: 20px;
+}
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+  #passwordFeedback {
+  font-size: 0.9rem;
+  text-align: left;
+  color: white;
+}
+/* Modal Styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
   width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal Content */
+.modal-content {
+  background: #1f1f1f;
+  padding: 25px;
+  border-radius: 8px;
+  text-align: center;
+  color: white;
+  width: 350px;
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+}
+
+/* Modal Title */
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+/* Modal Text */
+.modal-text {
+  font-size: 1rem;
+  color: #ccc;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+/* Modal Buttons */
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.btn-secondary, .btn-danger {
+  width: 48%;
   padding: 10px;
   font-size: 1rem;
   border-radius: 5px;
-  border: 1px solid #ccc;
-  background-color: white;
-  color: black;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.btn.btn-primary {
-  height: 50px;
-  font-size: 1.38rem;
-  background-color: black;
-  border-color: rgb(255, 255, 255);
-  border-width: 2px;
+.btn-danger {
+  background-color: red;
+  color: white;
 }
 
-.btn.btn-primary:hover {
-  background-color: white;
-  color: black;
+.btn-danger:hover {
+  background-color: darkred;
 }
 
-
-small.text-bright-white {
-  font-size: 0.9rem;
-  color: #ccc;
+.btn-secondary {
+  background-color: #444;
+  color: white;
 }
 
-ul.text-bright-white {
-  padding-left: 20px;
-  font-size: 0.9rem;
-  color: #ccc;
+.btn-secondary:hover {
+  background-color: #666;
 }
-
-
-#passwordFeedback {
+.form-control {
+  background-color: #222;
+  border: 1px solid #555;
+  color: white;
+  padding: 12px;
+  border-radius: 6px;
+}
+#emailFeedback {
   font-size: 0.9rem;
   text-align: left;
   color: white;
 }
-
-
-
-
-/* Mobile View Adjustments */
-@media (max-width: 768px) {
-  .main-background-color {
- 
-  background-color: #181A1F;
- 
-  text-align: left;
 }
-
-  .main-background-color h2 {
-    font-size: 1.8rem;
-    margin-left: 10px;
-  }
-
-  .main-background-color h4 {
-    font-size: 1.2rem;
-    margin-left: 10px;
-  }
-
-  .form-control {
-    font-size: 1rem;
-    padding: 10px;
-    
-  }
-
-  ul.text-bright-white {
-    font-size: 1rem;
-  }
-
-  small.text-bright-white {
-    font-size: 1rem;
-  }
-
-
-  .form-outline {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-.form-container {
-  
-  margin-left: 10px;
-}
-}
-    
-    </style>
+</style>
     <script>
       const confirmedNewPasswordInput = document.getElementById('confirmNewPassword');
       const newPasswordInput = document.getElementById('newPassword');
@@ -265,6 +298,8 @@ ul.text-bright-white {
         }
       }
 
+           
+
       function checkPasswordStrength() {
         var newPassword = newPasswordInput.value;
         var strength = validatePassword(newPassword);
@@ -283,6 +318,103 @@ ul.text-bright-white {
       function validatePassword(password) {
         const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*!])[A-Za-z\d@#$%^&*!]{7,}$/;
         return regex.test(password);
+      }
+
+      function validateDalEmail() {
+        var emailInput = document.getElementById("newEmail");
+        var emailFeedback = document.getElementById("emailValidationMessage");
+        var emailValue = emailInput.value.trim();
+
+        if (!emailValue.endsWith("@dal.ca")) {
+          emailInput.style.border = "2px solid red";
+          emailFeedback.textContent = "Email must be a valid @dal.ca address.";
+          emailFeedback.style.color = "red";
+        } else {
+          emailInput.style.border = "2px solid green";
+          emailFeedback.textContent = "Valid @dal.ca email.";
+          emailFeedback.style.color = "green";
+        }
+      }
+      // Email Change Functions
+      function changeEmail(e) {
+        e.preventDefault();
+        const form = document.getElementById("changeEmailForm");
+        var emailInput = document.getElementById("newEmail");
+        var emailFeedback = document.getElementById("emailValidationMessage");
+        var emailValue = emailInput.value.trim();
+
+        if (!emailValue.endsWith("@dal.ca")) {
+          emailInput.style.border = "2px solid red";
+          emailFeedback.textContent = "Email must be a valid @dal.ca address.";
+          emailFeedback.style.color = "red";
+          return; // Stop form submission
+        }
+
+        var emailPassword = document.getElementById("emailPassword").value;
+        var confirmNewEmail = document.getElementById("confirmNewEmail").value;
+
+        if (emailValue !== confirmNewEmail) {
+          emailInput.style.border = "2px solid red";
+          emailFeedback.textContent = "Emails do not match.";
+          return; // Stop form submission
+        }
+
+        let body = {
+          password: emailPassword,
+          newEmail: emailValue
+        };
+
+        fetch(`/session/changeemail`, { 
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        })
+        .then(async response => {
+          const body = await response.json().catch(_error => ({}));
+          if (response.status === 401 && body.error) throw new Error(body.error);
+          else if (!response.ok) throw new Error(`Server returned status code ${response.status}`);
+
+          toastr.success("Email updated successfully");
+          form.reset();
+          emailInput.style.border = "";
+          emailFeedback.textContent = "";
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          toastr.error(error.message, "Failed to update email");
+        });
+      }
+
+      // Check if emails match
+      function checkEmailMatch() {
+        var newEmail = document.getElementById("newEmail").value;
+        var confirmNewEmail = document.getElementById("confirmNewEmail").value;
+        var emailFeedback = document.getElementById("emailFeedback");
+
+        if (newEmail === confirmNewEmail) {
+          confirmNewEmail.style.backgroundColor = "#b3ffb3";
+          newEmail.style.backgroundColor = "#b3ffb3";
+          emailFeedback.textContent = "Emails match";
+          emailFeedback.style.color = "#b3ffb3";
+        } else {
+          confirmNewEmail.style.backgroundColor = "#ff9980";
+          newEmail.style.backgroundColor = "#ff9980";
+          emailFeedback.textContent = "Emails do not match";
+          emailFeedback.style.color = "#ff9980";
+        }
+      }
+      // Delete Account Functions
+      function confirmDelete() {
+       document.getElementById("deleteModal").style.display = "flex";
+      }
+
+      function closeModal() {
+        document.getElementById("deleteModal").style.display = "none";
+      }
+
+      function deleteAccount() {
+        alert("Account deletion confirmed (backend logic needed).");
+        closeModal();
       }
     </script>
   <footer>
