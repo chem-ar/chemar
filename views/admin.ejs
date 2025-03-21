@@ -226,6 +226,9 @@ ul.small {
   text-align: left;
   color: white;
 }
+.text-success {
+    color: green !important;
+}
 }
 </style>
     <script>
@@ -321,10 +324,14 @@ ul.small {
           emailInput.style.border = "2px solid red";
           emailFeedback.textContent = "Email must be a valid @dal.ca address.";
           emailFeedback.style.color = "red";
+          emailFeedback.classList.add("text-danger");
+          emailFeedback.classList.remove("text-success");
         } else {
           emailInput.style.border = "2px solid green";
           emailFeedback.textContent = "Valid @dal.ca email.";
           emailFeedback.style.color = "green";
+          emailFeedback.classList.remove("text-danger");
+          emailFeedback.classList.add("text-success");
         }
       }
       // Email Change Functions
