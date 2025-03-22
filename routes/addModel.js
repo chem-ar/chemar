@@ -1,22 +1,24 @@
-var express = require('express');
-var multer = require('multer');
-var router = express.Router();
-var fs = require('fs');
-var path = require('path');
-var obj2gltf = require('obj2gltf');
+const express = require('express');
+const multer = require('multer');
+const router = express.Router();
+const fs = require('fs');
+const path = require('path');
+const obj2gltf = require('obj2gltf');
+const { sql, connect } = require('../db');
 const { checkSession } = require('./auth/session-mgmt');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/modelfiles/')
+        cb(null, 'public/modelfiles/');
     },
     filename: (req, file, cb) => {
-        cb(null, file.originalname);
+        cb(null, Date.now() + '-' + file.originalname);
     }
 });
+
 const upload = multer({ storage: storage });
 
-router.get('/', function (req, res, next) {
+router.get('/', (req, res) => {
     res.render('addModel', { title: 'Add New Model' });
 });
 
@@ -27,8 +29,6 @@ const uploadMiddleware = upload.fields([
     { name: 'binFileName', maxCount: 1 },
     { name: 'glbFileName', maxCount: 1 }
 ]);
-
-const catalogPath = './public/catalog/modelFileCatalog.json';
 
 async function convertOBJToGLB(objPath, outputGlbPath) {
     try {
@@ -43,62 +43,76 @@ async function convertOBJToGLB(objPath, outputGlbPath) {
 
 router.post('/saveModel', uploadMiddleware, async (req, res) => {
     const name = req.body.name;
-    const modelDescription = req.body.modelDescription;
-    let { isAdmin } = checkSession(req, res);
-    if (!isAdmin) {
-        Object.values(req.files).flat().forEach(file => fs.unlinkSync(file.path));
-        return res.status(401).send({ error: "User not logged in" });
+    const description = req.body.modelDescription;
+    const uploadDate = new Date();
+
+    let { isAdmin, isInstructor, isOwner } = await checkSession(req, res);
+    let userRole = res.locals.userRole;
+    const userId = res.locals.userId;
+
+
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+        isOwner = true;
     }
 
-    let parsedData = JSON.parse(fs.readFileSync(catalogPath));
-    for (const entry of parsedData) {
-        if (entry.name === name && entry.description === modelDescription) {
+    if (!isAdmin) {
+        Object.values(req.files).flat().forEach(file => fs.unlinkSync(file.path));
+        return res.status(401).send({ error: "Unauthorized" });
+    }
+
+    try {
+        const pool = await connect();
+        const existing = await pool.request()
+            .input('name', sql.NVarChar, name)
+            .input('userId', sql.Int, userId)
+            .query("SELECT * FROM Models WHERE file_name = @name AND user_id = @userId");
+
+        if (existing.recordset.length > 0) {
             Object.values(req.files).flat().forEach(file => fs.unlinkSync(file.path));
             return res.status(400).send({ error: 'This model already exists' });
         }
-    }
 
-    const newId = parsedData.length ? parsedData[parsedData.length - 1].id + 1 : 1;
-    let modelEntry = { id: newId, name, description: modelDescription, files: {} };
+        let filePath = null;
 
-    if (req.files['objFileName']) {
-        const objFile = req.files['objFileName'][0];
-        const objFileNameWithoutExt = path.parse(objFile.originalname).name;
-        const outputGlbPath = path.join('public/modelfiles', `${objFileNameWithoutExt}.glb`);
-        const convertedGlbPath = await convertOBJToGLB(objFile.path, outputGlbPath);
-        
-        if (convertedGlbPath) {
-            modelEntry.files.glb = `${objFileNameWithoutExt}.glb`;
+        if (req.files['objFileName']) {
+            const objFile = req.files['objFileName'][0];
+            const objFileNameWithoutExt = path.parse(objFile.originalname).name;
+            const outputGlbPath = path.join('public/modelfiles', `${objFileNameWithoutExt}-${Date.now()}.glb`);
+            const convertedGlbPath = await convertOBJToGLB(objFile.path, outputGlbPath);
+            if (convertedGlbPath) filePath = convertedGlbPath;
+            fs.unlinkSync(objFile.path);
         }
-        fs.unlinkSync(objFile.path);
-    }
 
-    if (req.files['gltfFileName']) {
-        const gltfFile = req.files['gltfFileName'][0];
-        const binFile = req.files['binFileName'] ? req.files['binFileName'][0] : null;
-        
-        const newGltfFileName = gltfFile.originalname;
-        fs.renameSync(gltfFile.path, path.join(gltfFile.destination, newGltfFileName));
-        modelEntry.files.gltf = newGltfFileName;
-        
-        if (binFile) {
-            const newBinFileName = binFile.originalname;
-            fs.renameSync(binFile.path, path.join(binFile.destination, newBinFileName));
-            modelEntry.files.bin = newBinFileName;
+        if (req.files['gltfFileName']) {
+            const gltfFile = req.files['gltfFileName'][0];
+            filePath = path.join(gltfFile.destination, gltfFile.filename);
         }
+
+        if (req.files['glbFileName']) {
+            const glbFile = req.files['glbFileName'][0];
+            filePath = path.join(glbFile.destination, glbFile.filename);
+        }
+
+        await pool.request()
+            .input('userId', sql.Int, userId)
+            .input('file_name', sql.NVarChar, name)
+            .input('desc', sql.NVarChar, description)
+            .input('file_path', sql.NVarChar, filePath)
+            .input('upload_date', sql.DateTime, uploadDate)
+            .query(`
+                INSERT INTO Models (user_id, file_name, [desc], file_path, upload_date)
+                VALUES (@userId, @file_name, @desc, @file_path, @upload_date)
+            `);
+
+        res.send({ message: 'Model saved!' });
+    } catch (error) {
+        console.error('DB Insert Error:', error);
+        res.sendStatus(500);
     }
-
-    if (req.files['glbFileName']) {
-        const glbFile = req.files['glbFileName'][0];
-        const newGlbPath = path.join(glbFile.destination, glbFile.originalname);
-        fs.renameSync(glbFile.path, newGlbPath);
-        modelEntry.files.glb = glbFile.originalname;
-    }
-
-    parsedData.push(modelEntry);
-    fs.writeFileSync(catalogPath, JSON.stringify(parsedData, null, 2));
-
-    res.send({ message: 'Model saved!' });
 });
 
 module.exports = router;
