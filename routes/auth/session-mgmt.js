@@ -12,7 +12,7 @@ async function checkSession(req, res) {
         const pool = await connect();
         const result = await pool.request()
             .input('token', sql.NVarChar(255), token)
-            .query(`SELECT u.role, u.email, s.expires_at 
+            .query(`SELECT user_id, u.role, u.email, s.expires_at 
                     FROM Sessions s 
                     JOIN Users u ON s.user_id = u.id 
                     WHERE s.token = @token`);
@@ -33,7 +33,11 @@ async function checkSession(req, res) {
             .input('expiresAt', sql.BigInt, Date.now() + 14400000)
             .query(`UPDATE Sessions SET expires_at = @expiresAt WHERE token = @token`);
 
-        return { isAdmin: session.role === 'admin', isInstructor: session.role === 'instructor', isOwner: session.owner, role: session.role, email: session.email };
+        res.locals.userId = session.user_id;
+        session.role = (session.role || '').toLowerCase();
+        res.locals.userRole = session.role;
+
+        return { isAdmin: session.role === 'admin', isInstructor: session.role === 'instructor', isOwner: session.owner, role: session.role, email: session.email, userId: session.user_id };
     } catch (err) {
         console.error("Error checking session:", err);
         return { isAdmin: false, isInstructor: false, isOwner: false };
