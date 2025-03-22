@@ -1,8 +1,13 @@
 <%- include('partials/header') %>
 <!--ADMIN NAVBAR CHECK-->
-<% if (isowner){%>
-<%- include('partials/navbarowner') %>
-<%}%>
+<% if (isOwner) { %>
+    <%- include('partials/navbarowner') %>
+<% } else if (isInstructor || isAdmin) { %>
+    <%- include('partials/navbarAdmin') %>
+<% } else { %>
+    <%- include('partials/navbar') %>
+<% } %>
+
 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>

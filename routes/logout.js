@@ -1,11 +1,15 @@
 var express = require('express');
 var router = express.Router();
-const {endSession} = require('./auth/session-mgmt')
+const { endSession } = require('./auth/session-mgmt');
 
-//Create cookie here then redirect
-router.get('/', function(req, res, next) {
-  endSession(req, res)
-  res.redirect("/");
+router.get('/', async function(req, res, next) {
+    try {
+        await endSession(req, res);  
+        return res.redirect("/login");  
+    } catch (error) {
+        console.error("Logout error:", error);
+        return res.status(500).send("Error logging out");
+    }
 });
 
 module.exports = router;
