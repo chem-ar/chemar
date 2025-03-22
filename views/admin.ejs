@@ -12,18 +12,11 @@
 <div class="container mt-5">
   <div class="card shadow-lg p-4 bg-dark text-white rounded">
     <h2 class="text-center fw-bold">Account Management</h2>
+    
+    <!-- Change Password Section -->
     <h4 class="text-center mt-3">Change Password</h4>
     <div class="form-container mt-4">
-      <form id="changePasswordForm" onsubmit="changePassword(event)" action="" method="post">
-        <div class="form-outline">
-          <label for="roleSelect" class="text-bright-white">Select Role:</label>
-          <select id="roleSelect" name="role" class="form-control">
-            <option value="" disabled selected>Select your role</option>
-            <option value="Admin">Admin</option>
-            <option value="Instructor">Instructor</option>
-            <option value="Student">Student</option>
-          </select>
-        </div>
+      <form id="changePasswordForm" onsubmit="changePassword(event)" method="post">
         <div class="form-outline mb-3">
           <label for="oldPassword" class="form-label">Old Password</label>
           <input required type="password" id="oldPassword" class="form-control" name="oldPassword">
@@ -31,14 +24,6 @@
         <div class="form-outline mb-3">
           <label for="newPassword" class="form-label">New Password</label>
           <input required type="password" id="newPassword" class="form-control" name="newPassword" onkeyup="checkPasswordStrength()">
-          <small class="text-muted">Password Requirements:</small>
-          <ul class="small text-muted">
-            <li>At least 7 characters long</li>
-            <li>At least one uppercase letter</li>
-            <li>At least one lowercase letter</li>
-            <li>At least one number</li>
-            <li>At least one symbol (@!$%*?&)</li>
-          </ul>
         </div>
         <div class="form-outline mb-3">
           <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
@@ -46,35 +31,42 @@
         </div>
         <div id="passwordFeedback" class="text-white"></div>
         <button type="submit" id="changePasswordBtn" class="btn btn-light w-100">Change Password</button>
-        <h4 class="text-center mt-4">Update Email Address</h4>
-        <div class="form-container mt-4">
-          <form id="changeEmailForm" onsubmit="changeEmail(event)" action="" method="post">
-            <div class="form-outline mb-3">
-              <label for="emailPassword" class="form-label">Current Password</label>
-              <input required type="password" id="emailPassword" class="form-control" name="emailPassword">
-            </div>
-            <div class="form-outline mb-3">
-              <label for="newEmail" class="form-label">New Email</label>
-              <input required type="email" id="newEmail" class="form-control" name="newEmail" 
-                  placeholder="Enter New Email (must be @dal.ca)" onkeyup="validateDalEmail()">
-              <small id="emailValidationMessage" class="text-danger"></small>
-            </div>
-            <div class="form-outline mb-3">
-              <label for="confirmNewEmail" class="form-label">Confirm New Email</label>
-              <input required type="email" id="confirmNewEmail" class="form-control" name="confirmNewEmail" onkeyup="checkEmailMatch()">
-            </div>
-            <div id="emailFeedback" class="text-white"></div>
-            <button type="submit" id="changeEmailBtn" class="btn btn-light w-100">Update Email</button>
-          </form>
-        </div>
       </form>
     </div>
-
+    
+    <!-- Update Email Address Section -->
+    <h4 class="text-center mt-4">Update Email Address</h4>
+    <div class="form-container mt-4">
+      <form id="changeEmailForm" onsubmit="changeEmail(event)" method="post">
+        <div class="form-outline mb-3">
+          <label for="emailPassword" class="form-label">Current Password</label>
+          <input required type="password" id="emailPassword" class="form-control" name="emailPassword">
+        </div>
+        <div class="form-outline mb-3">
+          <label for="newEmail" class="form-label">New Email</label>
+          <input required type="email" id="newEmail" class="form-control" name="newEmail" placeholder="Enter New Email (must be @dal.ca)" onkeyup="validateDalEmail()">
+          <small id="emailValidationMessage" class="text-danger"></small>
+        </div>
+        <div class="form-outline mb-3">
+          <label for="confirmNewEmail" class="form-label">Confirm New Email</label>
+          <input required type="email" id="confirmNewEmail" class="form-control" name="confirmNewEmail" onkeyup="checkEmailMatch()">
+        </div>
+        <div id="emailFeedback" class="text-white"></div>
+        <button type="submit" id="changeEmailBtn" class="btn btn-light w-100">Update Email</button>
+      </form>
+    </div>
+    
     <!-- Delete Account Section -->
-  <h4 class="admin-page mt-4">Warning</h4>
-  <p class="text-danger">Deleting your account is permanent and cannot be undone.</p>
-  <button class="btn btn-danger" onclick="confirmDelete()">Delete Account</button>
-</div>
+    <h4 class="admin-page mt-4">Warning</h4>
+    <p class="text-danger">Deleting your account is permanent and cannot be undone.</p>
+    <form id="deleteAccountForm" onsubmit="deleteAccount(event); return false;">
+      <div class="form-outline mb-3">
+        <label for="deletePassword" class="form-label">Enter Password to Confirm Deletion</label>
+        <input required type="password" id="deletePassword" class="form-control" name="deletePassword">
+      </div>
+      <button type="submit" class="btn btn-danger">Delete Account</button>
+    </form>
+  </div>
 
 <!-- Confirmation Modal -->
 <div id="deleteModal" class="modal">
@@ -86,7 +78,7 @@
     </p>
     <div class="modal-buttons">
       <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-danger" onclick="deleteAccount()">Delete</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
     </div>
   </div>
 </div>
@@ -234,6 +226,9 @@ ul.small {
   text-align: left;
   color: white;
 }
+.text-success {
+    color: green !important;
+}
 }
 </style>
     <script>
@@ -254,7 +249,7 @@ ul.small {
           newPassword: newPassword
         }
         if (newPassword == confirmedNewPassword) {
-          fetch(`/session/changepassword`, { 
+          fetch(`/admin/changepassword`, { 
               method: "POST",
               headers: {
                 "Content-Type": "application/json"
@@ -329,10 +324,14 @@ ul.small {
           emailInput.style.border = "2px solid red";
           emailFeedback.textContent = "Email must be a valid @dal.ca address.";
           emailFeedback.style.color = "red";
+          emailFeedback.classList.add("text-danger");
+          emailFeedback.classList.remove("text-success");
         } else {
           emailInput.style.border = "2px solid green";
           emailFeedback.textContent = "Valid @dal.ca email.";
           emailFeedback.style.color = "green";
+          emailFeedback.classList.remove("text-danger");
+          emailFeedback.classList.add("text-success");
         }
       }
       // Email Change Functions
@@ -364,7 +363,7 @@ ul.small {
           newEmail: emailValue
         };
 
-        fetch(`/session/changeemail`, { 
+        fetch(`/admin/changeemail`, { 
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)
@@ -412,11 +411,47 @@ ul.small {
         document.getElementById("deleteModal").style.display = "none";
       }
 
-      function deleteAccount() {
-        alert("Account deletion confirmed (backend logic needed).");
-        closeModal();
-      }
-    </script>
+  function deleteAccount() {
+    if (event) event.preventDefault();
+
+    const password = document.getElementById("deletePassword").value;
+
+    if (!password) {
+        alert("Please enter your password to confirm deletion.");
+        return;
+    }
+
+    fetch(`/admin/deleteaccount`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: password })
+    })
+    .then(async response => {
+        console.log("Response received:", response);
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            console.error("Error response:", data);
+            throw new Error(data.message || "Error deleting account");
+        }
+
+        return fetch("/logout", { method: "GET" })
+            .then(() => console.log("Logout successful"))
+            .catch(err => console.error("Logout failed:", err));
+    })
+    .then(() => {
+        setTimeout(() => {
+            window.location.replace("/login"); 
+        }, 500);
+    })
+    .catch(error => {
+        console.error("Fetch error:", error);
+        alert(error.message);
+    });
+
+    closeModal();
+  }
+</script>
   <footer>
     <%- include('partials/footer') %>
   </footer>

@@ -53,7 +53,7 @@ router.post('/', async (req, res) => {
 
         res.redirect('/');
     } catch (err) {
-        console.error("🚨 Login error:", err);
+        console.error("Login error:", err);
         return res.status(500).json({ message: "Internal server error." });
     }
 });

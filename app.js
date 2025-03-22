@@ -97,6 +97,8 @@ app.use(async (req, res, next) => {
       res.locals.isOwner = role === "admin";  
   }
 
+  res.locals.email = sessionData.email;
+
   next();
 });
 
@@ -131,6 +133,7 @@ app.use('/registration', registrationRouter);
 
 
 app.use('/passwordReset', passwordResetRouter);
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
