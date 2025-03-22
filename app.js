@@ -39,7 +39,6 @@ var jmolRouter = require('./routes/jmol');
 var forgotPasswordRouter = require('./routes/forgotPasswordPage')
 var messageRouter = require('./routes/confirmationMessage')
 var refreshToken = require('./routes/refreshtoken')
-var registrationRouter = require('./routes/registration');
 var { connect } = require('./db'); 
 connect(); 
 
@@ -128,7 +127,6 @@ app.use('/confirmationMessage', messageRouter);
 app.use('/refreshToken', refreshToken);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use('/registration', registrationRouter);
 
 
 
