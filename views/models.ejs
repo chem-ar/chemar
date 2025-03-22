@@ -1,5 +1,4 @@
 <%- include('partials/header') %>
-<!--ADMIN NAVBAR CHECK-->
 <% if (isOwner) { %>
     <%- include('partials/navbarowner') %>
 <% } else if (isInstructor || isAdmin) { %>
@@ -8,43 +7,43 @@
     <%- include('partials/navbar') %>
 <% } %>
 
-<script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-
-
 <div class="container mb-4 main-background-color">
     <div class="row content">
         <div class="col-12 pt-4 text-start text-white">
             <h1 class="display-4 fw-bold">Model Catalog</h1>
-            <!--ADMIN CHECK-->
             <% if (isAdmin || isInstructor || isOwner){%>
                 <%- include('partials/addModel') %>
             <%}%>
-            <p></p>
             <table id="modelTable" class="table table-striped text-white" style="width:100%">
                 <thead>
                     <tr>
                         <th>Name</th>
                         <th>Description</th>
-                        <th>Uploaded Files</th>
-                        <!--ADMIN CHECK-->
+                        <th>File Name</th>
                         <% if (isAdmin || isInstructor || isOwner){%>
                             <th class="options-column">Options</th>
                         <%}%>
                     </tr>
                 </thead>            
-                <tbody id="table-body">
+                <tbody>
+                    <% models.forEach(model => { %>
+                        <tr>
+                            <td><%= model.file_name %></td>
+                            <td><%= model.desc %></td>
+                            <td><%= model.file_name_only %></td>
+                            <% if (isAdmin || isInstructor || isOwner) { %>
+                                <td>
+                                    <button type="button" class="btn editModelBtn btn-warning" data-id="<%= model.id %>" data-name="<%= model.file_name %>" data-desc="<%= model.desc %>" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+                                    <button type="button" class="btn deleteModelBtn btn-danger" data-id="<%= model.id %>" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+                                </td>
+                            <% } %>
+                        </tr>
+                    <% }) %>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
-
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
-
 
 <!-- Edit Modal -->
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
@@ -55,24 +54,22 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="col-12 text-start text-white bg-dark">
-                    <form id="editModelForm" action="/" method="PUT">
-                        <div class="row">
-                            <div class="col-12 col-sm-12 col-md-12">
-                                <h4 class="mb-1 mt-2">Model Name:</h4>
-                                <input type="text" class="form-control" id="modelNameEdit" name="name" placeholder="Model Name" required>
-                                <h4 class="mb-1 mt-2">Description:</h4>
-                                <input type="text" class="form-control" id="modelDescriptionEdit" name="description" placeholder="Description" required>
-                                <button type="submit" id="editSubmitBtn" class="btn btn-success form-control my-2">Submit</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                <form id="editModelForm">
+                    <input type="hidden" id="editModelId">
+                    <div class="mb-3">
+                        <label for="modelNameEdit" class="form-label text-white">Model Name:</label>
+                        <input type="text" class="form-control" id="modelNameEdit" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modelDescriptionEdit" class="form-label text-white">Description:</label>
+                        <input type="text" class="form-control" id="modelDescriptionEdit" name="description" required>
+                    </div>
+                    <button type="submit" class="btn btn-success form-control my-2">Submit</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- Delete Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -82,161 +79,74 @@
                 <h5 class="modal-title text-white" id="deleteModalLabel">Confirm Delete</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-white">
                 Are you sure you want to delete this model?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="confirmDeleteBtn" class="btn btn-danger" data-bs-dismiss="modal">Delete</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>
 </div>
 
-
-<style>
-    .modal-content .modal-body {
-        color: white;
-    }
-</style>
-
-
 <script>
-    $(document).ready(function () {
-    $('#editModal').appendTo("body");
-    $('#deleteModal').appendTo("body");
-
-
-    // Initialize the DataTable
-    dataTable = new DataTable('#modelTable', {
-        ordering: true,
-        columnDefs: [
-            { orderable: false, targets: [3] }
-        ]
-    });
-   
-    fetchModels();
-});
-
-
-let dataTable;
-
-
-function fetchModels() {
-    fetch("/catalog/modelFileCatalog.json")
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error(`HTTP error Status: ${res.status}`);
-            }
-            return res.json();
-        })
-        .then((modelData) => {
-            dataTable.clear();
-            modelData.forEach(populateTable);
-
-
-            document.querySelectorAll('.editModelBtn').forEach(btn => {
-                btn.addEventListener('click', handleEditClick);
-            });
-
-
-            document.querySelectorAll('.deleteModelBtn').forEach(btn => {
-                btn.addEventListener('click', handleDeleteClick);
-            });
-        })
-        .catch((error) => toastr.error(error.message, "Unable to fetch data"));
-}
-
-
-function handleEditClick(event){
-    const btn = event.currentTarget;
-    const row = btn.closest('tr');
-    const modelName = row.children[0].textContent;
-    const modelDescription = row.children[1].textContent;
-    const id = btn.id;
-
-
-    document.getElementById('modelNameEdit').value = modelName;
-    document.getElementById('modelDescriptionEdit').value = modelDescription;
-
-
-    document.getElementById('editModelForm').onsubmit = function (e) {
-        e.preventDefault();
-        const updatedModel = {
-            name: document.getElementById('modelNameEdit').value,
-            description: document.getElementById('modelDescriptionEdit').value
-        };
-       
-        fetch(`/models/edit?id=${id}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(updatedModel)
-        })
-        .then(response => {
-            if (response.ok) {
-                $('#editModal').modal('hide');
-                toastr.success('Edited Successfully', "Success");
-                fetchModels();
-            } else if (response.status == 409) {
-                toastr.error('Model with same name & description exists', "Error");
-            } else if (response.status == 401) {
-                toastr.error('Please login to edit', "Error");
-            } else {
-                throw new Error(`Server returned status code: ${response.status}`);
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            toastr.error('Error in Editing, please try again!');
+    document.querySelectorAll('.editModelBtn').forEach(button => {
+        button.addEventListener('click', () => {
+            document.getElementById('editModelId').value = button.getAttribute('data-id');
+            document.getElementById('modelNameEdit').value = button.getAttribute('data-name');
+            document.getElementById('modelDescriptionEdit').value = button.getAttribute('data-desc');
         });
-    };
-}
+    });
 
+    document.getElementById('editModelForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const id = document.getElementById('editModelId').value;
+        const name = document.getElementById('modelNameEdit').value;
+        const description = document.getElementById('modelDescriptionEdit').value;
 
-function handleDeleteClick(event) {
-    const btn = event.currentTarget;
-    const id = btn.id;
-
-
-    document.getElementById('confirmDeleteBtn').onclick = function () {
-        fetch(`/models/delete`, {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id })
-        })
-        .then(response => {
-            if (response.ok) {
-                $('#deleteModal').modal('hide');
-                toastr.success('Deleted Successfully', "Success");
-                fetchModels();
-            } else if (response.status == 401) {
-                toastr.error('Please login to delete', "Error");
+        try {
+            const res = await fetch(`/models/edit`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id, name, description })
+            });
+            if (res.ok) {
+                location.reload();
+            } else if (res.status === 409) {
+                toastr.error("Duplicate model name and description.");
             } else {
-                toastr.error('Delete Unsuccessful', "Error");
+                toastr.error("Edit failed.");
             }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            toastr.error('Error in deleting, please try again!', "Error");
-        });  
-    };
-}
+        } catch (err) {
+            toastr.error("Error editing model.");
+        }
+    });
 
+    let deleteId = null;
+    document.querySelectorAll('.deleteModelBtn').forEach(button => {
+        button.addEventListener('click', () => {
+            deleteId = button.getAttribute('data-id');
+        });
+    });
 
-function populateTable(modelData) {
-    const newRow = dataTable.row.add([
-        modelData.name,
-        modelData.description,
-        Object.values(modelData.files).map(file => `<a class="text-white" href="/modelfiles/${file}">${file}</a>`).join(", "),
-        `<button type="button" class="btn editModelBtn btn-warning" id="${modelData.id}" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
-         <button type="button" class="btn deleteModelBtn btn-danger" id="${modelData.id}" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>`
-    ]).draw().node();
-}
-
-
-
-
+    document.getElementById('confirmDeleteBtn').addEventListener('click', async function () {
+        if (!deleteId) return;
+        try {
+            const res = await fetch('/models/delete', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: deleteId })
+            });
+            if (res.ok) {
+                location.reload();
+            } else {
+                toastr.error("Delete failed.");
+            }
+        } catch (err) {
+            toastr.error("Error deleting model.");
+        }
+    });
 </script>
 
-
-<%- include('partials/footer')%>
+<%- include('partials/footer') %>
