@@ -7,10 +7,12 @@ const { checkSession } = require('./auth/session-mgmt');
 router.post('/', (req, res) => {
     let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
     let userRole = res.locals.userRole;
-    if(userRole === 'instructor'){
+    if (userRole === 'instructor') {
         isAdmin = true;
         isInstructor = true;
-    }else if(userRole === 'admin'){
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
     }
@@ -57,10 +59,12 @@ router.post('/', (req, res) => {
 router.post('/saveMolFile', async (req, res) => {
     let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
     let userRole = res.locals.userRole;
-    if(userRole === 'instructor'){
+    if (userRole === 'instructor') {
         isAdmin = true;
         isInstructor = true;
-    }else if(userRole === 'admin'){
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
     }

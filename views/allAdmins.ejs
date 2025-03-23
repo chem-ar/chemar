@@ -204,14 +204,14 @@
 
 // Populate the table with data
 function populateTable(adminData, index) {
+    const role = adminData.role?.toLowerCase(); // normalize it
 
-    // Add new row to the DataTable
     const newRow = dataTable.row.add([
         adminData.email,
         `<select class="form-select compact-role-select role-select" data-email="${adminData.email}">
-        <option value="admin" ${adminData.role === 'admin' ? 'selected' : ''}>Admin</option>
-        <option value="instructor" ${adminData.role === 'instructor' ? 'selected' : ''}>Instructor</option>
-        <option value="student" ${adminData.role === 'student' ? 'selected' : ''}>Student</option>
+            <option value="admin" ${role === 'admin' ? 'selected' : ''}>Admin</option>
+            <option value="instructor" ${role === 'instructor' ? 'selected' : ''}>Instructor</option>
+            <option value="student" ${role === 'student' ? 'selected' : ''}>Student</option>
         </select>`,
         `<button type="button" class="btn deleteModelBtn" style="background-color: #CC0000; color: white;" 
             id="${adminData.email}" data-bs-toggle="modal" data-bs-target="#deleteModal">
@@ -219,10 +219,9 @@ function populateTable(adminData, index) {
         </button>`
     ]).draw().node();
 
-        // Ensure the new row is now part of the DOM before querying
-        $(newRow).find('.deleteModelBtn').on('click', handleDeleteClick);
+    $(newRow).find('.deleteModelBtn').on('click', handleDeleteClick);
+}
 
-    }
     document.addEventListener('DOMContentLoaded', async () => {
         try {
             const response = await fetch('/alladmin/last-backup');

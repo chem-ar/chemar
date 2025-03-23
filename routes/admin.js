@@ -13,6 +13,8 @@ router.get('/', async function (req, res, next) {
         isInstructor = true;
     } else if (userRole === 'admin') {
         isAdmin = true;
+    }else if(userRole === 'superadmin'){
+        isAdmin = true;
         isOwner = true;
     }
 
