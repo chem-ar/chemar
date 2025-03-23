@@ -6,11 +6,10 @@ var { checkSession } = require('./auth/session-mgmt')
 
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
-    const scenesDirectory = './public/scenes/';
-    // Admin and owner check
+router.get('/', (req, res) => {
     let { isAdmin, isInstructor, isOwner } = checkSession(req, res);
-    let userRole = res.locals.userRole;
+    let userRole = res.locals.userRole;    
+    const userEmail = res.locals.email;
     if (userRole === 'instructor') {
         isAdmin = true;
         isInstructor = true;
@@ -20,54 +19,49 @@ router.get('/', function (req, res, next) {
         isAdmin = true;
         isOwner = true;
     }
-    // Load the scene catalog data
-    let sceneCatalog;
+
+    const catalogPath = './public/catalog/sceneCatalog.json';
+    let catalog = {};
+
     try {
-        const sceneCatalogJSON = fs.readFileSync('./public/catalog/sceneCatalog.json', 'utf8');
-        sceneCatalog = JSON.parse(sceneCatalogJSON);
-    } catch (error) {
-        console.error('Error loading scene catalog:', error);
-        return res.sendStatus(500); // Send error response if scene catalog cannot be loaded
+        const catalogRaw = fs.readFileSync(catalogPath, 'utf8');
+        if (catalogRaw.trim()) {
+            catalog = JSON.parse(catalogRaw);
+        }
+    } catch (err) {
+        console.error('Failed to load scene catalog:', err);
     }
 
-    // Get the list of scene files
-    let sceneFiles;
-    try {
-        sceneFiles = fs.readdirSync(scenesDirectory);
-    } catch (error) {
-        console.error('Error reading scene files:', error);
-        return res.sendStatus(500); // Send error response if scene files cannot be read
+    const sceneList = [];
+
+    for (const [filename, scene] of Object.entries(catalog)) {
+        const isSceneOwner = scene.sceneOwner === userEmail;
+        const isVisibleToUser = scene.studentAccessible || isAdmin || isInstructor || isOwner || isSceneOwner;
+
+        if (isVisibleToUser) {
+            sceneList.push({
+                filename,
+                name: scene.name,
+                desc: scene.desc,
+                sceneOwner: scene.sceneOwner,
+                studentAccessible: scene.studentAccessible
+            });
+        }
     }
 
-    // Combine scene catalog data with scene files, filter according to ownership
-    let finalList = [];
-    for (let filename of sceneFiles) {
-        // Check if the scene file exists in the scene catalog
-        if (sceneCatalog.hasOwnProperty(filename)) {
-            const sceneOwner = sceneCatalog[filename].sceneOwner;    
-            const accessible = sceneCatalog[filename].studentAccessible; 
-
-            // Show scene if:
-            // 1. The user is the website owner (isowner === true)
-            // 2. The scene has no owner field (meaning the owner field is absent)
-            // 3. The current user is the owner of the scene
-            if (isOwner || !sceneCatalog[filename].hasOwnProperty('sceneOwner') || (!isAdmin && (sceneCatalog[filename].hasOwnProperty('studentAccessible') && accessible  ))) {
-                finalList.push({
-                    filename: filename,
-                    name: sceneCatalog[filename].name,
-                    desc: sceneCatalog[filename].desc,
-                    sceneOwner: sceneOwner || 'No Owner'
-                });
-            } 
-        } 
-    }
-    // Render the scenes page, passing the filtered list of scenes
-    res.render('scenes', { title: 'Catalog', list: finalList, isAdmin: isAdmin, sceneCatalog: sceneCatalog, isOwner: isOwner, isInstructor: isInstructor });
+    res.render('scenes', {
+        title: 'Catalog',
+        list: sceneList,
+        isAdmin,
+        isInstructor,
+        isOwner
+    });
 });
 
 
+
 // Endpoint to delete a scene
-router.post('/deleteScene/:scene', function (req, res) {
+router.post('/deleteScene/:sceneName', function (req, res) {
     let { isAdmin, isInstructor, isOwner } = checkSession(req, res);
     let userRole = res.locals.userRole;
     if (userRole === 'instructor') {
@@ -81,7 +75,7 @@ router.post('/deleteScene/:scene', function (req, res) {
     }
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
-    const sceneName = req.params.scene;
+    const sceneName = req.params.sceneName;
     const scenePath = `./public/scenes/${sceneName}.json`;
     console.log(scenePath);
 
@@ -116,6 +110,7 @@ router.post('/deleteScene/:scene', function (req, res) {
 router.post('/addScene', function (req, res) {
     let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
     let userRole = res.locals.userRole;
+    let email = res.locals.email;
     if (userRole === 'instructor') {
         isAdmin = true;
         isInstructor = true;
@@ -174,7 +169,7 @@ router.post('/addScene', function (req, res) {
                 sceneCatalog[newSceneName + ".json"] = {
                     "name": newSceneName,
                     "desc": newSceneDesc,
-                    "sceneOwner": adminEmail,
+                    "sceneOwner": email,
                     "studentAccessible": studentAccessible
                 };
 
