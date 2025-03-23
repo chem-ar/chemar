@@ -1,12 +1,12 @@
-Include the header and navbar partials
-<% if (isAdmin) { %>
-  <%- include('partials/navbarowner') %>
-<% } else if (isInstructor) { %>
-  <%- include('partials/navbarAdmin') %>
+<%- include('partials/header') %>
+<!--ADMIN NAVBAR CHECK-->
+<% if (isOwner) { %>
+    <%- include('partials/navbarowner') %>
+<% } else if (isInstructor || isAdmin) { %>
+    <%- include('partials/navbarAdmin') %>
 <% } else { %>
-  <%- include('partials/navbar') %>
+    <%- include('partials/navbar') %>
 <% } %>
- 
 
 <div class="container">
   <div class="row bg-light rounded-3 bg-dark text-white">

@@ -9,9 +9,11 @@ router.get('/', async function (req, res) {
 
     let navbar = 'partials/navbar'; 
     if (userRole === 'admin') {
-        navbar = 'partials/navbarowner'; 
+        navbar = 'partials/navbarAdmin'; 
     } else if (userRole === 'instructor') {
         navbar = 'partials/navbarAdmin'; 
+    } else if(userRole === 'superadmin'){
+        navbar = 'partials/navbarowner';
     }
 
     console.log(userRole);

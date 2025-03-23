@@ -9,8 +9,15 @@ const { checkSession } = require('./auth/session-mgmt');
 router.get('/', async (req, res) => {
     let { isAdmin, isInstructor, isOwner } = await checkSession(req, res);
     let userRole = res.locals.userRole;
-    if (userRole === 'instructor') isAdmin = isInstructor = true;
-    else if (userRole === 'admin') isAdmin = isOwner = true;
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
+        isAdmin = true;
+        isOwner = true;
+    }
 
     if (!isAdmin) return res.redirect("/");
 
@@ -44,8 +51,15 @@ router.get('/', async (req, res) => {
 router.post('/edit', async (req, res) => {
     let { isAdmin, isInstructor, isOwner } = await checkSession(req, res);
     let userRole = res.locals.userRole;
-    if (userRole === 'instructor') isAdmin = isInstructor = true;
-    else if (userRole === 'admin') isAdmin = isOwner = true;
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
+        isAdmin = true;
+        isOwner = true;
+    }
     
     if (!isAdmin) return res.status(401).send({ error: "Unauthorized" });
 
@@ -81,8 +95,15 @@ router.post('/edit', async (req, res) => {
 router.delete('/delete', async (req, res) => {
     let { isAdmin, isInstructor, isOwner } = await checkSession(req, res);
     let userRole = res.locals.userRole;
-    if (userRole === 'instructor') isAdmin = isInstructor = true;
-    else if (userRole === 'admin') isAdmin = isOwner = true;
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
+        isAdmin = true;
+        isOwner = true;
+    }
 
     if (!isAdmin) return res.status(401).send({ error: "Unauthorized" });
 

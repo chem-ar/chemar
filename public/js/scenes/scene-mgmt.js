@@ -68,11 +68,35 @@ export function initScene(pngFile, markerData, threeArea, window) {
     controls.minDistance = 1;
     camera.position.set(0, 0, 2);
 
-    markerLocationHelper.position.set(markerData.position.x, markerData.position.y, 0);
-    markerPlane.position.set(markerData.position.x, markerData.position.y, 0.1);
+    // Safe handling explicitly here:
+    markerLocationHelper.position.set(
+        markerData.position?.x ?? 0,
+        markerData.position?.y ?? 0,
+        markerData.position?.z ?? 0
+    );
+
+    markerPlane.position.set(
+        markerData.position?.x ?? 0,
+        markerData.position?.y ?? 0,
+        (markerData.position?.z ?? 0) + 0.1
+    );
+
+    // Default rotation and scale explicitly handled
+    markerPlane.rotation.set(
+        markerData.rotation?.x ?? 0,
+        markerData.rotation?.y ?? 0,
+        markerData.rotation?.z ?? 0
+    );
+
+    markerPlane.scale.set(
+        markerData.scale?.x ?? 1,
+        markerData.scale?.y ?? 1,
+        markerData.scale?.z ?? 1
+    );
 
     animate();
 }
+
 
 function animate() {
     requestAnimationFrame(animate);
@@ -124,22 +148,54 @@ export function updateSceneImg(fileSrc) {
 }
 
 export function exportSceneData() {
-    const { position, rotation: { x, y, z }, scale } = markerPlane;
-    const markerData = { position, rotation: { x, y, z }, scale };
+    const markerData = {
+        position: {
+            x: markerPlane.position.x,
+            y: markerPlane.position.y,
+            z: markerPlane.position.z
+        },
+        rotation: {
+            x: markerPlane.rotation.x,
+            y: markerPlane.rotation.y,
+            z: markerPlane.rotation.z
+        },
+        scale: {
+            x: markerPlane.scale.x,
+            y: markerPlane.scale.y,
+            z: markerPlane.scale.z
+        }
+    };
 
-    const exportedMols = sceneMolecules.map(mol => ({
-        Title: mol.Title,
-        cjson: mol.cjson,
-        position: mol.position,
-        rotation: mol.rotation,
-        scale: mol.scale,
-        modelInfo: mol.modelInfo,
-        initialPosition: mol.initialPosition,
-        animations: mol.animations?.map(anim => anim.name) || [] // Save animation names
+    const sceneMolecules = window.currentSceneModels.map(model => ({
+        modelInfo: {
+            id: model.id,
+            name: model.name,
+            file_path: model.file_path.replace(/\\/g, '/').replace(/^public\//, ''),
+            upload_date: model.upload_date,
+            desc: model.desc
+        },
+        position: {
+            x: model.object.position.x,
+            y: model.object.position.y,
+            z: model.object.position.z
+        },
+        rotation: {
+            x: model.object.rotation.x,
+            y: model.object.rotation.y,
+            z: model.object.rotation.z,
+            isEuler: true
+        },
+        scale: {
+            x: model.object.scale.x,
+            y: model.object.scale.y,
+            z: model.object.scale.z
+        },
+        animations: model.animations || []
     }));
 
-    return { markerData, sceneMolecules: exportedMols };
+    return { markerData, sceneMolecules };
 }
+
 
 export function adjustMolToMarker(mol, marker) {
     [mol.position.y, mol.position.z] = [mol.position.z, -mol.position.y];
