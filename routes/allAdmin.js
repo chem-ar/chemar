@@ -26,7 +26,12 @@ function emailExists(email){
 router.get('/', async function (req, res, next) {
     let {isAdmin, isOwner} = checkSession(req, res);
     let userRole = res.locals.userRole;
-    if(userRole === 'admin'){
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
     }
@@ -36,63 +41,120 @@ router.get('/', async function (req, res, next) {
 })
 
 router.get('/alladminsearch', async function (req, res, next) {
-    let {isAdmin, isOwner} = checkSession(req, res);
-    let userRole = res.locals.userRole;
-    if(userRole === 'admin'){
-        isAdmin = true;
-        isOwner = true;
+    const { sql, connect } = require('../db');
+
+    const userRole = res.locals.userRole;
+    if (userRole !== 'superadmin') {
+        return res.status(401).json({ error: 'Unauthorized' });
     }
-    if (!isOwner) return res.status(401).json({error: 'Please log in as owner of the page'})
 
-    let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
+    try {
+        const pool = await connect();
+        const result = await pool.request()
+            .query(`SELECT id, email, role FROM Users`);
 
-    return res.send(adminData)
-})
-
-router.delete('/delete', async function (req, res, next) {
-    let {isAdmin, isOwner} = checkSession(req, res);
-    let userRole = res.locals.userRole;
-    if(userRole === 'admin'){
-        isAdmin = true;
-        isOwner = true;
+        res.json(result.recordset);
+    } catch (err) {
+        console.error('Failed to fetch users:', err);
+        res.status(500).json({ error: 'Failed to fetch user list' });
     }
-    if (!isOwner) return res.status(401).json({error: 'Please log in as owner of the page'})
+});
 
-    let email = req.body.email;
+router.post('/updateRoles', async function (req, res) {
+    const { sql, connect } = require('../db');
 
-    let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
-    let adminDeleteIndex = -1;
-    adminData.map((ele, i) => {
-        if(ele.email == email){
-            adminDeleteIndex = i
+    const userRole = res.locals.userRole;
+    const currentUserEmail = res.locals.email;
+
+    if (userRole !== 'superadmin') {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const updates = req.body.updates;
+
+    if (!Array.isArray(updates)) {
+        return res.status(400).json({ error: 'Invalid updates payload' });
+    }
+
+    try {
+        const pool = await connect();
+
+        for (const { email, role } of updates) {
+            if (email === currentUserEmail) {
+                console.log(`Skipped role update for self: ${email}`);
+                continue;
+            }
+
+            await pool.request()
+                .input('email', sql.NVarChar(255), email)
+                .input('role', sql.NVarChar(50), role)
+                .query(`UPDATE Users SET role = @role WHERE email = @email`);
         }
-    })
 
-    if(adminDeleteIndex === -1){
-        return res.status(400).json({error: 'Email does not exists'})
+        res.status(200).json({ message: 'Roles updated successfully' });
+    } catch (err) {
+        console.error('Role update failed:', err);
+        res.status(500).json({ error: 'Failed to update roles' });
+    }
+});
+
+
+
+router.delete('/delete', async function (req, res) {
+    const { sql, connect } = require('../db');
+    const { email } = req.body;
+
+    const userRole = res.locals.userRole;
+    if (userRole !== 'superadmin') {
+        return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const thisAdminSession = adminData[adminDeleteIndex].session.find(
-        session => session.token === req.cookies.session
-    );
-    if (thisAdminSession !== undefined) {
-        return res.status(400).json({
-            error: 'You cannot delete your own account'
-        });
+    try {
+        // Prevent superadmin from deleting themselves
+        const pool = await connect();
+
+        const result = await pool.request()
+            .input('email', sql.NVarChar(255), email)
+            .query(`SELECT id FROM Users WHERE email = @email`);
+
+        if (result.recordset.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const currentSessionToken = req.cookies.session;
+
+        // Optional: Prevent self-deletion
+        const sessionCheck = await pool.request()
+            .input('token', sql.NVarChar(255), currentSessionToken)
+            .query(`SELECT u.email FROM Sessions s JOIN Users u ON s.user_id = u.id WHERE s.token = @token`);
+
+        if (sessionCheck.recordset.length && sessionCheck.recordset[0].email === email) {
+            return res.status(400).json({ error: 'You cannot delete your own account' });
+        }
+
+        // Delete user and their sessions
+        await pool.request()
+            .input('email', sql.NVarChar(255), email)
+            .query(`DELETE FROM Users WHERE email = @email`);
+
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (err) {
+        console.error('Delete failed:', err);
+        res.status(500).json({ error: 'Failed to delete user' });
     }
-    adminData.splice(adminDeleteIndex, 1)
-
-    fs.writeFileSync("./routes/auth/admin.json", JSON.stringify(adminData))
-
-    return res.status(200).send({message: 'deleted success'})
-})
+});
 
 // adding admins
 router.post('/addadmin', async function (req, res, next) 
 {
     let {isAdmin, isOwner} = checkSession(req, res);
     let userRole = res.locals.userRole;
-    if(userRole === 'admin'){
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
     }
@@ -138,7 +200,12 @@ function ensureBackupDatesFile() {
 router.get('/download-backup', async (req, res, next) => {
     let {isAdmin, isOwner} = checkSession(req, res);
     let userRole = res.locals.userRole;
-    if(userRole === 'admin'){
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
     }
@@ -219,7 +286,12 @@ const REQUIRED_DIRECTORIES = [
 router.post('/upload-backup', upload.single('backupZip'), async (req, res) => {
     let {isAdmin, isOwner} = checkSession(req, res);
     let userRole = res.locals.userRole;
-    if(userRole === 'admin'){
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
     }

@@ -37,7 +37,7 @@ async function checkSession(req, res) {
         session.role = (session.role || '').toLowerCase();
         res.locals.userRole = session.role;
 
-        return { isAdmin: session.role === 'admin', isInstructor: session.role === 'instructor', isOwner: session.owner, role: session.role, email: session.email, userId: session.user_id };
+        return { isAdmin: session.role === 'admin', isInstructor: session.role === 'instructor', isOwner: session.role === 'superadmin', role: session.role, email: session.email, userId: session.user_id };
     } catch (err) {
         console.error("Error checking session:", err);
         return { isAdmin: false, isInstructor: false, isOwner: false };

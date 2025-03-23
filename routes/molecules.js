@@ -6,11 +6,14 @@ var fs = require('fs');
 router.get('/', function(req, res, next) {
     const molfiles = './public/molfiles/';
 
-    let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
+    let { isAdmin, isInstructor, isOwner } = checkSession(req, res);
     let userRole = res.locals.userRole;
-    if(userRole === 'instructor'){
+    if (userRole === 'instructor') {
         isAdmin = true;
-    }else if(userRole === 'admin'){
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
     }
