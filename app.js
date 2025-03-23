@@ -21,6 +21,7 @@ var adminRouter = require('./routes/admin');
 var allAdminRouter = require('./routes/allAdmin')
 var modelsRouter = require('./routes/models');
 var aboutRouter = require('./routes/about');
+var registrationRouter = require('./routes/registration');
 
 var usersRouter = require('./routes/session');
 var moleculeRouter = require('./routes/molecules');
@@ -78,6 +79,7 @@ app.use(express.urlencoded({ extended: true }));
 initializeCache();
 
 app.use('/login', loginRouter);
+app.use('/registration', registrationRouter);
 
 
 app.use(async (req, res, next) => {
@@ -93,7 +95,7 @@ app.use(async (req, res, next) => {
       res.locals.userRole = role;
       res.locals.isAdmin = role === "admin";
       res.locals.isInstructor = role === "instructor";
-      res.locals.isOwner = role === "admin";  
+      res.locals.isOwner = role === "superadmin";  
   }
 
   res.locals.email = sessionData.email;

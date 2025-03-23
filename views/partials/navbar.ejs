@@ -21,7 +21,15 @@
       </ul>
 
 
-      <a type="button" class="btn btn-outline-light" href="/login">Login / Register</a>
+      <% if (locals.userRole && locals.userRole !== 'guest') { %>
+        <a type="button" class="btn btn-outline-light me-2" href="/logout">
+          Logout
+        </a>
+      <% } else { %>
+        <a type="button" class="btn btn-outline-light me-2" href="/login">
+          Login
+        </a>
+      <% } %>
       
       
 
