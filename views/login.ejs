@@ -47,13 +47,6 @@
         const confirmPassword = document.getElementById("registerConfirmPassword").value;
         const role = document.getElementById("registerRole").value;
   
-        // Validate email
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@dal\.ca$/;
-        if (!emailRegex.test(email)) {
-          alert("Email must end with @dal.ca");
-          return;
-        }
-  
         // Validate password
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
         if (!passwordRegex.test(password)) {
@@ -128,7 +121,7 @@
           <div class="tab-pane fade" id="registerPane">
             <form id="registerForm">
               <div class="mb-3">
-                <input type="email" class="form-control" id="registerEmail" placeholder="Email (@dal.ca only)" required>
+                <input type="email" class="form-control" id="registerEmail" placeholder="Email" required>
               </div>
               <div class="mb-3">
                 <input type="password" class="form-control" id="registerPassword" placeholder="Password" required>
@@ -150,7 +143,6 @@
                 <select id="registerRole" class="form-control" required>
                   <option value="" disabled selected>Select Role</option>
                   <option value="Instructor">Instructor</option>
-                  <option value="Admin">Admin</option>
                   <option value="Student">Student</option>
                 </select>
               </div>
