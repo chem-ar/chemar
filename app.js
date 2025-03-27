@@ -96,7 +96,6 @@ app.use(async (req, res, next) => {
       res.locals.isAdmin = role === "admin";
       res.locals.isInstructor = role === "instructor";
       res.locals.isOwner = role === "superadmin";  
-      res.locals.isDeveloper = role === "developer";
   }
 
   res.locals.email = sessionData.email;
