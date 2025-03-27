@@ -28,7 +28,7 @@
 
 </head>
 
-    <% if (isOwner) { %>
+    <% if (isOwner || isDeveloper) { %>
         <%- include('partials/navbarowner') %>
     <% } else if (isInstructor || isAdmin) { %>
         <%- include('partials/navbarAdmin') %>
