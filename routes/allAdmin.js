@@ -105,7 +105,7 @@ router.delete('/delete', async function (req, res) {
     const { email } = req.body;
 
     const userRole = res.locals.userRole;
-    if (userRole !== 'superadmin') {
+    if (userRole !== 'superadmin' || userRole !== 'developer') {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
