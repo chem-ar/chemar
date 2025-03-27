@@ -34,6 +34,7 @@
                     <% for (let scene of list) { %>
                         <% let filename = scene.filename; %>
                         <% let isVisibleToUser = scene.studentAccessible || scene.sceneOwner === email || isOwner; %>
+                        <% let canEdit = isOwner || scene.sceneOwner === email; %>
                         <% if (isVisibleToUser) { %>
                         <tr>
                             <td>
@@ -59,7 +60,7 @@
                                         Share
                                     </button>
             
-                                    <% if (isAdmin || isInstructor) { %>
+                                    <% if (canEdit) { %>
                                         <button onclick="goToPage('/sceneEditor/<%= filename %>')" type="button" class="btn" style="background-color: #FFB300; color: black;">
                                             Edit
                                         </button>
