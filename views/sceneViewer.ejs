@@ -24,19 +24,11 @@
 
     <!-- A-Frame Scene Setup -->
     <!-- 'embedded' makes the scene part of the normal HTML layout, and 'arjs' attribute sets up the webcam as the source -->
-    <a-scene
-      embedded
-      arjs="
-        sourceType: webcam;
-        detectionMode: mono_and_matrix;
-        matrixCodeType: 3x3;
-        patternRatio: 0.8;
-        smooth: true;
-        smoothCount: 5;
-        smoothTolerance: 0.01;
-        smoothThreshold: 5;
-      ">
-      <a-scene>
+    <a-marker 
+      type="pattern" 
+      url="markers/customMarker.patt" 
+      id="marker">
+    </a-marker>
 
       <!-- Define an AR marker using a preset "hiro" pattern, and assign it an ID for future reference -->
       <a-marker 
