@@ -22,24 +22,17 @@
   </head>
   <body>
 
-    <!-- A-Frame Scene Setup -->
-    <!-- 'embedded' makes the scene part of the normal HTML layout, and 'arjs' attribute sets up the webcam as the source -->
-    <a-marker 
-      type="pattern" 
-      url="markers/customMarker.patt" 
-      id="marker">
-    </a-marker>
-
       <!-- Define an AR marker using a preset "hiro" pattern, and assign it an ID for future reference -->
-      <a-marker 
-        type="pattern" 
-        url="/data/Kanji.patt" 
-        id="marker">
-      </a-marker>
-
-      <!-- Add a camera entity to the scene so the AR content can be viewed from the correct perspective -->
-      <a-entity camera></a-entity>
-    </a-scene>
+      <a-scene embedded arjs="sourceType: webcam;">         
+         <!-- Define an AR marker using a preset "hiro" pattern, and assign it an ID for future reference -->      
+          <a-marker         
+            type="pattern"         
+            url="/data/kanji.patt"         
+            id="marker">      
+          </a-marker>      
+          <!-- Add a camera entity to the scene so the AR content can be viewed from the correct perspective -->      
+          <a-entity camera></a-entity>    
+          </a-scene>
 
     <!-- JavaScript Section for Dynamic Content and Animations -->
     <script>
