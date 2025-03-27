@@ -17,22 +17,37 @@
 
     <!-- Inline CSS to remove default margins, padding, and to hide overflow -->
     <style>
-      body, html { margin: 0; padding: 0; overflow: hidden; }
+      body, html { margin: 0; padding: 0; overflow: hidden; height:100%;}
+      #rotationButton {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    padding: 10px 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+  }
     </style>
   </head>
   <body>
 
-      <!-- Define an AR marker using a preset "hiro" pattern, and assign it an ID for future reference -->
-      <a-scene embedded arjs="sourceType: webcam;">         
-         <!-- Define an AR marker using a preset "hiro" pattern, and assign it an ID for future reference -->      
-          <a-marker         
-            type="pattern"         
-            url="/data/kanji.patt"         
-            id="marker">      
-          </a-marker>      
-          <!-- Add a camera entity to the scene so the AR content can be viewed from the correct perspective -->      
-          <a-entity camera></a-entity>    
-          </a-scene>
+    <button id="rotationButton">Toggle Rotation</button>
+
+    <!-- Define an AR marker using a preset "hiro" pattern, and assign it an ID for future reference -->
+    <a-scene arjs="sourceType: webcam;">         
+        <!-- Define an AR marker using a preset "hiro" pattern, and assign it an ID for future reference -->      
+      <a-marker
+        type="pattern"
+        url="/data/kanji.patt"
+        id="marker">
+      </a-marker>
+        <!-- Add a camera entity to the scene so the AR content can be viewed from the correct perspective -->    
+      <a-entity camera></a-entity>
+    </a-scene>
 
     <!-- JavaScript Section for Dynamic Content and Animations -->
     <script>
@@ -121,6 +136,25 @@
         // This ensures the molecule is displayed in the AR scene relative to the marker.
         marker.appendChild(ent);
       }
-    </script>
+
+    let sceneRotating = false;
+
+    document.querySelector("#rotationButton").addEventListener("click", toggleRotation);
+
+    function toggleRotation() {
+      sceneRotating = !sceneRotating;
+
+      Array.from(document.querySelector("#marker").children).forEach(ent => {
+        if (sceneRotating) {
+          ent.setAttribute("animation", "property: rotation; to: 0 360 0; loop: true; dur: 5000; easing: linear");
+        }
+        else {
+          ent.removeAttribute("animation");
+        }
+      });
+    }
+
+  </script>
+
   </body>
 </html>
