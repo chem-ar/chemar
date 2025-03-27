@@ -2,47 +2,135 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Dynamic AR.js & A-Frame Demo</title>
+    <!-- The title of the webpage -->
+    <title>
+      Dynamic AR.js & A-Frame Demo with Animations
+    </title>
+
+    <!-- Ensure proper scaling and disable zooming on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    
+    <!-- Include A-Frame library for creating 3D/VR experiences -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <!-- Include AR.js extension for A-Frame to enable AR capabilities using the webcam -->
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.2/aframe/build/aframe-ar.js"></script>
-    <style>body,html {margin:0;padding:0;overflow:hidden;}</style>
+
+    <!-- Inline CSS to remove default margins, padding, and to hide overflow -->
+    <style>
+      body, html { margin: 0; padding: 0; overflow: hidden; }
+    </style>
   </head>
   <body>
+
+    <!-- A-Frame Scene Setup -->
+    <!-- 'embedded' makes the scene part of the normal HTML layout, and 'arjs' attribute sets up the webcam as the source -->
     <a-scene embedded arjs="sourceType: webcam;">
-      <a-marker preset="hiro" id="marker"></a-marker>
+
+      <!-- Define an AR marker using a preset "hiro" pattern, and assign it an ID for future reference -->
+      <a-marker 
+        type="pattern" 
+        url="/data/Kanji.patt" 
+        id="marker">
+      </a-marker>
+
+      <!-- Add a camera entity to the scene so the AR content can be viewed from the correct perspective -->
       <a-entity camera></a-entity>
     </a-scene>
+
+    <!-- JavaScript Section for Dynamic Content and Animations -->
     <script>
+
+      // Determine the JSON file name based on the current page's filename.
+      // window.location.pathname returns the path (e.g., '/folder/demo.html').
+      // split("/") divides it into an array, and pop() retrieves the last segment ('demo.html').
+      // We then append ".json" to form the expected JSON filename (e.g., 'demo.html.json').
       let file = window.location.pathname.split("/").pop() + ".json";
+      
+      // Fetch the JSON data from the '/scenes/' directory using the dynamically determined file name.
       fetch("/scenes/" + file)
-        .then(r => { if (!r.ok) throw new Error("HTTP error " + r.status); return r.json(); })
+        .then(r => {
+
+          // Check if the HTTP response is OK (status in the range 200-299)
+          if (!r.ok) throw new Error("HTTP error " + r.status);
+          // Parse the response body as JSON if the fetch was successful
+          return r.json();
+        })
         .then(data => {
-          if(data.trackingMarker){
+          // Check if the JSON contains tracking marker configuration data
+          if (data.trackingMarker) {
+
+            // Select the AR marker element using its ID
             const m = document.querySelector("#marker"),
+                  // Extract the position, rotation, and scale objects from the JSON data
                   p = data.trackingMarker.position,
                   r = data.trackingMarker.rotation,
                   s = data.trackingMarker.scale;
+
+            // Update the marker's position attribute using the x, y, and z values
             m.setAttribute("position", `${p.x} ${p.y} ${p.z}`);
+            // Update the marker's rotation attribute using the x, y, and z values
             m.setAttribute("rotation", `${r.x} ${r.y} ${r.z}`);
+            // Update the marker's scale attribute using the x, y, and z values
             m.setAttribute("scale", `${s.x} ${s.y} ${s.z}`);
           }
+
+          // For each molecule defined in the JSON, call the addMolecule function to add it to the scene
           data.molecules.forEach(addMolecule);
         })
         .catch(e => console.error("Error fetching JSON:", e));
-      
+
+      /**
+       * Function to add a molecule (3D model) to the AR scene.
+       * @param {Object} mol - Molecule data containing model information, position, rotation, scale, and title.
+       */
       function addMolecule(mol) {
+
+        // Select the marker element where the molecule will be attached
         const marker = document.querySelector("#marker"),
+              // Create a new A-Frame entity that will hold the 3D model
               ent = document.createElement("a-entity"),
+              // Extract file information from the molecule's modelInfo object
               files = mol.modelInfo.files;
+        
+        // Determine the source file for the 3D model:
+        // If a .glb file exists, use that; if not, check for a .gltf file.
+        // The file is assumed to be in the '../modelfiles/' directory.
         let src = files.glb ? `../modelfiles/${files.glb}` : files.gltf ? `../modelfiles/${files.gltf}` : "";
+        
+        // Set the glTF model attribute on the entity so A-Frame loads the 3D model.
         ent.setAttribute("gltf-model", src);
+        
+        // Set the position of the molecule using the x, y, and z values from the JSON.
         ent.setAttribute("position", `${mol.position.x} ${mol.position.y} ${mol.position.z}`);
+        
+        // Prepare the rotation string:
+        // Check if the rotation object uses the Three.js style properties (_x, _y, _z);
+        // If not, use x, y, and z (defaulting to 0 if not provided).
         let rot = mol.rotation,
-            rotStr = (rot && rot._x !== undefined) ? `${rot._x} ${rot._y} ${rot._z}` : `${rot.x||0} ${rot.y||0} ${rot.z||0}`;
+            rotStr = (rot && rot._x !== undefined) 
+                     ? `${rot._x} ${rot._y} ${rot._z}` 
+                     : `${rot.x || 0} ${rot.y || 0} ${rot.z || 0}`;
+                     
+        // Set the rotation attribute for the entity.
         ent.setAttribute("rotation", rotStr);
+        
+        // Set the scale of the molecule using parsed float values to ensure numerical accuracy.
         ent.setAttribute("scale", `${parseFloat(mol.scale.x)} ${parseFloat(mol.scale.y)} ${parseFloat(mol.scale.z)}`);
+        
+        // Assign a unique identifier to the entity using the molecule's title from the JSON.
         ent.setAttribute("id", mol.Title);
+        
+        // ---------------------------------------------------------------
+        // A-Frame Animation Component: Add a continuous rotation animation.
+        // ---------------------------------------------------------------
+        // The animation component animates the 'rotation' property.
+        // 'to: 0 360 0' means the entity will rotate to 0° on the x-axis, 360° on the y-axis, and 0° on the z-axis.
+        // 'loop: true' ensures the animation repeats indefinitely.
+        // 'dur: 10000' sets the duration of one full rotation to 10,000 milliseconds (10 seconds).
+        ent.setAttribute("animation", "property: rotation; to: 0 360 0; loop: true; dur: 20000");
+        
+        // Append the configured entity (with its 3D model and animation) as a child of the marker.
+        // This ensures the molecule is displayed in the AR scene relative to the marker.
         marker.appendChild(ent);
       }
     </script>
