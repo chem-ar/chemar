@@ -24,7 +24,19 @@
 
     <!-- A-Frame Scene Setup -->
     <!-- 'embedded' makes the scene part of the normal HTML layout, and 'arjs' attribute sets up the webcam as the source -->
-    <a-scene embedded arjs="sourceType: webcam;">
+    <a-scene
+      embedded
+      arjs="
+        sourceType: webcam;
+        detectionMode: mono_and_matrix;
+        matrixCodeType: 3x3;
+        patternRatio: 0.8;
+        smooth: true;
+        smoothCount: 5;
+        smoothTolerance: 0.01;
+        smoothThreshold: 5;
+      ">
+      <a-scene>
 
       <!-- Define an AR marker using a preset "hiro" pattern, and assign it an ID for future reference -->
       <a-marker 
@@ -110,7 +122,7 @@
             rotStr = (rot && rot._x !== undefined) 
                      ? `${rot._x} ${rot._y} ${rot._z}` 
                      : `${rot.x || 0} ${rot.y || 0} ${rot.z || 0}`;
-                     
+
         // Set the rotation attribute for the entity.
         ent.setAttribute("rotation", rotStr);
         
@@ -119,15 +131,6 @@
         
         // Assign a unique identifier to the entity using the molecule's title from the JSON.
         ent.setAttribute("id", mol.Title);
-        
-        // ---------------------------------------------------------------
-        // A-Frame Animation Component: Add a continuous rotation animation.
-        // ---------------------------------------------------------------
-        // The animation component animates the 'rotation' property.
-        // 'to: 0 360 0' means the entity will rotate to 0° on the x-axis, 360° on the y-axis, and 0° on the z-axis.
-        // 'loop: true' ensures the animation repeats indefinitely.
-        // 'dur: 10000' sets the duration of one full rotation to 10,000 milliseconds (10 seconds).
-        ent.setAttribute("animation", "property: rotation; to: 0 360 0; loop: true; dur: 20000");
         
         // Append the configured entity (with its 3D model and animation) as a child of the marker.
         // This ensures the molecule is displayed in the AR scene relative to the marker.
