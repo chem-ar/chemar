@@ -32,7 +32,10 @@ const uploadMiddleware = upload.fields([
 
 async function convertOBJToGLB(objPath, outputGlbPath) {
     try {
-        const glb = await obj2gltf(objPath, { binary: true });
+        const glb = await obj2gltf(objPath, {
+            binary: true,
+            metallicRoughness: true,        
+          });
         fs.writeFileSync(outputGlbPath, glb);
         return outputGlbPath;
     } catch (error) {
@@ -82,12 +85,23 @@ router.post('/saveModel', uploadMiddleware, async (req, res) => {
 
         if (req.files['objFileName']) {
             const objFile = req.files['objFileName'][0];
-            const objFileNameWithoutExt = path.parse(objFile.originalname).name;
-            const outputGlbPath = path.join('public/modelfiles', `${objFileNameWithoutExt}-${Date.now()}.glb`);
+            const objDir = path.dirname(objFile.path);
+        
+            if (req.files['mtlFileName']) {
+                const mtlFile = req.files['mtlFileName'][0];
+                const mtlDestPath = path.join(objDir, mtlFile.originalname);
+        
+                // Put .mtl next to .obj so obj2gltf can find it
+                fs.renameSync(mtlFile.path, mtlDestPath);
+            }
+        
+            const outputGlbPath = path.join('public/modelfiles', `${Date.now()}-${objFile.originalname}.glb`);
             const convertedGlbPath = await convertOBJToGLB(objFile.path, outputGlbPath);
             if (convertedGlbPath) filePath = convertedGlbPath;
-            fs.unlinkSync(objFile.path);
+        
+            fs.unlinkSync(objFile.path); // optional
         }
+        
 
         if (req.files['gltfFileName']) {
             const gltfFile = req.files['gltfFileName'][0];
