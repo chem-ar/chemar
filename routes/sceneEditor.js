@@ -138,6 +138,51 @@ router.get('/:id', async function(req, res) {
   }
 });
 
+router.post('/upload/images/', function (req, res) {
+  let { isAdmin, isInstructor, isOwner } = checkSession(req, res);
+    let userRole = res.locals.userRole;
+
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    } else if (userRole === 'superadmin') {
+        isAdmin = true;
+        isOwner = true;
+    }
+    
+  if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
+
+  // Extract image data and image name from the request body
+  let imageName = req.body["image-name"]; // Retrieve the image name from the request
+  let imageData = req.body["image-contents"].replace(/^data:image\/png;base64,/, "");
+
+  // Generate a unique filename for the image if image name is not provided
+  if (!imageName) {
+    imageName = Date.now() + '.png'; // You can use any unique identifier
+  }
+
+  // Construct the path where the image will be saved
+  const imagePath = './public/images/' + imageName;
+
+  // Write the image data to the file system
+  fs.writeFile(imagePath, imageData, 'base64', function (err) {
+    if (err) {
+      console.error('Error saving image:', err);
+      return res.status(500).json({ success: false, error: 'Error saving image' });
+    }
+
+    // Return the success response with the file path
+    res.status(200).json({
+      success: true,
+      message: "File uploaded successfully.",
+      fileSrc: '/images/' + imageName // Assuming '/images/' is the URL path to access uploaded images
+    });
+  });
+});
+
+
 
 router.post('/save/:scene', async (req, res) => {
   let { isAdmin, role: userRole } = await checkSession(req, res);
