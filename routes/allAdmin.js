@@ -105,14 +105,14 @@ router.delete('/delete', async function (req, res) {
     const { email } = req.body;
 
     const userRole = res.locals.userRole;
-    if (userRole !== 'superadmin') {
+    if (userRole !== 'superadmin' || userRole !== 'developer') {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
     try {
-        // Prevent superadmin from deleting themselves
         const pool = await connect();
 
+        // Find the user ID from the email
         const result = await pool.request()
             .input('email', sql.NVarChar(255), email)
             .query(`SELECT id FROM Users WHERE email = @email`);
@@ -121,9 +121,10 @@ router.delete('/delete', async function (req, res) {
             return res.status(404).json({ error: 'User not found' });
         }
 
+        const userId = result.recordset[0].id;
         const currentSessionToken = req.cookies.session;
 
-        // Optional: Prevent self-deletion
+        // Prevent self-deletion
         const sessionCheck = await pool.request()
             .input('token', sql.NVarChar(255), currentSessionToken)
             .query(`SELECT u.email FROM Sessions s JOIN Users u ON s.user_id = u.id WHERE s.token = @token`);
@@ -132,7 +133,17 @@ router.delete('/delete', async function (req, res) {
             return res.status(400).json({ error: 'You cannot delete your own account' });
         }
 
-        // Delete user and their sessions
+        // Delete all models belonging to the user
+        await pool.request()
+            .input('userId', sql.Int, userId)
+            .query(`DELETE FROM Models WHERE user_id = @userId`);
+
+        // Delete user's sessions
+        await pool.request()
+            .input('userId', sql.Int, userId)
+            .query(`DELETE FROM Sessions WHERE user_id = @userId`);
+
+        // Now delete the user
         await pool.request()
             .input('email', sql.NVarChar(255), email)
             .query(`DELETE FROM Users WHERE email = @email`);
@@ -143,6 +154,7 @@ router.delete('/delete', async function (req, res) {
         res.status(500).json({ error: 'Failed to delete user' });
     }
 });
+
 
 // adding admins
 router.post('/addadmin', async function (req, res, next) 
