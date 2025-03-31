@@ -1,101 +1,134 @@
-var express = require('express');
-var router = express.Router();
-var fs = require('fs');
-var { checkSession } = require('./auth/session-mgmt');
+const express = require('express');
+const router = express.Router();
+const fs = require('fs');
+const path = require('path');
+const { sql, connect } = require('../db');
+const { checkSession } = require('./auth/session-mgmt');
 
-/* GET models page. */
-router.get('/', function (req, res, next) {
-    let { isAdmin, isowner } = checkSession(req, res);
+// GET models page
+router.get('/', async (req, res) => {
+    let { isAdmin, isInstructor, isOwner } = await checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
+        isAdmin = true;
+        isOwner = true;
+    }
+
     if (!isAdmin) return res.redirect("/");
-    res.render('models', { title: 'Model Catalog', isAdmin: isAdmin, isowner });
-});
 
-// To handle the edit functionality
-router.post('/edit', function (req, res, next) {
-    let { isAdmin, isowner } = checkSession(req, res);
-    if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
-
-    const data = { ...req.body };
-    let id = req.query.id;
-    const modelFileCatalog = './public/catalog/modelFileCatalog.json';
-    const modelFileData = fs.readFileSync(modelFileCatalog);
-    const modelData = JSON.parse(modelFileData);
-
-    let n;
-    let exists = false;
-    
-    for (const key in modelData) {
-        if (modelData[key].id == parseInt(id)) {
-            n = key;
-        }
-        if (modelData[key].name == data.name && modelData[key].description == data.description) {
-            exists = true;
-        }
-    }
-    
-    if (!exists) {
-        const previousName = modelData[n].name;
-        modelData[n].description = data.description;
-        modelData[n].name = data.name;
-    } else {
-        return res.status(409).send('');
-    }
-    
-    fs.writeFileSync(modelFileCatalog, JSON.stringify(modelData));
-    return res.redirect('/models');
-});
-
-// Handling the delete functionality
-router.delete('/delete', function (req, res, next) {
-    let { isAdmin } = checkSession(req, res);
-    if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
-
-    const id = req.body.id;
-    const modelFileCatalog = './public/catalog/modelFileCatalog.json';
+    const userId = res.locals.userId;
 
     try {
-        const modelFileData = fs.readFileSync(modelFileCatalog, 'utf8');
-        const modelData = JSON.parse(modelFileData);
+        const pool = await connect();
+        const result = await pool.request()
+            .input('userId', sql.Int, userId)
+            .query("SELECT * FROM Models WHERE user_id = @userId");
 
-        let modelIndex = modelData.findIndex(model => model.id === parseInt(id));
+        const models = result.recordset.map(model => ({
+            ...model,
+            file_name_only: model.file_path ? path.basename(model.file_path) : ''
+        }));
 
-        if (modelIndex === -1) {
-            console.error(`Model with ID ${id} not found.`);
-            return res.status(404).send({ error: "Model not found" });
+        res.render('models', {
+            title: 'Model Catalog',
+            models,
+            isAdmin,
+            isOwner,
+            isInstructor
+        });
+    } catch (error) {
+        console.error("Error loading models:", error);
+        res.sendStatus(500);
+    }
+});
+
+// Edit model
+router.post('/edit', async (req, res) => {
+    let { isAdmin, isInstructor, isOwner } = await checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
+        isAdmin = true;
+        isOwner = true;
+    }
+    
+    if (!isAdmin) return res.status(401).send({ error: "Unauthorized" });
+
+    const { id, name, description } = req.body;
+
+    try {
+        const pool = await connect();
+
+        const check = await pool.request()
+            .input('name', sql.NVarChar, name)
+            .input('desc', sql.NVarChar, description)
+            .input('id', sql.Int, id)
+            .query("SELECT * FROM Models WHERE file_name = @name AND [desc] = @desc AND id <> @id");
+
+        if (check.recordset.length > 0) {
+            return res.status(409).send('Duplicate model name and description.');
         }
 
-        const modelDelete = modelData[modelIndex];
-        const filesToDelete = [];
+        await pool.request()
+            .input('name', sql.NVarChar, name)
+            .input('desc', sql.NVarChar, description)
+            .input('id', sql.Int, id)
+            .query("UPDATE Models SET file_name = @name, [desc] = @desc WHERE id = @id");
 
-        // Delete model files based on the catalog entry
-        Object.values(modelDelete.files).forEach(file => {
-            const filePath = `./public/modelfiles/${file}`;
-            if (fs.existsSync(filePath)) {
-                filesToDelete.push(filePath);
-            } else {
-                console.warn(`File not found: ${filePath}`);
-            }
-        });
+        return res.redirect('/models');
+    } catch (error) {
+        console.error("Error updating model:", error);
+        res.sendStatus(500);
+    }
+});
 
-        // Delete files
-        filesToDelete.forEach(file => {
-            try {
-                fs.unlinkSync(file);
-                console.log(`Deleted: ${file}`);
-            } catch (err) {
-                console.error(`Error deleting ${file}:`, err);
-            }
-        });
+// Delete model
+router.delete('/delete', async (req, res) => {
+    let { isAdmin, isInstructor, isOwner } = await checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
+        isAdmin = true;
+        isOwner = true;
+    }
 
-        // Remove model from catalog
-        modelData.splice(modelIndex, 1);
-        fs.writeFileSync(modelFileCatalog, JSON.stringify(modelData, null, 2));
+    if (!isAdmin) return res.status(401).send({ error: "Unauthorized" });
 
-        return res.status(200).send({ message: "Model deleted successfully" });
+    const id = req.body.id;
 
+    try {
+        const pool = await connect();
+
+        const result = await pool.request()
+            .input('id', sql.Int, id)
+            .query("SELECT file_path FROM Models WHERE id = @id");
+
+        if (result.recordset.length === 0) return res.status(404).send({ error: "Model not found" });
+
+        const filePath = result.recordset[0].file_path;
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+
+        await pool.request()
+            .input('id', sql.Int, id)
+            .query("DELETE FROM Models WHERE id = @id");
+
+        res.status(200).send({ message: "Model deleted successfully" });
     } catch (error) {
         console.error("Error deleting model:", error);
-        return res.status(500).send({ error: "Internal server error" });
+        res.sendStatus(500);
     }
 });
 
