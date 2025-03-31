@@ -8,6 +8,8 @@ var express = require("express");
 require('express-async-errors');
 dotenv.config({ path: './.env' }); // .env file path.
 
+const { checkSession } = require('./routes/auth/session-mgmt');
+
 var createError = require("http-errors");
 var path = require("path");
 var cookieParser = require("cookie-parser");
@@ -19,6 +21,7 @@ var adminRouter = require('./routes/admin');
 var allAdminRouter = require('./routes/allAdmin')
 var modelsRouter = require('./routes/models');
 var aboutRouter = require('./routes/about');
+var registrationRouter = require('./routes/registration');
 
 var usersRouter = require('./routes/session');
 var moleculeRouter = require('./routes/molecules');
@@ -37,6 +40,8 @@ var jmolRouter = require('./routes/jmol');
 var forgotPasswordRouter = require('./routes/forgotPasswordPage')
 var messageRouter = require('./routes/confirmationMessage')
 var refreshToken = require('./routes/refreshtoken')
+var { connect } = require('./db'); 
+connect(); 
 
 const initializeCache = require("./routes/cache/setup");
 
@@ -73,6 +78,32 @@ app.use(express.urlencoded({ extended: true }));
 
 initializeCache();
 
+app.use('/login', loginRouter);
+app.use('/registration', registrationRouter);
+
+
+app.use(async (req, res, next) => {
+  let sessionData = await checkSession(req, res);
+  
+  if (!sessionData || !sessionData.role) {
+      res.locals.userRole = "guest";
+      res.locals.isAdmin = false;
+      res.locals.isInstructor = false;
+      res.locals.isOwner = false;
+  } else {
+      let role = sessionData.role.toLowerCase();
+      res.locals.userRole = role;
+      res.locals.isAdmin = role === "admin";
+      res.locals.isInstructor = role === "instructor";
+      res.locals.isOwner = role === "superadmin";  
+  }
+
+  res.locals.email = sessionData.email;
+
+  next();
+});
+
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/molecules', moleculeRouter);
@@ -83,14 +114,13 @@ app.use('/models', modelsRouter);
 
 app.use('/about', aboutRouter);
 app.use('/admin', adminRouter);
-app.use('/alladmin', allAdminRouter);
+app.use('/allAdmin', allAdminRouter);
 
 app.use('/sceneviewer', sceneViewer);
 app.use('/sceneeditor', sceneEditor);
 app.use('/moleculeviewer', moleculeViewer);
 app.use('/addmolecule', addMolecule);
 app.use('/addmodel', addModel);
-app.use('/login', loginRouter);
 app.use('/session', sessionRouter);
 app.use('/logout', logoutRouter);
 app.use('/jmol', jmolRouter);
@@ -101,7 +131,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
+
 app.use('/passwordReset', passwordResetRouter);
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));

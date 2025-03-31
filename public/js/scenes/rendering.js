@@ -19,7 +19,7 @@ export async function createModel(modelData, position, rotation, scale) {
     
     else if (files.gltf || files.glb) {
         const gltfLoader = new GLTFLoader();
-        const gltf = await gltfLoader.loadAsync(`/modelfiles/${files.gltf || files.glb}`);
+        const gltf = await gltfLoader.loadAsync(`/${files.gltf || files.glb}`);
         object = gltf.scene;
 
         if (gltf.animations.length > 0) {
