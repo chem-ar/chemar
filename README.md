@@ -95,8 +95,6 @@ npm start
 
 The server will start listening on port 4000. You can now access the web application by visiting https://localhost:4000 in your browser.
 
-
-
 ## Technical Inventory
 ### Client-side Technologies:
 * **Bootstrap**: A CSS and JS framework and UI toolkit for styling web applications
