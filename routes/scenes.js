@@ -2,170 +2,203 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 const path = require('path');
-var { checkSession, findAdminEmailBySession } = require('./auth/session-mgmt')
+const { sql, connect } = require('../db');
+var { checkSession } = require('./auth/session-mgmt')
 
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
-    const scenesDirectory = './public/scenes/';
-    // Admin and owner check
-    let { isAdmin, isowner } = checkSession(req, res);
+router.get('/', (req, res) => {
+    let { isAdmin, isInstructor, isOwner } = checkSession(req, res);
+    let userRole = res.locals.userRole;    
+    const userEmail = res.locals.email;
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
+        isAdmin = true;
+        isOwner = true;
+    }
 
-    // Retrieve the current user's email using the session token
-    const sessionToken = req.cookies.session;
-    const adminEmail = findAdminEmailBySession(sessionToken);
-    
-    // Load the scene catalog data
-    let sceneCatalog;
+    const catalogPath = './public/catalog/sceneCatalog.json';
+    let catalog = {};
+
     try {
-        const sceneCatalogJSON = fs.readFileSync('./public/catalog/sceneCatalog.json', 'utf8');
-        sceneCatalog = JSON.parse(sceneCatalogJSON);
-    } catch (error) {
-        console.error('Error loading scene catalog:', error);
-        return res.sendStatus(500); // Send error response if scene catalog cannot be loaded
+        const catalogRaw = fs.readFileSync(catalogPath, 'utf8');
+        if (catalogRaw.trim()) {
+            catalog = JSON.parse(catalogRaw);
+        }
+    } catch (err) {
+        console.error('Failed to load scene catalog:', err);
     }
 
-    // Get the list of scene files
-    let sceneFiles;
-    try {
-        sceneFiles = fs.readdirSync(scenesDirectory);
-    } catch (error) {
-        console.error('Error reading scene files:', error);
-        return res.sendStatus(500); // Send error response if scene files cannot be read
+    const sceneList = [];
+
+    for (const [filename, scene] of Object.entries(catalog)) {
+        const isSceneOwner = scene.sceneOwner === userEmail;
+        const isVisibleToUser = scene.studentAccessible || isAdmin || isInstructor || isOwner || isSceneOwner;
+
+        if (isVisibleToUser) {
+            sceneList.push({
+                filename,
+                name: scene.name,
+                desc: scene.desc,
+                sceneOwner: scene.sceneOwner,
+                studentAccessible: scene.studentAccessible
+            });
+        }
     }
 
-    // Combine scene catalog data with scene files, filter according to ownership
-    let finalList = [];
-    for (let filename of sceneFiles) {
-        // Check if the scene file exists in the scene catalog
-        if (sceneCatalog.hasOwnProperty(filename)) {
-            const sceneOwner = sceneCatalog[filename].sceneOwner;    
-            const accessible = sceneCatalog[filename].studentAccessible; 
-
-            // Show scene if:
-            // 1. The user is the website owner (isowner === true)
-            // 2. The scene has no owner field (meaning the owner field is absent)
-            // 3. The current user is the owner of the scene
-            if (isowner || !sceneCatalog[filename].hasOwnProperty('sceneOwner') || sceneOwner === adminEmail ||  (!isAdmin && (sceneCatalog[filename].hasOwnProperty('studentAccessible') && accessible  ))) {
-                finalList.push({
-                    filename: filename,
-                    name: sceneCatalog[filename].name,
-                    desc: sceneCatalog[filename].desc,
-                    sceneOwner: sceneOwner || 'No Owner'
-                });
-            } 
-        } 
-    }
-    // Render the scenes page, passing the filtered list of scenes
-    res.render('scenes', { title: 'Catalog', list: finalList, isAdmin: isAdmin, sceneCatalog: sceneCatalog, isowner });
+    res.render('scenes', {
+        title: 'Catalog',
+        list: sceneList,
+        isAdmin,
+        isInstructor,
+        isOwner,
+    });
 });
+
 
 
 // Endpoint to delete a scene
-router.post('/deleteScene/:scene', function (req, res) {
-    let { isAdmin, isowner } = checkSession(req, res);
+router.post('/deleteScene/:sceneName', async function (req, res) {
+    let { isAdmin, isInstructor, isOwner } = checkSession(req, res);
+    let userRole = res.locals.userRole;
+
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    } else if (userRole === 'superadmin') {
+        isAdmin = true;
+        isOwner = true;
+    }
+
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
-    const sceneName = req.params.scene;
+    const sceneName = req.params.sceneName;
     const scenePath = `./public/scenes/${sceneName}.json`;
-    console.log(scenePath);
+    const sceneCatalogPath = './public/catalog/sceneCatalog.json';
 
     try {
         // Delete scene file
-        fs.unlinkSync(scenePath);
-        console.log(`Scene file '${sceneName}.json' deleted successfully.`);
+        if (fs.existsSync(scenePath)) {
+            await fs.promises.unlink(scenePath);
+        }
 
         // Update scene catalog
-        const sceneCatalogPath = './public/catalog/sceneCatalog.json';
-
         if (fs.existsSync(sceneCatalogPath)) {
-            let sceneCatalog = JSON.parse(fs.readFileSync(sceneCatalogPath, 'utf8'));
+            const rawCatalog = await fs.promises.readFile(sceneCatalogPath, 'utf8');
+            let sceneCatalog = rawCatalog.trim() ? JSON.parse(rawCatalog) : {};
+
             delete sceneCatalog[sceneName + '.json'];
 
-            fs.writeFileSync(sceneCatalogPath, JSON.stringify(sceneCatalog, null, 2));
-            console.log(`Entry for scene '${sceneName}' removed from scene catalog.`);
-            res.sendStatus(200); // Send success response
+            await fs.promises.writeFile(sceneCatalogPath, JSON.stringify(sceneCatalog, null, 2));
         } else {
             console.error('Scene catalog file not found.');
-            res.sendStatus(500); // Send error response
         }
+
+        const pool = await connect();
+        const result = await pool.request()
+            .input('scene_name', sql.VarChar, sceneName)
+            .query(`
+                DELETE FROM Scenes
+                WHERE scene_name = @scene_name
+            `);
+
+        res.sendStatus(200);
     } catch (err) {
-        console.error(`Failed to delete scene file '${sceneName}.json':`, err);
-        res.sendStatus(500); // Send error response
+        console.error(`Failed to delete scene '${sceneName}':`, err);
+        res.sendStatus(500);
     }
 });
+
 
 
 
 // Handle adding a new scene
-router.post('/addScene', function (req, res) {
-    let { isAdmin, isowner } = checkSession(req, res);
+router.post('/addScene', async function (req, res) {
+    let { isAdmin, isInstructor, isOwner } = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    let email = res.locals.email;
+    let userId = res.locals.userId;
+
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    } else if (userRole === 'superadmin') {
+        isAdmin = true;
+        isOwner = true;
+    }
+
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
-    // Get new scene info from request body
-    var newSceneName = req.body.name;
-    var newSceneDesc = req.body.desc; // Check if 'description' is correctly accessed
-    var sessionToken = req.cookies.session;
-    var studentAccessible = req.body.studentAccessible;
+    const newSceneName = req.body.name;
+    const newSceneDesc = req.body.desc;
+    const studentAccessible = req.body.studentAccessible;
 
-    var adminEmail = findAdminEmailBySession(sessionToken);
-    
-    // Create scene object
-    var scene = {
-        "name": newSceneName,
-        "desc": newSceneDesc, // Make sure the 'desc' field is populated
-        "trackingMarker": {
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            }
+    const scene = {
+        name: newSceneName,
+        desc: newSceneDesc,
+        trackingMarker: {
+            position: { x: 0, y: 0, z: 0 }
         },
-        "molecules": [],
+        molecules: [],
         studentAccessible: studentAccessible
     };
 
-    // Write scene data to a new JSON file
-    fs.writeFile(`./public/scenes/${newSceneName}.json`, JSON.stringify(scene), (err) => {
-        if (err) {
-            console.error('Error writing scene file:', err);
-            res.sendStatus(500); // Send error response
-        } else {
-            console.log(`Scene file '${newSceneName}.json' created successfully.`);
+    try {
+        // Save the scene to file
+        await fs.promises.writeFile(`./public/scenes/${newSceneName}.json`, JSON.stringify(scene));
 
-            // Update scene catalog
-            const sceneCatalogPath = './public/catalog/sceneCatalog.json';
-            let sceneCatalog = {};
+        // Update the catalog
+        const sceneCatalogPath = './public/catalog/sceneCatalog.json';
+        let sceneCatalog = {};
 
-            try {
-                // Read the current scene catalog
-                if (fs.existsSync(sceneCatalogPath)) {
-                    const sceneCatalogData = fs.readFileSync(sceneCatalogPath, 'utf8');
-                    if (sceneCatalogData.trim().length > 0) {
-                        sceneCatalog = JSON.parse(sceneCatalogData);
-                    }
-                }
-                
-                // Add new scene entry to the scene catalog
-                sceneCatalog[newSceneName + ".json"] = {
-                    "name": newSceneName,
-                    "desc": newSceneDesc,
-                    "sceneOwner": adminEmail,
-                    "studentAccessible": studentAccessible
-                };
-
-                // Write updated scene catalog back to the file
-                fs.writeFileSync(sceneCatalogPath, JSON.stringify(sceneCatalog, null, 2));
-
-                console.log(`Scene '${newSceneName}' added to the scene catalog.`);
-                res.sendStatus(200); // Send success response
-            } catch (catalogErr) {
-                console.error('Error updating scene catalog:', catalogErr);
-                res.sendStatus(500); // Send error response
-            }
+        if (fs.existsSync(sceneCatalogPath)) {
+            const raw = await fs.promises.readFile(sceneCatalogPath, 'utf8');
+            if (raw.trim()) sceneCatalog = JSON.parse(raw);
         }
-    });
+
+        sceneCatalog[newSceneName + ".json"] = {
+            name: newSceneName,
+            desc: newSceneDesc,
+            sceneOwner: email,
+            studentAccessible: studentAccessible
+        };
+
+        await fs.promises.writeFile(sceneCatalogPath, JSON.stringify(sceneCatalog, null, 2));
+
+        const pool = await connect();
+
+        const userId = res.locals.userId;
+
+        if (!Number.isInteger(userId)) {
+            console.error('Invalid userId:', userId);
+            return res.status(500).send({ error: 'Invalid user ID' });
+        }
+
+        await pool.request()
+            .input('user_id', sql.Int, userId)
+            .input('scene_name', sql.VarChar, newSceneName)
+            .input('is_public', sql.Bit, studentAccessible ? 1 : 0)
+            .input('desc', sql.VarChar, newSceneDesc)
+            .query(`
+                INSERT INTO Scenes (user_id, scene_name, is_public, [desc])
+                VALUES (@user_id, @scene_name, @is_public, @desc)
+            `);
+
+        res.sendStatus(200);
+    } catch (err) {
+        console.error('Error creating scene:', err);
+        res.sendStatus(500);
+    }
 });
+
 
 router.get('/list', function (req, res) {
     const scenes = './public/scenes/';

@@ -111,7 +111,9 @@ The server will start listening on port 4000. You can now access the web applica
 * **EJS**: A templating engine for Node.js
 
 ## Database Technologies:
-* **Supabase**: A Firebase alternative that provides a Postgres database, authentication, and storage.
+* **Azure SQL Database**: Cloud-based relational database service built on the SQL Server database engine
+* **Azure Data Studio**: Open-source tool for data management and development 
+        * **Important**: Azure Data Studio officially retires on February 28, 2026
 
 
 ### Back End
@@ -1554,3 +1556,4 @@ Libraries:
 https://github.com/dataarts/dat.gui
 https://github.com/artoolkitx/jsartoolkit5
 https://github.com/jeromeetienne/threex.domevents
+https://github.com/google/model-viewer

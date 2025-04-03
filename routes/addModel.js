@@ -1,154 +1,134 @@
-var express = require('express');
-var multer = require('multer');
-var router = express.Router();
-var fs = require('fs');
+const express = require('express');
+const multer = require('multer');
+const router = express.Router();
+const fs = require('fs');
 const path = require('path');
+const obj2gltf = require('obj2gltf');
+const { sql, connect } = require('../db');
 const { checkSession } = require('./auth/session-mgmt');
-
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/modelfiles/')
+        cb(null, 'public/modelfiles/');
     },
     filename: (req, file, cb) => {
-        cb(null, file.originalname);
+        cb(null, Date.now() + '-' + file.originalname);
     }
 });
+
 const upload = multer({ storage: storage });
 
-
-router.get('/', function (req, res, next) {
+router.get('/', (req, res) => {
     res.render('addModel', { title: 'Add New Model' });
 });
 
-
-// Middleware to handle file uploading
 const uploadMiddleware = upload.fields([
     { name: 'objFileName', maxCount: 1 },
     { name: 'mtlFileName', maxCount: 1 },
     { name: 'gltfFileName', maxCount: 1 },
     { name: 'binFileName', maxCount: 1 },
-    { name: 'glbFileName', maxCount: 1 },
-    { name: 'pdbFileName', maxCount: 1 },
-    { name: 'xyzFileName', maxCount: 1 }
+    { name: 'glbFileName', maxCount: 1 }
 ]);
 
+async function convertOBJToGLB(objPath, outputGlbPath) {
+    try {
+        const glb = await obj2gltf(objPath, {
+            binary: true,
+            metallicRoughness: true,        
+          });
+        fs.writeFileSync(outputGlbPath, glb);
+        return outputGlbPath;
+    } catch (error) {
+        console.error('Error converting OBJ to GLB:', error);
+        return null;
+    }
+}
 
-// Generate a unique ID for each model
-const uniqueId = (parsedData) => {
-    if (parsedData.length == 0) return 1;
-    return parsedData[parsedData.length - 1].id + 1;
-};
-
-
-// Handle model saving
-router.post('/saveModel', uploadMiddleware, (req, res) => {
+router.post('/saveModel', uploadMiddleware, async (req, res) => {
     const name = req.body.name;
-    const modelDescription = req.body.modelDescription;
-    const fileType = req.body.fileType;
-   
-    let { isAdmin } = checkSession(req, res);
-    if (!isAdmin) {
-        // Delete any uploaded files
-        Object.values(req.files).flat().forEach(file => fs.unlinkSync(file.path));
-        return res.status(401).send({ error: "User not logged in" });
+    const description = req.body.modelDescription;
+    const uploadDate = new Date();
+
+    let { isAdmin, isInstructor, isOwner } = await checkSession(req, res);
+    let userRole = res.locals.userRole;
+    const userId = res.locals.userId;
+
+
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
+        isAdmin = true;
+        isOwner = true;
     }
 
+    if (!isAdmin) {
+        Object.values(req.files).flat().forEach(file => fs.unlinkSync(file.path));
+        return res.status(401).send({ error: "Unauthorized" });
+    }
 
-    // Read model catalog
-    const catalogPath = './public/catalog/modelFileCatalog.json';
-    var parsedData = JSON.parse(fs.readFileSync(catalogPath));
+    try {
+        const pool = await connect();
+        const existing = await pool.request()
+            .input('name', sql.NVarChar, name)
+            .input('userId', sql.Int, userId)
+            .query("SELECT * FROM Models WHERE file_name = @name AND user_id = @userId");
 
-
-    // Check if the model already exists
-    for (const entry of parsedData) {
-        if (entry.name === name && entry.description === modelDescription) {
+        if (existing.recordset.length > 0) {
             Object.values(req.files).flat().forEach(file => fs.unlinkSync(file.path));
             return res.status(400).send({ error: 'This model already exists' });
         }
-    }
 
+        let filePath = null;
 
-    // Assign a unique ID
-    const newId = uniqueId(parsedData);
+        if (req.files['objFileName']) {
+            const objFile = req.files['objFileName'][0];
+            const objDir = path.dirname(objFile.path);
+        
+            if (req.files['mtlFileName']) {
+                const mtlFile = req.files['mtlFileName'][0];
+                const mtlDestPath = path.join(objDir, mtlFile.originalname);
+        
+                // Put .mtl next to .obj so obj2gltf can find it
+                fs.renameSync(mtlFile.path, mtlDestPath);
+            }
+        
+            const outputGlbPath = path.join('public/modelfiles', `${Date.now()}-${objFile.originalname}.glb`);
+            const convertedGlbPath = await convertOBJToGLB(objFile.path, outputGlbPath);
+            if (convertedGlbPath) filePath = convertedGlbPath;
+        
+            fs.unlinkSync(objFile.path); // optional
+        }
+        
 
-
-    let modelEntry = {
-        id: newId,
-        name: name,
-        description: modelDescription,
-        files: {}
-    };
-
-
-    // Handle OBJ + MTL file uploads
-    if (fileType === 'obj-mtl') {
-        const objFile = req.files['objFileName'][0];
-        const mtlFile = req.files['mtlFileName'][0];
-
-
-        const newObjFileName = objFile.originalname;
-        const newMtlFileName = mtlFile.originalname;
-
-
-        fs.renameSync(objFile.path, path.join(objFile.destination, newObjFileName));
-        fs.renameSync(mtlFile.path, path.join(mtlFile.destination, newMtlFileName));
-
-
-        modelEntry.files.obj = newObjFileName;
-        modelEntry.files.mtl = newMtlFileName;
-    }
-    // Handle GLTF file upload (must also have .bin file)
-    else if (fileType === 'gltf') {
-        if (!req.files['binFileName']) {
-            Object.values(req.files).flat().forEach(file => fs.unlinkSync(file.path));
-            return res.status(400).send({ error: "GLTF file requires a corresponding .bin file." });
+        if (req.files['gltfFileName']) {
+            const gltfFile = req.files['gltfFileName'][0];
+            filePath = path.join(gltfFile.destination, gltfFile.filename);
         }
 
+        if (req.files['glbFileName']) {
+            const glbFile = req.files['glbFileName'][0];
+            filePath = path.join(glbFile.destination, glbFile.filename);
+        }
 
-        const gltfFile = req.files['gltfFileName'][0];
-        const binFile = req.files['binFileName'][0];
+        await pool.request()
+            .input('userId', sql.Int, userId)
+            .input('file_name', sql.NVarChar, name)
+            .input('desc', sql.NVarChar, description)
+            .input('file_path', sql.NVarChar, filePath)
+            .input('upload_date', sql.DateTime, uploadDate)
+            .query(`
+                INSERT INTO Models (user_id, file_name, [desc], file_path, upload_date)
+                VALUES (@userId, @file_name, @desc, @file_path, @upload_date)
+            `);
 
-
-        const newGltfFileName = gltfFile.originalname;
-        const newBinFileName = binFile.originalname
-
-
-        fs.renameSync(gltfFile.path, path.join(gltfFile.destination, newGltfFileName));
-        fs.renameSync(binFile.path, path.join(binFile.destination, newBinFileName));
-
-
-        modelEntry.files.gltf = newGltfFileName;
-        modelEntry.files.bin = newBinFileName;
+        res.send({ message: 'Model saved!' });
+    } catch (error) {
+        console.error('DB Insert Error:', error);
+        res.sendStatus(500);
     }
-    // Handle GLB file upload
-    else if (fileType === 'glb') {
-        const glbFile = req.files['glbFileName'][0];
-
-
-        const newGlbFileName = glbFile.originalname;
-        fs.renameSync(glbFile.path, path.join(glbFile.destination, newGlbFileName));
-
-
-        modelEntry.files.glb = newGlbFileName;
-    }
-
-
-
-    // Add model to catalog
-    parsedData.push(modelEntry);
-    fs.writeFileSync(catalogPath, JSON.stringify(parsedData, null, 2));
-
-
-    return res.send({ message: 'Model saved!' });
 });
-
-
-// Endpoint to check model status
-router.get('/modelStatus/:modelname', (req, res) => {
-    const { modelname } = req.params;
-    res.json({ isSaved: modelSaveStatus[modelname] || false });
-});
-
 
 module.exports = router;
