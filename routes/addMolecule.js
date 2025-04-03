@@ -16,6 +16,9 @@ router.post('/', (req, res) => {
         isAdmin = true;
         isOwner = true;
     }
+    else if(userRole === 'developer'){
+        isDeveloper = true;
+    }
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     // Assign values from form to variables
@@ -67,6 +70,9 @@ router.post('/saveMolFile', async (req, res) => {
     }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
+    }
+    else if(userRole === 'developer'){
+        isDeveloper = true;
     }
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 

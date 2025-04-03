@@ -11,7 +11,7 @@
     <div class="row content">
         <div class="col-12 pt-4 text-start text-white">
             <h1 class="display-4 fw-bold">Model Catalog</h1>
-            <% if (isAdmin || isInstructor || isOwner){%>
+            <% if (isAdmin || isInstructor || isOwner || isDeveloper){%>
                 <%- include('partials/addModel') %>
             <%}%>
             <table id="modelTable" class="table table-striped text-white" style="width:100%">
@@ -20,7 +20,7 @@
                         <th>Name</th>
                         <th>Description</th>
                         <th>File Name</th>
-                        <% if (isAdmin || isInstructor || isOwner){%>
+                        <% if (isAdmin || isInstructor || isOwner || isDeveloper){%>
                             <th class="options-column">Options</th>
                         <%}%>
                     </tr>
@@ -31,7 +31,7 @@
                             <td><%= model.file_name %></td>
                             <td><%= model.desc %></td>
                             <td><%= model.file_name_only %></td>
-                            <% if (isAdmin || isInstructor || isOwner) { %>
+                            <% if (isAdmin || isInstructor || isOwner || isDeveloper) { %>
                                 <td>
                                     <button type="button" class="btn editModelBtn btn-warning" data-id="<%= model.id %>" data-name="<%= model.file_name %>" data-desc="<%= model.desc %>" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
                                     <button type="button" class="btn deleteModelBtn btn-danger" data-id="<%= model.id %>" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
