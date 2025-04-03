@@ -58,7 +58,7 @@ router.get('/', (req, res) => {
         list: sceneList,
         isAdmin,
         isInstructor,
-        isOwner
+        isOwner,
     });
 });
 

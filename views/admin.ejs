@@ -1,6 +1,6 @@
 <%- include('partials/header') %>
 <!--ADMIN NAVBAR CHECK-->
-<% if (isOwner || isDeveloper) { %>
+<% if (isOwner) { %>
     <%- include('partials/navbarowner') %>
 <% } else if (isInstructor || isAdmin) { %>
     <%- include('partials/navbarAdmin') %>
