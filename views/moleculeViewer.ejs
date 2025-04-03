@@ -109,10 +109,18 @@ footer {
             font-size: 1.13rem;
             padding: 10px 20px;
         }
+        
+        
         #backButton {
-            position: absolute;
-            left: 10px; 
-            top: 10px; 
+            position: static; 
+        }
+
+        @media screen and (min-width: 1024px) {
+            #backButton {
+                position: absolute;
+                left: 10px; 
+                top: 10px; 
+            }
         }
 
         #control-panel2 input[type=button] {
@@ -121,7 +129,11 @@ footer {
             font-size: 1.13rem;
             padding: 10px 20px;
         }
-
+        #control-panel2 {
+            border: none;
+            background: none;
+            box-shadow: none;
+}
         #toggle-button {
             background-color: #097242;
             color: white;
@@ -203,6 +215,8 @@ footer {
         // Toggle Spin button
         jmolButton("spin @ {!_spinning}", "Toggle Spin", "toggle-button");
 
+        </Script>
+        <Script>
         // Slider for Van der Waals Radius
         var slider = document.createElement("input");
         var title = document.createElement("h5");
@@ -210,7 +224,7 @@ footer {
         document.body.appendChild(title);
         slider.type = "range";
         slider.min = 0.2;
-        slider.max = 2.0;
+        slider.max = 1.0; // Above 1 does not render any difference
         slider.step = 0.1;
         slider.value = 0.3;
 
@@ -231,10 +245,10 @@ footer {
 
         document.body.appendChild(slider);
         document.body.appendChild(label);
-    </script>
+    
 
     <!-- Bond Size Control Panel -->
-    <script>
+    
         var bondSizeSlider = document.createElement("input");
         //add title for the slider
         var bondSize = document.createElement("h5");
@@ -287,7 +301,6 @@ footer {
     </div>
 
     <!-- Modal Structure for Save Model -->
-    <!-- Modal Structure for Save Model -->
 <div id="saveModelModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
@@ -311,11 +324,19 @@ footer {
 </div>
 
     <style>
-        #get-obj{
+    
+    #get-obj {
+        position: static; 
+    }
+
+    @media screen and (min-width: 1024px) {
+        #get-obj {
             position: absolute;
             right: 10px;
-            top: 10px; 
+            top: 10px;
         }
+    }
+
 
         .modal {
             display: none;
@@ -429,15 +450,6 @@ footer {
 
     #control-panel2 input[type="button"],
     #toggle-button,
-    #backButton input[type="button"] {
-        font-size: 0.9rem; 
-        padding: 8px 16px;
-    }
-    #backButton {
-    position: absolute;
-    left: 10px; 
-    top: 10px; 
-}
 
     
 
@@ -525,9 +537,7 @@ button:hover {
 
     <script>
     
-        document.getElementById('saveAsModelBtn').addEventListener('click', function () {
-            document.getElementById("saveModelModal").style.display = "block";
-        });
+        
 
         // Close Modal Function
         function closeModal() {
