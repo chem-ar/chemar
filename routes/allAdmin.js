@@ -34,17 +34,22 @@ router.get('/', async function (req, res, next) {
     }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
+    }else if(userRole === 'developer'){
+        isDeveloper = true;
+        isAdmin = true;
+        
     }
 
-    if (!isOwner) return res.redirect("/");
-    res.render('allAdmins', { title: 'allAdmin', isOwner, isAdmin })
+    if (!isOwner && !isDeveloper) return res.redirect("/");
+    res.render('allAdmins', { title: 'allAdmin', isOwner, isAdmin, isDeveloper })
 })
 
 router.get('/alladminsearch', async function (req, res, next) {
     const { sql, connect } = require('../db');
 
     const userRole = res.locals.userRole;
-    if (userRole !== 'superadmin') {
+    
+    if (userRole !== 'superadmin' && userRole !== 'developer') {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
@@ -90,7 +95,6 @@ router.post('/updateRoles', async function (req, res) {
                 .input('role', sql.NVarChar(50), role)
                 .query(`UPDATE Users SET role = @role WHERE email = @email`);
         }
-
         res.status(200).json({ message: 'Roles updated successfully' });
     } catch (err) {
         console.error('Role update failed:', err);
@@ -157,6 +161,9 @@ router.post('/addadmin', async function (req, res, next)
     }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
+    }else if(userRole === 'developer'){
+        isDeveloper = true;
+        isAdmin = true;
     }
     if (!isOwner) return res.status(401).json({error: 'Please log in as owner of the page'})
 
@@ -208,6 +215,9 @@ router.get('/download-backup', async (req, res, next) => {
     }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
+    }else if(userRole === 'developer'){
+        isDeveloper = true;
+        isAdmin = true;
     }
     if (!isOwner) return res.status(401).json({error: 'Please log in as owner of the page'})
 
@@ -294,6 +304,9 @@ router.post('/upload-backup', upload.single('backupZip'), async (req, res) => {
     }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
+    }else if(userRole === 'developer'){
+        isDeveloper = true;
+        isAdmin = true;
     }
     if (!isOwner) return res.status(401).json({error: 'Please log in as owner of the page'})
 

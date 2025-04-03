@@ -6,8 +6,10 @@ const { sql, connect } = require('../db');
 const { checkSession } = require('./auth/session-mgmt');
 
 // GET models page
+
 router.get('/', async (req, res) => {
-    let { isAdmin, isInstructor, isOwner } = await checkSession(req, res);
+   
+    let { isAdmin, isInstructor, isOwner, isDeveloper } = await checkSession(req, res);
     let userRole = res.locals.userRole;
     if (userRole === 'instructor') {
         isAdmin = true;
@@ -17,12 +19,15 @@ router.get('/', async (req, res) => {
     }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
+    }else if(userRole === 'developer'){
+        isDeveloper = true;
+        isAdmin = true;
     }
 
     if (!isAdmin) return res.redirect("/");
 
     const userId = res.locals.userId;
-
+    
     try {
         const pool = await connect();
         const result = await pool.request()
@@ -59,6 +64,9 @@ router.post('/edit', async (req, res) => {
     }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
+    }else if(userRole === 'developer'){
+        isDeveloper = true;
+        isAdmin = true;
     }
     
     if (!isAdmin) return res.status(401).send({ error: "Unauthorized" });
@@ -103,6 +111,9 @@ router.delete('/delete', async (req, res) => {
     }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
+    }else if(userRole === 'developer'){
+        isAdmin = true;
+        isDeveloper = true;
     }
 
     if (!isAdmin) return res.status(401).send({ error: "Unauthorized" });
