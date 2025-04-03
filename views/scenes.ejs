@@ -1,13 +1,14 @@
 <%- include('partials/header') %>
-<!--ADMIN NAVBAR CHECK-->
-<% if (isowner) { %>
+
+<!-- ADMIN NAVBAR CHECK -->
+<% if (isOwner) { %>
     <%- include('partials/navbarowner') %>
-  <% } else if (isAdmin) { %>
+<% } else if (isInstructor || isAdmin) { %>
     <%- include('partials/navbarAdmin') %>
-  <% } %>
-<% if (!isAdmin){%>
+<% } else { %>
     <%- include('partials/navbar') %>
-<%}%>
+<% } %>
+
 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 
 <div class="container mb-4 main-background-color">
@@ -15,286 +16,152 @@
         <div class="col-12 pt-4 text-start text-white">
             <h1 class="display-4 fw-bold">Scenes Catalog</h1>
 
-             <!--ADMIN CHECK-->
-             <% if (isAdmin){%>
+            <% if (isOwner || isAdmin || isInstructor) { %>
                 <%- include('partials/addScene') %>
-            <%}%>
+            <% } %>
 
-            <p></p>
             <table id="sceneTable" class="table table-striped text-white" style="width:100%">
                 <thead>
                     <tr>
                         <th>Name</th>
                         <th>Description</th>
+                        <th>Owner</th>
+                        <th>Visibility</th>
                         <th class="options-column-scenes">Options</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% for (let scene of list) { %>    
+                    <% for (let scene of list) { %>
                         <% let filename = scene.filename; %>
-                            <tr>
-                                <td>
-                                    <a class="text-white names-in-scenes" id="Name<%= filename %>" href="/sceneViewer/<%= filename.slice(0, -5) %>"><%= filename.slice(0, -5) %></a>
-                                </td>
-                                <td id="Description<%=filename %>" class="text-white desc-in-scenes"><%= scene.desc %></td>
-                                <td class="options-column-scenes">
-                                    <div class = "d-grid gap-2">
-
-                                        <button 
-                                        id="<%= 'viewBtn' + filename.slice(0, -5) %>" 
-                                        type="button" 
-                                        class="view btn" 
-                                        onclick="window.location.href='/sceneViewer/<%= filename.slice(0, -5) %>'" 
-                                        style="background-color: #6c757d; color: black;">
-                                            <svg 
-                                            xmlns="http://www.w3.org/2000/svg" 
-                                            width="17" 
-                                            height="17" 
-                                            fill="currentColor" 
-                                            class="bi bi-eye" 
-                                            viewBox="0 0 16 16" 
-                                            aria-label="View icon">
-                                                <path 
-                                                d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zm-8 4a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-1.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
-                                            </svg>
-                                            View AR
+                        <% let isVisibleToUser = scene.studentAccessible || scene.sceneOwner === email || isOwner; %>
+                        <% let canEdit = isOwner || scene.sceneOwner === email; %>
+                        <% if (isVisibleToUser) { %>
+                        <tr>
+                            <td>
+                                <a class="text-white names-in-scenes" href="/sceneViewer/<%= filename.slice(0, -5) %>">
+                                    <%= scene.name %>
+                                </a>
+                            </td>
+                            <td class="text-white desc-in-scenes"><%= scene.desc %></td>
+                            <td class="text-white"><%= scene.sceneOwner %></td>
+                            <td class="text-white">
+                                <% if (scene.studentAccessible) { %>
+                                    Public
+                                <% } else { %>
+                                    Private (You)
+                                <% } %>
+                            </td>
+                            <td class="options-column-scenes">
+                                <div class="d-grid gap-2">
+                                    <button type="button" class="view btn" onclick="window.location.href='/sceneViewer/<%= filename.slice(0, -5) %>'" style="background-color: #6c757d; color: black;">
+                                        View AR
+                                    </button>
+                                    <button type="button" class="share btn" style="background-color: #00BFE3; color: black;" data-bs-toggle="modal" data-bs-target="#shareModal" data-scene="<%= filename.slice(0, -5) %>">
+                                        Share
+                                    </button>
+            
+                                    <% if (canEdit) { %>
+                                        <button onclick="goToPage('/sceneEditor/<%= filename %>')" type="button" class="btn" style="background-color: #FFB300; color: black;">
+                                            Edit
                                         </button>
-
-                                        <button id="<%= 'shareBtn' + filename.slice(0, -5) %>" type="button" class="share btn" style="background-color: #00BFE3; color: black;" data-bs-toggle="modal" data-bs-target="#shareModal">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16" aria-label="Share icon">
-                                                <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
-                                            </svg> Share
-                                        </button>
-                                         <!--ADMIN CHECK-->
-                                         <% if (isAdmin) { %>
-                                        <button onclick="goToPage('../sceneEditor/<%=filename %>')" type="button" class="btn" style="background-color: #FFB300; color: black;">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16" aria-label="Edit icon">
-                                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                                                </svg> Edit
-                                            </button>
-                                        
-                                            <script>
-                                                function goToPage(url) {
-                                                    window.location.href = url;
-                                                }
-                                            </script>
-
+            
                                         <button type="button" class="btn deleteSceneBtn" style="background-color: #CC0000; color: white;" data-bs-toggle="modal" data-bs-target="#deleteModal" data-scene="<%= filename.slice(0, -5) %>">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16" aria-label="Delete icon">
-                                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                                </svg> Delete
-                                            </button>
-                                        <% } %>
-                                    </div>
-                                </td>
-                            </tr>
-                            
-                        <%}%>
+                                            Delete
+                                        </button>
+                                    <% } %>
+                                </div>
+                            </td>
+                        </tr>
+                        <% } %>
+                    <% } %>
                 </tbody>
             </table>
+            
         </div>
     </div>
 </div>
 
+<!-- DataTables Scripts -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
 
-<script type="module">
-    let dataTable;
+<script>
+    $(document).ready(function () {
+        $('#sceneTable').DataTable({
+            columnDefs: [{ orderable: false, targets: [3] }] // 'Options' column is now index 3
+        });
+    });
 
-    fetch("/catalog/sceneCatalog.json")
-        .then((response) => response.json())
-        .then((data) => {
-            dataTable = data;
-            // Iterates through the json file
-            for (let item in data) {
-                var id = item.replace(".json", "");
-                // Check if the molecule ID exists before trying to update the name and formula
-                if (document.getElementById("Name"+id) != null) {
-                    var sceneName = document.getElementById("Name"+id);
-                    sceneName.innerHTML = data[item].name;
-                    var sceneDescription = document.getElementById("Description"+id)
-                    sceneDescription.innerHTML = data[item].desc;
-                }
-            }
-            if(!$.fn.DataTable.isDataTable('#sceneTable')){
-                // Initialize DataTable
-                $('#sceneTable').DataTable({
-                    columnDefs: [
-                        { orderable: false, targets: [2] }
-                    ]
-                });
-            }
-        })
-        .catch(err => toastr.error(err.message));
+    function goToPage(url) {
+        window.location.href = url;
+    }
+
+    $('.share').on('click', function () {
+        const scene = $(this).data('scene');
+        const qrcode = new QRCode(document.getElementById("qrcode"));
+        qrcode.makeCode(`${window.location.origin}/sceneViewer/${scene}`);
+    });
+
+    $('.deleteSceneBtn').on('click', function () {
+        const sceneName = $(this).data('scene');
+        $('#deleteModal .modal-body').text(`Are you sure you want to delete "${sceneName}"?`).attr('data-scene-to-delete', sceneName);
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.deleteSceneBtn').forEach(button => {
+            button.addEventListener('click', function () {
+                const sceneName = this.dataset.scene;
+                const modalBody = document.querySelector('#deleteModal .modal-body');
+                modalBody.textContent = `Are you sure you want to delete "${sceneName}"?`;
+                modalBody.setAttribute('data-scene-to-delete', sceneName);
+            });
+        });
+
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+        confirmBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const sceneName = document.querySelector('#deleteModal .modal-body').getAttribute('data-scene-to-delete');
+            fetch(`/scenes/deleteScene/${sceneName}`, { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        toastr.error('Failed to delete scene');
+                    }
+                })
+                .catch(() => toastr.error('Server error'));
+        });
+    });
 </script>
 
 <!-- Delete Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content bg-dark">
             <div class="modal-header">
-                <h5 class="modal-title text-white" id="deleteModalLabel">Confirm Deletion</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title text-white">Confirm Deletion</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                Are you sure you want to delete <span id="sceneName"></span>?
-            </div>
+            <div class="modal-body text-white"></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="confirmDeleteBtn" class="btn btn-danger" data-bs-dismiss="modal">Delete</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>
 </div>
-<style>
-    .modal-content .modal-body {
-        color: white;
-    }
-</style>
 
-<!-- Modal -->
-<div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="canvasModalLabel" aria-hidden="true">
+<!-- Share Modal -->
+<div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content bg-dark">
-            <div class="modal-header">
-               
-            </div>
-        <div class="modal-body">
-            <div class="">
-                <div id="qrcode" class="bg-white py-4" align="center"></div>
-                <script type="text/javascript">
-                    let qrcode = new QRCode(document.getElementById("qrcode"), "https://webisora.com");
-                </script>
+            <div class="modal-body text-center">
+                <div id="qrcode" class="bg-white py-4"></div>
             </div>
         </div>
     </div>
-    </div>
 </div>
 
-<script>
-    
-document.addEventListener("DOMContentLoaded", function() {
-    // Add event listener to form submission
-    document.getElementById("newSceneAddBtn")?.addEventListener("click", function(event) {
-        // Prevent default form submission behavior
-        event.preventDefault();
-        
-        // Gather data from form fields
-        var newSceneName = document.getElementById("newSceneName").value;
-        var newSceneDesc = document.getElementById("newSceneDesc").value;
-        var studentAccessible = document.getElementById("studentAccessibleCheckbox").checked;
-
-        // Create scene object
-        var scene = {
-            name: newSceneName,
-            desc: newSceneDesc,
-            trackingMarker: {
-                position: {
-                    x: 0,
-                    y: 0,
-                    z: 0
-                }
-            },
-            molecules: [],
-            studentAccessible: studentAccessible
-        };
-
-        // Send data to server using fetch API
-        fetch('/scenes/addScene', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(scene),
-            credentials: 'include' 
-        })
-        .then(async response => {
-            const body = await response.json().catch(_error => ({}));
-
-            if (response.status === 401 && body.error) {
-                throw new Error(body.error);
-            } else if (response.ok) {
-                location.reload();
-                // Reload the page or handle success as needed
-            } else {
-                console.error('Failed to add scene.');
-                throw new Error(`Server returned status code ${response.status}`);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            toastr.error(error.message, "Failed to create scene");
-        });
-    });
-});
-
-
-    // Preview the .mol file content when selected
-    function onReceiptsSelected() {
-            const files = fileName.files;
-            if (files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById("preview").value += e.target.result;
-                };
-                reader.readAsText(files[0]);
-            }
-        }
-
-    var share = document.getElementsByClassName("share");
-
-    Array.from(share).forEach(function(element) {
-        element.addEventListener("click", function(){
-            let itemNumber = element.id.replace("shareBtn", "")
-            qrcode.makeCode(window.location.host + "/sceneViewer/" + itemNumber); 
-        })
-    });
-
-    document.addEventListener("DOMContentLoaded", function() {
-        // Add event listener to delete buttons
-        var deleteButtons = document.querySelectorAll(".deleteSceneBtn");
-        var deleteModalBody = document.querySelector("#deleteModal .modal-body");
-
-        // Loop through each delete button and add click event listener
-        deleteButtons.forEach(function(button) {
-            button.addEventListener("click", function() {
-                var sceneName = this.getAttribute("data-scene");
-
-                // Set the text content of the modal body to include the scene's name
-                deleteModalBody.textContent = `Are you sure you want to delete "${sceneName}"?`;
-
-                deleteModalBody.setAttribute('data-scene-to-delete', sceneName);
-            });
-        });
-
-        var confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
-        confirmDeleteBtn.addEventListener("click", function() {
-            const sceneName = deleteModalBody.getAttribute('data-scene-to-delete');
-            fetch(`/scenes/deleteScene/${sceneName}`, {
-                method: "POST"
-            })
-            .then(async response => {
-                const body = await response.json().catch(_error => ({}));
-
-                if (response.status === 401 && body.error) {
-                    throw new Error(body.error);
-                } else if (response.ok) {
-                    // if successful, reload the page
-                    console.log("Scene deleted successfully.");
-                    location.reload(); // Reload the page to reflect changes
-                } else {
-                    throw new Error(`Server returned error code ${response.status}`);
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                toastr.error(error.message, "Failed to delete scene");
-            });
-        });
-    });
-</script>
 <%- include('partials/footer') %>
