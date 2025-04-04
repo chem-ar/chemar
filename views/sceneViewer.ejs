@@ -19,18 +19,27 @@
     <style>
       body, html { margin: 0; padding: 0; overflow: hidden; height:100%;}
       #rotationButton {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    padding: 10px 20px;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-  }
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        padding: 10px 20px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+      }
+      #rotationButton:hover {
+        background-color: rgb(73, 77, 78, 0.7);
+      }
+      #rotationButton.toggled {
+        background-color: rgba(0, 77, 165, 0.7);
+      }
+      #rotationButton.toggled:hover {
+        background-color: rgba(37, 134, 245, 0.7);
+      }
     </style>
   </head>
   <body>
@@ -140,10 +149,18 @@
 
     let sceneRotating = false;
 
-    document.querySelector("#rotationButton").addEventListener("click", toggleRotation);
+    const rotButton = document.querySelector("#rotationButton")
+    rotButton.addEventListener("click", toggleRotation);
 
     function toggleRotation() {
       sceneRotating = !sceneRotating;
+
+      if (sceneRotating) {
+        rotButton.classList.add("toggled");
+      }
+      else {
+        rotButton.classList.remove("toggled");
+      }
 
       Array.from(document.querySelector("#marker").children).forEach(ent => {
         if (sceneRotating) {
