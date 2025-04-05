@@ -20,6 +20,9 @@ router.get('/', function(req, res, next) {
     }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
+    }else if(userRole === 'developer'){
+        isDeveloper = true;
+        isAdmin = true;
     }
     res.render('catalog', { title: 'Catalog', list: fs.readdirSync(molfiles), mol: molecule,name: name, formula: formula, isAdmin: isAdmin, isowner});
 });
