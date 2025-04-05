@@ -7,59 +7,59 @@ var { checkSession } = require('./auth/session-mgmt')
 
 
 /* GET home page. */
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     let { isAdmin, isInstructor, isOwner } = checkSession(req, res);
-    let userRole = res.locals.userRole;    
+    let userRole = res.locals.userRole;
     const userEmail = res.locals.email;
+
     if (userRole === 'instructor') {
-        isAdmin = true;
         isInstructor = true;
     } else if (userRole === 'admin') {
         isAdmin = true;
-    }else if(userRole === 'superadmin'){
+    } else if (userRole === 'superadmin') {
         isAdmin = true;
         isOwner = true;
-    }else if(userRole === 'developer'){
-        isDeveloper = true;
+    } else if (userRole === 'developer') {
         isAdmin = true;
+        isOwner = true;
     }
-
-    const catalogPath = './public/catalog/sceneCatalog.json';
-    let catalog = {};
 
     try {
-        const catalogRaw = fs.readFileSync(catalogPath, 'utf8');
-        if (catalogRaw.trim()) {
-            catalog = JSON.parse(catalogRaw);
+        const pool = await connect();
+        let result;
+
+        if (isAdmin) {
+            // Admins see all scenes
+            result = await pool.request().query(`
+                SELECT s.scene_name AS filename, s.[desc], u.email AS sceneOwner, s.is_public AS studentAccessible
+                FROM Scenes s
+                JOIN Users u ON s.user_id = u.id
+            `);
+        } else {
+            // Instructors and students only see their own scenes
+            result = await pool.request()
+                .input('email', sql.VarChar, userEmail)
+                .query(`
+                    SELECT s.scene_name AS filename, s.[desc], u.email AS sceneOwner, s.is_public AS studentAccessible
+                    FROM Scenes s
+                    JOIN Users u ON s.user_id = u.id
+                    WHERE u.email = @email
+                `);
         }
+
+        const sceneList = result.recordset;
+
+        res.render('scenes', {
+            title: 'Catalog',
+            list: sceneList,
+            isAdmin,
+            isInstructor,
+            isOwner,
+        });
     } catch (err) {
-        console.error('Failed to load scene catalog:', err);
+        console.error('Failed to load scenes from DB:', err);
+        res.status(500).send('Error loading scene catalog');
     }
-
-    const sceneList = [];
-
-    for (const [filename, scene] of Object.entries(catalog)) {
-        const isSceneOwner = scene.sceneOwner === userEmail;
-        const isVisibleToUser = scene.studentAccessible || isAdmin || isInstructor || isOwner || isSceneOwner;
-
-        if (isVisibleToUser) {
-            sceneList.push({
-                filename,
-                name: scene.name,
-                desc: scene.desc,
-                sceneOwner: scene.sceneOwner,
-                studentAccessible: scene.studentAccessible
-            });
-        }
-    }
-
-    res.render('scenes', {
-        title: 'Catalog',
-        list: sceneList,
-        isAdmin,
-        isInstructor,
-        isOwner,
-    });
 });
 
 
@@ -215,6 +215,54 @@ router.get('/list', function (req, res) {
 
     res.status(200).send(fs.readdirSync(scenes));
 });
+
+router.get('/api/:sceneName', async (req, res) => {
+    const sceneName = req.params.sceneName;
+    const pool = await connect();
+
+    try {
+        const sceneResult = await pool.request()
+            .input('scene_name', sql.VarChar, sceneName)
+            .query('SELECT * FROM Scenes WHERE scene_name = @scene_name');
+
+        if (sceneResult.recordset.length === 0) {
+            return res.status(404).json({ error: 'Scene not found' });
+        }
+
+        const scene = sceneResult.recordset[0];
+
+        const modelResult = await pool.request().query('SELECT * FROM Models');
+
+        const molecules = modelResult.recordset.map(model => ({
+            modelInfo: {
+                id: model.id,
+                name: model.file_name,
+                desc: model.desc,
+                file_path: model.file_path.replace("public\\", "") 
+            },
+            position: { x: 0, y: 0, z: 0 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 1, y: 1, z: 1 },
+            animations: []
+        }));
+
+        res.json({
+            name: scene.scene_name,
+            desc: scene.desc,
+            trackingMarker: {
+                position: { x: 0, y: 0, z: 0 },
+                rotation: { x: 0, y: 0, z: 0 },
+                scale: { x: 1, y: 1, z: 1 }
+            },
+            molecules
+        });
+
+    } catch (err) {
+        console.error('Failed to fetch scene data from DB:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
+
 
 
 module.exports = router;
