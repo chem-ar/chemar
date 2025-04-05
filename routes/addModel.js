@@ -62,6 +62,9 @@ router.post('/saveModel', uploadMiddleware, async (req, res) => {
     }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
+    }else if(userRole === 'developer'){
+        isDeveloper = true;
+        isAdmin = true;
     }
 
     if (!isAdmin) {

@@ -14,6 +14,8 @@ router.get('/', async function (req, res) {
         navbar = 'partials/navbarAdmin'; 
     } else if(userRole === 'superadmin'){
         navbar = 'partials/navbarowner';
+    } else if(userRole ==='developer'){
+        navbar = 'partials/navbarowner';
     }
 
     console.log(userRole);

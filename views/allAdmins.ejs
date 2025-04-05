@@ -210,6 +210,7 @@ function populateTable(adminData, index) {
         adminData.email,
         `<select class="form-select compact-role-select role-select" data-email="${adminData.email}">
             <option value="admin" ${role === 'admin' ? 'selected' : ''}>Admin</option>
+            <option value="developer" ${role === 'developer' ? 'selected' : ''}>Developer</option>
             <option value="instructor" ${role === 'instructor' ? 'selected' : ''}>Instructor</option>
             <option value="student" ${role === 'student' ? 'selected' : ''}>Student</option>
         </select>`,

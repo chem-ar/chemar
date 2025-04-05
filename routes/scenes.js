@@ -19,6 +19,9 @@ router.get('/', (req, res) => {
     }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
+    }else if(userRole === 'developer'){
+        isDeveloper = true;
+        isAdmin = true;
     }
 
     const catalogPath = './public/catalog/sceneCatalog.json';
@@ -74,6 +77,9 @@ router.post('/deleteScene/:sceneName', async function (req, res) {
     } else if (userRole === 'superadmin') {
         isAdmin = true;
         isOwner = true;
+    }else if(userRole === 'developer'){
+        isDeveloper = true;
+        isAdmin = true;
     }
 
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
@@ -133,6 +139,9 @@ router.post('/addScene', async function (req, res) {
     } else if (userRole === 'superadmin') {
         isAdmin = true;
         isOwner = true;
+    }else if(userRole === 'developer'){
+        isDeveloper = true;
+        isAdmin = true;
     }
 
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
