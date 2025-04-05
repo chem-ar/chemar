@@ -16,6 +16,9 @@ router.get('/', function(req, res, next) {
     }else if(userRole === 'superadmin'){
         isAdmin = true;
         isOwner = true;
+    }else if(userRole === 'developer'){
+        isDeveloper = true;
+        isAdmin = true;
     }
 
     try {
