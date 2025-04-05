@@ -13,7 +13,7 @@ deploy-main-azure:      # This job runs in the deploy stage.
     - az login --username $PRODID --password $PRODPASSWORD
     - az webapp up --name $PRODAPPNAME --resource-group $PRODRESOURCEGROUP --runtime "NODE|22-lts"
 
-kudu-scm-build:
+kudu-scm-build-main:
   stage: post-deploy
   image: mcr.microsoft.com/azure-cli:latest
   script: |

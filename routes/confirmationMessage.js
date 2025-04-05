@@ -11,6 +11,9 @@ router.get('/', function (req, res, next) {
     }else if(userRole === 'admin'){
         isAdmin = true;
         isOwner = true;
+    }else if(userRole === 'developer'){
+        isDeveloper = true;
+        isAdmin = true;
     }
 
     res.render("confirmationMessage", { title: 'Confirmation Message', message: 'An email has been sent! Please check your junk email and inbox!', isAdmin: isAdmin, isOwner: isOwner, isInstructor: isInstructor });

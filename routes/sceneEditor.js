@@ -101,7 +101,9 @@ router.get('/:id', async function(req, res) {
   } else if (userRole === 'superadmin') {
     isAdmin = true;
     isOwner = true;
-  }
+  }else if(userRole === 'developer'){
+    isDeveloper = true;
+}
 
   if (!isAdmin) return res.redirect("/");
 
