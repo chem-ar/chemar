@@ -11,11 +11,14 @@ https://git.cs.dal.ca/belcher/chemar-winter-2023
   - [Technical Inventory](#technical-inventory)
     - [Client-side Technologies:](#client-side-technologies)
   - [Server-side Technologies:](#server-side-technologies)
-  - [Database Technologies:](#database-technologies)
+  - [Authentication and Session Management (New W2025):](#authentication-and-mession-management-(new-w2025))
+  - [Scene and Model Management (New W2025):](#scene-and-model-management-(new-22025))
+  - [Scene Viewer (New/Updated W2025):](#scene-viewer-(new/updated-w2025))
     - [Back End](#back-end)
       - [Node.js](#nodejs)
       - [Express.js](#expressjs)
       - [EJS (Embedded JavaScript) Templating Engine](#ejs-embedded-javascript-templating-engine)
+      - [Database Technologies:](#database-technologies-(New-2025))
   - [Routing](#routing)
     - [Express.js](#expressjs-1)
       - [express-generator](#express-generator)
@@ -1595,6 +1598,9 @@ https://stemkoski.github.io/AR.js-examples/index.html
 
 The Three.js docs:
 https://threejs.org/
+
+A-Frame:
+https://github.com/aframevr/aframe/blob/gh-pages/examples/showcase/model-viewer/index.html
 
 Libraries:
 https://github.com/dataarts/dat.gui
