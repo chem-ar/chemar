@@ -1,11 +1,13 @@
 var express = require('express');
 var router = express.Router();
-var { checkSession } = require('./auth/session-mgmt');
+var fs = require('fs')
+var {checkSession} = require('./auth/session-mgmt')
 
-router.get('/', async function (req, res) {
+/* GET about page. */
+router.get('/', function (req, res, next) {
+    let {isAdmin, isowner} = checkSession(req, res);
+    res.render('about', { title: 'About Us', isAdmin: isAdmin, isowner: isowner });
 
-
-    res.render('about', { title: 'About ChemAR'});
 });
 
 module.exports = router;
