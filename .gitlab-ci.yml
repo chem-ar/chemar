@@ -18,3 +18,4 @@ kudu-scm-build-main:
   image: mcr.microsoft.com/azure-cli:latest
   script: |
     az rest --method POST --uri "https://dalchemar.scm.azurewebsites.net/api/command" --headers "Content-Type=application/json" "Authorization=Basic JGRhbGNoZW1hcjpUWDN0NDQxaWFYVFBtOW5OcjI4WFdHRm5YaENncG1ZNVJkODNrUFFrSERpY3M2SnYxWGhXcm05ZU5nc0s=" --body "{\"command\": \"sh -c \\\"cd /home/site/wwwroot && npm install\\\"\"}"
+

@@ -10,7 +10,20 @@ router.get('/', function(req, res, next) {
     let name,formula = "not found in catalog";
     
     //Admin check
-    let {isAdmin, isowner} = checkSession(req, res);
+    let { isAdmin, isInstructor, isOwner } = checkSession(req, res);
+    let userRole = res.locals.userRole;
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    }else if(userRole === 'superadmin'){
+        isAdmin = true;
+        isOwner = true;
+    }else if(userRole === 'developer'){
+        isDeveloper = true;
+        isAdmin = true;
+    }
     res.render('catalog', { title: 'Catalog', list: fs.readdirSync(molfiles), mol: molecule,name: name, formula: formula, isAdmin: isAdmin, isowner});
 });
 

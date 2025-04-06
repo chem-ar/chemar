@@ -11,7 +11,11 @@ https://git.cs.dal.ca/belcher/chemar-winter-2023
   - [Technical Inventory](#technical-inventory)
     - [Client-side Technologies:](#client-side-technologies)
   - [Server-side Technologies:](#server-side-technologies)
-  - [Database Technologies:](#database-technologies)
+  - [Database Technologies (New 2025)](#database-technologies-new-w2025)
+  - [Authentication and Session Management](#authentication-and-session-management-new-w2025)
+  - [Scene and Model Management](#scene-and-model-management-new-w2025)
+  - [Scene Viewer](#scene-viewer-newupdated-w2025)
+  - [Database Integration](#database-integration-new-w2025)
     - [Back End](#back-end)
       - [Node.js](#nodejs)
       - [Express.js](#expressjs)
@@ -57,7 +61,7 @@ https://git.cs.dal.ca/belcher/chemar-winter-2023
 
 ### Description
 
-This is a web application that allows users to view 3D models of molecules in Augmented Reality. The application uses the AR.js library to detect markers and display 3D models in the browser. The models are generated from a mol file and are intended to look like classic "ball and stick" models.
+This is a web application that allows users to view 3D models of molecules in Augmented Reality. The application uses the AR.js library to detect markers and display 3D models in the browser. The models are generated from a mol file and are intended to look like classic "ball and stick" models. The system integrates a dynamic database to store user data, models, scenes, and manage authentication and user sessions.
 
 ### Minimum Requirements
 
@@ -85,6 +89,14 @@ cd <project-root-directory>
 npm install
 ```
 
+Create a .env file at the root of the project and add the necessary environment variables for the database and email configurations.
+```bash
+DB_USER=<your-database-username>
+DB_PASSWORD=<your-database-password>
+DB_SERVER=<your-database-server>
+DB_NAME=<your-database-name>
+```
+
 ## Running the application
 
 To start the server, run the following command:
@@ -93,9 +105,9 @@ To start the server, run the following command:
 npm start
 ```
 
-The server will start listening on port 4000. You can now access the web application by visiting https://localhost:4000 in your browser.
-
-
+The server will start listening on both HTTP and HTTPS ports. You can access the web application by visiting:
+HTTP: http://localhost:8000
+HTTPS: https://localhost:4000
 
 ## Technical Inventory
 ### Client-side Technologies:
@@ -104,14 +116,20 @@ The server will start listening on port 4000. You can now access the web applica
 * **jQuery Datatables**: A jQuery plugin for displaying, filtering, paginating and searching tabular data
 * **Three.js**: A JavaScript library for creating 3D graphics in a web browser
 * **WebXR**: A JavaScript API for accessing augmented reality and virtual reality devices, like cameras and motion sensors
+* **A-Frame & AR.js (New W2025)**: A-Frame provides the structure for creating 3D/VR scenes, and AR.js adds AR capabilities.
 
 ## Server-side Technologies:
 * **Node.js**: A JavaScript runtime engine
 * **Express**: A web application framework for Node.js
 * **EJS**: A templating engine for Node.js
+* **bcrypt (New W2025)**: A library for hashing passwords and securing user authentication.
+* **mssql (New W2025)**: SQL Server client for connecting to the Azure SQL Database.
+* **express-session (New W2025)**: A session middleware to manage user sessions.
 
-## Database Technologies:
-* **Supabase**: A Firebase alternative that provides a Postgres database, authentication, and storage.
+## Database Technologies (New W2025):
+* **Azure SQL Database**: Cloud-based relational database service built on the SQL Server database engine
+* **Azure Data Studio**: Open-source tool for data management and development 
+        * **Important**: Azure Data Studio officially retires on February 28, 2026
 
 
 ### Back End
@@ -140,7 +158,32 @@ EJS (Embedded JavaScript) is a templating engine used by Node.js developers. It 
 - Practice sending a variable from the server to the client using EJS
 - Practice using EJS to render a HTML using the contents of a variable, array, objects, etc.
 
+## Authentication and Session Management (New W2025)
+The application uses express-session to manage user sessions. Each user is assigned a role (admin, instructor, superadmin, or guest) based on the session data. Users are authenticated with bcrypt for password hashing and Azure SQL for user data storage.
 
+## Scene and Model Management (New W2025)
+The application allows users to manage 3D models and AR scenes, with CRUD (Create, Read, Update, Delete) operations. Models and scenes are stored in the Azure SQL database and can be viewed and modified from the web interface.
+
+```bash
+// Example of fetching and displaying models:
+const models = await pool.request()
+    .input('userId', sql.Int, userId)
+    .query("SELECT * FROM Models WHERE user_id = @userId");
+```
+## Scene Viewer (New/Updated W2025)
+The scene viewer allows users to view and interact with AR scenes directly in their browser. The viewer utilizes A-Frame and AR.js to display 3D models linked to specific scenes. The sceneViewer.js file handles loading scenes from the database and rendering them using AR.js's marker-based tracking. The scene models can also be animated, and users can toggle scene rotation.
+```bash
+<a-scene arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;">
+  <a-marker type="pattern" url="/data/kanji.patt" id="marker"></a-marker>
+  <a-entity camera></a-entity>
+</a-scene>
+```
+
+## Database Integration (New W2025)
+The application connects to an Azure SQL Database to manage user data, AR scenes, models, and molecules. mssql is used for SQL Server connectivity:
+```bash
+const { sql, connect } = require('../db');
+```
 ## Routing
 
 A website route is a URL or link on a website that directs users to a specific page or section of a website. A website route is typically written in a specific syntax and includes parameters such as the page name, controller, action, and any additional query strings.
@@ -1532,6 +1575,13 @@ https://www.youtube.com/watch?v=yXEesONd_54
 FreeCodeCamp Data Structures and Algorithms Course:
 https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/
 
+Azure SQL Database:
+https://azure.microsoft.com/en-us/services/sql-database/
+
+bcrypt Documentation:
+https://www.npmjs.com/package/bcrypt
+
+
 
 ## Documentation:
 Node.js:
@@ -1550,7 +1600,11 @@ https://stemkoski.github.io/AR.js-examples/index.html
 The Three.js docs:
 https://threejs.org/
 
+A-Frame:
+https://github.com/aframevr/aframe/blob/gh-pages/examples/showcase/model-viewer/index.html
+
 Libraries:
 https://github.com/dataarts/dat.gui
 https://github.com/artoolkitx/jsartoolkit5
 https://github.com/jeromeetienne/threex.domevents
+https://github.com/google/model-viewer
