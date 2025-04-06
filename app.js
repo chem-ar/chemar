@@ -52,6 +52,58 @@ var app = express();
 app.use(express.json({ limit: '1000gb' }));
 app.use(bodyParser.urlencoded({ limit: '1000gb', extended: true }));
 
+function getAvailablePort(preferredPort) {
+  return new Promise((resolve, reject) => {
+      const server = net.createServer();
+
+      server.on('error', () => {
+          // If preferredPort fails, choose a random available port
+          const randomPort = Math.floor(Math.random() * (65535 - 1024) + 1024);
+          const fallbackServer = net.createServer();
+
+          fallbackServer.listen(randomPort, () => {
+              const port = fallbackServer.address()?.port; // Ensure it's not null
+              fallbackServer.close(() => resolve(port || randomPort));
+          }).on('error', (err) => {
+              console.error("❌ Error finding available port:", err);
+              reject(err);
+          });
+      });
+
+      server.listen(preferredPort, () => {
+          const port = server.address()?.port; // Ensure it's not null
+          server.close(() => resolve(port || preferredPort));
+      });
+  });
+}
+
+(async () => {
+  try {
+      const httpPort = await getAvailablePort(8000);
+      console.log(`✅ Selected HTTP port: ${httpPort}`);
+
+      const httpsPort = await getAvailablePort(4000);
+      console.log(`✅ Selected HTTPS port: ${httpsPort}`);
+
+      http.createServer(app).listen(httpPort, () => {
+          console.log(`🚀 HTTP server is running on port ${httpPort}`);
+      });
+
+      https.createServer(
+          {
+              key: fs.readFileSync("key.pem"),
+              cert: fs.readFileSync("cert.pem"),
+          },
+          app
+      ).listen(httpsPort, () => {
+          console.log(`🔒 HTTPS server is running on port ${httpsPort}`);
+      });
+
+  } catch (error) {
+      console.error("❌ Failed to start servers:", error);
+      process.exit(1); // Exit if something goes wrong
+  }
+})();
 
 // View engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -71,34 +123,25 @@ app.use('/registration', registrationRouter);
 
 
 app.use(async (req, res, next) => {
-    try {
-      let sessionData = await checkSession(req, res);
-      
+  let sessionData = await checkSession(req, res);
+  
+  if (!sessionData || !sessionData.role) {
       res.locals.userRole = "guest";
       res.locals.isAdmin = false;
       res.locals.isInstructor = false;
       res.locals.isOwner = false;
-      res.locals.email = null;
-  
-      if (sessionData?.role) {
-        let role = sessionData.role.toLowerCase();
-        res.locals.userRole = role;
-        res.locals.isAdmin = role === "admin";
-        res.locals.isInstructor = role === "instructor";
-        res.locals.isOwner = role === "superadmin";  
-        res.locals.email = sessionData.email || null;
-      }
-  
-      next();
-    } catch (err) {
-      console.error("Session middleware error:", err);
-      res.locals.userRole = "guest";
-      res.locals.isAdmin = false;
-      res.locals.isInstructor = false;
-      res.locals.isOwner = false;
-      next();
-    }
-  });
+  } else {
+      let role = sessionData.role.toLowerCase();
+      res.locals.userRole = role;
+      res.locals.isAdmin = role === "admin";
+      res.locals.isInstructor = role === "instructor";
+      res.locals.isOwner = role === "superadmin";  
+  }
+
+  res.locals.email = sessionData.email;
+
+  next();
+});
 
 
 app.use('/', indexRouter);
@@ -141,33 +184,8 @@ app.use(function (err, req, res, next) {
     res.locals.message = err.message;
     res.locals.error = req.app.get("env") === "development" ? err : {};
 
-    res.locals.isOwner = res.locals.isOwner || false;
-    res.locals.isAdmin = res.locals.isAdmin || false;
-    res.locals.isInstructor = res.locals.isInstructor || false;
-    res.locals.userRole = res.locals.userRole || "guest";
-
     res.status(err.status || 500);
-    res.render("error", { 
-        title: "MoleculAR - Error",
-        isOwner: res.locals.isOwner,
-        isAdmin: res.locals.isAdmin,
-        isInstructor: res.locals.isInstructor,
-        userRole: res.locals.userRole
-    });
+    res.render("error", { title: "MoleculAR - Error" });
 });
-
-http.createServer(app).listen(8000);
-https
-  .createServer(
-    {
-      key: fs.readFileSync("key.pem"),
-      cert: fs.readFileSync("cert.pem"),
-    },
-    app
-  )
-  .listen(4000, () => {
-    console.log("server is running at port 4000");
-  });
-
 
 module.exports = app;
