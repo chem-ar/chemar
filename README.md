@@ -11,14 +11,15 @@ https://git.cs.dal.ca/belcher/chemar-winter-2023
   - [Technical Inventory](#technical-inventory)
     - [Client-side Technologies:](#client-side-technologies)
   - [Server-side Technologies:](#server-side-technologies)
-  - [Authentication and Session Management (New W2025):](#authentication-and-mession-management-(new-w2025))
-  - [Scene and Model Management (New W2025):](#scene-and-model-management-(new-22025))
-  - [Scene Viewer (New/Updated W2025):](#scene-viewer-(new/updated-w2025))
+  - [Database Technologies (New 2025)](#database-technologies-new-w2025)
+  - [Authentication and Session Management](#authentication-and-session-management-new-w2025)
+  - [Scene and Model Management](#scene-and-model-management-new-w2025)
+  - [Scene Viewer](#scene-viewer-newupdated-w2025)
+  - [Database Integration](#database-integration-new-w2025)
     - [Back End](#back-end)
       - [Node.js](#nodejs)
       - [Express.js](#expressjs)
       - [EJS (Embedded JavaScript) Templating Engine](#ejs-embedded-javascript-templating-engine)
-      - [Database Technologies:](#database-technologies-(New-2025))
   - [Routing](#routing)
     - [Express.js](#expressjs-1)
       - [express-generator](#express-generator)
@@ -125,7 +126,7 @@ HTTPS: https://localhost:4000
 * **mssql (New W2025)**: SQL Server client for connecting to the Azure SQL Database.
 * **express-session (New W2025)**: A session middleware to manage user sessions.
 
-## Database Technologies (New 2025):
+## Database Technologies (New W2025):
 * **Azure SQL Database**: Cloud-based relational database service built on the SQL Server database engine
 * **Azure Data Studio**: Open-source tool for data management and development 
         * **Important**: Azure Data Studio officially retires on February 28, 2026
