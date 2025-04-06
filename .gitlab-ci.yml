@@ -10,6 +10,7 @@ deploy-main-azure:      # This job runs in the deploy stage.
   only:
     - main #Change to your branch for testing. Change back to main/develop before merging
   script:
+    - npm install
     - az login --username $PRODID --password $PRODPASSWORD
     - az webapp up --name $PRODAPPNAME --resource-group $PRODRESOURCEGROUP --runtime "NODE|22-lts"
 
