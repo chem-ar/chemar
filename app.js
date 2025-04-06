@@ -185,15 +185,7 @@ app.use(function (err, req, res, next) {
     res.locals.error = req.app.get("env") === "development" ? err : {};
 
     res.status(err.status || 500);
-    res.render("error", {
-        title: "MoleculAR - Error",
-        isOwner: res.locals.isOwner || false,
-        isInstructor: res.locals.isInstructor || false,
-        isAdmin: res.locals.isAdmin || false,
-        userRole: res.locals.userRole || 'guest',
-        email: res.locals.email || null
-    });
+    res.render("error", { title: "MoleculAR - Error" });
 });
-
 
 module.exports = app;
