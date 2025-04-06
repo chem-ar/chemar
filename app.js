@@ -123,25 +123,34 @@ app.use('/registration', registrationRouter);
 
 
 app.use(async (req, res, next) => {
-  let sessionData = await checkSession(req, res);
-  
-  if (!sessionData || !sessionData.role) {
+    try {
+      let sessionData = await checkSession(req, res);
+      
       res.locals.userRole = "guest";
       res.locals.isAdmin = false;
       res.locals.isInstructor = false;
       res.locals.isOwner = false;
-  } else {
-      let role = sessionData.role.toLowerCase();
-      res.locals.userRole = role;
-      res.locals.isAdmin = role === "admin";
-      res.locals.isInstructor = role === "instructor";
-      res.locals.isOwner = role === "superadmin";  
-  }
-
-  res.locals.email = sessionData.email;
-
-  next();
-});
+      res.locals.email = null;
+  
+      if (sessionData?.role) {
+        let role = sessionData.role.toLowerCase();
+        res.locals.userRole = role;
+        res.locals.isAdmin = role === "admin";
+        res.locals.isInstructor = role === "instructor";
+        res.locals.isOwner = role === "superadmin";  
+        res.locals.email = sessionData.email || null;
+      }
+  
+      next();
+    } catch (err) {
+      console.error("Session middleware error:", err);
+      res.locals.userRole = "guest";
+      res.locals.isAdmin = false;
+      res.locals.isInstructor = false;
+      res.locals.isOwner = false;
+      next();
+    }
+  });
 
 
 app.use('/', indexRouter);
@@ -184,8 +193,19 @@ app.use(function (err, req, res, next) {
     res.locals.message = err.message;
     res.locals.error = req.app.get("env") === "development" ? err : {};
 
+    res.locals.isOwner = res.locals.isOwner || false;
+    res.locals.isAdmin = res.locals.isAdmin || false;
+    res.locals.isInstructor = res.locals.isInstructor || false;
+    res.locals.userRole = res.locals.userRole || "guest";
+
     res.status(err.status || 500);
-    res.render("error", { title: "MoleculAR - Error" });
+    res.render("error", { 
+        title: "MoleculAR - Error",
+        isOwner: res.locals.isOwner,
+        isAdmin: res.locals.isAdmin,
+        isInstructor: res.locals.isInstructor,
+        userRole: res.locals.userRole
+    });
 });
 
 module.exports = app;
