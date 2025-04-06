@@ -1,63 +1,114 @@
 var express = require('express');
 var router = express.Router();
-var { sql, connect } = require('../db');
+var fs = require('fs');
+const { checkSession } = require('./auth/session-mgmt')
 const { sendMail } = require('./sendEmail');
-const crypto = require('crypto');
+const dotenv = require('dotenv');
 
 router.get('/', function (req, res) {
     res.render("forgotPasswordPage", { title: 'Forgot Password Page' });
 });
 
 router.post('/', async function (req, res) {
-    try {
-        let email = req.body.email;
-        if (!email) {
-            return res.status(400).json({ message: "Email is required." });
+    let adminEmail = req.body.email;
+    let Admin;
+    let admins = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
+    for (let i = 0; i < admins.length; i++) {
+        if (adminEmail == admins[i].email) {
+            Admin = true;
+            break;
         }
+    }
 
-        const pool = await connect();
-        const result = await pool.request()
-            .input('email', sql.NVarChar(255), email)
-            .query(`SELECT email FROM Users WHERE email = @email`);
+    if (Admin) {
+        let token = await generateToken(req, res)
 
-        if (result.recordset.length === 0) {
-            return res.render("confirmationMessage", {
-                title: 'Confirmation Message',
-                message: 'If an account exists with this email, you will receive a password reset link.'
-            });
-        }
-
-        let token = crypto.randomUUID();
+        //https://www.geeksforgeeks.org/how-to-get-the-full-url-in-expressjs/
         let protocol = req.protocol;
         let host = req.hostname;
         let url = "/passwordReset";
         let port = process.env.PORT || 4000;
-        let baseUrl = `${protocol}://${host}${url}`;
+        let baseUrl = `${protocol}://${host}${url}` // If the Server is running on production no need for port.
 
         if (port == 4000) {
-            baseUrl = `${protocol}://${host}:${port}${url}`;
+            baseUrl = `${protocol}://${host}:${port}${url}` // If the server is running in devlopment the port needs to be added. 
         }
 
-        let link = `${baseUrl}?token=${token}&email=${email}`;
 
-        const mailOptions = {
-            from: "ChemAR <daluni.chemar@gmail.com>",
-            to: email,
-            subject: "Forgot Password | ChemAR",
-            html: `<h1>Hello from ChemAR</h1><p>Here is your password reset link: <a href="${link}">${link}</a></p>`,
-        };
+        let tokenlink = baseUrl.concat("?token=", token);
+        let link = tokenlink.concat("&email=", adminEmail);
 
-        await sendMail(mailOptions);
+        try {
+            const mailOptions = {
+                from: "ChemAR <daluni.chemar@gmail.com>",
+                to: adminEmail,
+                subject: "Forgot Password | ChemAR",
+                text: `Hi, here is your link: ${link}`,
+                html: `<h1>Hello from ChemAR</h1><p>Here is your password reset link: <a href="${link}">${link}</a></p>`,
+            };
+            let r = await sendMail(mailOptions);
+            console.log(r); //
 
-        return res.render("confirmationMessage", {
-            title: 'Confirmation Message',
-            message: 'If an account exists with this email, you will receive a password reset link.'
-        });
 
-    } catch (error) {
-        console.error("Error in forgot password process:", error);
-        return res.status(500).json({ message: "Internal server error." });
+        } catch (error) {
+            console.log(error); //
+        }
     }
+    let { isAdmin, isowner } = checkSession(req, res);
+    res.render("confirmationMessage", { title: 'Confirmation Message', message: 'If an account exist with this email, you will recive the password reset link', isAdmin: isAdmin, isowner });
+
 });
+
+
+async function generateToken(req, res) {
+    deleteToken(req, res);
+    let { isAdmin, isowner } = checkSession(req, res);
+    if (!isAdmin) {
+        let token = globalThis.crypto.randomUUID()
+        let sess = {
+            token: token,
+            time: Date.now()
+        }
+
+        let ad = fs.readFileSync('./routes/auth/admin.json');
+        let adminData = JSON.parse(ad)
+        let adminIndex
+        let email = req.body.email;
+        for (let i = 0; i < adminData.length; i++) {
+            if (adminData[i].email == email) {
+                adminIndex = i
+            }
+        }
+        adminData[adminIndex].session.push(sess)
+
+        fs.writeFileSync('./routes/auth/admin.json', JSON.stringify(adminData))
+        return token;
+    }
+}
+
+async function deleteToken(req, res) {
+    let i = -1
+    let ad = fs.readFileSync('./routes/auth/admin.json')
+    let adminData = JSON.parse(ad)
+    const token = req.cookies.session;
+    let adminIndex;
+    adminData.map((e, ai) => {
+        e.session.map((ele, ind) => {
+            if (ele.token === token) {
+                i = ind
+                adminIndex = ai;
+                return;
+            }
+        })
+    })
+
+    if (i != -1) {
+        adminData[adminIndex].session.splice(i, 1)
+    }
+    fs.writeFileSync('./routes/auth/admin.json', JSON.stringify(adminData))
+}
+
+
+
 
 module.exports = router;

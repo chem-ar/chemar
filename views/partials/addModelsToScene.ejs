@@ -22,92 +22,64 @@
     const addModelSelect = document.getElementById('add-model-select');
     const addModelBtn = document.getElementById('add-model-btn');
     const addModelSpinner = document.getElementById('add-model-spinner');
+
+    // created in sceneEditor.ejs
     const moleculeList = document.getElementById('molecule-list');
 
     let models = [];
 
-    fetch('/sceneEditor/user/models', {
-    credentials: 'include'
-})
-.then(response => {
-    if (!response.ok) {
-        throw new Error(`Server returned status code ${response.status}`);
-    }
-    return response.json();
-})
-.then(data => {
-    models = data;
+    fetch('/catalog/modelFileCatalog.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Server returned status code ${response.status}`);
+            }
 
-    const options = models.map(modelInfo => {
-        const option = document.createElement('option');
-        option.value = modelInfo.id;
-        option.text = modelInfo.name;
-        return option;
-    });
+            return response.json();
+        })
+        .then(body => {
+            models = body;
 
-    addModelSelect.append(...options);
-})
-.catch(error => {
-    toastr.error(
-        error.message,
-        "Failed to populate list of models"
-    );
-});
+            const options = models.map(modelInfo => {
+                const option = document.createElement('option');
+                option.value = modelInfo.id;
+                option.text = modelInfo.name;
+                return option;
+            });
 
+            addModelSelect.append(...options);
+        })
+        .catch(error => {
+            toastr.error(
+                error.message,
+                "Failed to populate list of models"
+            );
+        });
     
-addModelBtn.addEventListener('click', () => {
-    const option = addModelSelect.selectedOptions[0];
-    const modelId = option.value;
-    if (modelId === '') return;
+    addModelBtn.addEventListener('click', () => {
+        const option = addModelSelect.selectedOptions[0];
+        const modelId = option.value;
+        if (modelId === '') return;
 
-    const modelInfo = models.find(model => model.id == modelId);
+        const modelInfo = models.find(modelInfo => modelInfo.id == modelId);
 
-    console.log("Original file path:", modelInfo.file_path);
+        addModelSpinner.style.display = '';
+        addModelBtn.disabled = true;
 
-    // Replace backslashes with forward slashes, then remove "public/" prefix
-    let filePath = modelInfo.file_path.replace(/\\/g, '/').replace(/^public\//, '');
-
-    console.log("Corrected file path:", filePath);
-
-    const fileExtension = filePath.split('.').pop().toLowerCase();
-    let files = {};
-
-    if (fileExtension === 'obj') {
-        files.obj = filePath;
-        files.mtl = filePath.replace('.obj', '.mtl');
-    } else if (fileExtension === 'glb') {
-        files.glb = filePath;
-    } else if (fileExtension === 'gltf') {
-        files.gltf = filePath;
-    }
-
-    const formattedModelData = { files };
-    console.log("Formatted Model Data:", formattedModelData);
-
-    addModelSpinner.style.display = '';
-    addModelBtn.disabled = true;
-
-    createModel(formattedModelData)
-    .then(createdModel => {        
-        addModelToScene(modelInfo, createdModel);
-        addMolToMenu(createdModel.object, modelInfo.name, moleculeList);
-        window.currentSceneModels.push({
-            object: createdModel.object,
-            name: modelInfo.name,
-            file_path: modelInfo.file_path,
-            animations: []
+        createModel(modelInfo)
+            .then(createdModel => {        
+                addModelToScene(modelInfo, createdModel);
+                addMolToMenu(createdModel, modelInfo.name, moleculeList);
+                toastr.success(`${modelInfo.name} added successfully!`, "Success", {
+                timeOut: 3000,
+                positionClass: 'toast-top-right',
+                progressBar: true
         });
-        toastr.success(`${modelInfo.name} added successfully!`, "Success", {
-            timeOut: 3000,
-            positionClass: 'toast-top-right',
-            progressBar: true
-        });
-    })
-    .catch(error => toastr.error(error.message, "Failed to add model"))
-    .finally(() => { 
-        addModelSpinner.style.display = 'none';
-        addModelBtn.disabled = false;
+            })
+            .catch(error => toastr.error(error.message, "Failed to add model"))
+            .finally(() => { 
+                addModelSpinner.style.display = 'none';
+                addModelBtn.disabled = false;
+            });
+
     });
-});
-
 </script>

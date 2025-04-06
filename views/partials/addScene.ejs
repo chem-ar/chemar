@@ -153,38 +153,3 @@ button#newSceneAddBtn {
 </div>
     </div>
 </div>
-
-<script type="module">
-  document.getElementById('newSceneAddBtn').addEventListener('click', () => {
-      const name = document.getElementById('newSceneName').value.trim();
-      const desc = document.getElementById('newSceneDesc').value.trim();
-      const studentAccessible = document.getElementById('studentAccessibleCheckbox').checked;
-
-      if (!name || !desc) {
-          toastr.error("Scene name and description are required.");
-          return;
-      }
-
-      fetch('/scenes/addScene', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          credentials: 'include',
-          body: JSON.stringify({
-              name: name,
-              desc: desc,
-              studentAccessible: studentAccessible
-          })
-      })
-      .then(res => {
-          if (!res.ok) throw new Error(`Server returned ${res.status}`);
-          toastr.success("Scene created!");
-      })
-      .catch(err => {
-          console.error(err);
-          toastr.error(err.message, "Failed to create scene");
-      });
-  });
-</script>
-

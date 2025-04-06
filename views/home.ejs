@@ -27,14 +27,14 @@
   </script>
 
 </head>
-
-    <% if (isOwner) { %>
-        <%- include('partials/navbarowner') %>
-    <% } else if (isInstructor || isAdmin) { %>
-        <%- include('partials/navbarAdmin') %>
-    <% } else { %>
-        <%- include('partials/navbar') %>
-    <% } %>
+  <% if (isowner) { %>
+    <%- include('partials/navbarowner') %>
+  <% } else if (isAdmin) { %>
+    <%- include('partials/navbarAdmin') %>
+  <% } %>
+  <% if (!isAdmin){%>
+      <%- include('partials/navbar') %>
+  <%}%>
 
   <body class="bg-dark">
     <canvas class="webgl"></canvas>

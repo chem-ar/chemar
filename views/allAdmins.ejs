@@ -1,13 +1,8 @@
 <%- include('partials/header') %>
 <!--ADMIN NAVBAR CHECK-->
-<% if (isOwner) { %>
-    <%- include('partials/navbarowner') %>
-<% } else if (isInstructor || isAdmin) { %>
-    <%- include('partials/navbarAdmin') %>
-<% } else { %>
-    <%- include('partials/navbar') %>
-<% } %>
-
+<% if (isowner){%>
+<%- include('partials/navbarowner') %>
+<%}%>
 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
@@ -17,6 +12,7 @@
         <div class="col-12 pt-4 text-start text-white">
             <h1 class="display-4 fw-bold">Admin Catalog</h1>
             <div class="d-flex gap-2 pb-4">
+                <%- include('partials/addAdmin') %>
                 <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=875656222736-ip7hujo32jhjskno15s9pdi95jom97ig.apps.googleusercontent.com&redirect_uri=https://dalchemar.azurewebsites.net/refreshToken&scope=https://mail.google.com&response_type=code&prompt=consent&access_type=offline" type="button" class="btn btn-info">Renew Google Cloud Token</a>
                 <!-- IF you are testing it on local host Change the href's redirect_uri = https://localhost:4000/refreshToken -->
             </div>    
@@ -24,19 +20,15 @@
                 <thead>
                 <tr>
                     <th class="model-table-header">Email</th>
-                    <th class="model-table-header">Role </th>
                     <th class="options-column model-table-header">Delete</th>
                 </tr>
                 </thead>
                 <tbody id="table-body">
                 </tbody>
             </table>
-            <div class="text-end mt-3">
-                <button id="saveChangesBtn" class="btn btn-success">Save Changes</button>
-            </div> 
         </div>
         <br>
-              
+        
         <div class="container mt-5">
             <div class="card p-4 shadow-sm">
                 <h2 class="text-center mb-4">Backup Information</h2>
@@ -101,7 +93,6 @@
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
 
-
 <!-- Delete Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -121,24 +112,26 @@
   </div>
 </div>
 
+<script>
+    document.getElementById('addAdminButton').addEventListener('click', function() {
+        var x = document.getElementById('passwordRequirements');
+        if (x.style.display === 'none') {
+            x.style.display = 'block';
+        } else {
+            x.style.display = 'none';
+        }
+    });
+</script>
 
 <style>
     .modal-content .modal-body {
         color: white;
     }
-    .compact-role-select {
-  max-width: 160px;
-  padding: 2px 6px;
-  font-size: 0.9rem;
-  height: 30px;
-  border-radius: 4px;
-}
-
 </style>
 
 <script>
     $(document).ready(function () {
-        $('#deleteModal, #editRoleModal').appendTo("body");
+        $('#deleteModal').appendTo("body");
 
         // Initialize the DataTable
         dataTable = $('#adminTable').DataTable({
@@ -202,27 +195,24 @@
     };
 }
 
-// Populate the table with data
-function populateTable(adminData, index) {
-    const role = adminData.role?.toLowerCase(); // normalize it
+    // Populate the table with data
+    function populateTable(adminData) {
 
-    const newRow = dataTable.row.add([
-        adminData.email,
-        `<select class="form-select compact-role-select role-select" data-email="${adminData.email}">
-            <option value="admin" ${role === 'admin' ? 'selected' : ''}>Admin</option>
-            <option value="developer" ${role === 'developer' ? 'selected' : ''}>Developer</option>
-            <option value="instructor" ${role === 'instructor' ? 'selected' : ''}>Instructor</option>
-            <option value="student" ${role === 'student' ? 'selected' : ''}>Student</option>
-        </select>`,
-        `<button type="button" class="btn deleteModelBtn" style="background-color: #CC0000; color: white;" 
-            id="${adminData.email}" data-bs-toggle="modal" data-bs-target="#deleteModal">
-            <i class="bi bi-trash"></i> Delete
-        </button>`
-    ]).draw().node();
+        // Add new row to the DataTable
+        const newRow = dataTable.row.add([
+            adminData.email,
+            `<button type="button" class="btn deleteModelBtn" style="background-color: #CC0000; color: white;" id="${adminData.email}" data-bs-toggle="modal" data-bs-target="#deleteModal" data-file="">
+                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16" aria-label="Delete icon">
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                </svg> Delete
+            </button>`
+        ]).draw().node();
 
-    $(newRow).find('.deleteModelBtn').on('click', handleDeleteClick);
-}
+        // Ensure the new row is now part of the DOM before querying
+        $(newRow).find('.deleteModelBtn').on('click', handleDeleteClick);
 
+    }
     document.addEventListener('DOMContentLoaded', async () => {
         try {
             const response = await fetch('/alladmin/last-backup');
@@ -242,41 +232,6 @@ function populateTable(adminData, index) {
             toastr.error('Failed to retrieve last backup date', 'Error');
         }
     });
-
-    document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('saveChangesBtn').addEventListener('click', async () => {
-        const updates = [];
-
-        document.querySelectorAll('.role-select').forEach(select => {
-            const email = select.getAttribute('data-email');
-            const role = select.value;
-            updates.push({ email, role });
-        });
-        //needs to be edited or changed to support database updates
-        try {
-            const response = await fetch('/alladmin/updateRoles', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ updates })
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                toastr.success(result.message || "Roles updated successfully!");
-                fetchAdmins(); // refresh table
-            } else {
-                toastr.error(result.error || "Failed to update roles");
-            }
-        } catch (err) {
-            console.error(err);
-            toastr.error("An unexpected error occurred");
-        }
-    });
-});
-
     
 </script>
 

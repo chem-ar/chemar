@@ -6,20 +6,8 @@ var fs = require('fs');
 router.get('/', function(req, res, next) {
     const molfiles = './public/molfiles/';
 
-    let { isAdmin, isInstructor, isOwner } = checkSession(req, res);
-    let userRole = res.locals.userRole;
-    if (userRole === 'instructor') {
-        isAdmin = true;
-        isInstructor = true;
-    } else if (userRole === 'admin') {
-        isAdmin = true;
-    }else if(userRole === 'superadmin'){
-        isAdmin = true;
-        isOwner = true;
-    }else if(userRole === 'developer'){
-        isDeveloper = true;
-        isAdmin = true;
-    }
+    //Admin check
+    let {isAdmin, isowner} = checkSession(req, res);
 
     try {
         let listItems = fs.readdirSync(molfiles);
@@ -39,7 +27,7 @@ router.get('/', function(req, res, next) {
         }
 
 
-        res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin, isInstructor: isInstructor, isOwner: isOwner });
+        res.render('molecules', { title: 'Catalog', list: finalList, isAdmin: isAdmin, isowner });
     } catch (error) {
         console.error('Error:', error);
         res.sendStatus(500); // Send error response
