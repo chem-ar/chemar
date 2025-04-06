@@ -1,73 +1,84 @@
 var express = require('express');
 var router = express.Router();
-var fs = require('fs');
-const { startSession, checkSession } = require('./auth/session-mgmt')
-const bcrypt = require('bcrypt')
-const { checkPassword } = require('./checkPassword');
+const { sql, connect } = require('../db');
 
-//Create cookie here then redirect
-router.get('/', function (req, res) {
-  res.redirect("/");
-});
+const SESSION_DURATION = 14400000; // 4 hours in milliseconds
 
-router.post('/', async function (req, res) {
-  let adminEmail = req.body.email;
-  let adminPass;
-  let admins = JSON.parse(fs.readFileSync("./routes/auth/admin.json"))
-  for (let i = 0; i < admins.length; i++) {
-    if (adminEmail == admins[i].email) {
-      adminPass = admins[i].password;
-      break;
+async function checkSession(req, res, next) {
+    const token = req.cookies.session;
+    if (!token) {
+        res.locals.userRole = 'guest'; // Default role if no session
+        return next();
     }
-  }
 
-  if (!adminPass) {
-    return res.status(401).send({ error: 'Invalid Credentials' })
-  }
+    try {
+        const pool = await connect();
+        const result = await pool.request()
+            .input('token', sql.NVarChar(255), token)
+            .query(`SELECT u.role, s.expires_at 
+                    FROM Sessions s 
+                    JOIN Users u ON s.user_id = u.id 
+                    WHERE s.token = @token`);
 
-  const hash = await bcrypt.compare(req.body.password, adminPass)
-  if (hash) {
-    startSession(req, res)
-    return res.status(200).send({});
-  }
-  return res.status(401).send({ error: "Password Incorrect" });
+        if (result.recordset.length === 0) {
+            res.locals.userRole = 'guest';
+            return next();
+        }
+
+        const session = result.recordset[0];
+
+        if (Date.now() > session.expires_at) {
+            await endSession(req, res);
+            res.locals.userRole = 'guest';
+            return next();
+        }
+
+        await pool.request()
+            .input('token', sql.NVarChar(255), token)
+            .input('expiresAt', sql.BigInt, Date.now() + SESSION_DURATION)
+            .query(`UPDATE Sessions SET expires_at = @expiresAt WHERE token = @token`);
+
+        res.locals.userRole = session.role;
+        return next();
+    } catch (err) {
+        console.error("Error checking session:", err);
+        res.locals.userRole = 'guest';
+        return next();
+    }
+}
+
+router.post('/logout', async function (req, res) {
+    const token = req.cookies.session;
+    if (!token) {
+        return res.redirect('/');
+    }
+
+    try {
+        const pool = await connect();
+        await pool.request()
+            .input('token', sql.NVarChar(255), token)
+            .query(`DELETE FROM Sessions WHERE token = @token`);
+
+        res.clearCookie('session');
+        return res.redirect('/');
+    } catch (err) {
+        console.error("Logout error:", err);
+        return res.redirect('/');
+    }
 });
 
-router.post('/changepassword', async function (req, res) {
-  let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"));
-  let { isAdmin, isowner } = checkSession(req, res);
-  let token = req.cookies.session;
-  let admin;
-  let adminIndex;
-  adminData.map((ele, ind) => {
-    ele.session.map((e, i) => {
-      if (e.token == token) {
-        admin = ele;
-        adminIndex = ind
-      }
-    })
-  })
-  if (!admin) {
-    return res.status(401).json({ error: "Invalid Credentials." })
-  }
-
-  if(!checkPassword(req.body.newPassword)){
-    return res.status(401).json({error: 'Password is not strong'})
-  }
-  
-  const hash = await bcrypt.compare(req.body.password, admin.password)
-  if (isAdmin && hash) {
-    let newPassword = await bcrypt.hash(req.body.newPassword, 5)
-    adminData[adminIndex].password = newPassword
-    let arr = JSON.stringify(adminData)
-    fs.writeFileSync("./routes/auth/admin.json", arr)
-    return res.send({});
-  }
-  else {
-    return res.status(401).json({ error: "Invalid Credentials." })
-  }
-});
-
-
+async function endSession(req, res) {
+    const token = req.cookies.session;
+    try {
+        const pool = await connect();
+        await pool.request()
+            .input('token', sql.NVarChar(255), token)
+            .query(`DELETE FROM Sessions WHERE token = @token`);
+        res.clearCookie('session');
+    } catch (err) {
+        console.error("Error ending session:", err);
+    }
+}
 
 module.exports = router;
+module.exports.checkSession = checkSession;

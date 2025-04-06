@@ -1,181 +1,159 @@
 var express = require('express');
 var router = express.Router();
-var fs = require('fs'); 
-const { checkSession, findAdminEmailBySession } = require('./auth/session-mgmt');
+var fs = require('fs');
+const { checkSession } = require('./auth/session-mgmt');
 const path = require('path');
+const { sql, connect } = require('../db');
 
-router.delete('/delete/:scene/:moleculeIndex', (req, res) => {
-  let { isAdmin, isowner } = checkSession(req, res);
+router.delete('/delete/:scene/:moleculeIndex', async (req, res) => {
+  let { isAdmin, role: userRole } = await checkSession(req, res);
+
+  if (userRole === 'instructor' || userRole === 'admin' || userRole === 'superadmin') {
+    isAdmin = true;
+  }
+
+  if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
   if (!isAdmin) return res.status(401).json({ error: "User not logged in" });
 
-  // Extract scene and molecule names from the request parameters
   const sceneName = req.params.scene;
   const molIndex = req.params.moleculeIndex;
 
-  // Correct file path to the scene JSON
-  const path = require('path');
   const sceneFilePath = path.resolve(__dirname, `../public/scenes/${sceneName}.json`);
-  //console.log(`Resolved scene file path: ${sceneFilePath}`);
 
-  // Check if the scene file exists
   if (!fs.existsSync(sceneFilePath)) {
-      return res.status(404).json({ error: "Scene not found" });
+    return res.status(404).json({ error: "Scene not found" });
   }
 
-  // Load the scene JSON file
   fs.readFile(sceneFilePath, 'utf8', (err, data) => {
-      if (err) {
-          return res.status(500).json({ error: "Scene file not found" });
-      }
-      let sceneData;
-      try {
-          sceneData = JSON.parse(data);
-      } catch (parseError) {
-          return res.status(500).json({ error: "Failed to parse scene data" });
-      }
-      
-      // Remove the molecule from the array
-      sceneData.molecules.splice(molIndex, 1);
+    if (err) return res.status(500).json({ error: "Scene file not found" });
 
-      // Save the updated JSON file
-      fs.writeFile(sceneFilePath, JSON.stringify(sceneData, null, 2), (writeErr) => {
-          if (writeErr) {
-              return res.status(500).json({ error: "Failed to update scene file" });
-          }
-          // otherwise success message
-          res.status(200).json({ message: "Molecule deleted successfully" });
-      });
+    let sceneData;
+    try {
+      sceneData = JSON.parse(data);
+      sceneData.molecules.splice(molIndex, 1);
+    } catch (parseError) {
+      return res.status(500).json({ error: "Failed to parse scene data" });
+    }
+
+    fs.writeFile(sceneFilePath, JSON.stringify(sceneData, null, 2), (writeErr) => {
+      if (writeErr) return res.status(500).json({ error: "Failed to update scene file" });
+      res.status(200).json({ message: "Molecule deleted successfully" });
+    });
   });
 });
 
-
-router.get('/', function(req, res, next) {
-  const scenes = './public/scenes/'
+router.get('/', (req, res) => {
   res.render('sceneEditor', { title: 'Scene Viewer' });
 });
 
-router.post('/updateCatalog/:oldSceneName', (req, res) => {
-  let { isAdmin, isowner } = checkSession(req, res);
+router.post('/updateCatalog/:oldSceneName', async (req, res) => {
+  let { isAdmin, isInstructor, isOwner, role: userRole } = await checkSession(req, res);
+
   if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
   const oldSceneName = req.params.oldSceneName;
   const newSceneName = req.body.name;
   const newSceneDescription = req.body.description;
-  const scenesDirectory = './public/scenes'; // Directory where scene files are stored
+  const scenesDirectory = './public/scenes';
 
-  // Read the scene catalog file
   fs.readFile('./public/catalog/sceneCatalog.json', 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading scene catalog file:', err);
-      return res.status(500).json({ success: false, error: 'Error reading scene catalog file' });
-    }
+    if (err) return res.status(500).json({ error: 'Error reading scene catalog file' });
 
-      let sceneCatalog;
-      try {
-          sceneCatalog = JSON.parse(data || '{}'); // Handle empty file
-      } catch (parseErr) {
-          console.error('Error parsing scene catalog file:', parseErr);
-          return res.status(500).json({ success: false, error: 'Error parsing scene catalog file' });
-      }
+    let sceneCatalog = JSON.parse(data || '{}');
+    let sceneUpdated = false;
 
-      // Check if sceneCatalog is an object
-      if (typeof sceneCatalog === 'object') {
-          let sceneUpdated = false;
+    Object.keys(sceneCatalog).forEach(filename => {
+      const scene = sceneCatalog[filename];
+      if (scene.name === oldSceneName) {
+        scene.name = newSceneName;
+        scene.desc = newSceneDescription;
+        sceneUpdated = true;
 
-          Object.keys(sceneCatalog).forEach(filename => {
-              const scene = sceneCatalog[filename];
-              if (scene.name === oldSceneName) {
-                  scene.name = newSceneName;
-                  scene.desc = newSceneDescription;
-                  sceneUpdated = true;
+        const oldFilePath = path.join(scenesDirectory, filename);
+        const newFilename = `${newSceneName}.json`;
+        const newFilePath = path.join(scenesDirectory, newFilename);
 
-                  // Rename the scene file to match the new scene name
-                  const oldFilePath = path.join(scenesDirectory, filename);
-                  const newFilename = `${newSceneName}.json`; // Ensure new filename is valid
-                  const newFilePath = path.join(scenesDirectory, newFilename);
+        fs.rename(oldFilePath, newFilePath, (renameErr) => {
+          if (renameErr) return res.status(500).json({ error: 'Error renaming scene file' });
 
-                  fs.rename(oldFilePath, newFilePath, (renameErr) => {
-                      if (renameErr) {
-                          console.error('Error renaming scene file:', renameErr);
-                          return res.status(500).json({ success: false, error: 'Error renaming scene file' });
-                      }
+          sceneCatalog[newFilename] = scene;
+          if (newFilename !== filename) delete sceneCatalog[filename];
 
-                      // Update the sceneCatalog key
-                      sceneCatalog[newFilename] = scene;
-                      if (newFilename !== filename) {
-                        delete sceneCatalog[filename];
-                      }
-
-                      // Write the updated scene catalog back to the file
-                      fs.writeFile('./public/catalog/sceneCatalog.json', JSON.stringify(sceneCatalog, null, 2), err => {
-                          if (err) {
-                              console.error('Error writing scene catalog file:', err);
-                              return res.status(500).json({ success: false, error: 'Error writing scene catalog file' });
-                          }
-
-                          res.status(200).json({ success: true });
-                      });
-                  });
-              }
+          fs.writeFile('./public/catalog/sceneCatalog.json', JSON.stringify(sceneCatalog, null, 2), err => {
+            if (err) return res.status(500).json({ error: 'Error writing scene catalog file' });
+            res.status(200).json({ success: true });
           });
-
-          if (!sceneUpdated) {
-              return res.status(400).json({ success: false, error: 'Scene not found' });
-          }
-      } else {
-          return res.status(400).json({ success: false, error: 'Invalid scene catalog data' });
+        });
       }
+    });
+
+    if (!sceneUpdated) res.status(400).json({ error: 'Scene not found' });
   });
 });
 
+router.get('/:id', async function(req, res) {
+  let { isAdmin, isOwner, role: userRole, email: userEmail } = await checkSession(req, res);
 
-router.get('/:id', function(req , res){
-  let { isAdmin, isowner } = checkSession(req, res);
+  if (userRole === 'instructor') {
+    isAdmin = true;
+  } else if (userRole === 'admin') {
+    isAdmin = true;
+  } else if (userRole === 'superadmin') {
+    isAdmin = true;
+    isOwner = true;
+  }else if(userRole === 'developer'){
+    isDeveloper = true;
+}
+
   if (!isAdmin) return res.redirect("/");
-  var scenefiles = fs.readdirSync('./public/scenes/');
-  const sessionToken = req.cookies.session;
-  let adminEmail = findAdminEmailBySession(sessionToken);
-  let file = req.params.id;
+
+  const scenefiles = fs.readdirSync('./public/scenes/');
+  const file = req.params.id;
   let sceneOwner;
   let sceneCatalog;
-  
-  // get the sceneCatalog file
+
   try {
-      const sceneCatalogJSON = fs.readFileSync('./public/catalog/sceneCatalog.json', 'utf8');
-      sceneCatalog = JSON.parse(sceneCatalogJSON);
+    const sceneCatalogJSON = fs.readFileSync('./public/catalog/sceneCatalog.json', 'utf8');
+    sceneCatalog = JSON.parse(sceneCatalogJSON);
   } catch (error) {
-      console.error('Error loading scene catalog:', error);
-      return res.sendStatus(500); // Send error response if scene catalog cannot be loaded
+    console.error('Error loading scene catalog:', error);
+    return res.sendStatus(500);
   }
 
-  // find the owner of the requested scene
-  if(sceneCatalog.hasOwnProperty(file)){
+  if (sceneCatalog.hasOwnProperty(file)) {
     let thisScene = sceneCatalog[file];
-    // check if the scene has an owner
     if (thisScene.hasOwnProperty("sceneOwner")) {
       sceneOwner = thisScene.sceneOwner;
-      // if the current user is not the ower of the scene or the owner of the website, redirect to the scene catalog page.
-      if (sceneOwner !== adminEmail && !isowner ){
+      if (!(isOwner || (sceneOwner === userEmail))) {
         return res.redirect("/scenes");
       }
     }
   }
 
-  // if the requested file exists, redirect to the scene editor with the requested file
   if (scenefiles.includes(file)) {
     res.render('sceneEditor', {
       title: 'Scene Viewer',
       item: file
     });
-  }
-
-  else {
+  } else {
     res.render('error', { title: 'ChemAR - Error', message: 'Scene not found', error: { status: 404, stack: 'Scene not found' } });
   }
 });
 
 router.post('/upload/images/', function (req, res) {
-  let { isAdmin, isowner } = checkSession(req, res);
+  let { isAdmin, isInstructor, isOwner } = checkSession(req, res);
+    let userRole = res.locals.userRole;
+
+    if (userRole === 'instructor') {
+        isAdmin = true;
+        isInstructor = true;
+    } else if (userRole === 'admin') {
+        isAdmin = true;
+    } else if (userRole === 'superadmin') {
+        isAdmin = true;
+        isOwner = true;
+    }
+    
   if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
   // Extract image data and image name from the request body
@@ -206,22 +184,22 @@ router.post('/upload/images/', function (req, res) {
   });
 });
 
-router.post('/save/:scene', (req, res) => {
-  let { isAdmin, isowner } = checkSession(req, res);
+
+
+router.post('/save/:scene', async (req, res) => {
+  let { isAdmin, role: userRole } = await checkSession(req, res);
+
+  if (userRole === 'instructor' || userRole === 'admin' || userRole === 'superadmin') {
+    isAdmin = true;
+  }
+
   if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
-  // Get the scene name from the params.
   const sceneName = req.params.scene;
-  const scenePath = `./public/scenes/${sceneName}.json`; // Save the file path.
-  var overwritten = false;
+  const scenePath = `./public/scenes/${sceneName}.json`;
+  let overwritten = fs.existsSync(scenePath);
 
-  // Check if scene doesn't exist.
-  if (fs.existsSync(scenePath))
-    overwritten = true;
-
-  // Write the file with template.
-  fs.writeFile(scenePath, JSON.stringify(req.body), (err) => {
-
+  fs.writeFile(scenePath, JSON.stringify(req.body, null, 2), (err) => {
     if (err) {
       console.error('Error saving scene:', err);
       return res.status(500).send({ successful: false, error: 'Error saving scene' });
@@ -231,10 +209,26 @@ router.post('/save/:scene', (req, res) => {
       successful: true,
       overwritten: overwritten,
       path: scenePath
-    })
+    });
   });
 });
 
 
+router.get('/user/models', async (req, res) => {
+  const user_id = res.locals.userId;
+
+  if (!user_id) return res.status(401).json({ error: "User not logged in" });
+
+  try {
+    const pool = await connect();
+    const result = await pool.request()
+      .input('user_id', sql.Int, user_id)
+      .query(`SELECT id, file_name AS name, upload_date, [desc], file_path FROM Models WHERE user_id = @user_id`);
+
+    res.json(result.recordset);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch models" });
+  }
+});
 
 module.exports = router;

@@ -56,7 +56,6 @@
         </div>
     </div>
 
-
     <div class="row">
         <form class="collapse multi-collapse" id="uploadFile" enctype="multipart/form-data">
             <div class="row d-flex flex-wrap">
@@ -64,10 +63,8 @@
                     <h4>Model Name:</h4>
                     <input type="text" class="form-control" id="modelName" name="name" required>
 
-
                     <h4>Description:</h4>
                     <input type="text" class="form-control" id="modelDescription" name="modelDescription" required>
-
 
                     <h4>Upload Model Files:</h4>
                     <div id="drop-zone" class="drop-zone">
@@ -75,10 +72,9 @@
                         <input type="file" class="hidden" id="fileInput" name="modelFiles" multiple
                                accept=".obj,.mtl,.bin,.gltf,.glb,.fbx">
                     </div>
-
+                    <small class="text-muted">Note: If uploading .obj files, please ensure the corresponding .mtl file is also included.</small>
 
                     <div id="file-list"></div>
-
 
                     <button class="btn btn-customsubmit form-control my-2" id="uploadBtn">
                         <span id="uploadBtnSpinner" class="spinner-border spinner-border-sm" role="status" style="display: none;"></span>
@@ -90,7 +86,6 @@
     </div>
 </div>
 
-
 <script type="module">
     const dropZone = document.getElementById("drop-zone");
     const fileInput = document.getElementById("fileInput");
@@ -101,36 +96,19 @@
     const uploadBtn = document.getElementById("uploadBtn");
     const uploadSpinner = document.getElementById("uploadBtnSpinner");
 
-
-    // Ensure click to upload still works
-    dropZone.addEventListener("click", () => {
-        fileInput.click();
-    });
-
-
-    dropZone.addEventListener("dragover", (e) => {
+    dropZone.addEventListener("click", () => fileInput.click());
+    dropZone.addEventListener("dragover", e => {
         e.preventDefault();
         dropZone.classList.add("dragover");
     });
-
-
-    dropZone.addEventListener("dragleave", () => {
-        dropZone.classList.remove("dragover");
-    });
-
-
-    dropZone.addEventListener("drop", (e) => {
+    dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
+    dropZone.addEventListener("drop", e => {
         e.preventDefault();
         dropZone.classList.remove("dragover");
         fileInput.files = e.dataTransfer.files;
         updateFileList(fileInput.files);
     });
-
-
-    fileInput.addEventListener("change", () => {
-        updateFileList(fileInput.files);
-    });
-
+    fileInput.addEventListener("change", () => updateFileList(fileInput.files));
 
     function updateFileList(files) {
         fileList.innerHTML = "";
@@ -141,16 +119,13 @@
         }
     }
 
-
-    uploadModelForm.addEventListener("submit", async (e) => {
+    uploadModelForm.addEventListener("submit", async e => {
         e.preventDefault();
         setModelUploading(true);
-
 
         const formData = new FormData();
         formData.append("name", modelNameInput.value);
         formData.append("modelDescription", modelDescInput.value);
-
 
         let fileType = "";
         for (const file of fileInput.files) {
@@ -172,16 +147,13 @@
         }
         formData.append("fileType", fileType);
 
-
         try {
-            const res = await fetch("/addmodel/saveModel", { method: "POST", body: formData });
-
-
-
-
+            const res = await fetch("/addmodel/saveModel", {
+                method: "POST",
+                body: formData
+            });
             const body = await res.json();
             if (!res.ok) throw new Error(body.error || `Server error ${res.status}`);
-
 
             toastr.success(body.message);
             uploadModelForm.reset();
@@ -192,7 +164,6 @@
             setModelUploading(false);
         }
     });
-
 
     function setModelUploading(isUploading) {
         uploadSpinner.style.display = isUploading ? "" : "none";

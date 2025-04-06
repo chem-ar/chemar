@@ -1,374 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta
-      name="viewport"
-      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
-    />
-    <title><%= title %></title>
+    <meta charset="utf-8">
+    <!-- The title of the webpage -->
+    <title>
+      Dynamic AR.js & A-Frame Demo with Animations
+    </title>
 
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
-      crossorigin="anonymous"
-    />
+    <!-- Ensure proper scaling and disable zooming on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    
+    <!-- Include A-Frame library for creating 3D/VR experiences -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <!-- Include AR.js extension for A-Frame to enable AR capabilities using the webcam -->
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.2/aframe/build/aframe-ar.js"></script>
 
-    <link
-      rel="stylesheet"
-      href="https://cdn.datatables.net/1.13.3/css/dataTables.bootstrap5.min.css"
-    />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
-
-    <link rel="stylesheet" href="/styles/style.css" />
-    <script src="/js/three.js"></script>
-
-    <!-- include jsartookit -->
-    <script src="/jsartoolkit5/artoolkit.min.js"></script>
-    <script src="/jsartoolkit5/artoolkit.api.js"></script>
-    <!-- include threex.artoolkit -->
-    <script src="/threex/threex-artoolkitsource.js"></script>
-    <script src="/threex/threex-artoolkitcontext.js"></script>
-    <script src="/threex/threex-arbasecontrols.js"></script>
-    <script src="/threex/threex-armarkercontrols.js"></script>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-  integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
- 
-    <!-- include datgui debugging purposes -->
-
-    <!-- include Mol file to CJSON conversion extras -->
-    <!-- Changed converter.js to convertMolFileToJson.js -->
-    <script src="/js/convertMolFileToJson.js"></script>
-
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "../js/three.module.js"
-        }
-      }
-    </script>
-
+    <!-- Inline CSS to remove default margins, padding, and to hide overflow -->
     <style>
-      #gui_container {
+      #backButton {
         position: absolute;
-        bottom: 0;
-        right: 0;
-        z-index: 1000 !important;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+        padding: 10px 20px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
       }
-      #text {
+      #backButton:hover {
+        background-color: rgba(73, 77, 78, 0.7);
+      }
+
+
+      body, html { margin: 0; padding: 0; overflow: hidden; height:100%;}
+      #rotationButton {
         position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 1000 !important;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        padding: 10px 20px;
+        background-color: rgba(0, 0, 0, 0.7);
         color: white;
-        font-family: "Lucida Grande", sans-serif;
-        padding: 1em;
-        background-color: transparent;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
       }
-
-      #gui {
-        transform: translate(0, -20px);
+      #rotationButton:hover {
+        background-color: rgb(73, 77, 78, 0.7);
       }
-
-      .UIButton {
-        background-color: #0071EB;
-        color: White;
+      #rotationButton.toggled {
+        background-color: rgba(0, 77, 165, 0.7);
       }
-
-      .UIButton:hover {
-        background-color: #0071EB;
-        color: White;
+      #rotationButton.toggled:hover {
+        background-color: rgba(37, 134, 245, 0.7);
       }
-
-
-      #myModal p {
-        color: white;
-      }
-
-      #myModal h2 {
-        font-weight: bold;
-        padding-bottom: 1rem;
-      }
-
-
-
     </style>
   </head>
+  <body>
+    <button id="backButton" onclick="goBack()">Back</button>
+    <button id="rotationButton">Toggle Rotation</button>
 
-<html lang="en">
-  <body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
-  <div id="gui_container"></div>
-  <div id="text">
-    <a href = "/scenes/" class="btn UIButton">
-     <span> ◄ Back to Scenes</span> 
-    </a>
-    <button type="button" class="btn UIButton" data-bs-toggle="modal" data-bs-target="#myModal">How does AR work?</button>
-   
-    <br />
-  </div>
+    <!-- Define an AR marker using a preset "hiro" pattern, and assign it an ID for future reference -->
+    <a-scene arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3; 
+    trackingMethod: best; maxDetectionRate: 30; smooth: true; smoothCount: 10; smoothTolerance: 0.01; smoothThreshold: 5;">
+<!-- Define an AR marker using a preset "hiro" pattern, and assign it an ID for future reference -->      
+      <a-marker
+        type="pattern"
+        url="/data/kanji.patt"
+        id="marker">
+      </a-marker>
+        <!-- Add a camera entity to the scene so the AR content can be viewed from the correct perspective -->    
+      <a-entity camera></a-entity>
+    </a-scene>
 
-  
+    <!-- JavaScript Section for Dynamic Content and Animations -->
+    <script>
+      const sceneName = window.location.pathname.split("/").pop();
 
-  <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="canvasModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content bg-dark">
-            <div class="modal-header">
-              <h1 class="modal-title text-white h5" >How does AR work?</h1>
-              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <h2 class="modal-title text-white h4" >How can I see the molecules on my worksheet?</h2>
-                <p class="myModal">To see the molecules that your instructor has added to your worksheet, hold you device's camera up to the kanji symbol on the page. 
-                                    Once your device's camera recognizes this symbol you should see the intended molecules renderering on the page. To keep seeing these 
-                                    molecules, make sure the marker is in view of your camera. For best results keep your device ~6 inches away from the page as this will allow 
-                                    your camera to have it in view at all times.
-                </p>
-                <h2 class="modal-title text-white h4" >Can I see the molecules without my worksheet?</h2>
-                <p class="myModal">To see the molecules without the use of a marker you can click the experimental AR button. This mode will allow you to view the molecules 
-                  your instructor has added to the lesson without the marker in view. Within this mode you will be able to walk around the rendered molecule without the worry
-                  of having the marker in view of the camera. Though please note this mode is still being developed in our lab so you may get some unexpected results when using it.
-                </p>
-            </div>
-        </div>
-    </div>
-  </div>
+        fetch("/scenes/api/" + sceneName)
+        .then(res => res.json())
+        .then(data => {
+          if (data.trackingMarker) {
+            const m = document.querySelector("#marker"),
+                  p = data.trackingMarker.position,
+                  r = data.trackingMarker.rotation,
+                  s = data.trackingMarker.scale;
 
-  <!-- 
-    Example created by Lee Stemkoski: https://github.com/stemkoski
-    Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/ and https://threejs.org/examples/?q=webxr
-  -->
-  <script type="module">
-        import * as THREE from "/js/three.module.js";
-        import { createModel } from "/js/scenes/rendering.js";
-        import { ARButton } from "/js/ARButton.js";
-        import { OrbitControls } from "/js/OrbitControls.js";
-        import { adjustMolToMarker } from '/js/scenes/scene-mgmt.js';
-      
-        let requestedFile =
-          window.location.pathname.substring(
-            window.location.pathname.lastIndexOf("/") + 1
-          ) + ".json";
-
-        let moleculeData;
-
-        fetch("/scenes" + "/" + requestedFile)
-          .then((response) => response.json())
-          .then((data) => {
-            moleculeData = data;
-            initialize();
-            animate();
-          });
-
-        var scene, camera, renderer, clock, deltaTime, totalTime, clone, moleculeARGroup, controls, moleculeSizeDivisor = 128;
-
-        var arToolkitSource, arToolkitContext;
-
-        var markerX, markerY, markerZ;
-
-        var markerRoot1, markerRoot2, markerVisible;
-
-        function initialize() {
-
-           ////////////////////////////////////////////////////////////
-          // setup Scene
-          ////////////////////////////////////////////////////////////
-
-          scene = new THREE.Scene();
-
-           ////////////////////////////////////////////////////////////
-          // setup Light Sources
-          ////////////////////////////////////////////////////////////
-          // changed ambient light
-          let ambientLight = new THREE.AmbientLight(0x070707, 1);
-          scene.add(ambientLight);
-
-          let spotLight = new THREE.SpotLight(0xffffff);
-          spotLight.position.set(140, 65, 95);
-
-          //to adjust shading, make changes to spotlight and ambient light. 
-
-          spotLight.castShadow = true;
-
-          spotLight.shadow.mapSize.width = 1024;
-          spotLight.shadow.mapSize.height = 1024;
-
-          spotLight.shadow.camera.near = 500;
-          spotLight.shadow.camera.far = 4000;
-          spotLight.shadow.camera.fov = 30;
-
-          scene.add(spotLight);
-
-           ////////////////////////////////////////////////////////////
-          // setup Camera
-          ////////////////////////////////////////////////////////////
-
-          camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 20);
-          scene.add(camera);
-
-           ////////////////////////////////////////////////////////////
-          // setup Renderer
-          ////////////////////////////////////////////////////////////
-
-          renderer = new THREE.WebGLRenderer({
-            antialias: true,
-            alpha: true,
-          });
-          renderer.setPixelRatio( window.devicePixelRatio );
-	        renderer.setSize( window.innerWidth, window.innerHeight );
-          renderer.outputEncoding = THREE.sRGBEncoding;
-          renderer.xr.enabled = true;
-
-          document.body.appendChild(renderer.domElement);
-
-           ////////////////////////////////////////////////////////////
-          // setup Clock
-          ////////////////////////////////////////////////////////////
-
-          clock = new THREE.Clock();
-          deltaTime = 0;
-          totalTime = 0;
-
-          ////////////////////////////////////////////////////////////
-          // setup arToolkitSource
-          ////////////////////////////////////////////////////////////
-
-          arToolkitSource = new THREEx.ArToolkitSource({
-            sourceType: "webcam",
-          });
-
-          function onResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-             renderer.setSize( window.innerWidth, window.innerHeight );
-            arToolkitSource.onResize();
-            arToolkitSource.copySizeTo(renderer.domElement);
-            if (arToolkitContext.arController !== null) {
-              arToolkitSource.copySizeTo(arToolkitContext.arController.canvas);
-            }
+            m.setAttribute("position", `${p.x} ${p.y} ${p.z}`);
+            m.setAttribute("rotation", `${r.x} ${r.y} ${r.z}`);
+            m.setAttribute("scale", `${s.x} ${s.y} ${s.z}`);
           }
 
-          arToolkitSource.init(function onReady() {
-            onResize();
+          data.molecules.forEach(mol => {
+            const marker = document.querySelector("#marker"),
+                  ent = document.createElement("a-entity"),
+                  fileName = mol.modelInfo.file_path.split('/').pop();
+                  const modelInfo = mol.modelInfo;
+
+            ent.setAttribute("gltf-model", `/${modelInfo.file_path.replaceAll('\\\\', '/')}`);
+            ent.setAttribute("position", `${mol.position.x} ${mol.position.y} ${mol.position.z}`);
+
+            const rot = mol.rotation;
+            const rotStr = `${rot.x || 0} ${rot.y || 0} ${rot.z || 0}`;
+            ent.setAttribute("rotation", rotStr);
+
+            ent.setAttribute("scale", `${parseFloat(mol.scale.x)} ${parseFloat(mol.scale.y)} ${parseFloat(mol.scale.z)}`);
+            ent.setAttribute("id", mol.modelInfo.name);
+
+            marker.appendChild(ent);
           });
+        })
+        .catch(e => console.error("Error fetching scene from DB:", e));
 
-          // handle resize event
-          window.addEventListener("resize", function () {
-            onResize();
-          });
+    let sceneRotating = false;
 
-          ////////////////////////////////////////////////////////////
-          // setup arToolkitContext
-          ////////////////////////////////////////////////////////////
+    const rotButton = document.querySelector("#rotationButton")
+    rotButton.addEventListener("click", toggleRotation);
 
-          // create atToolkitContext
-          arToolkitContext = new THREEx.ArToolkitContext({
-            cameraParametersUrl: "/data/camera_para.dat",
-            detectionMode: "mono",
-          });
+    function toggleRotation() {
+      sceneRotating = !sceneRotating;
 
-          // copy projection matrix to camera when initialization complete
-          arToolkitContext.init(function onCompleted() {
-            camera.projectionMatrix.copy(
-              arToolkitContext.getProjectionMatrix()
-            );
-          });
-          ////////////////////////////////////////////////////////////
-          // setup ARButton
-          ////////////////////////////////////////////////////////////
-          const button = ARButton.createButton(renderer);
-          document.body.appendChild(button);
-          button.addEventListener("click", startAR);
+      if (sceneRotating) {
+        rotButton.classList.add("toggled");
+      }
+      else {
+        rotButton.classList.remove("toggled");
+      }
 
-           ////////////////////////////////////////////////////////////
-          // setup OrbitControls
-          ////////////////////////////////////////////////////////////
-          controls = new OrbitControls(camera, renderer.domElement);
-          controls.update();
-
-
-          ////////////////////////////////////////////////////////////
-          // setup markerRoots
-          ////////////////////////////////////////////////////////////
-
-          // build markerControls
-          markerRoot1 = new THREE.Group();
-          scene.add(markerRoot1);
-          let markerControls1 = new THREEx.ArMarkerControls(
-            arToolkitContext,
-            markerRoot1,
-            {
-              type: "pattern",
-              patternUrl: "/data/kanji.patt",
-            }
-          );
-
-           ////////////////////////////////////////////////////////////
-          // setup Populate Molcules to Marker
-          ////////////////////////////////////////////////////////////
-          moleculeARGroup = new THREE.Group();
-          for (let item of moleculeData.molecules) {
-            const marker = moleculeData.trackingMarker;
-            createModel(
-              item.modelInfo,
-              item.position,
-              item.rotation,
-              item.scale
-            ).then((molecule) => {
-              adjustMolToMarker(molecule, marker);
-              markerRoot1.add(molecule);
-
-              outlinePass.selectedObjects.push(molecule);
-
-              clone = molecule.clone();
-              moleculeARGroup.add(clone);
-            });
-          }          
-    
-          moleculeARGroup.visible = false;
-      
+      Array.from(document.querySelector("#marker").children).forEach(ent => {
+        if (sceneRotating) {
+          ent.setAttribute("animation", "property: rotation; to: 0 360 0; loop: true; dur: 5000; easing: linear");
         }
-
-        function update() {
-          // update artoolkit on every frame
-          if (arToolkitSource.ready !== false)
-            arToolkitContext.update(arToolkitSource.domElement);
-            markerX = markerRoot1.position.x;
-            markerY = markerRoot1.position.y;
-            markerZ = markerRoot1.position.z;
-
-            
+        else {
+          ent.removeAttribute("animation");
         }
+      });
+    }
 
-        function startAR()  {
-          moleculeARGroup.visible = true;
-          markerRoot1.clear();
-          camera.position.set(markerX, markerY, markerZ);
-          //Dividing by 100 because coordinates are measured in centimetres
-          moleculeARGroup.position.set(markerX/100, markerY/100, markerZ/100);
-            moleculeARGroup.scale.set(
-            moleculeARGroup.scale.x/moleculeSizeDivisor, 
-            moleculeARGroup.scale.y/moleculeSizeDivisor, 
-            moleculeARGroup.scale.z/moleculeSizeDivisor);
-            moleculeARGroup.quaternion.copy(markerRoot1.quaternion);
-            scene.add(moleculeARGroup);
-        }
+  </script>
 
-        function render() {
-          renderer.render(scene, camera);
-        }
-
-        function animate() {
-          renderer.setAnimationLoop(render);
-          requestAnimationFrame(animate);
-          deltaTime = clock.getDelta();
-          totalTime += deltaTime;
-          update();
-          render();
-        }
-
-      </script>
-    </body>
-  </html>
+  </body>
 </html>
