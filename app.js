@@ -8,6 +8,8 @@ var express = require("express");
 require('express-async-errors');
 dotenv.config({ path: './.env' }); // .env file path.
 
+
+//Errors in this file 
 var createError = require("http-errors");
 var path = require("path");
 var cookieParser = require("cookie-parser");
