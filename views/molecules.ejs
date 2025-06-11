@@ -105,6 +105,7 @@
 </div>
 
 <!-- Modal -->
+<!--QR code for model-->
 <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="canvasModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content bg-dark">
@@ -113,6 +114,8 @@
             </div>
             <div class="modal-body">
                 <div class="">
+                    <!--sample code from qrcode.js documentation-->
+                    <!--https://davidshimjs.github.io/qrcodejs/-->
                     <div id="qrcode" class="bg-white py-4" align="center"></div>
                     <script type="text/javascript">
                     var qrcode = new QRCode(document.getElementById("qrcode"), "http://jindo.dev.naver.com/collie");
@@ -276,6 +279,7 @@ Array.from(editBtnArray).forEach(btn => {
 
     var share = document.getElementsByClassName("share");
 
+    //update qr code with link to model
     Array.from(share).forEach(function(element) {
         element.addEventListener("click", function(){
             let itemNumber = element.id.replace("shareBtn", "");
