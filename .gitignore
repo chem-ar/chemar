@@ -279,3 +279,6 @@ public/scenes
 
 # backup dates
 public/backupDates.json
+
+#random large file
+public/scenes/Connor.json
