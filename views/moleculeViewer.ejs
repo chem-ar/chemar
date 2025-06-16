@@ -296,7 +296,7 @@ footer {
     <div id="control-panel2">
         <input type="button" value="Get obj file" id="get-obj" onclick='jmolScript("write " + cid + ".obj;")'>
         <% if (isAdmin) { %>
-            <input type="button" id="saveAsModelBtn"  value="Save Model">
+            <input type="button" id="saveAsModelBtn"  value="Save Model" onclick="openModal()">
         <% } %>
     </div>
 
@@ -538,11 +538,17 @@ button:hover {
     <script>
     
         
-
+        //If the save modal btn is clicked 
+        function openModal() {
+            document.getElementById("saveModelModal").style.display = "block";
+        }
+        
         // Close Modal Function
         function closeModal() {
             document.getElementById("saveModelModal").style.display = "none";
         }
+
+        
 
         // Submit Form
         function submitModelForm() {
