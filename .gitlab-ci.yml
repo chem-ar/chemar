@@ -8,7 +8,7 @@ deploy-main-azure:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
   image: mcr.microsoft.com/azure-cli
   only:
-    - main  #Change to your branch for testing. Change back to main/develop before merging
+    - develop #Change to your branch for testing. Change back to main/develop before merging
   script:
     - az login --username $PRODID --password $PRODPASSWORD
     - az webapp up --name $PRODAPPNAME --resource-group $PRODRESOURCEGROUP --runtime "NODE|22-lts"
