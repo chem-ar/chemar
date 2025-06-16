@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title><%= title %></title>
     <link rel='stylesheet' href='/styles/style.css' />
+    <link rel="stylesheet" href="styles/views-css/molecule.css">
     <script src='/js/three.js'></script>
 
     <!-- include jsartookit -->
@@ -22,28 +23,7 @@
      <!-- Changed converter.js to convertMolFileToJson.js -->
     <script src="/js/convertMolFileToJson.js"></script>
 
-    <style>
-      #gui_container{
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        z-index: 1000 !important;
-      }
-      #text{
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 1000 !important;
-        color: white;
-        font-family: "Lucida Grande", sans-serif;
-        padding: 1em;
-        background-color: #000;
-      }
-
-      #gui{
-        transform:translate(0, -20px);
-      }
-    </style>
+    
   </head>
 
 <html lang="en">
