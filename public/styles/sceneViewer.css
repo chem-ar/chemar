@@ -1,0 +1,40 @@
+      #gui_container {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1000 !important;
+      }
+      #text {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1000 !important;
+        color: white;
+        font-family: "Lucida Grande", sans-serif;
+        padding: 1em;
+        background-color: transparent;
+      }
+
+      #gui {
+        transform: translate(0, -20px);
+      }
+
+      .UIButton {
+        background-color: #0071EB;
+        color: White;
+      }
+
+      .UIButton:hover {
+        background-color: #0071EB;
+        color: White;
+      }
+
+
+      #myModal p {
+        color: white;
+      }
+
+      #myModal h2 {
+        font-weight: bold;
+        padding-bottom: 1rem;
+      }

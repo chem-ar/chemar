@@ -3,9 +3,9 @@
   <head>
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title><%= title %></title>
-    <link rel='stylesheet' href='/styles/style.css' />
+    <link rel="stylesheet" href="/styles/style.css" />
     <link rel="stylesheet" href="styles/views-css/molecule.css">
-    <script src='/js/three.js'></script>
+    <script src="/js/three.js"></script>
 
     <!-- include jsartookit -->
     <script src="/jsartoolkit5/artoolkit.min.js"></script>
@@ -31,7 +31,7 @@
   <div id="gui_container"></div>
   <div id="text">
     <a href = "/catalog/" style = "text-decoration: none">
-      ◄ <span style = "text-decoration: underline"> Back to Catalog</span> 
+      <span style = "text-decoration: underline"> Back to Catalog</span> 
     </a>
     <br>
     <p>
@@ -160,7 +160,7 @@
     // setup molecule
     ////////////////////////////////////////////////////////////
     //Load the molfile:
-    let molfile = (<%- JSON.stringify(molfile) %>);
+    let molfile = (<% JSON.stringify(molfile) %>);
     let molObject = molFileToJSON(molfile);
 
     console.log(molObject);
