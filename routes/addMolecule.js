@@ -5,20 +5,7 @@ const { checkSession } = require('./auth/session-mgmt');
 
 // Post request when clicking submit button
 router.post('/', (req, res) => {
-    let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
-    let userRole = res.locals.userRole;
-    if (userRole === 'instructor') {
-        isAdmin = true;
-        isInstructor = true;
-    } else if (userRole === 'admin') {
-        isAdmin = true;
-    }else if(userRole === 'superadmin'){
-        isAdmin = true;
-        isOwner = true;
-    }
-    else if(userRole === 'developer'){
-        isDeveloper = true;
-    }
+    let { isAdmin, isowner } = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     // Assign values from form to variables
@@ -60,20 +47,7 @@ router.post('/', (req, res) => {
 });
 
 router.post('/saveMolFile', async (req, res) => {
-    let {isAdmin, isInstructor, isOwner} = checkSession(req, res);
-    let userRole = res.locals.userRole;
-    if (userRole === 'instructor') {
-        isAdmin = true;
-        isInstructor = true;
-    } else if (userRole === 'admin') {
-        isAdmin = true;
-    }else if(userRole === 'superadmin'){
-        isAdmin = true;
-        isOwner = true;
-    }
-    else if(userRole === 'developer'){
-        isDeveloper = true;
-    }
+    let { isAdmin, isowner } = checkSession(req, res);
     if (!isAdmin) return res.status(401).send({ error: "User not logged in" });
 
     // Assign values from form to variables

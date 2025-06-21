@@ -351,7 +351,7 @@
             onMarkerXChange,
             onMarkerYChange,
             updateSceneImg,
-            exportSceneData,
+            exportSceneData
         } from '/js/scenes/scene-mgmt.js';
         import { addMolToMenu } from '/js/scenes/add-mol-to-menu.js';
 
@@ -374,68 +374,48 @@
         let markerData;
 
         let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
-        window.currentSceneModels = []; // Explicit initialization here!
 
-fetch('/scenes/' + requestedFile, { credentials: 'include' })
-    .then(response => response.json())
-    .then(async data => {
-        scene = data;
+        fetch('/scenes' + '/' + requestedFile, {
+            credentials: 'include'})
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Server returned status code ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(async data => {
+                scene = data;
+                
+                fileName.innerHTML = "File name: " + requestedFile;
+                sceneName.innerHTML = "Scene name: " + scene.name;
+                sceneDescription.innerHTML = "Scene desc: " + scene.desc;
+                sceneNameInput.value = scene.name;
+                sceneDescriptionInput.value = scene.desc;
+                markerData = scene.trackingMarker
+               
+                initScene(scene.png, markerData, threeArea, window);
+                
+                markerXSlider.value = markerData.position.x;
+                markerXInput.value = markerData.position.x;
+                markerYSlider.value = markerData.position.y;
+                markerYInput.value = markerData.position.y;
 
-        fileName.innerHTML = "File name: " + requestedFile;
-        sceneName.innerHTML = "Scene name: " + scene.name;
-        sceneDescription.innerHTML = "Scene desc: " + scene.desc;
-        sceneNameInput.value = scene.name;
-        sceneDescriptionInput.value = scene.desc;
-        markerData = scene.trackingMarker;
-
-        initScene(scene.png, markerData, threeArea, window);
-
-        markerXSlider.value = markerData.position?.x ?? 0;
-        markerXInput.value = markerData.position?.x ?? 0;
-        markerYSlider.value = markerData.position?.y ?? 0;
-        markerYInput.value = markerData.position?.y ?? 0;
-
-        let counter = 0;
-        for (let item of scene.molecules) {
-            const modelInfo = item.modelInfo;
-            const modelData = await createModel({
-            files: { glb: `modelfiles/${modelInfo.file_path.split('/').pop()}` }
-        }, item.position, item.rotation, item.scale);
-
-            if (modelData.mixer && item.animations) {
-                item.animations.forEach(animName => {
-                    const clip = THREE.AnimationClip.findByName(modelData.animations, animName);
-                    if (clip) {
-                        const action = modelData.mixer.clipAction(clip);
-                        action.play();
-                    }
-                });
-            }
-
-            // Explicitly set these properties to ensure correctness:
-            modelData.name = modelInfo.name;
-            modelData.file_path = modelInfo.file_path;
-
-            addModelToScene(modelInfo, modelData, item.cjson);
-            addMolToMenu(modelData.object, modelInfo.name, moleculeList, scene, counter);
-
-            // Explicitly push the correctly loaded model data to global array:
-            window.currentSceneModels.push({
-                object: modelData.object,
-                name: modelData.name,
-                file_path: modelData.file_path,
-                animations: item.animations || []
+                // Draw each molecule in three when sceneEditor is loaded.
+                let counter = 0;
+                for(let item of scene.molecules) {
+                    
+                    const modelInfo = item.modelInfo;
+                    const model = await createModel(modelInfo, item.position, item.rotation, item.scale);
+                    
+                    addModelToScene(modelInfo, model, item.cjson);
+                    addMolToMenu(model, modelInfo.name, moleculeList, scene, counter);
+                    counter++;
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                toastr.error(error.message, "Failed to load scene");
             });
-
-            counter++;
-        }
-    })
-    .catch(error => {
-        console.error(error);
-        toastr.error(error.message, "Failed to load scene");
-    });
-
-
 
 
             function validateName() {

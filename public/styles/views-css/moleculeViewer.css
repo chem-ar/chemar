@@ -1,0 +1,345 @@
+    /* body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; 
+    min-height: 100vh; 
+    margin: 0;
+    color: white;
+    background: #202020;
+    position: relative; 
+    padding-bottom: 60px;
+}
+
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    background: #202020;
+    color: white;
+    padding: 10px 0;
+    font-size: 14px;
+ 
+}
+
+        .content,
+        .content-display,
+        .content-jsmol {
+            border: 2px solid #333;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .content-jsmol {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #contro-panel2{
+            
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 4px;
+    background-color: #333;
+    width: 100%; 
+    max-width: 500px;
+    position: relative; 
+    box-sizing: border-box; 
+        }
+      
+#control-panel2 input[type="button"] {
+    font-size: 1rem;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 4px;
+    background-color: #0071EB;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#control-panel2 input[type="button"]:hover {
+    background-color: #005bb5;
+}
+
+
+.content {
+    margin-bottom: 20px; 
+}
+        #control-panel,
+        #control-panel2 {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            align-items: center;
+            border: 2px solid #333;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        input[type=button] {
+            background-color: rgb(251, 251, 251);
+            border-radius: 4px;
+            border: 2px solid #333;
+        }
+
+        #backButton input[type=button] {
+            background-color: #555555;
+            color: white;
+            font-size: 1.13rem;
+            padding: 10px 20px;
+        }
+        
+        
+        #backButton {
+            position: static; 
+        }
+
+        @media screen and (min-width: 1024px) {
+            #backButton {
+                position: absolute;
+                left: 10px; 
+                top: 10px; 
+            }
+        }
+
+        #control-panel2 input[type=button] {
+            background-color: #0071EB;
+            color: white;
+            font-size: 1.13rem;
+            padding: 10px 20px;
+        }
+        #control-panel2 {
+            border: none;
+            background: none;
+            box-shadow: none;
+}
+        #toggle-button {
+            background-color: #097242;
+            color: white;
+            font-size: 1.13rem;
+            padding: 10px 20px;
+            border-radius: 4px;
+            border: none;
+            margin-top: 10px; 
+            margin-bottom: 10px; 
+            margin-left: 10px; 
+            margin-right: 10px;
+        }
+    
+
+    
+    #get-obj {
+        position: static; 
+    }
+
+    @media screen and (min-width: 1024px) {
+        #get-obj {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+    }
+
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9010;
+            overflow: auto; 
+        }
+
+   
+        .modal-content {
+            background-color: #ffffff;
+            color: #333333;
+            padding: 20px;
+            border-radius: 5px;
+            width: 90%; 
+            max-width: 500px; 
+            box-sizing: border-box;
+            z-index: 9011;
+            position: relative;
+            margin: 5% auto; 
+        }
+
+        
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333333;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #ff0000;
+        }
+
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            background-color: #ffffff;
+            color: #333333;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+      
+        button {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px 20px;
+            background-color: #0071EB;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #005bb5;
+        }
+
+        /* Responsive adjustments for mobile devices */
+@media (max-width: 768px) {
+   
+    html, body {
+        overflow-x: hidden; 
+        width: 100%; 
+    }
+
+
+    #jmolApplet {
+    position: relative;
+
+    flex-direction: column;
+    align-items: center; 
+    margin: auto; 
+    overflow: hidden; 
+
+    height: 0; /* Explicitly set to 0 to remove extra space */
+    padding: 0; /* Remove any padding */
+    border: none; /* Optional: Ensure no borders add to size */
+}
+
+#jmolApplet canvas {
+    max-width: 100%; 
+}
+
+.jsmol-text {
+    margin-top: 10px; 
+    text-align: center; 
+    font-size: 14px; 
+    color: white;
+}
+
+    
+    .modal-content {
+        width: 90%;
+        max-width: 400px; 
+        margin: auto;
+        box-sizing: border-box;
+    }
+
+    #control-panel2 input[type="button"],
+    #toggle-button,
+
+    
+
+    
+    h5,
+    span {
+        text-align: center;
+    }
+
+  
+    input[type="text"],
+    textarea {
+        margin-bottom: 10px;
+    }
+    input[type="text"],
+        textarea {
+            width: 50%;
+            
+        }
+     
+.form-group {
+    display: flex;
+    flex-direction: column; 
+    
+  
+    padding: 10px;
+    margin-bottom: 15px;
+
+}
+
+
+.form-group label {
+    font-size: 16px; 
+    margin-bottom: 5px; 
+    color: #333; 
+}
+
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%; 
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+
+.form-group textarea {
+    resize: none; 
+    height: 80px; 
+}
+
+
+button {
+    display: block;
+    margin: 20px auto 0;
+    padding: 10px 20px;
+    background-color: #0071EB;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #005bb5;
+}
+
+
+.modal-content {
+    width: 90%;
+    max-width: 400px;
+    margin: auto;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.modal{
+    width: 100%;
+}
+} 

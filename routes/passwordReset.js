@@ -1,45 +1,71 @@
 var express = require('express');
 var router = express.Router();
-var { sql, connect } = require('../db');
-var bcrypt = require('bcrypt');
+var fs = require('fs');
+const { startSession, checkSession, endSession } = require('./auth/session-mgmt');
+const bcrypt = require('bcrypt');
 
 router.get('/', function (req, res) {
-    let email = req.query.email;
-    let token = req.query.token;
+    req.cookies.session = req.query.token;
+    req.body.email = req.query.email;
+    let adminEmail = req.query.email;
+    let confirm = false;
 
-    if (!email || !token) {
-        return res.status(400).json({ message: "Invalid password reset request." });
+    let { isAdmin, isowner } = checkSession(req, res);
+    if (isAdmin) {
+        confirm = true;
+        let i = -1
+        let ad = fs.readFileSync('./routes/auth/admin.json')
+        let adminData = JSON.parse(ad)
+        const token = req.query.token;
+        let adminIndex;
+        adminData.map((e, ai) => {
+            e.session.map((ele, ind) => {
+                if (ele.token === token) {
+                    i = ind
+                    adminIndex = ai;
+                    return;
+                }
+            })
+        })
+
+        if (i != -1) {
+            adminData[adminIndex].session.splice(i, 1)
+        }
+        fs.writeFileSync('./routes/auth/admin.json', JSON.stringify(adminData))
     }
 
-    // Render the password reset page
-    res.render('passwordReset', { title: 'Password Reset Page', email });
+    req.body.email = adminEmail;
+    if (confirm) {
+        return res.render('passwordReset', { title: 'Password Reset Page' });
+    } else {
+        return res.status(404);
+    }
+
 });
 
+
 router.post('/', async function (req, res) {
-    try {
-        let { email, newPassword } = req.body;
-        
-        if (!email || !newPassword) {
-            return res.status(400).json({ message: "Email and new password are required." });
+    console.log(req.body.email);
+    adminEmail = req.query.email;
+    let adminData = JSON.parse(fs.readFileSync("./routes/auth/admin.json"));
+    let admin;
+    let adminIndex;
+    let isAdmin;
+
+    for (let i = 0; i < adminData.length; i++) {
+        if (adminEmail == adminData[i].email) {
+            isAdmin = true;
+            adminIndex = i;
+            break;
         }
+    }
 
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-
-        const pool = await connect();
-        const result = await pool.request()
-            .input('email', sql.NVarChar(255), email)
-            .input('hashedPassword', sql.NVarChar(255), hashedPassword)
-            .query(`UPDATE Users SET password_hash = @hashedPassword WHERE email = @email`);
-
-        if (result.rowsAffected[0] > 0) {
-            return res.redirect("/login");
-        } else {
-            return res.status(404).json({ message: "User not found." });
-        }
-    } catch (err) {
-        console.error("Error resetting password:", err);
-        return res.status(500).json({ message: "Internal server error. Please try again." });
+    if (isAdmin) {
+        let newPassword = await bcrypt.hash(req.body.newPassword, 5)
+        adminData[adminIndex].password = newPassword
+        let arr = JSON.stringify(adminData)
+        fs.writeFileSync("./routes/auth/admin.json", arr)
+        return res.redirect("/login");
     }
 });
 
