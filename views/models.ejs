@@ -21,6 +21,7 @@
                 <%- include('partials/addModel') %>
             <%}%>
             <p></p>
+            <!--table of models-->
             <table id="modelTable" class="table table-striped text-white" style="width:100%">
                 <thead>
                     <tr>
@@ -114,7 +115,7 @@
 
 let dataTable;
 
-
+//populate table with model information
 function fetchModels() {
     fetch("/catalog/modelFileCatalog.json")
         .then((res) => {
