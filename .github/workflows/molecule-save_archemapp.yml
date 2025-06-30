@@ -52,4 +52,4 @@ jobs:
           app-name: 'archemapp'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DE25ED5C179148508ACBF0C8D8771E1F }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B47E8E80C50641C28EB763C38E15C3C2 }}
