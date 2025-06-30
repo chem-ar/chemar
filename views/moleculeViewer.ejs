@@ -579,9 +579,25 @@ button:hover {
         // check if the model has been saved or not
         function pollModelStatus(normalModelName) {
             let notified = false; // Flag to ensure notification shows only once
+            let pollCount = 0; // Counter to track polling attempts
+            const maxPolls = 30; // Maximum number of polls (30 seconds with 1-second intervals)
 
             // check periodically to see if model was saved, if so check for success or error messages
             const interval = setInterval(async () => {
+                pollCount++;
+                
+                // Stop polling after maxPolls attempts
+                if (pollCount >= maxPolls) {
+                    clearInterval(interval);
+                    if (!notified) {
+                        toastr.error('Save operation timed out. Please try again.', 'Timeout', {
+                            timeOut: 3000,
+                            positionClass: 'toast-top-right',
+                            progressBar: true
+                        });
+                    }
+                    return;
+                }
                 try {
                     const response = await fetch(`${window.location.origin}/addmodel/modelStatus/${normalModelName}`);
                     const data = await response.json();
@@ -616,7 +632,7 @@ button:hover {
                 } catch (error) {
                     console.error('Error polling model status:', error);
                 }
-            }, 1); // Poll every 0.01 seconds
+            }, 1000); // Poll every 1 second instead of 1 millisecond
         }
     </script>
     

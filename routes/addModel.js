@@ -5,6 +5,9 @@ var fs = require('fs');
 const path = require('path');
 const { checkSession } = require('./auth/session-mgmt');
 
+// Object to track model save status
+const modelSaveStatus = {};
+
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -140,11 +143,138 @@ router.post('/saveModel', uploadMiddleware, (req, res) => {
     return res.send({ message: 'Model saved!' });
 });
 
+// Route to handle quick save model from Jmol (receives .obj file directly)
+router.post('/quickSaveModel/:modelName/:modelDesc/:fileName', (req, res) => {
+    try {
+        const { modelName, modelDesc, fileName } = req.params;
+        
+        // Decode URL parameters
+        const decodedModelName = decodeURIComponent(modelName);
+        const decodedModelDesc = decodeURIComponent(modelDesc);
+        const decodedFileName = decodeURIComponent(fileName);
+        
+        console.log(`Saving model: ${decodedModelName}, file: ${decodedFileName}`);
+        console.log('Request body type:', typeof req.body);
+        console.log('Request body keys:', req.body ? Object.keys(req.body) : 'null');
+        console.log('Request body content:', req.body);
+        
+        // Check if user is admin
+        let { isAdmin } = checkSession(req, res);
+        if (!isAdmin) {
+            modelSaveStatus[decodedModelName] = { error: "User not logged in" };
+            return res.status(401).send({ error: "User not logged in" });
+        }
+
+        // Save the file data to the modelfiles directory
+        const modelfilesDir = 'public/modelfiles';
+        if (!fs.existsSync(modelfilesDir)) {
+            fs.mkdirSync(modelfilesDir, { recursive: true });
+        }
+        
+        const filePath = path.join(modelfilesDir, decodedFileName);
+        
+        // Handle the body based on what JMol is actually sending
+        let fileContent = '';
+        if (typeof req.body === 'string') {
+            fileContent = req.body;
+        } else if (typeof req.body === 'object' && req.body !== null) {
+            // If it's an object, maybe JMol is sending JSON with file content
+            if (req.body.content) {
+                fileContent = req.body.content;
+            } else if (req.body.data) {
+                fileContent = req.body.data;
+            } else {
+                // Try to extract any string values from the object
+                const values = Object.values(req.body);
+                fileContent = values.find(v => typeof v === 'string') || JSON.stringify(req.body);
+            }
+        }
+        
+        fs.writeFileSync(filePath, fileContent);
+        
+        console.log(`File saved to: ${filePath}`);
+
+        // Only update the catalog when we receive the .obj file (not for .mtl)
+        if (decodedFileName.endsWith('.obj')) {
+            // Wait a moment for potential .mtl file to also be saved
+            setTimeout(() => {
+                try {
+                    // Read model catalog
+                    const catalogPath = './public/catalog/modelFileCatalog.json';
+                    let parsedData;
+                    try {
+                        parsedData = JSON.parse(fs.readFileSync(catalogPath));
+                    } catch (error) {
+                        modelSaveStatus[decodedModelName] = { error: "Unable to read model catalog" };
+                        return;
+                    }
+
+                    // Check if the model already exists
+                    for (const entry of parsedData) {
+                        if (entry.name === decodedModelName && entry.description === decodedModelDesc) {
+                            modelSaveStatus[decodedModelName] = { error: 'This model already exists' };
+                            return;
+                        }
+                    }
+
+                    // Assign a unique ID
+                    const newId = uniqueId(parsedData);
+
+                    let modelEntry = {
+                        id: newId,
+                        name: decodedModelName,
+                        description: decodedModelDesc,
+                        files: {
+                            obj: decodedFileName
+                        }
+                    };
+
+                    // Check if there's also an .mtl file
+                    const mtlFileName = decodedFileName.replace('.obj', '.mtl');
+                    const mtlFilePath = path.join('public/modelfiles', mtlFileName);
+                    if (fs.existsSync(mtlFilePath)) {
+                        modelEntry.files.mtl = mtlFileName;
+                        console.log(`Found MTL file: ${mtlFileName}`);
+                    }
+
+                    // Add model to catalog
+                    parsedData.push(modelEntry);
+                    fs.writeFileSync(catalogPath, JSON.stringify(parsedData, null, 2));
+
+                    // Mark as successfully saved
+                    modelSaveStatus[decodedModelName] = { success: true };
+                    
+                    console.log(`Model catalog updated for: ${decodedModelName}`);
+                } catch (error) {
+                    console.error('Error updating catalog:', error);
+                    modelSaveStatus[decodedModelName] = { error: "Error updating catalog" };
+                }
+            }, 500); // Wait 500ms for potential MTL file
+        }
+
+        return res.send({ message: 'File saved successfully!' });
+
+    } catch (error) {
+        console.error('Error in quickSaveModel:', error);
+        const modelName = decodeURIComponent(req.params.modelName);
+        modelSaveStatus[modelName] = { error: "Internal server error" };
+        return res.status(500).send({ error: "Internal server error" });
+    }
+});
+
 
 // Endpoint to check model status
 router.get('/modelStatus/:modelname', (req, res) => {
-    const { modelname } = req.params;
-    res.json({ isSaved: modelSaveStatus[modelname] || false });
+    try {
+        const { modelname } = req.params;
+        console.log(`Checking model status for: ${modelname}`);
+        const status = modelSaveStatus[modelname] || false;
+        console.log(`Model status: ${JSON.stringify(status)}`);
+        res.json({ isSaved: status });
+    } catch (error) {
+        console.error('Error in modelStatus endpoint:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
 
