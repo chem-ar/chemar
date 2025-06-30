@@ -13,6 +13,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
 
@@ -38,20 +39,29 @@ jobs:
         run: |
           # Create a clean deployment package excluding dev dependencies and unnecessary files
           mkdir deployment-package
-          cp -r . deployment-package/
+          
+          # Copy only necessary files (exclude large directories from the start)
+          rsync -av --exclude='node_modules' \
+                    --exclude='.git' \
+                    --exclude='.github' \
+                    --exclude='uploads/bin' \
+                    --exclude='uploads/fbx' \
+                    --exclude='uploads/glb' \
+                    --exclude='uploads/gltf' \
+                    --exclude='uploads/mtl' \
+                    --exclude='uploads/obj' \
+                    --exclude='public/jmol-16.1.41' \
+                    --exclude='*.pem' \
+                    --exclude='*.csr' \
+                    --exclude='third year - Shortcut.lnk' \
+                    --exclude='.vscode' \
+                    --exclude='*.log' \
+                    . deployment-package/
+          
           cd deployment-package
           
-          # Remove development files and large files that shouldn't be deployed
-          rm -rf node_modules
-          rm -rf .git
-          rm -rf .github
-          rm -rf uploads/bin uploads/fbx uploads/glb uploads/gltf uploads/mtl uploads/obj
-          rm -rf public/jmol-16.1.41
-          rm -f *.pem *.csr
-          rm -f "third year - Shortcut.lnk"
-          
           # Install only production dependencies
-          npm ci --only=production
+          npm ci --only=production --no-audit --no-fund
 
       - name: Zip artifact for deployment
         run: |
@@ -66,6 +76,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: build
     environment: production
     permissions:
