@@ -578,8 +578,7 @@ button:hover {
 
         // check if the model has been saved or not
         function pollModelStatus(normalModelName) {
-            let notified = false; // Flag to ensure notification shows only once
-            let pollCount = 0; // Counter to track polling attempts
+            let notified = false; // Flag to ensure notification shows only once            let pollCount = 0; // Counter to track polling attempts
             const maxPolls = 30; // Maximum number of polls (30 seconds with 1-second intervals)
 
             // check periodically to see if model was saved, if so check for success or error messages
