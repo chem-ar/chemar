@@ -215,6 +215,11 @@ router.post('/save/:scene', (req, res) => {
   const scenePath = `./public/scenes/${sceneName}.json`; // Save the file path.
   var overwritten = false;
 
+  // Add debugging
+  console.log(`=== SAVING SCENE: ${sceneName} ===`);
+  console.log('Scene data received:', JSON.stringify(req.body, null, 2));
+  console.log(`Molecules count: ${req.body.molecules ? req.body.molecules.length : 'undefined'}`);
+
   // Check if scene doesn't exist.
   if (fs.existsSync(scenePath))
     overwritten = true;
@@ -227,6 +232,7 @@ router.post('/save/:scene', (req, res) => {
       return res.status(500).send({ successful: false, error: 'Error saving scene' });
     }
 
+    console.log(`✅ Scene saved successfully to: ${scenePath}`);
     res.status(200).send({
       successful: true,
       overwritten: overwritten,
