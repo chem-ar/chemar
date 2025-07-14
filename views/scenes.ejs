@@ -1,4 +1,5 @@
-<%- include('partials/header') %>
+This is scene.ejs
+<%- include('partials/header') %> 
 <!--ADMIN NAVBAR CHECK-->
 <% if (isowner) { %>
     <%- include('partials/navbarowner') %>
@@ -9,17 +10,17 @@
     <%- include('partials/navbar') %>
 <%}%>
 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-
+ 
 <div class="container mb-4 main-background-color">
     <div class="row content">
         <div class="col-12 pt-4 text-start text-white">
             <h1 class="display-4 fw-bold">Scenes Catalog</h1>
-
+ 
              <!--ADMIN CHECK-->
              <% if (isAdmin){%>
                 <%- include('partials/addScene') %>
             <%}%>
-
+ 
             <p></p>
             <table id="sceneTable" class="table table-striped text-white" style="width:100%">
                 <thead>
@@ -39,13 +40,11 @@
                                 <td id="Description<%=filename %>" class="text-white desc-in-scenes"><%= scene.desc %></td>
                                 <td class="options-column-scenes">
                                     <div class = "d-grid gap-2">
-                                        <!--view button-->
                                         <button id="<%= 'viewBtn' + filename.slice(0, -5) %>" type="button" class="view btn" onclick="window.location.href='/sceneViewer/<%= filename.slice(0, -5) %>'" style="background-color: #6c757d; color: black;">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16" aria-label="View icon">
                                                 <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zm-8 4a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-1.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
                                             </svg> View AR
                                         </button>
-                                        <!--share button-->
                                         <button id="<%= 'shareBtn' + filename.slice(0, -5) %>" type="button" class="share btn" style="background-color: #00BFE3; color: black;" data-bs-toggle="modal" data-bs-target="#shareModal">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16" aria-label="Share icon">
                                                 <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
@@ -53,19 +52,18 @@
                                         </button>
                                          <!--ADMIN CHECK-->
                                          <% if (isAdmin) { %>
-                                        <!--edit button-->
                                         <button onclick="goToPage('../sceneEditor/<%=filename %>')" type="button" class="btn" style="background-color: #FFB300; color: black;">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16" aria-label="Edit icon">
                                                     <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                                                 </svg> Edit
                                             </button>
-                                        
+                                       
                                             <script>
                                                 function goToPage(url) {
                                                     window.location.href = url;
                                                 }
                                             </script>
-                                        <!--delete button-->
+ 
                                         <button type="button" class="btn deleteSceneBtn" style="background-color: #CC0000; color: white;" data-bs-toggle="modal" data-bs-target="#deleteModal" data-scene="<%= filename.slice(0, -5) %>">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16" aria-label="Delete icon">
                                                     <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
@@ -76,23 +74,22 @@
                                     </div>
                                 </td>
                             </tr>
-                            
+                           
                         <%}%>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
+ 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
-
+ 
 <script type="module">
     let dataTable;
-
-    //populate table with scenes
+ 
     fetch("/catalog/sceneCatalog.json")
         .then((response) => response.json())
         .then((data) => {
@@ -119,7 +116,7 @@
         })
         .catch(err => toastr.error(err.message));
 </script>
-
+ 
 <!-- Delete Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -143,10 +140,8 @@
         color: white;
     }
 </style>
-
+ 
 <!-- Modal -->
-<!--QR code to share scene-->
-<!--QR code is initalized with dummy link, which is replaced when the share button is used-->
 <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="canvasModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content bg-dark">
@@ -155,8 +150,6 @@
             </div>
         <div class="modal-body">
             <div class="">
-                <!--sample code from qrcode.js documentation-->
-                <!--https://davidshimjs.github.io/qrcodejs/-->
                 <div id="qrcode" class="bg-white py-4" align="center"></div>
                 <script type="text/javascript">
                     let qrcode = new QRCode(document.getElementById("qrcode"), "https://webisora.com");
@@ -166,20 +159,20 @@
     </div>
     </div>
 </div>
-
+ 
 <script>
-    
+   
 document.addEventListener("DOMContentLoaded", function() {
     // Add event listener to form submission
     document.getElementById("newSceneAddBtn")?.addEventListener("click", function(event) {
         // Prevent default form submission behavior
         event.preventDefault();
-        
+       
         // Gather data from form fields
         var newSceneName = document.getElementById("newSceneName").value;
         var newSceneDesc = document.getElementById("newSceneDesc").value;
         var studentAccessible = document.getElementById("studentAccessibleCheckbox").checked;
-
+ 
         // Create scene object
         var scene = {
             name: newSceneName,
@@ -194,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function() {
             molecules: [],
             studentAccessible: studentAccessible
         };
-
+ 
         // Send data to server using fetch API
         fetch('/scenes/addScene', {
             method: 'POST',
@@ -202,11 +195,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(scene),
-            credentials: 'include' 
+            credentials: 'include'
         })
         .then(async response => {
             const body = await response.json().catch(_error => ({}));
-
+ 
             if (response.status === 401 && body.error) {
                 throw new Error(body.error);
             } else if (response.ok) {
@@ -223,8 +216,8 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 });
-
-
+ 
+ 
     // Preview the .mol file content when selected
     function onReceiptsSelected() {
             const files = fileName.files;
@@ -236,34 +229,33 @@ document.addEventListener("DOMContentLoaded", function() {
                 reader.readAsText(files[0]);
             }
         }
-
+ 
     var share = document.getElementsByClassName("share");
-
-    //update qr code with link to scene viewer
+ 
     Array.from(share).forEach(function(element) {
         element.addEventListener("click", function(){
             let itemNumber = element.id.replace("shareBtn", "")
-            qrcode.makeCode(window.location.host + "/sceneViewer/" + itemNumber); 
+            qrcode.makeCode(window.location.host + "/sceneViewer/" + itemNumber);
         })
     });
-
+ 
     document.addEventListener("DOMContentLoaded", function() {
         // Add event listener to delete buttons
         var deleteButtons = document.querySelectorAll(".deleteSceneBtn");
         var deleteModalBody = document.querySelector("#deleteModal .modal-body");
-
+ 
         // Loop through each delete button and add click event listener
         deleteButtons.forEach(function(button) {
             button.addEventListener("click", function() {
                 var sceneName = this.getAttribute("data-scene");
-
+ 
                 // Set the text content of the modal body to include the scene's name
                 deleteModalBody.textContent = `Are you sure you want to delete "${sceneName}"?`;
-
+ 
                 deleteModalBody.setAttribute('data-scene-to-delete', sceneName);
             });
         });
-
+ 
         var confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
         confirmDeleteBtn.addEventListener("click", function() {
             const sceneName = deleteModalBody.getAttribute('data-scene-to-delete');
@@ -272,7 +264,7 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(async response => {
                 const body = await response.json().catch(_error => ({}));
-
+ 
                 if (response.status === 401 && body.error) {
                     throw new Error(body.error);
                 } else if (response.ok) {
@@ -291,3 +283,4 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 </script>
 <%- include('partials/footer') %>
+ 

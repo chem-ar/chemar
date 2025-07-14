@@ -3,10 +3,9 @@
   <head>
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title><%= title %></title>
-    <link rel="stylesheet" href="/styles/style.css" />
-    <link rel="stylesheet" href="styles/views-css/molecule.css">
-    <script src="/js/three.js"></script>
-
+    <link rel='stylesheet' href='/styles/style.css' />
+    <script src='/js/three.js'></script>
+ 
     <!-- include jsartookit -->
     <script src="/jsartoolkit5/artoolkit.min.js"></script>
     <script src="/jsartoolkit5/artoolkit.api.js"></script>
@@ -15,77 +14,97 @@
     <script src="/threex/threex-artoolkitcontext.js"></script>
     <script src="/threex/threex-arbasecontrols.js"></script>
     <script src="/threex/threex-armarkercontrols.js"></script>
-
+ 
     <!-- include datgui debugging purposes -->
     <script type="text/javascript" src="/datgui/dat.gui.min.js"></script>
-
+ 
     <!-- include Mol file to CJSON conversion extras -->
-     <!-- Changed converter.js to convertMolFileToJson.js -->
-    <script src="/js/convertMolFileToJson.js"></script>
-
-    
+    <script src="/cjson/converter.js"></script>
+ 
+    <style>
+      #gui_container{
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1000 !important;
+      }
+      #text{
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1000 !important;
+        color: white;
+        font-family: "Lucida Grande", sans-serif;
+        padding: 1em;
+        background-color: #000;
+      }
+ 
+      #gui{
+        transform:translate(0, -20px);
+      }
+    </style>
   </head>
-
+ 
 <html lang="en">
   <body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
   <div id="gui_container"></div>
   <div id="text">
     <a href = "/catalog/" style = "text-decoration: none">
-      <span style = "text-decoration: underline"> Back to Catalog</span> 
+      ◄ <span style = "text-decoration: underline"> Back to Catalog</span>
     </a>
     <br>
     <p>
       <%= name %> (<%= formula %>)
     </p>
   </div>
-  <!-- 
+  <!--
     Example created by Lee Stemkoski: https://github.com/stemkoski
     Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/
   -->
   <script>
-  
+ 
   var scene, camera, renderer, clock, deltaTime, totalTime;
-  
+ 
   var arToolkitSource, arToolkitContext;
-  
+ 
   var markerRoot1, markerRoot2;
-
+ 
   var moleculeGroup = new THREE.Group();
-
+ 
   var autoRotate = {
     switch: false
   }
-
+ 
   var mesh1;
-  
+ 
   initialize();
   animate();
-  
+ 
   function initialize()
   {
     scene = new THREE.Scene();
-  
+ 
     let ambientLight = new THREE.AmbientLight( 0xffffff, 1 );
     scene.add( ambientLight );
-    
+   
     let spotLight = new THREE.SpotLight( 0xffffff );
     spotLight.position.set( 100, 1000, 100 );
-
+ 
     spotLight.castShadow = true;
-
+ 
     spotLight.shadow.mapSize.width = 1024;
     spotLight.shadow.mapSize.height = 1024;
-
+ 
     spotLight.shadow.camera.near = 500;
     spotLight.shadow.camera.far = 4000;
     spotLight.shadow.camera.fov = 30;
-
+ 
     scene.add( spotLight );
-    
-          
+   
+         
     camera = new THREE.Camera();
     scene.add(camera);
-  
+ 
     renderer = new THREE.WebGLRenderer({
       antialias : true,
       alpha: true
@@ -96,75 +115,75 @@
     renderer.domElement.style.top = '0px'
     renderer.domElement.style.left = '0px'
     document.body.appendChild( renderer.domElement );
-  
+ 
     clock = new THREE.Clock();
     deltaTime = 0;
     totalTime = 0;
-    
+   
     ////////////////////////////////////////////////////////////
     // setup arToolkitSource
     ////////////////////////////////////////////////////////////
-  
+ 
     arToolkitSource = new THREEx.ArToolkitSource({
       sourceType : 'webcam',
     });
-  
+ 
     function onResize()
     {
-      arToolkitSource.onResize()	
-      arToolkitSource.copySizeTo(renderer.domElement)	
+      arToolkitSource.onResize()  
+      arToolkitSource.copySizeTo(renderer.domElement)
       if ( arToolkitContext.arController !== null )
       {
-        arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)	
-      }	
+        arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)  
+      }
     }
-  
+ 
     arToolkitSource.init(function onReady(){
       onResize()
     });
-    
+   
     // handle resize event
     window.addEventListener('resize', function(){
       onResize()
     });
-    
+   
     ////////////////////////////////////////////////////////////
     // setup arToolkitContext
-    ////////////////////////////////////////////////////////////	
-  
+    ////////////////////////////////////////////////////////////  
+ 
     // create atToolkitContext
     arToolkitContext = new THREEx.ArToolkitContext({
       cameraParametersUrl: '/data/camera_para.dat',
       detectionMode: 'mono'
     });
-    
+   
     // copy projection matrix to camera when initialization complete
     arToolkitContext.init( function onCompleted(){
       camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
     });
-  
+ 
     ////////////////////////////////////////////////////////////
     // setup markerRoots
     ////////////////////////////////////////////////////////////
-  
+ 
     // build markerControls
     markerRoot1 = new THREE.Group();
     scene.add(markerRoot1);
     let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
       type: 'pattern', patternUrl: "/data/kanji.patt",
     })
-  
-
-
+ 
+ 
+ 
     ////////////////////////////////////////////////////////////
     // setup molecule
     ////////////////////////////////////////////////////////////
     //Load the molfile:
-    let molfile = (<% JSON.stringify(molfile) %>);
+    let molfile = (<%- JSON.stringify(molfile) %>);
     let molObject = molFileToJSON(molfile);
-
+ 
     console.log(molObject);
-
+ 
     //Set the limits of the geometry to 0:
     let limits = {
       x: {
@@ -180,7 +199,7 @@
         max: 0
       }
     }
-
+ 
     for(let item of molObject.atoms){
       if(item.x < limits.x.min){
         limits.x.min = item.x;
@@ -201,7 +220,7 @@
         limits.z.max = item.z;
       }
     }
-
+ 
     //Iterate through the atoms, specify materials and geometry, and add them to the molecule group:
     for(let item of molObject.atoms){
       let material;
@@ -210,13 +229,13 @@
         opacity: 0.1,
         side: THREE.DoubleSide
       });
-
+ 
       let geometry;
       switch(item.type){
         case "C":
           geometry = new THREE.SphereGeometry( .2, 32, 16 );
           geometry2 = new THREE.SphereGeometry( .3, 32, 16 );
-          material = new THREE.MeshPhongMaterial( { 
+          material = new THREE.MeshPhongMaterial( {
             color: 0x555555,
             transparent: true,
             opacity: 0.8,
@@ -226,7 +245,7 @@
         case "H":
           geometry = new THREE.SphereGeometry( .05, 32, 16 );
           geometry2 = new THREE.SphereGeometry( .3, 32, 16 );
-          material = new THREE.MeshPhongMaterial( { 
+          material = new THREE.MeshPhongMaterial( {
             color: 0xffffff,
             transparent: true,
             opacity: 0.9,
@@ -236,7 +255,7 @@
         case "O":
           geometry = new THREE.SphereGeometry( .1, 32, 16 );
           geometry2 = new THREE.SphereGeometry( .3, 32, 16 );
-          material = new THREE.MeshPhongMaterial( { 
+          material = new THREE.MeshPhongMaterial( {
             color: 0xff0000,
             transparent: true,
             opacity: 0.8,
@@ -246,7 +265,7 @@
         case "N":
           geometry = new THREE.SphereGeometry( .1, 32, 16 );
           geometry2 = new THREE.SphereGeometry( .3, 32, 16 );
-          material = new THREE.MeshPhongMaterial( { 
+          material = new THREE.MeshPhongMaterial( {
             color: 0x189AB4,
             transparent: true,
             opacity: 0.8,
@@ -256,7 +275,7 @@
         case "S":
           geometry = new THREE.SphereGeometry( .1, 32, 16 );
           geometry2 = new THREE.SphereGeometry( .3, 32, 16 );
-          material = new THREE.MeshPhongMaterial( { 
+          material = new THREE.MeshPhongMaterial( {
             color: 0xffff00,
             transparent: true,
             opacity: 0.8,
@@ -266,112 +285,112 @@
         case "P":
           geometry = new THREE.SphereGeometry( .2, 32, 16 );
           geometry2 = new THREE.SphereGeometry( .3, 32, 16 );
-          material = new THREE.MeshPhongMaterial( { 
+          material = new THREE.MeshPhongMaterial( {
             color: 0xffa500,
             transparent: true,
             opacity: 0.8,
             side: THREE.DoubleSide
           } );
           break;
-        
+       
         default:
           geometry = new THREE.SphereGeometry( .1, 32, 16 );
           geometry2 = new THREE.SphereGeometry( .3, 32, 16 );
-          material = new THREE.MeshPhongMaterial( { 
+          material = new THREE.MeshPhongMaterial( {
             color: 0x555555,
             transparent: true,
             opacity: 0.8,
             side: THREE.DoubleSide
           } );
       }
-
+ 
       const sphere = new THREE.Mesh( geometry, material );
       const normalSphere = new THREE.Mesh( geometry2, meshNormalMaterialBonds );
-
+ 
       sphere.position.x = item.position.x ;
       sphere.position.y = item.position.y ;
       sphere.position.z = item.position.z;
-      
+     
       normalSphere.position.x = item.position.x;
       normalSphere.position.y = item.position.y;
       normalSphere.position.z = item.position.z;
-      
+     
       moleculeGroup.add( sphere );
       moleculeGroup.add( normalSphere );
     }
-
-    let bondMaterial = new THREE.MeshPhongMaterial( { 
+ 
+    let bondMaterial = new THREE.MeshPhongMaterial( {
         color: 0xffffff,
         transparent: true,
         opacity: 0.5,
         side: THREE.DoubleSide
       } );
-    
-    let bondMaterialNormal = new THREE.MeshNormalMaterial( { 
+   
+    let bondMaterialNormal = new THREE.MeshNormalMaterial( {
         color: 0xffffff,
         transparent: true,
         opacity: 0.1,
         side: THREE.DoubleSide
       } );
-
+ 
     for(let bond of molObject.bonds){
       console.log(bond);
       let index1 = Number(bond[0])-1;
       let index2 = Number(bond[1])-1;
-
+ 
       let atom1 = molObject.atoms[index1];
       let atom2 = molObject.atoms[index2];
-
+ 
       let point1 = new THREE.Vector3( atom1.position.x, atom1.position.y, atom1.position.z );
       let point2 = new THREE.Vector3( atom2.position.x, atom2.position.y, atom2.position.z );
-      
+     
       let distance = point1.distanceTo(point2);
       let angle = point1.angleTo(point2);
-
+ 
       console.log(angle);
-
+ 
       const cylinderGeometry = new THREE.CylinderGeometry( .05, .05, distance, 8 );
       cylinderGeometry.translate(0, distance / 2, 0);
       cylinderGeometry.rotateX(Math.PI / 2);
-
+ 
       const cylinderMaterial = new THREE.MeshBasicMaterial( {color: 0xffffff} );
       const cylinder = new THREE.Mesh( cylinderGeometry, bondMaterialNormal );
       cylinder.position.x = atom1.position.x ;
       cylinder.position.y = atom1.position.y ;
       cylinder.position.z = atom1.position.z ;
       cylinder.lookAt(point2);
-
+ 
       moleculeGroup.add( cylinder );
-
+ 
       console.log(distance);
-
+ 
     }
-
+ 
     moleculeGroup.position.x = ( (limits.x.max - limits.x.min) / 2)
     moleculeGroup.position.y = ( (limits.y.max - limits.y.min) / 2)
     moleculeGroup.position.z = ( (limits.z.max - limits.z.min) / 2)
-
+ 
     moleculeGroup.scale.x = 0.5;
     moleculeGroup.scale.y = 0.5;
     moleculeGroup.scale.z = 0.5;
         //GUI Configuration
-
+ 
     markerRoot1.add( moleculeGroup );
-
+ 
     var gui = new dat.GUI({ autoPlace: false });
     gui.domElement.id = 'gui';
     gui_container.appendChild(gui.domElement);
-
+ 
     const moleculePosition = gui.addFolder('Position')
     moleculePosition.add(moleculeGroup.position, 'x', -1, 1)
     moleculePosition.add(moleculeGroup.position, 'y', -1, 1)
     moleculePosition.add(moleculeGroup.position, 'z', -1, 1)
-
+ 
     const moleculeRotation = gui.addFolder('Rotation')
     moleculeRotation.add(moleculeGroup.rotation, 'x', -Math.PI*2, Math.PI*2)
     moleculeRotation.add(moleculeGroup.rotation, 'y', -Math.PI*2, Math.PI*2)
     moleculeRotation.add(moleculeGroup.rotation, 'z', -Math.PI*2, Math.PI*2)
-    
+   
     const moleculeScale = gui.addFolder('Scale')
     const scaleX = moleculeScale.add(moleculeGroup.scale, 'x', .1, 1.5).name("Scaling Factor")
     scaleX.onChange(function(value){
@@ -379,39 +398,39 @@
       moleculeGroup.scale.z = value;
     })
     gui.add(autoRotate, "switch").name("Auto Rotate");
-
+ 
   }
-  
-  
+ 
+ 
   function update()
   {
     // update artoolkit on every frame
     if ( arToolkitSource.ready !== false )
       arToolkitContext.update( arToolkitSource.domElement );
   }
-  
-  
+ 
+ 
   function render()
   {
     renderer.render( scene, camera );
   }
-  
-  
+ 
+ 
   function animate()
   {
     requestAnimationFrame(animate);
     deltaTime = clock.getDelta();
     totalTime += deltaTime;
-
+ 
     if(autoRotate.switch){
       moleculeGroup.rotation.z-=.5*deltaTime;
     }
-    
-
+   
+ 
     update();
     render();
   }
-  
+ 
   </script>
   </body>
 </html>

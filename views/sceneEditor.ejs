@@ -3,16 +3,16 @@
 <head>
     <title>Scene Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+ 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css">
-
+ 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
     <script>
         toastr.options = { escapeHtml: true, closeButton: true, progressBar: true };
     </script>
-
+ 
     <script type="importmap">
         {
             "imports": {
@@ -20,13 +20,13 @@
             }
         }
     </script>
-
+ 
     <style>
-        body { 
+        body {
             background-color : #202020;
-            margin: 0; 
+            margin: 0;
         }
-
+ 
         #three-area{
             height: 100vh;
             width: 100%;
@@ -45,11 +45,11 @@
             position: relative;
             overflow: hidden;
         }
-
+ 
         #editor-back-button{
             float:left;
         }
-        
+       
         .bg-black{
             background-color: #1f2326 !important;
         }
@@ -59,46 +59,46 @@
         .blur-10{
             backdrop-filter: blur(10px);
         }
-
-
-
-        @media (max-width: 576px) { 
+ 
+ 
+ 
+        @media (max-width: 576px) {
             .offcanvas{
                 width:100% !important;
             }  
          }
-
-        @media (min-width: 576px) { 
+ 
+        @media (min-width: 576px) {
             .offcanvas{
                 width:55% !important;
             }  
          }
-
-        @media (min-width: 768px) { 
+ 
+        @media (min-width: 768px) {
             .offcanvas{
                 width:50% !important;
             }  
          }
-
-        @media (min-width: 992px) { 
+ 
+        @media (min-width: 992px) {
             .offcanvas{
                 width:50% !important;
             }
          }
-
-        @media (min-width: 1200px) { 
+ 
+        @media (min-width: 1200px) {
             .offcanvas{
                 width:45% !important;
             }
          }
-
-        @media (min-width: 1400px) { 
+ 
+        @media (min-width: 1400px) {
             .offcanvas{
                 width:35% !important;
             }
          }
-
-    </style> 
+ 
+    </style>
 </head>
 <body>
     <div id = "body-container">
@@ -119,7 +119,7 @@
                             </button>
                         </div>
                     </div>
-                    
+                   
                     <div class="offcanvas offcanvas-start text-white transparent-blur blur-10" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="mainMenu" aria-labelledby="mainMenu">
                         <div class="offcanvas-header bg-black border-bottom">
                             <a href="/scenes" id="editor-back-button" class="btn btn-outline-light">
@@ -131,7 +131,7 @@
                             </svg>
                             Toggle Menu
                         </button>
-    
+   
                         <h3 class="offcanvas-title fw-bold" id="offcanvasScrollingLabel">
                             ChemAR
                         </h3>
@@ -206,14 +206,14 @@
                                                     <input type="number" class="form-control" id="markerXSlider" min="0" max="11" step=".01" value="0" oninput="markerXInput.value = markerXSlider.value">
                                                 </div>
                                             </div>
-
+ 
                                             <div class = "row mt-2">
                                                 <div class = "col-2">
                                                     <label for="marker-y" class="form-label">Offset Y</label>
                                                 </div>
                                                 <div class = "col-7">
                                                     <input type="range" class="form-range" id="markerYInput"  min="0" max="11" step=".01" value="0" oninput="markerYSlider.value = markerYInput.value" >
-
+ 
                                                 </div>
                                                 <div class = "col-3">
                                                     <input type="number" class="form-control"  id="markerYSlider"  min="0" max="11" step=".01" value="0" oninput="markerYInput.value = markerYSlider.value" >
@@ -244,7 +244,7 @@
                                   </div>
                                 </div>
                             </div>
-                    
+                   
                             <hr>
                             <div class = "row">
                                 <h4>Current Models</h4>
@@ -252,7 +252,7 @@
                                     <div id = "molecule-list"></div>
                                 </div>
                             </div>
-
+ 
                             <hr>
                         </div>
                     </div>
@@ -260,7 +260,7 @@
             </div>
         </div>
     </div>
-
+ 
     <div class="modal fade" id="saveModal" tabindex="-1" aria-labelledby="saveModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content bg-dark text-white">
@@ -294,8 +294,8 @@
             </div>
         </div>
     </div>    
-    
-
+   
+ 
     <div class="modal fade" id="loadModal" tabindex="-1" aria-labelledby="loadModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content bg-dark text-white">
@@ -319,7 +319,7 @@
             </div>
         </div>
     </div>
-
+ 
     <!-- Delete Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -342,7 +342,7 @@
         color: white;
     }
 </style>
-
+ 
     <script type= "module">
         import { createModel } from '/js/scenes/rendering.js';
         import {
@@ -354,27 +354,27 @@
             exportSceneData
         } from '/js/scenes/scene-mgmt.js';
         import { addMolToMenu } from '/js/scenes/add-mol-to-menu.js';
-
+ 
         var fileName = document.getElementById("fileName");
         var sceneName = document.getElementById("sceneName");
         var sceneDescription = document.getElementById("sceneDescription");
         let sceneNameInput = document.getElementById('newNameInput');
         let sceneDescriptionInput = document.getElementById('newDescriptionInput');
         const threeArea = document.getElementById('three-area');
-
+ 
         // mooleculeList is also used at partials/addModelsToScene.ejs
         const moleculeList = document.getElementById('molecule-list');
-
+ 
         const markerXSlider = document.getElementById('markerXSlider');
         const markerXInput = document.getElementById('markerXInput');
         const markerYSlider = document.getElementById('markerYSlider');
         const markerYInput = document.getElementById('markerYInput');
-
+ 
         let scene;
         let markerData;
-
+ 
         let requestedFile = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
-
+ 
         fetch('/scenes' + '/' + requestedFile, {
             credentials: 'include'})
             .then(response => {
@@ -385,7 +385,7 @@
             })
             .then(async data => {
                 scene = data;
-                
+               
                 fileName.innerHTML = "File name: " + requestedFile;
                 sceneName.innerHTML = "Scene name: " + scene.name;
                 sceneDescription.innerHTML = "Scene desc: " + scene.desc;
@@ -394,19 +394,19 @@
                 markerData = scene.trackingMarker
                
                 initScene(scene.png, markerData, threeArea, window);
-                
+               
                 markerXSlider.value = markerData.position.x;
                 markerXInput.value = markerData.position.x;
                 markerYSlider.value = markerData.position.y;
                 markerYInput.value = markerData.position.y;
-
+ 
                 // Draw each molecule in three when sceneEditor is loaded.
                 let counter = 0;
                 for(let item of scene.molecules) {
-                    
+                   
                     const modelInfo = item.modelInfo;
                     const model = await createModel(modelInfo, item.position, item.rotation, item.scale);
-                    
+                   
                     addModelToScene(modelInfo, model, item.cjson);
                     addMolToMenu(model, modelInfo.name, moleculeList, scene, counter);
                     counter++;
@@ -416,44 +416,44 @@
                 console.error(error);
                 toastr.error(error.message, "Failed to load scene");
             });
-
-
+ 
+ 
             function validateName() {
                 const nameInput = document.getElementById("newNameInput").value;
                 const descriptionInput = document.getElementById("newDescriptionInput").value;
-
+ 
                 if (nameInput.trim() === "" || descriptionInput.trim() === "") {
                     return false;
                 }
-                
+               
                 return true;
             }
-
+ 
         let offcanvas = document.getElementById('mainMenu')
         offcanvas.classList.add('show')
-
+ 
         markerXSlider.addEventListener('input', onMarkerXChange);
         markerXInput.addEventListener('input', onMarkerXChange);
         markerYSlider.addEventListener('input', onMarkerYChange);
         markerYInput.addEventListener('input', onMarkerYChange);
-
+ 
 // When the admin saves changes to the scene editor.
 document.getElementById("saveBtn").addEventListener('click', () => {
     if (!validateName()) {
         toastr.error("Please enter a name and description");
     } else {
-        
-        const oldSceneName = scene.name; 
+       
+        const oldSceneName = scene.name;
         var sceneName = sceneNameInput.value;
         var sceneDescription = sceneDescriptionInput.value;
-
+ 
         let pngFileToUpdate = scene.png;
         if (pngFileName) {
             pngFileToUpdate = pngFileName;
         }
-
+ 
         const { markerData, sceneMolecules } = exportSceneData();
-
+ 
         scene = {
             "name": sceneName,
             "desc": sceneDescription,
@@ -485,7 +485,7 @@ document.getElementById("saveBtn").addEventListener('click', () => {
             // Close the modal
             var saveModal = new bootstrap.Modal(document.getElementById('saveModal'));
             saveModal.hide();
-
+ 
             // Redirect the user to the scenes page
             window.location.href = "/scenes";
         })
@@ -495,7 +495,7 @@ document.getElementById("saveBtn").addEventListener('click', () => {
         });
     }
 });
-
+ 
 function updateSceneCatalog(oldSceneName, newSceneName, newSceneDescription) {
     fetch(`/sceneEditor/updateCatalog/${oldSceneName}`, {
         method: "POST",
@@ -515,17 +515,17 @@ function updateSceneCatalog(oldSceneName, newSceneName, newSceneDescription) {
         console.error(err);
     });
 }
-
+ 
         const sceneFileInput = document.getElementById('sceneFileInput');
         let pngFileName;
-
+ 
         sceneFileInput.addEventListener('change', function(e) {
             const file = sceneFileInput.files[0];
             if (!file) return;
-
+ 
             // Extract the PNG file name
             pngFileName = file.name;
-
+ 
             const reader = new FileReader();
             reader.addEventListener("load", () => {
                 // convert image file to base64 string
@@ -545,7 +545,7 @@ function updateSceneCatalog(oldSceneName, newSceneName, newSceneDescription) {
                                 throw error;
                             }
                         }
-
+ 
                         if (xhr.status === 200) {
                             if (response.success) {
                                 updateSceneImg(response.fileSrc);
@@ -568,13 +568,14 @@ function updateSceneCatalog(oldSceneName, newSceneName, newSceneDescription) {
                     "image-contents": reader.result
                 }));
             }, false);
-
+ 
             if (file) {
                 reader.readAsDataURL(file);
             }
         });
     </script>
-
+ 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 </body>
 </html>
+ 
