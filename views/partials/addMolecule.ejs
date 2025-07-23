@@ -271,10 +271,14 @@ function getPubChemCompoundDetails(cid) {
 function toastOnMolSave(toastMsg) {
     // manually creating toast body because newline "\n" doesnt work otherwise
     const toastBody = document.createElement('span');
-    // currently no easy way to add just the newly saved molecule to the table
-    // below, so ask the user to refresh the entire page
-    toastBody.innerText = toastMsg + "\nRefresh the page to see changes";
+    // show success message and automatically refresh after a brief delay
+    toastBody.innerText = toastMsg + "\nRefreshing page...";
     toastr.success(toastBody, undefined, { escapeHtml: false });
+    
+    // Automatically refresh the page after 2 seconds to show the newly added molecule
+    setTimeout(() => {
+        window.location.reload();
+    }, 2000);
 }
 
 function uploadMol(formElement) {
