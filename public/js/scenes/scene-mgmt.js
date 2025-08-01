@@ -61,7 +61,7 @@ export function initScene(pngFile, markerData, threeArea, window){
     paperPlane.position.y = paperDimensions.x/2;
 
     markerMaterial = new THREE.MeshLambertMaterial({
-        map: loader.load('/test_marker.png')
+        map: loader.load('/kanji_marker.png')
     });
 
     let markerDimensions = new THREE.Vector2( 1, 1 );
