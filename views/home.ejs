@@ -62,7 +62,7 @@
         </div>
       </div>
     </section>
-
+  
     <section class="section">
       <div style="margin-left: 40%"></div>
       <div
@@ -73,7 +73,7 @@
           width: 100%;
           border-color: transparent;
           text-align: center;
-        "
+        " 
       >
         <div class="card-header" style="font-size: 3.6vw">Instructions</div>
         <div class="accordion instructions" id="instructions">
@@ -99,8 +99,7 @@
               <div class="accordion-body instructions">
                 <b>
                   You should have been given a scene sheet. Make sure you 
-                  have this. It has a QR code and a tracking marker (a black 
-                  and white symbol).
+                  have this. It has a QR code and a tracking marker.
                 </b>
               </div>
             </div>
@@ -444,16 +443,23 @@
       });
 
       animate();
+
+      // function to automatically update the copyright year
+      const currentYear = new Date().getFullYear();
+      document.getElementById("year").textContent = `© ${currentYear} ChemAR`;
+      
+
     </script>
     
 <div class="container footerbuttons">
   <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
       <div class="col-md-4 d-flex align-items-center">
-          <span class="mb-3 mb-md-0 text-muted footer-text">© 2024 ChemAR</span>
+          <span id= "year" class="mb-3 mb-md-0 text-muted footer-text">© 2024 ChemAR</span>
+
       </div>
   </footer>
 </div>
 <script src="../datatable.js"></script>
-</script>
+
   </body>
 </html>
