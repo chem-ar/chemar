@@ -1,5 +1,5 @@
 import { OrbitControls } from '/js/OrbitControls.js';
-import * as THREE from '/js/three.module.js';
+import * as THREE from 'three';
 
 let scene1, camera, renderer, controls;
 
@@ -97,6 +97,7 @@ function animate() {
     renderer.render( scene1, camera );
     controls.update();
 }
+
 
 function onResize(window) {
     camera.aspect = window.innerWidth / window.innerHeight;

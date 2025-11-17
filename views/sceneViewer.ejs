@@ -421,14 +421,14 @@
           if (!moleculeARGroup.visible){
             //Rotate each molecule on its own axis
             activeMolecules.forEach((molecule) => {
-              molecule.rotation.y += deltaTime * 0.5; // Rotate around Y axis
-              //molecule.rotation.x += deltaTime * 0.5; // Rotate around X axis
+              molecule.rotation.y += deltaTime * 0; // Uncomment to enable rotation around Y axis
+              molecule.rotation.x += deltaTime * 0; // Uncomment to enable rotation around X axis
 
               // May be edited as desired to add more rotation effects.
             });
           }
           else {
-            moleculeARGroup.rotation.y += 0.01;
+            // moleculeARGroup.rotation.y += 0.01;
           }
 
           update();
