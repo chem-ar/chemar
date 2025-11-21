@@ -175,4 +175,4 @@ export function adjustMolToMarker(mol, marker) {
     mol.position.x -= Number(marker.position.x);
     mol.position.y -= Number(marker.position.z);
     mol.position.z += Number(marker.position.y);
-}
+} 
