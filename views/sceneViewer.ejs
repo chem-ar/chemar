@@ -231,6 +231,106 @@
 
           document.body.appendChild(renderer.domElement);
 
+          //start of section -- this section is NOT from the original above source 
+
+          // documentation for learning touch events:
+          // (October 21, 2025). "Touch Events". Mozilla. https://developer.mozilla.org/en-US/docs/Web/API/Touch_events
+
+          //Desired Variables for functionality learned from: alessandro_guarino (Febuary, 2021). "Touch in three js". ThreeJS. https://discourse.threejs.org/t/touch-in-three-js/23382/6
+          let touches = [];
+          let isAR = false;
+          let isDragging = false;
+          
+          let currentX = 0;
+          let currentY = 0;
+          let movedX = 0;
+          let movedY = 0;
+          
+          let pinchDistance = 0;
+          let scaleFactor = 1;
+          
+          //setup the touch events, user places 1 or more fingers on screen
+          document.addEventListener("touchstart", event => {
+            if(!isAR) {
+              return;
+            }
+            event.preventDefault();
+
+            //loop through each touch oject created when a finger is placed -- changedtouches[], store them into the touches array
+            // use of the changedtouches array learned from: Web Dev Simplified, (April 9, 2022). "Learn JavaScript Touch Events In 17 Minutes" Youtube. https://www.youtube.com/watch?v=TaPdgj8mucI
+            for(let touch of event.changedTouches) {
+              touches.push({
+                id: touch.identifier,
+                x: touch.pageX,
+                y: touch.pageY
+              });
+            }
+            
+            //if rotation (only one finger)
+            if(touches.length == 1) {
+              currentX = touches[0].x;
+              currentY = touches[0].y;
+              isDragging = true;
+            }
+            //if pinch to size (two fingers)
+            if(touches.length == 2) {
+              //calculate the distance between the x and y positions of both fingers
+              //Math for calculating pinch distance learned from: ClassicThunder, beek. "Three.js Pinch Zoom" StackOverflow https://stackoverflow.com/questions/25374420/three-js-pinch-zoom
+              const dx = touches[1].x - touches[0].x;
+              const dy = touches[1].y - touches[0].y;
+              pinchDistance = Math.sqrt(dx * dx + dy * dy);
+              isDragging = false;
+            }
+          });
+
+          //calculate distance between current and moving positions
+          document.addEventListener("touchmove", event => {
+            if(!isAR) {
+              return;
+            }
+            event.preventDefault();
+
+            //if rotation, set new x and y positions. 
+            // Code for changing rotation axis derived from: Pixel Perfect, (August 17, 2025) "#7 Three.js Drag Controls: Natural Turntable with Inertia (G-Sap)". Youtube. https://www.youtube.com/watch?v=Z7QtUVp2S7U
+            if(isDragging && touches.length == 1) {
+              const dx = touches[0].x - currentX;
+              const dy = touches[0].y - currentY;
+              //rotate the molecule via the distances calcuated above
+              moleculeARGroup.rotation.x = movedX + dy * 0.01;
+              moleculeARGroup.rotation.y = movedY + dx * 0.01;
+            }
+            //if pinch to zoom, set size to be distance scale of initial, adding or removing scale size based on new pinch distance
+            if(!isDragging && touches.length == 2) {
+             //Math for calculating pinch distance and scale learned from: ClassicThunder, beek. "Three.js Pinch Zoom" StackOverflow https://stackoverflow.com/questions/25374420/three-js-pinch-zoom
+              const dx = touches[1].x - touches[0].x;
+              const dy = touches[1].y - touches[0].y;
+              const newDistance = Math.sqrt(dx * dx + dy * dy);
+              //scale is currentdistance divided by last distance (original distance)
+              scaleFactor = newDistance / pinchDistance;
+              scaleFactor = Math.max(0.1, Math.min(scaleFactor, 5));
+              moleculeARGroup.scale.set(scaleFactor, scaleFactor, scaleFactor);
+            }
+
+          });
+
+          document.addEventListener("touchend", event => {
+            if(!isAR) {
+              return;
+            }
+            event.preventDefault();
+
+            //loop through the changedtouches array (touches currently on screen), 
+            // remove what is no longer on screen 
+            for(let touch of changedTouches) {
+              for(let i = 0; i < touches.length; i++) {
+                if(touches[i].id == touch.identifier) {
+                  touches.splice(i, 1);
+                  break;
+                }
+              }
+            }
+          });
+
            ////////////////////////////////////////////////////////////
           // setup Clock
           ////////////////////////////////////////////////////////////
@@ -281,7 +381,8 @@
             maxDetectionRate: 60,          // Increased for faster updates
             canvasWidth: 640,              // Balanced resolution for speed
             canvasHeight: 480,
-            imageSmoothingEnabled: false   // Faster processing
+            imageSmoothingEnabled: true,   // helps with different types of lighting
+            thresholdMode: "adaptive" //helps with different types of lighting
           });
 
           // copy projection matrix to camera when initialization complete
@@ -298,29 +399,31 @@
           document.body.appendChild(button);
           button.addEventListener("click", startAR);
 
+          //TEMPORARY COMMENTING-OUT OF ORBITCONTROLS - causes unwanted movement of molecule
+
            ////////////////////////////////////////////////////////////
           // setup OrbitControls
           ////////////////////////////////////////////////////////////
-          controls = new OrbitControls(camera, renderer.domElement);
-          controls.dampingFactor = 10;
-          controls.minDistance = 1;
-          camera.position.x = 0;
-          camera.position.y = 0;
-          camera.position.z = 2;
+          // controls = new OrbitControls(camera, renderer.domElement);
+          // controls.dampingFactor = 10;
+          // controls.minDistance = 1;
+          // camera.position.x = 0;
+          // camera.position.y = 0;
+          // camera.position.z = 2;
           
-          //Three.js - OrbitControls Documentation: https://threejs.org/docs/#examples/en/controls/OrbitControls
-          //allow a user to zoom in/out and to rotate the molecule on their phone
-          controls.enableZoom = true;
-          controls.enableRotate = true;
-          controls.rotateSpeed = -0.4;
-          controls.zoomSpeed = 0.4;
+          // //Three.js - OrbitControls Documentation: https://threejs.org/docs/#examples/en/controls/OrbitControls
+          // //allow a user to zoom in/out and to rotate the molecule on their phone
+          // controls.enableZoom = true;
+          // controls.enableRotate = true;
+          // controls.rotateSpeed = -0.4;
+          // controls.zoomSpeed = 0.4;
 
-          controls.touches = {
-              ONE: THREE.TOUCH.ROTATE, //Rotate molecule with 1 finger
-              TWO: THREE.TOUCH.DOLLY, //Zoom with 2 fingers
-          };
+          // controls.touches = {
+          //     ONE: THREE.TOUCH.ROTATE, //Rotate molecule with 1 finger
+          //     TWO: THREE.TOUCH.DOLLY, //Zoom with 2 fingers
+          // };
           
-          controls.update();
+          // controls.update();
 
 
           ////////////////////////////////////////////////////////////
@@ -386,6 +489,8 @@
         }
 
         function startAR()  {
+          isAR = true;
+
           moleculeARGroup.visible = true;
           markerRoot1.clear();
           camera.position.set(markerX, markerY, markerZ);
@@ -421,8 +526,8 @@
           if (!moleculeARGroup.visible){
             //Rotate each molecule on its own axis
             activeMolecules.forEach((molecule) => {
-              molecule.rotation.y += deltaTime * 0; // Uncomment to enable rotation around Y axis
-              molecule.rotation.x += deltaTime * 0; // Uncomment to enable rotation around X axis
+              molecule.rotation.y += deltaTime * 0; // Edited to remove rotation
+              molecule.rotation.x += deltaTime * 0; // Edited to remove rotation
 
               // May be edited as desired to add more rotation effects.
             });
