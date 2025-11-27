@@ -515,21 +515,24 @@
 
         function animate() {
           requestAnimationFrame(animate); 
-          deltaTime = clock.getDelta();
-          totalTime += deltaTime;
+          // this section of code overwrites the above touch events, remove it entirley
 
-          if (!moleculeARGroup.visible){
-            //Rotate each molecule on its own axis
-            activeMolecules.forEach((molecule) => {
-              molecule.rotation.y += deltaTime * 0; // Edited to remove rotation
-              molecule.rotation.x += deltaTime * 0; // Edited to remove rotation
+          
+          // deltaTime = clock.getDelta();
+          // totalTime += deltaTime;
 
-              // May be edited as desired to add more rotation effects.
-            });
-          }
-          else {
-            // moleculeARGroup.rotation.y += 0.01;
-          }
+          // if (!moleculeARGroup.visible){
+          //   //Rotate each molecule on its own axis
+          //   activeMolecules.forEach((molecule) => {
+          //     molecule.rotation.y += deltaTime * 0; // Edited to remove rotation
+          //     molecule.rotation.x += deltaTime * 0; // Edited to remove rotation
+
+          //     // May be edited as desired to add more rotation effects.
+          //   });
+          // }
+          // else {
+          //   // moleculeARGroup.rotation.y += 0.01;
+          // }
 
           update();
           render(); 
@@ -538,3 +541,4 @@
       </script>
     </body>
   </html>
+<!-- Removed duplicate </html> tag -->
