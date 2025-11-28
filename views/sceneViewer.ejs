@@ -147,7 +147,6 @@
         import * as THREE from "/js/three.module.js";
         import { createModel } from "/js/scenes/rendering.js";
         import { ARButton } from "/js/ARButton.js";
-        import { OrbitControls } from "/js/OrbitControls.js";
         import { adjustMolToMarker } from '/js/scenes/scene-mgmt.js';
       
         let requestedFile =
@@ -166,13 +165,9 @@
           });
 
         var scene, camera, renderer, clock, deltaTime, totalTime, clone, moleculeARGroup, controls, moleculeSizeDivisor = 128;
-
         var activeMolecules = []; // creating an array to keep track of active molecules and manipulate independently.
-
         var arToolkitSource, arToolkitContext;
-
         var markerX, markerY, markerZ;
-
         var markerRoot1, markerRoot2, markerVisible;
 
         function initialize() {
@@ -192,17 +187,6 @@
 
           let spotLight = new THREE.SpotLight(0xffffff);
           spotLight.position.set(140, 65, 95);
-          
-          //Removed shadow settings to improve clarity of molecular models
-          // shadows already removed in refractoring
-          // spotLight.castShadow = true;
-
-          // spotLight.shadow.mapSize.width = 1024;
-          // spotLight.shadow.mapSize.height = 1024;
-
-          // spotLight.shadow.camera.near = 500;
-          // spotLight.shadow.camera.far = 4000;
-          // spotLight.shadow.camera.fov = 30;
 
           scene.add(spotLight);
 
@@ -250,7 +234,7 @@
             displayWidth: 640,   // Match source dimensions
             displayHeight: 480,
             deviceId: undefined  // Allow faster camera initialization
-        });
+         });
           function onResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
              renderer.setSize( window.innerWidth, window.innerHeight );
@@ -299,32 +283,6 @@
           document.body.appendChild(button);
           button.addEventListener("click", startAR);
 
-          //TEMPORARY COMMENTING-OUT OF ORBITCONTROLS - causes unwanted movement of molecule
-
-           ////////////////////////////////////////////////////////////
-          // setup OrbitControls
-          ////////////////////////////////////////////////////////////
-          // controls = new OrbitControls(camera, renderer.domElement);
-          // controls.dampingFactor = 10;
-          // controls.minDistance = 1;
-          // camera.position.x = 0;
-          // camera.position.y = 0;
-          // camera.position.z = 2;
-          
-          // //Three.js - OrbitControls Documentation: https://threejs.org/docs/#examples/en/controls/OrbitControls
-          // //allow a user to zoom in/out and to rotate the molecule on their phone
-          // controls.enableZoom = true;
-          // controls.enableRotate = true;
-          // controls.rotateSpeed = -0.4;
-          // controls.zoomSpeed = 0.4;
-
-          // controls.touches = {
-          //     ONE: THREE.TOUCH.ROTATE, //Rotate molecule with 1 finger
-          //     TWO: THREE.TOUCH.DOLLY, //Zoom with 2 fingers
-          // };
-          
-          // controls.update();
-
 
           ////////////////////////////////////////////////////////////
           // setup markerRoots
@@ -346,6 +304,7 @@
           // setup Populate Molcules to Marker
           ////////////////////////////////////////////////////////////
           moleculeARGroup = new THREE.Group();
+
           for (let item of moleculeData.molecules) {
             const marker = moleculeData.trackingMarker;
             createModel(
@@ -354,10 +313,15 @@
               item.rotation,
               item.scale
             ).then((molecule) => {
-              adjustMolToMarker(molecule,marker);
-              markerRoot1.add(molecule);  
 
-              activeMolecules.push(molecule); // adding to active molecules array
+              //using the exact molecules overwrites the touch events, so a wrapper is used to stop the overwriting
+              const wrapper = new THREE.Group();
+              wrapper.add(molecule);
+
+              adjustMolToMarker(wrapper, molecule, marker);
+              markerRoot1.add(wrapper);  
+
+              activeMolecules.push(wrapper); // adding to active molecules array
 
               molecule.traverse(function(child) {
                   if (child.isMesh) {
@@ -515,24 +479,6 @@
 
         function animate() {
           requestAnimationFrame(animate); 
-          // this section of code overwrites the above touch events, remove it entirley
-
-          
-          // deltaTime = clock.getDelta();
-          // totalTime += deltaTime;
-
-          // if (!moleculeARGroup.visible){
-          //   //Rotate each molecule on its own axis
-          //   activeMolecules.forEach((molecule) => {
-          //     molecule.rotation.y += deltaTime * 0; // Edited to remove rotation
-          //     molecule.rotation.x += deltaTime * 0; // Edited to remove rotation
-
-          //     // May be edited as desired to add more rotation effects.
-          //   });
-          // }
-          // else {
-          //   // moleculeARGroup.rotation.y += 0.01;
-          // }
 
           update();
           render(); 

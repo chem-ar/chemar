@@ -168,11 +168,15 @@ export function exportSceneData() {
  * 
  * @returns void. The passed molecule is changed in place
  */
-export function adjustMolToMarker(mol, marker) {
-    [mol.position.y, mol.position.z] = [mol.position.z, -mol.position.y];
-    mol.rotateX(Math.PI / 2);
+export function adjustMolToMarker(wrapper, mol, marker) {
+    //to avoid overwritting, we need to set values to the wrapper, not the mol
+    mol.position.set(0,0,0);
+    mol.rotation.set(0,0,0);
 
-    mol.position.x -= Number(marker.position.x);
-    mol.position.y -= Number(marker.position.z);
-    mol.position.z += Number(marker.position.y);
-} 
+    [wrapper.position.y, wrapper.position.z] = [wrapper.position.z, -wrapper.position.y];
+    wrapper.rotateX(Math.PI / 2);
+
+    wrapper.position.x -= Number(marker.position.x);
+    wrapper.position.y -= Number(marker.position.z);
+    wrapper.position.z += Number(marker.position.y);
+}
